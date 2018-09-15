@@ -37,9 +37,9 @@ class Ball {
         ball.name = "ball\(num)"
         
         let physBody = SKPhysicsBody(circleOfRadius: radius)
+        physBody.restitution = 0
         physBody.angularDamping = 0
         physBody.linearDamping = 0
-        physBody.restitution = 1
         physBody.allowsRotation = false
         // This was the key to allowing balls to maintain their angles after impact
         physBody.friction = 0
@@ -55,8 +55,7 @@ class Ball {
     }
     
     public func stop() {
-        node!.removeAllActions()
-        isActive = false
+        node!.physicsBody?.isResting = true
     }
     
     public func returnToOrigin(point: CGPoint) {
