@@ -23,10 +23,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private var ballManager : BallManager?
     
-    private var currentState : Int?
-    
-    private var states : [Int] = []
-    
     private var currentTouch : CGPoint?
     
     private var prevTime : TimeInterval?
@@ -34,11 +30,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Stuff for collisions
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitMask = UInt32(0b0001)
-    
-    // MARK: State values
-    private var READY = Int(0)
-    private var SHOOT_BALLS = Int(1)
-    private var WAIT_BALLS = Int(2)
     
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -48,21 +39,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if (nameA?.starts(with: "ball"))! && nameB == "ground" {
             // Stop the ball at this exact point if it's the first ball to hit the ground
             print("\(nameA!) hit the ground")
-            contact.bodyA.node!.physicsBody?.isResting = true
-            //ballManager!.markBallInactive(name: nameA!)
+            //contact.bodyA.node!.physicsBody?.isResting = true
+            ballManager!.markBallInactive(name: nameA!)
         }
         
         if (nameB?.starts(with: "ball"))! && nameA == "ground" {
             // Stop the ball at this exact point if it's the first ball to hit the ground
             print("\(nameB!) hit the ground")
-            contact.bodyB.node!.physicsBody?.isResting = true
-            //ballManager!.markBallInactive(name: nameB!)
+            //contact.bodyB.node!.physicsBody?.isResting = true
+            ballManager!.markBallInactive(name: nameB!)
         }
     }
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
-        initState()
         initWalls(view: view)
         initBallManager(view: view, numBalls: numberOfBalls)
         
@@ -78,10 +68,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if currentState! == READY {
+        if ballManager!.isReady() {
             if let touch = touches.first {
-                currentTouch = touch.location(in: self)
-                incrementState()
+                let direction = touch.location(in: self)
+                ballManager!.setDirection(point: direction)
+                ballManager!.incrementState()
             }
         }
     }
@@ -92,30 +83,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
-        if currentState! == SHOOT_BALLS {
-            // This function returns false when all balls have been shot
-            if false == ballManager?.shootBalls(point: currentTouch!) {
-                incrementState()
-            }
+        if ballManager!.isShooting() {
+            ballManager!.shootBall()
         }
         
-        //ballManager!.stopInactiveBalls()
+        if ballManager!.isWaiting() {
+            ballManager!.stopInactiveBalls()
+        }
     }
     
     // MARK: Private functions
-    private func initState() {
-        currentState = READY
-    }
-    
-    private func incrementState() {
-        if currentState! == WAIT_BALLS {
-            currentState! = READY
-            return
-        }
-        
-        currentState! += 1
-    }
-    
     private func initWalls(view: SKView) {
         margin = view.frame.height * 0.10
         
