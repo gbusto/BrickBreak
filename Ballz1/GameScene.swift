@@ -12,6 +12,7 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Private attributes
+    private var numberOfBlocks = Int(10)
     private var numberOfBalls = Int(10)
     private var margin : CGFloat?
     private var radius : CGFloat?
@@ -23,9 +24,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private var ballManager : BallManager?
     
+    private var blockGenerator : BlockGenerator?
+    
     private var currentTouch : CGPoint?
     
     private var prevTime : TimeInterval?
+    
+    private var turnOver = true
     
     // Stuff for collisions
     private var categoryBitMask = UInt32(0b0001)
@@ -55,6 +60,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         initWalls(view: view)
         initBallManager(view: view, numBalls: numberOfBalls)
+        initBlockGenerator(view: view)
         
         physicsWorld.contactDelegate = self
     }
@@ -83,12 +89,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
+        if turnOver {
+            addRow()
+            turnOver = false
+        }
+        
         if ballManager!.isShooting() {
             ballManager!.shootBall()
         }
         
         if ballManager!.isWaiting() {
             ballManager!.stopInactiveBalls()
+        }
+        
+        if ballManager!.isDone() {
+            turnOver = true
+            ballManager!.incrementState()
         }
     }
     
@@ -128,6 +144,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode?.anchorPoint = CGPoint(x: 0, y: 0)
         ceilingNode?.position = CGPoint(x: 0, y: view.frame.height - margin)
         ceilingNode?.name = "ceiling"
+        ceilingNode?.zPosition = 101
         
         let startPoint = CGPoint(x: 0, y: 0)
         let endPoint = CGPoint(x: view.frame.width, y: 0)
@@ -180,5 +197,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let position = CGPoint(x: view.frame.midX, y: margin! + radius!)
         ballManager!.initBallManager(numBalls: numBalls, position: position, radius: radius!)
         ballManager!.addBalls(scene: self)
+    }
+    
+    private func initBlockGenerator(view: SKView) {
+        blockGenerator = BlockGenerator()
+        blockGenerator?.initBlockGenerator(view: view, numBalls: numberOfBalls, numBlocks: numberOfBlocks,
+                                           ceiling: view.frame.height - margin!, ground: margin!)
+    }
+    
+    private func addRow() {
+        blockGenerator!.generateRow(scene: self)
     }
 }
