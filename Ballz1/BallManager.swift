@@ -14,8 +14,7 @@ class BallManager {
     // MARK: Private properties
     private var numberOfBalls : Int?
     private var ballArray : [Ball] = []
-    
-    private var numBallsFired : Int?
+    private var activeBallArray : [Ball] = []
     
     private var firstBallReturned = false
     
@@ -25,7 +24,6 @@ class BallManager {
     // MARK: Public functions
     public func initBallManager(numBalls: Int, position: CGPoint, radius: CGFloat) {
         numberOfBalls = numBalls
-        numBallsFired = 0
         originPoint = position
         
         for i in 1...numBalls {
@@ -42,35 +40,44 @@ class BallManager {
     }
     
     public func shootBalls(point: CGPoint) -> Bool {
-        let ball = ballArray[numBallsFired!]
+        let ball = ballArray[activeBallArray.count]
         ball.fire(point: point)
-        numBallsFired! += 1
+        activeBallArray.append(ball)
         
-        return numBallsFired! < numberOfBalls!
+        return activeBallArray.count < ballArray.count
     }
     
-    public func stop(name: String) {
+    public func markBallInactive(name: String) {
         for ball in ballArray {
             if ball.node!.name == name {
+                ball.isActive = false
+            }
+        }
+    }
+    
+    public func stopInactiveBalls() {
+        if 0 == activeBallArray.count {
+            firstBallReturned = false
+            return
+        }
+        
+        var indices : [Int] = []
+        
+        for i in 0...(activeBallArray.count - 1) {
+            let ball = activeBallArray[i]
+            if false == ball.isActive {
                 ball.stop()
+                indices.append(i)
                 if false == firstBallReturned {
                     firstBallReturned = true
+                    // Might need to change this; not sure if position updates depending on where it is
                     originPoint = ball.node!.position
-                    return
-                }
-                else {
-                    ball.returnToOrigin(point: originPoint!)
-                    return
                 }
             }
         }
         
-        for ball in ballArray {
-            if ball.isActive {
-                return
-            }
+        for index in indices {
+            activeBallArray.remove(at: index)
         }
-        
-        firstBallReturned = false
     }
 }

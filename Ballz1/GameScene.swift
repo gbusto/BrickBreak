@@ -48,13 +48,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if (nameA?.starts(with: "ball"))! && nameB == "ground" {
             // Stop the ball at this exact point if it's the first ball to hit the ground
             print("\(nameA!) hit the ground")
-            ballManager!.stop(name: nameA!)
+            contact.bodyA.node!.physicsBody?.isResting = true
+            //ballManager!.markBallInactive(name: nameA!)
         }
         
         if (nameB?.starts(with: "ball"))! && nameA == "ground" {
             // Stop the ball at this exact point if it's the first ball to hit the ground
             print("\(nameB!) hit the ground")
-            ballManager!.stop(name: nameB!)
+            contact.bodyB.node!.physicsBody?.isResting = true
+            //ballManager!.markBallInactive(name: nameB!)
         }
     }
     
@@ -97,7 +99,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        
+        //ballManager!.stopInactiveBalls()
     }
     
     // MARK: Private functions
@@ -132,6 +134,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let startPoint = CGPoint(x: 0, y: margin)
         let endPoint = CGPoint(x: view.frame.width, y: margin)
         let physBody = SKPhysicsBody(edgeFrom: startPoint, to: endPoint)
+        physBody.usesPreciseCollisionDetection = true
+        physBody.restitution = 0
+        physBody.angularDamping = 1
+        physBody.linearDamping = 1
         physBody.categoryBitMask = categoryBitMask
         physBody.contactTestBitMask = contactTestBitMask
         groundNode?.physicsBody = physBody
@@ -149,6 +155,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let startPoint = CGPoint(x: 0, y: 0)
         let endPoint = CGPoint(x: view.frame.width, y: 0)
         let physBody = SKPhysicsBody(edgeFrom: startPoint, to: endPoint)
+        physBody.angularDamping = 0
+        physBody.linearDamping = 0
+        physBody.restitution = 1
+        physBody.friction = 0
         physBody.categoryBitMask = categoryBitMask
         physBody.contactTestBitMask = contactTestBitMask
         ceilingNode?.physicsBody = physBody
@@ -160,6 +170,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let lwStartPoint = CGPoint(x: 1, y: margin)
         let lwEndPoint = CGPoint(x: 1, y: view.frame.height - margin)
         let leftWallEdge = SKPhysicsBody(edgeFrom: lwStartPoint, to: lwEndPoint)
+        leftWallEdge.angularDamping = 0
+        leftWallEdge.linearDamping = 0
+        leftWallEdge.restitution = 1
+        leftWallEdge.friction = 0
         leftWallEdge.categoryBitMask = categoryBitMask
         leftWallEdge.contactTestBitMask = contactTestBitMask
         leftWallNode = SKNode()
@@ -169,6 +183,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let rwStartPoint = CGPoint(x: view.frame.width, y: margin)
         let rwEndPoint = CGPoint(x: view.frame.width, y: view.frame.height - margin)
         let rightWallEdge = SKPhysicsBody(edgeFrom: rwStartPoint, to: rwEndPoint)
+        rightWallEdge.angularDamping = 0
+        rightWallEdge.linearDamping = 0
+        rightWallEdge.restitution = 1
+        rightWallEdge.friction = 0
         rightWallEdge.categoryBitMask = categoryBitMask
         rightWallEdge.contactTestBitMask = contactTestBitMask
         rightWallNode = SKNode()
