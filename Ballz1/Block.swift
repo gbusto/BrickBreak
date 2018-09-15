@@ -20,6 +20,10 @@ class Block {
     private var hitCount : Int?
     
     private var labelNode : SKLabelNode?
+    
+    // Setting up properties for collisions
+    private var categoryBitMask = UInt32(0b0001)
+    private var contactTestBitmask = UInt32(0b0001)
 
     // MARK: Init function
     public func initBlock(num: Int, size: CGSize, position: CGPoint, hitCount: Int) {
