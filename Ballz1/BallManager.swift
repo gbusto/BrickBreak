@@ -24,6 +24,7 @@ class BallManager {
     private var READY = Int(0)
     private var SHOOTING = Int(1)
     private var WAITING = Int(2)
+    private var DONE = Int(3)
     
     private var state = Int(0)
     
@@ -45,7 +46,7 @@ class BallManager {
     }
     
     public func incrementState() {
-        if WAITING == state {
+        if DONE == state {
             state = READY
             return
         }
@@ -63,6 +64,10 @@ class BallManager {
     
     public func isWaiting() -> Bool {
         return (state == WAITING)
+    }
+    
+    public func isDone() -> Bool {
+        return (state == DONE)
     }
     
     public func setDirection(point: CGPoint) {
