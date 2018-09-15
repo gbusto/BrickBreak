@@ -41,18 +41,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let nameA = contact.bodyA.node?.name!
         let nameB = contact.bodyB.node?.name!
         
-        if (nameA?.starts(with: "ball"))! && nameB == "ground" {
-            // Stop the ball at this exact point if it's the first ball to hit the ground
-            print("\(nameA!) hit the ground")
-            //contact.bodyA.node!.physicsBody?.isResting = true
-            ballManager!.markBallInactive(name: nameA!)
+        if (nameA?.starts(with: "ball"))! {
+            if nameB! == "ground" {
+                // Stop the ball at this exact point if it's the first ball to hit the ground
+                ballManager!.markBallInactive(name: nameA!)
+            }
+            else if (nameB?.starts(with: "block"))! {
+                // A block was hit
+                blockGenerator!.hit(name: nameB!)
+            }
         }
         
-        if (nameB?.starts(with: "ball"))! && nameA == "ground" {
-            // Stop the ball at this exact point if it's the first ball to hit the ground
-            print("\(nameB!) hit the ground")
-            //contact.bodyB.node!.physicsBody?.isResting = true
-            ballManager!.markBallInactive(name: nameB!)
+        if (nameB?.starts(with: "ball"))! {
+            if nameA! == "ground" {
+                // Stop the ball at this exact point if it's the first ball to hit the ground
+                ballManager!.markBallInactive(name: nameB!)
+            }
+            else if (nameA?.starts(with: "block"))! {
+                // A block was hit
+                blockGenerator!.hit(name: nameA!)
+            }
         }
     }
     
@@ -106,6 +114,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             turnOver = true
             ballManager!.incrementState()
         }
+        
+        blockGenerator?.removeBlocks(scene: self)
     }
     
     // MARK: Private functions

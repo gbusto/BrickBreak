@@ -73,4 +73,28 @@ class BlockGenerator {
             block.node!.run(SKAction.moveBy(x: 0, y: -width!, duration: 1))
         }
     }
+    
+    public func hit(name: String) {
+        for block in blockArray {
+            if block.node!.name == name {
+                block.hit()
+            }
+        }
+    }
+    
+    public func removeBlocks(scene: SKScene) {
+        var indices : [Int] = []
+        
+        for i in 0...(blockArray.count - 1) {
+            let block = blockArray[i]
+            if block.isDead() {
+                scene.removeChildren(in: [block.node!])
+                indices.append(i)
+            }
+        }
+        
+        for index in indices {
+            blockArray.remove(at: index)
+        }
+    }
 }
