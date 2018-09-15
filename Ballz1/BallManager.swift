@@ -20,6 +20,15 @@ class BallManager {
     
     private var originPoint : CGPoint?
     
+    // MARK: State values
+    private var READY = Int(0)
+    private var SHOOTING = Int(1)
+    private var WAITING = Int(2)
+    
+    private var state = Int(0)
+    
+    private var direction : CGPoint?
+    
     
     // MARK: Public functions
     public func initBallManager(numBalls: Int, position: CGPoint, radius: CGFloat) {
@@ -31,6 +40,33 @@ class BallManager {
             ball.initBall(num: i, position: position, radius: radius)
             ballArray.append(ball)
         }
+        
+        state = READY
+    }
+    
+    public func incrementState() {
+        if WAITING == state {
+            state = READY
+            return
+        }
+        
+        state += 1
+    }
+    
+    public func isReady() -> Bool {
+        return (state == READY)
+    }
+    
+    public func isShooting() -> Bool {
+        return (state == SHOOTING)
+    }
+    
+    public func isWaiting() -> Bool {
+        return (state == WAITING)
+    }
+    
+    public func setDirection(point: CGPoint) {
+        direction = point
     }
     
     public func addBalls(scene: SKScene) {
@@ -39,12 +75,14 @@ class BallManager {
         }
     }
     
-    public func shootBalls(point: CGPoint) -> Bool {
+    public func shootBall() {
         let ball = ballArray[activeBallArray.count]
-        ball.fire(point: point)
+        ball.fire(point: direction!)
         activeBallArray.append(ball)
         
-        return activeBallArray.count < ballArray.count
+        if activeBallArray.count == ballArray.count {
+            incrementState()
+        }
     }
     
     public func markBallInactive(name: String) {
@@ -78,6 +116,10 @@ class BallManager {
         
         for index in indices {
             activeBallArray.remove(at: index)
+        }
+        
+        if 0 == activeBallArray.count {
+            incrementState()
         }
     }
 }
