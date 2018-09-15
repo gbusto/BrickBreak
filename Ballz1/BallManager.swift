@@ -104,27 +104,20 @@ class BallManager {
             return
         }
         
-        var indices : [Int] = []
+        var iterator = activeBallArray.makeIterator()
+        var index = 0
         
-        for i in 0...(activeBallArray.count - 1) {
-            let ball = activeBallArray[i]
+        while let ball = iterator.next() {
             if false == ball.isActive {
                 ball.stop()
-                indices.append(i)
+                activeBallArray.remove(at: index)
                 if false == firstBallReturned {
                     firstBallReturned = true
                     // Might need to change this; not sure if position updates depending on where it is
                     originPoint = ball.node!.position
                 }
             }
-        }
-        
-        for index in indices {
-            activeBallArray.remove(at: index)
-        }
-        
-        if 0 == activeBallArray.count {
-            incrementState()
+            index += 1
         }
     }
 }
