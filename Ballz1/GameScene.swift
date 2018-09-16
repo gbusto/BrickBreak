@@ -205,8 +205,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         radius = CGFloat(view.frame.width * 0.015)
         ballManager = BallManager()
         let position = CGPoint(x: view.frame.midX, y: margin! + radius!)
-        ballManager!.initBallManager(numBalls: numBalls, position: position, radius: radius!)
-        ballManager!.addBalls(scene: self)
+        ballManager!.initBallManager(scene: self, numBalls: numBalls, position: position, radius: radius!)
+        ballManager!.addBalls()
     }
     
     private func initBlockGenerator(view: SKView) {
