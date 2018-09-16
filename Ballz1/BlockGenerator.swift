@@ -83,18 +83,13 @@ class BlockGenerator {
     }
     
     public func removeBlocks(scene: SKScene) {
-        var indices : [Int] = []
-        
-        for i in 0...(blockArray.count - 1) {
-            let block = blockArray[i]
-            if block.isDead() {
-                scene.removeChildren(in: [block.node!])
-                indices.append(i)
+        let newBlockArray = blockArray.filter {
+            if $0.isDead() {
+                scene.removeChildren(in: [$0.node!])
             }
+            return !$0.isDead()
         }
         
-        for index in indices {
-            blockArray.remove(at: index)
-        }
+        blockArray = newBlockArray
     }
 }
