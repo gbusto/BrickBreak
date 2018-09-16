@@ -104,9 +104,7 @@ class BallManager {
             firstBallReturned = false
             return
         }
-        
-        print("Number of active balls \(numBallsActive)")
-        
+                
         for ball in ballArray {
             if ball.isResting {
                 continue
