@@ -12,7 +12,10 @@ import GameplayKit
 class BallManager {
     
     // MARK: Private properties
+    private var scene : SKScene?
     private var numberOfBalls : Int?
+    
+    private var ballRadius : CGFloat?
     private var ballArray : [Ball] = []
     
     private var firstBallReturned = false
@@ -39,11 +42,15 @@ class BallManager {
     
     private var direction : CGPoint?
     
+    private var labelNode : SKLabelNode?
+    
     
     // MARK: Public functions
-    public func initBallManager(numBalls: Int, position: CGPoint, radius: CGFloat) {
+    public func initBallManager(scene: SKScene, numBalls: Int, position: CGPoint, radius: CGFloat) {
         numberOfBalls = numBalls
         originPoint = position
+        self.scene = scene
+        ballRadius = radius
         
         for i in 1...numBalls {
             let ball = Ball()
@@ -51,6 +58,8 @@ class BallManager {
             ballArray.append(ball)
         }
         
+        labelNode = SKLabelNode()
+
         state = READY
     }
     
@@ -83,10 +92,12 @@ class BallManager {
         direction = point
     }
     
-    public func addBalls(scene: SKScene) {
+    // This is only called once
+    public func addBalls() {
         for ball in ballArray {
-            scene.addChild(ball.node!)
+            scene!.addChild(ball.node!)
         }
+        addLabel()
     }
     
     public func shootBall() {
@@ -96,6 +107,10 @@ class BallManager {
         
         if numBallsActive == ballArray.count {
             incrementState()
+            removeLabel()
+        }
+        else {
+            updateLabel()
         }
     }
     
@@ -120,9 +135,12 @@ class BallManager {
                 if false == firstBallReturned {
                     firstBallReturned = true
                     originPoint = ball.node!.position
+                    // originPoint needs to be set before calling addLabel()
+                    addLabel()
                 }
                 ball.stop(point: originPoint!)
                 numBallsActive -= 1
+                updateLabel()
             }
         }
         
@@ -130,5 +148,26 @@ class BallManager {
             incrementState()
             firstBallReturned = false
         }
+    }
+    
+    // MARK: Private functions
+    private func addLabel() {
+        let newPoint = CGPoint(x: originPoint!.x, y: (originPoint!.y + (ballRadius! * 1.5)))
+        labelNode!.position = newPoint
+        labelNode!.fontSize = ballRadius! * 3
+        labelNode!.color = .white
+        updateLabel()
+        scene!.addChild(labelNode!)
+        print("Added label at position \(newPoint)")
+    }
+    
+    private func updateLabel() {
+        labelNode!.text = "Balls: \(ballArray.count - numBallsActive)"
+        print("Updating label")
+    }
+    
+    private func removeLabel() {
+        scene!.removeChildren(in: [labelNode!])
+        print("Removed label")
     }
 }
