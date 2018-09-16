@@ -14,6 +14,7 @@ class Ball {
     // MARK: Public properties
     public var node : SKShapeNode?
     public var isActive = false
+    public var isResting = true
     
     // MARK: Private properties
     // Ball radius
@@ -56,6 +57,7 @@ class Ball {
     
     public func stop() {
         node!.physicsBody?.isResting = true
+        isResting = true
     }
     
     public func returnToOrigin(point: CGPoint) {
@@ -103,6 +105,7 @@ class Ball {
         
         node!.run(SKAction.applyImpulse(CGVector(dx: impulseX, dy: impulseY), duration: 0.00001))
         isActive = true
+        isResting = false
     }
     
     // MARK: Private functions
