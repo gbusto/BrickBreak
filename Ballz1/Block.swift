@@ -58,7 +58,7 @@ class Block {
     }
     
     public func isDead() -> Bool {
-        return (hitCount! == 0)
+        return (hitCount! <= 0)
     }
     
     // MARK: Private functions
