@@ -14,9 +14,10 @@ class BallManager {
     // MARK: Private properties
     private var numberOfBalls : Int?
     private var ballArray : [Ball] = []
-    private var activeBallArray : [Ball] = []
     
     private var firstBallReturned = false
+    
+    private var numBallsActive = 0
     
     private var originPoint : CGPoint?
     
@@ -81,11 +82,11 @@ class BallManager {
     }
     
     public func shootBall() {
-        let ball = ballArray[activeBallArray.count]
+        let ball = ballArray[numBallsActive]
         ball.fire(point: direction!)
-        activeBallArray.append(ball)
+        numBallsActive += 1
         
-        if activeBallArray.count == ballArray.count {
+        if numBallsActive == ballArray.count {
             incrementState()
         }
     }
@@ -99,31 +100,28 @@ class BallManager {
     }
     
     public func stopInactiveBalls() {
-        if 0 == activeBallArray.count {
+        if 0 == numBallsActive {
             firstBallReturned = false
             return
         }
         
-        var indices : [Int] = []
+        print("Number of active balls \(numBallsActive)")
         
-        for i in 0...(activeBallArray.count - 1) {
-            let ball = activeBallArray[i]
+        for ball in ballArray {
+            if ball.isResting {
+                continue
+            }
             if false == ball.isActive {
                 ball.stop()
-                indices.append(i)
                 if false == firstBallReturned {
                     firstBallReturned = true
-                    // Might need to change this; not sure if position updates depending on where it is
                     originPoint = ball.node!.position
                 }
+                numBallsActive -= 1
             }
         }
         
-        for index in indices {
-            activeBallArray.remove(at: index)
-        }
-        
-        if 0 == activeBallArray.count {
+        if 0 == numBallsActive {
             incrementState()
         }
     }
