@@ -25,6 +25,8 @@ class BlockGenerator {
     private var numBlocksPerRow : Int?
     
     private var blockArray : [Block] = []
+    
+    private var actionsStarted = 0
 
     public func initBlockGenerator(view: SKView, numBalls: Int, numBlocks: Int,
                                    ceiling: CGFloat, ground: CGFloat) {
@@ -65,13 +67,24 @@ class BlockGenerator {
             }
         }
         
+        // Set this value to be the number of items in the array that are going to be animated
+        actionsStarted = blockArray.count
+        
         if false == start {
             start = true
         }
         
         for block in blockArray {
-            block.node!.run(SKAction.moveBy(x: 0, y: -width!, duration: 1))
+            block.node!.run(SKAction.moveBy(x: 0, y: -width!, duration: 1)) {
+                // Remove one from the count each time an action completes
+                self.actionsStarted -= 1
+            }
         }
+    }
+    
+    public func isReady() -> Bool {
+        // This is used to prevent the user from shooting while the block manager isn't ready yet
+        return (0 == actionsStarted)
     }
     
     public func hit(name: String) {

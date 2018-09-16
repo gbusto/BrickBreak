@@ -82,7 +82,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if ballManager!.isReady() {
+        if ballManager!.isReady() && blockGenerator!.isReady() {
             if let touch = touches.first {
                 let direction = touch.location(in: self)
                 ballManager!.setDirection(point: direction)
