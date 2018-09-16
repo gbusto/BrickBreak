@@ -22,9 +22,17 @@ class BallManager {
     private var originPoint : CGPoint?
     
     // MARK: State values
+    // READY state means that all balls are at rest, all animations are complete
+    // Changes from this state by GameScene when the user touches the screen to fire balls
     private var READY = Int(0)
+    // SHOOTING state is when it's firing balls
+    // Changes from this state by itself after all balls have been shot to notify GameScene to stop calling shootBall()
     private var SHOOTING = Int(1)
+    // WAITING state is when all the balls have been fired and we're waiting for balls to return to the ground
+    // Changes from this state by itself after all balls are at rest again to notify GameScene
     private var WAITING = Int(2)
+    // DONE state tells GameScene that the BallManager is done and all balls are at rest again
+    // Changes from this state by GameScene and used to tell when a "turn" is over and to add another row to the game scene
     private var DONE = Int(3)
     
     private var state = Int(0)
@@ -100,8 +108,7 @@ class BallManager {
     }
     
     public func stopInactiveBalls() {
-        if 0 == numBallsActive {
-            firstBallReturned = false
+        if isReady() || isDone() {
             return
         }
                 
@@ -121,6 +128,7 @@ class BallManager {
         
         if 0 == numBallsActive {
             incrementState()
+            firstBallReturned = false
         }
     }
 }
