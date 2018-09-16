@@ -110,11 +110,11 @@ class BallManager {
                 continue
             }
             if false == ball.isActive {
-                ball.stop()
                 if false == firstBallReturned {
                     firstBallReturned = true
                     originPoint = ball.node!.position
                 }
+                ball.stop(point: originPoint!)
                 numBallsActive -= 1
             }
         }

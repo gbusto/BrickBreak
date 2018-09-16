@@ -55,7 +55,8 @@ class Ball {
         node = ball
     }
     
-    public func stop() {
+    public func stop(point: CGPoint) {
+        node!.run(SKAction.move(to: point, duration: 0.2))
         node!.physicsBody?.isResting = true
         isResting = true
     }
