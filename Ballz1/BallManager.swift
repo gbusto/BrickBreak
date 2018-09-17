@@ -13,7 +13,7 @@ class BallManager {
     
     // MARK: Private properties
     private var scene : SKScene?
-    private var numberOfBalls : Int?
+    private var numberOfBalls = Int(0)
     
     private var ballRadius : CGFloat?
     private var ballArray : [Ball] = []
@@ -47,20 +47,25 @@ class BallManager {
     
     // MARK: Public functions
     public func initBallManager(scene: SKScene, numBalls: Int, position: CGPoint, radius: CGFloat) {
-        numberOfBalls = numBalls
         originPoint = position
         self.scene = scene
         ballRadius = radius
         
-        for i in 1...numBalls {
+        for _ in 1...numBalls {
             let ball = Ball()
-            ball.initBall(num: i, position: position, radius: radius)
+            ball.initBall(num: numberOfBalls, position: position, radius: radius)
             ballArray.append(ball)
+            numberOfBalls += 1
         }
         
         labelNode = SKLabelNode()
 
         state = READY
+    }
+    
+    public func addBall(position: CGPoint) {
+        let ball = Ball()
+        ball.initBall(num: numberOfBalls, position: position, radius: ballRadius!)
     }
     
     public func incrementState() {

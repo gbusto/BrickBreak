@@ -1,0 +1,138 @@
+//
+//  ItemGenerator.swift
+//  Ballz1
+//
+//  Created by Gabriel Busto on 9/17/18.
+//  Copyright © 2018 Self. All rights reserved.
+//
+
+import SpriteKit
+import GameplayKit
+
+class ItemGenerator {
+    
+    // MARK: Private properties
+    private var view : SKView?
+    private var width : CGFloat?
+    
+    private var ceilingHeight : CGFloat?
+    private var groundHeight : CGFloat?
+    
+    private var numBalls : Int?
+    private var maxHitCount : Int?
+    private var numBlocksPerRow : Int?
+    
+    private var itemArray : [Block] = []
+    private var blockColors : [BlockColor] = []
+    
+    private var actionsStarted = 0
+    private var blockCount = 0
+    
+    public func initItemGenerator(view: SKView, numBalls: Int, numBlocks: Int,
+                                   ceiling: CGFloat, ground: CGFloat) {
+        
+        initBlockColors()
+        update(numBalls: numBalls)
+        numBlocksPerRow = numBlocks
+        self.view = view
+        ceilingHeight = ceiling
+        groundHeight = ground
+        
+        width = view.frame.width / CGFloat(numBlocksPerRow!)
+        print("Block width will be \(width!)")
+    }
+    
+    public func update(numBalls: Int) {
+        self.numBalls = numBalls
+        self.maxHitCount = numBalls * 2
+    }
+    
+    public func generateRow(scene: SKScene, ballManager: BallManager) {
+        for i in 0...(numBlocksPerRow! - 1) {
+            if Bool.random() {
+                let posX = CGFloat(i) * width!
+                let posY = CGFloat(ceilingHeight! - (width! * 1))
+                let pos = CGPoint(x: posX, y: posY)
+                if Int.random(in: 1...100) <= 60 {
+                    let block = Block()
+                    let size = CGSize(width: width!, height: width!)
+                    let hitCount = Int.random(in: 1...maxHitCount!)
+                    block.initBlock(num: blockCount, color: blockColors.randomElement()!, size: size, position: pos, hitCount: hitCount)
+                    itemArray.append(block)
+                    block.node!.alpha = 0
+                    blockCount += 1
+                    scene.addChild(block.node!)
+                } else {
+                    print("Adding ball!")
+                    ballManager.addBall(position: pos)
+                    
+                }
+            }
+        }
+        
+        // Set this value to be the number of items in the array that are going to be animated
+        actionsStarted = itemArray.count
+        
+        for item in itemArray {
+            let action1 = SKAction.fadeIn(withDuration: 1)
+            let action2 = SKAction.moveBy(x: 0, y: -width!, duration: 1)
+            item.node!.run(SKAction.group([action1, action2])) {
+                // Remove one from the count each time an action completes
+                self.actionsStarted -= 1
+            }
+        }
+    }
+    
+    public func isReady() -> Bool {
+        // This is used to prevent the user from shooting while the block manager isn't ready yet
+        return (0 == actionsStarted)
+    }
+    
+    public func hit(name: String) {
+        for block in itemArray {
+            if block.node!.name == name {
+                block.hit()
+            }
+        }
+    }
+    
+    public func removeBlocks(scene: SKScene) {
+        let newitemArray = itemArray.filter {
+            if $0.isDead() {
+                scene.removeChildren(in: [$0.node!])
+            }
+            return !$0.isDead()
+        }
+        
+        itemArray = newitemArray
+    }
+    
+    public func canAddRow(groundHeight: CGFloat) -> Bool {
+        for block in itemArray {
+            if (block.node!.position.y - width!) < groundHeight {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    // MARK: Private functions
+    private func initBlockColors() {
+        let red = BlockColor()
+        let orange = BlockColor()
+        let yellow = BlockColor()
+        let green = BlockColor()
+        let blue = BlockColor()
+        let purple = BlockColor()
+        
+        red.initColor(red: 255/255, green: 51/255, blue: 51/255)
+        orange.initColor(red: 255/255, green: 153/255, blue: 51/255)
+        yellow.initColor(red: 255/255, green: 255/255, blue: 51/255)
+        green.initColor(red: 51/255, green: 255/255, blue: 153/255)
+        blue.initColor(red: 51/255, green: 153/255, blue: 255/255)
+        purple.initColor(red: 153/255, green: 51/255, blue: 255/255)
+        
+        blockColors = [red, orange, yellow, green, blue, purple]
+    }
+}

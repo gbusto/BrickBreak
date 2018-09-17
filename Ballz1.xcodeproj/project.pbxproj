@@ -20,6 +20,7 @@
 		032A60EC214D87D0005C1D9D /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A60EB214D87D0005C1D9D /* Block.swift */; };
 		032A60EE214D8A9C005C1D9D /* BlockGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */; };
 		039193BB214F6105008F0E46 /* BlockColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039193BA214F6105008F0E46 /* BlockColor.swift */; };
+		039193BD214FD5AD008F0E46 /* ItemGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039193BC214FD5AD008F0E46 /* ItemGenerator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		032A60EB214D87D0005C1D9D /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockGenerator.swift; sourceTree = "<group>"; };
 		039193BA214F6105008F0E46 /* BlockColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockColor.swift; sourceTree = "<group>"; };
+		039193BC214FD5AD008F0E46 /* ItemGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemGenerator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +117,7 @@
 				032A60EB214D87D0005C1D9D /* Block.swift */,
 				039193BA214F6105008F0E46 /* BlockColor.swift */,
 				032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */,
+				039193BC214FD5AD008F0E46 /* ItemGenerator.swift */,
 				0317DEA3214B5FA300E976E2 /* GameScene.swift */,
 				0317DEA5214B5FA300E976E2 /* GameViewController.swift */,
 				0317DEA7214B5FA300E976E2 /* Main.storyboard */,
@@ -276,6 +279,7 @@
 			files = (
 				0317DED2214B679500E976E2 /* Ball.swift in Sources */,
 				032A60EE214D8A9C005C1D9D /* BlockGenerator.swift in Sources */,
+				039193BD214FD5AD008F0E46 /* ItemGenerator.swift in Sources */,
 				0317DEA4214B5FA300E976E2 /* GameScene.swift in Sources */,
 				0317DED4214B6B7900E976E2 /* BallManager.swift in Sources */,
 				032A60EC214D87D0005C1D9D /* Block.swift in Sources */,
