@@ -77,7 +77,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if blockGenerator!.isReady() {
+        if blockGenerator!.isReady() && ballManager!.isReady() {
             if let touch = touches.first {
                 let point = touch.location(in: self)
                 let originPoint = ballManager!.getOriginPoint()
@@ -91,7 +91,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if blockGenerator!.isReady() {
+        if blockGenerator!.isReady() && ballManager!.isReady() {
             if let touch = touches.first {
                 let point = touch.location(in: self)
                 let originPoint = ballManager!.getOriginPoint()
