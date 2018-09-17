@@ -104,7 +104,7 @@ class Ball {
         let impulseX = (newX - originPoint.x) / 5
         let impulseY = (newY - originPoint.y) / 5
         
-        node!.run(SKAction.applyImpulse(CGVector(dx: impulseX, dy: impulseY), duration: 0.00001))
+        node!.run(SKAction.applyImpulse(CGVector(dx: impulseX, dy: impulseY), duration: 0.001))
         isActive = true
         isResting = false
     }
