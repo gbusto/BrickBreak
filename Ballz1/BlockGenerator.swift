@@ -23,6 +23,7 @@ class BlockGenerator {
     private var numBlocksPerRow : Int?
     
     private var blockArray : [Block] = []
+    private var blockColors : [BlockColor] = []
     
     private var actionsStarted = 0
     private var blockCount = 0
@@ -30,6 +31,7 @@ class BlockGenerator {
     public func initBlockGenerator(view: SKView, numBalls: Int, numBlocks: Int,
                                    ceiling: CGFloat, ground: CGFloat) {
         
+        initBlockColors()
         update(numBalls: numBalls)
         numBlocksPerRow = numBlocks
         self.view = view
@@ -54,7 +56,7 @@ class BlockGenerator {
                 let block = Block()
                 let size = CGSize(width: width!, height: width!)
                 let hitCount = Int.random(in: 1...maxHitCount!)
-                block.initBlock(num: blockCount, size: size, position: pos, hitCount: hitCount)
+                block.initBlock(num: blockCount, color: blockColors.randomElement()!, size: size, position: pos, hitCount: hitCount)
                 blockArray.append(block)
                 block.node!.alpha = 0
                 blockCount += 1
@@ -107,5 +109,24 @@ class BlockGenerator {
         }
         
         return true
+    }
+    
+    // MARK: Private functions
+    private func initBlockColors() {
+        let red = BlockColor()
+        let orange = BlockColor()
+        let yellow = BlockColor()
+        let green = BlockColor()
+        let blue = BlockColor()
+        let purple = BlockColor()
+        
+        red.initColor(red: 255/255, green: 51/255, blue: 51/255)
+        orange.initColor(red: 255/255, green: 153/255, blue: 51/255)
+        yellow.initColor(red: 255/255, green: 255/255, blue: 51/255)
+        green.initColor(red: 51/255, green: 255/255, blue: 153/255)
+        blue.initColor(red: 51/255, green: 153/255, blue: 255/255)
+        purple.initColor(red: 153/255, green: 51/255, blue: 255/255)
+        
+        blockColors = [red, orange, yellow, green, blue, purple]
     }
 }

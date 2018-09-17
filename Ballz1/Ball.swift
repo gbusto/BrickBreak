@@ -34,7 +34,7 @@ class Ball {
         self.radius = radius
         let ball = SKShapeNode(circleOfRadius: radius)
         ball.position = position
-        ball.fillColor = .yellow
+        ball.fillColor = .white
         ball.name = "ball\(num)"
         
         let physBody = SKPhysicsBody(circleOfRadius: radius)
