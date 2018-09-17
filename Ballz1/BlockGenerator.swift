@@ -25,6 +25,7 @@ class BlockGenerator {
     private var blockArray : [Block] = []
     
     private var actionsStarted = 0
+    private var blockCount = 0
 
     public func initBlockGenerator(view: SKView, numBalls: Int, numBlocks: Int,
                                    ceiling: CGFloat, ground: CGFloat) {
@@ -53,9 +54,10 @@ class BlockGenerator {
                 let block = Block()
                 let size = CGSize(width: width!, height: width!)
                 let hitCount = Int.random(in: 1...maxHitCount!)
-                block.initBlock(num: i, size: size, position: pos, hitCount: hitCount)
+                block.initBlock(num: blockCount, size: size, position: pos, hitCount: hitCount)
                 blockArray.append(block)
                 block.node!.alpha = 0
+                blockCount += 1
                 scene.addChild(block.node!)
             }
         }
