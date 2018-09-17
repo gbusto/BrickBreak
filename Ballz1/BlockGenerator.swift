@@ -12,8 +12,6 @@ import GameplayKit
 class BlockGenerator {
     
     // MARK: Private properties
-    private var start = false
-    
     private var view : SKView?
     private var width : CGFloat?
     
@@ -50,19 +48,14 @@ class BlockGenerator {
         for i in 0...(numBlocksPerRow! - 1) {
             if Bool.random() {
                 let posX = CGFloat(i) * width!
-                var posY = CGFloat(0)
-                if false == start {
-                    posY = CGFloat(ceilingHeight! - (width! * 1))
-                }
-                else {
-                    posY = CGFloat(ceilingHeight!)
-                }
+                let posY = CGFloat(ceilingHeight! - (width! * 1))
                 let pos = CGPoint(x: posX, y: posY)
                 let block = Block()
                 let size = CGSize(width: width!, height: width!)
                 let hitCount = Int.random(in: 1...maxHitCount!)
                 block.initBlock(num: i, size: size, position: pos, hitCount: hitCount)
                 blockArray.append(block)
+                block.node!.alpha = 0
                 scene.addChild(block.node!)
             }
         }
@@ -70,12 +63,10 @@ class BlockGenerator {
         // Set this value to be the number of items in the array that are going to be animated
         actionsStarted = blockArray.count
         
-        if false == start {
-            start = true
-        }
-        
         for block in blockArray {
-            block.node!.run(SKAction.moveBy(x: 0, y: -width!, duration: 1)) {
+            let action1 = SKAction.fadeIn(withDuration: 1)
+            let action2 = SKAction.moveBy(x: 0, y: -width!, duration: 1)
+            block.node!.run(SKAction.group([action1, action2])) {
                 // Remove one from the count each time an action completes
                 self.actionsStarted -= 1
             }
