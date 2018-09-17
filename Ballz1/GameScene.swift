@@ -27,11 +27,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var arrowNode : SKShapeNode?
     
     private var currentTouch : CGPoint?
-    
-    private var prevTime : TimeInterval?
-    
+        
     private var turnOver = true
     private var arrowIsShowing = false
+    
+    private var numTicksGap = 5
+    private var numTicks = 0
     
     // Stuff for collisions
     private var categoryBitMask = UInt32(0b0001)
@@ -124,7 +125,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if ballManager!.isShooting() {
-            ballManager!.shootBall()
+            if numTicks >= numTicksGap {
+                ballManager!.shootBall()
+                numTicks = 0
+            }
+            else {
+                numTicks += 1
+            }
         }
         
         if ballManager!.isWaiting() {
