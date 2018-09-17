@@ -23,14 +23,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var rightWallNode : SKNode?
     
     private var ballManager : BallManager?
-    
     private var blockGenerator : BlockGenerator?
+    private var arrowNode : SKShapeNode?
     
     private var currentTouch : CGPoint?
     
     private var prevTime : TimeInterval?
     
     private var turnOver = true
+    private var arrowIsShowing = false
     
     // Stuff for collisions
     private var categoryBitMask = UInt32(0b0001)
@@ -69,26 +70,46 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         initWalls(view: view)
         initBallManager(view: view, numBalls: numberOfBalls)
         initBlockGenerator(view: view)
+        initArrowNode(view: view)
         
         physicsWorld.contactDelegate = self
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+        if blockGenerator!.isReady() {
+            if let touch = touches.first {
+                let point = touch.location(in: self)
+                let originPoint = ballManager!.getOriginPoint()
+                if false == arrowIsShowing {
+                    showArrow()
+                    arrowIsShowing = true
+                }
+                updateArrow(startPoint: originPoint, touchPoint: point)
+            }
+        }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+        if blockGenerator!.isReady() {
+            if let touch = touches.first {
+                let point = touch.location(in: self)
+                let originPoint = ballManager!.getOriginPoint()
+                updateArrow(startPoint: originPoint, touchPoint: point)
+            }
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if ballManager!.isReady() && blockGenerator!.isReady() {
+        if ballManager!.isReady() && blockGenerator!.isReady() && arrowIsShowing {
             if let touch = touches.first {
                 let direction = touch.location(in: self)
                 ballManager!.setDirection(point: direction)
                 ballManager!.incrementState()
             }
         }
+        
+        hideArrow()
+        arrowIsShowing = false
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -215,7 +236,71 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                            ceiling: view.frame.height - margin!, ground: margin!)
     }
     
+    private func initArrowNode(view: SKView) {
+        arrowNode = SKShapeNode()
+    }
+    
     private func addRow() {
         blockGenerator!.generateRow(scene: self)
+    }
+    
+    private func updateArrow(startPoint: CGPoint, touchPoint: CGPoint) {
+        // The "box" we create around the origin point
+        let maxX = startPoint.x + view!.frame.width * 0.50
+        let maxY = startPoint.y + view!.frame.width * 0.50
+        let minX = startPoint.x - view!.frame.width * 0.50
+        
+        let slope = calcSlope(originPoint: startPoint, touchPoint: touchPoint)
+        let intercept = calcYIntercept(point: touchPoint, slope: slope)
+        
+        var newX = CGFloat(0)
+        var newY = CGFloat(0)
+        
+        if (slope >= 1) || (slope <= -1) {
+            newY = maxY
+            newX = (newY - intercept) / slope
+        }
+        else if (slope < 1) && (slope > -1) {
+            if (slope < 0) {
+                newX = minX
+            }
+            else if (slope > 0) {
+                newX = maxX
+            }
+            newY = (slope * newX) + intercept
+        }
+        
+        let endPoint = CGPoint(x: newX, y: newY)
+        
+        let path = CGMutablePath()
+        path.move(to: startPoint)
+        path.addLine(to: endPoint)
+        
+        arrowNode!.path = path
+        arrowNode!.strokeColor = .white
+        arrowNode!.lineWidth = 2
+    }
+    
+    private func showArrow() {
+        self.addChild(arrowNode!)
+    }
+    
+    private func hideArrow() {
+        self.removeChildren(in: [arrowNode!])
+    }
+    
+    private func calcSlope(originPoint: CGPoint, touchPoint: CGPoint) -> CGFloat {
+        let rise = touchPoint.y - originPoint.y
+        let run  = touchPoint.x - originPoint.x
+        
+        return CGFloat(rise / run)
+    }
+    
+    private func calcYIntercept(point: CGPoint, slope: CGFloat) -> CGFloat {
+        // y = mx + b <- We want to find 'b'
+        // (point.y - (point.x * slope)) = b
+        let intercept = point.y - (point.x * slope)
+        
+        return intercept
     }
 }

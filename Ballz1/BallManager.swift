@@ -72,6 +72,10 @@ class BallManager {
         state += 1
     }
     
+    public func getOriginPoint() -> CGPoint {
+        return originPoint!
+    }
+    
     public func isReady() -> Bool {
         return (state == READY)
     }
