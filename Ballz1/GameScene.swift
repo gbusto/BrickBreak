@@ -34,6 +34,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var numTicksGap = 5
     private var numTicks = 0
     
+    private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
+    private var marginColor = UIColor.init(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
+    
     // Stuff for collisions
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitMask = UInt32(0b0001)
@@ -74,6 +77,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         initArrowNode(view: view)
         
         physicsWorld.contactDelegate = self
+        self.backgroundColor = sceneColor
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -166,7 +170,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private func initGround(view: SKView, margin: CGFloat) {
         let size = CGSize(width: view.frame.width, height: margin)
-        groundNode = SKSpriteNode(color: .darkGray, size: size)
+        groundNode = SKSpriteNode(color: marginColor, size: size)
         groundNode?.anchorPoint = CGPoint(x: 0, y: 0)
         groundNode?.position = CGPoint(x: 0, y: 0)
         groundNode?.name = "ground"
@@ -187,7 +191,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private func initCeiling(view: SKView, margin: CGFloat) {
         let size = CGSize(width: view.frame.width, height: margin)
-        ceilingNode = SKSpriteNode(color: .darkGray, size: size)
+        ceilingNode = SKSpriteNode(color: marginColor, size: size)
         ceilingNode?.anchorPoint = CGPoint(x: 0, y: 0)
         ceilingNode?.position = CGPoint(x: 0, y: view.frame.height - margin)
         ceilingNode?.name = "ceiling"

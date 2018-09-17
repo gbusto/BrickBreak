@@ -24,14 +24,18 @@ class Block {
     // Setting up properties for collisions
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitmask = UInt32(0b0001)
+    
+    private var color : BlockColor?
 
     // MARK: Init function
-    public func initBlock(num: Int, size: CGSize, position: CGPoint, hitCount: Int) {
+    public func initBlock(num: Int, color: BlockColor, size: CGSize, position: CGPoint, hitCount: Int) {
         self.size = size
         self.position = position
         self.hitCount = hitCount
         
-        node = SKSpriteNode(color: .gray, size: size)
+        self.color = color
+        
+        node = SKSpriteNode(color: color.getColor(), size: size)
         node!.position = position
         node!.anchorPoint = CGPoint(x: 0, y: 0)
         node!.zPosition = 100
@@ -53,8 +57,8 @@ class Block {
     
     public func hit() {
         hitCount! -= 1
-        
         labelNode!.text = "\(hitCount!)"
+        //node!.color = color!.changeColor()
     }
     
     public func isDead() -> Bool {
@@ -65,6 +69,7 @@ class Block {
     private func initHitLabel() {
         let centerPoint = CGPoint(x: size!.width / 2, y: size!.height / 3)
         labelNode = SKLabelNode(text: "\(hitCount!)")
+        labelNode!.fontColor = .black
         labelNode!.position = centerPoint
         labelNode!.fontSize = size!.width / 2
     }

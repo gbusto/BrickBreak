@@ -19,6 +19,7 @@
 		0317DED4214B6B7900E976E2 /* BallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0317DED3214B6B7900E976E2 /* BallManager.swift */; };
 		032A60EC214D87D0005C1D9D /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A60EB214D87D0005C1D9D /* Block.swift */; };
 		032A60EE214D8A9C005C1D9D /* BlockGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */; };
+		039193BB214F6105008F0E46 /* BlockColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039193BA214F6105008F0E46 /* BlockColor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		0317DED3214B6B7900E976E2 /* BallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallManager.swift; sourceTree = "<group>"; };
 		032A60EB214D87D0005C1D9D /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockGenerator.swift; sourceTree = "<group>"; };
+		039193BA214F6105008F0E46 /* BlockColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockColor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +113,7 @@
 				0317DED1214B679500E976E2 /* Ball.swift */,
 				0317DED3214B6B7900E976E2 /* BallManager.swift */,
 				032A60EB214D87D0005C1D9D /* Block.swift */,
+				039193BA214F6105008F0E46 /* BlockColor.swift */,
 				032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */,
 				0317DEA3214B5FA300E976E2 /* GameScene.swift */,
 				0317DEA5214B5FA300E976E2 /* GameViewController.swift */,
@@ -276,6 +279,7 @@
 				0317DEA4214B5FA300E976E2 /* GameScene.swift in Sources */,
 				0317DED4214B6B7900E976E2 /* BallManager.swift in Sources */,
 				032A60EC214D87D0005C1D9D /* Block.swift in Sources */,
+				039193BB214F6105008F0E46 /* BlockColor.swift in Sources */,
 				0317DEA6214B5FA300E976E2 /* GameViewController.swift in Sources */,
 				0317DE9E214B5FA300E976E2 /* AppDelegate.swift in Sources */,
 			);
