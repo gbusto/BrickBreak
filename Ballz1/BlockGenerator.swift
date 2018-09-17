@@ -96,4 +96,14 @@ class BlockGenerator {
         
         blockArray = newBlockArray
     }
+    
+    public func canAddRow(groundHeight: CGFloat) -> Bool {
+        for block in blockArray {
+            if (block.node!.position.y - width!) < groundHeight {
+                return false
+            }
+        }
+        
+        return true
+    }
 }

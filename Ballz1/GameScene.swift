@@ -124,6 +124,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             turnOver = false
         }
         
+        // After rows have been added, check to see if we can add any more rows
+        if blockGenerator!.isReady() {
+            if false == blockGenerator!.canAddRow(groundHeight: margin!) {
+                // Game over!!!
+                self.isPaused = true
+                showGameOverLabel()
+            }
+        }
+        
         if ballManager!.isShooting() {
             if numTicks >= numTicksGap {
                 ballManager!.shootBall()
@@ -309,5 +318,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let intercept = point.y - (point.x * slope)
         
         return intercept
+    }
+    
+    private func showGameOverLabel() {
+        let fontSize = view!.frame.height * 0.2
+        let label = SKLabelNode()
+        label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY - fontSize)
+        label.fontSize = fontSize
+        label.color = .white
+        label.text = "Game Over"
+        label.numberOfLines = 2
+        label.zPosition = 102
+        label.preferredMaxLayoutWidth = view!.frame.width
+        self.addChild(label)
     }
 }
