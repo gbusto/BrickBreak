@@ -12,7 +12,7 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Private attributes
-    private var numberOfBlocks = Int(10)
+    private var numberOfBlocks = Int(8)
     private var numberOfBalls = Int(10)
     private var margin : CGFloat?
     private var radius : CGFloat?
@@ -31,7 +31,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var turnOver = true
     private var arrowIsShowing = false
     
-    private var numTicksGap = 5
+    private var numTicksGap = 6
     private var numTicks = 0
     
     private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
@@ -243,7 +243,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func initBallManager(view: SKView, numBalls: Int) {
-        radius = CGFloat(view.frame.width * 0.015)
+        radius = CGFloat(view.frame.width * 0.018)
         ballManager = BallManager()
         let position = CGPoint(x: view.frame.midX, y: margin! + radius!)
         ballManager!.initBallManager(scene: self, numBalls: numBalls, position: position, radius: radius!)
@@ -266,9 +266,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private func updateArrow(startPoint: CGPoint, touchPoint: CGPoint) {
         // The "box" we create around the origin point
-        let maxX = startPoint.x + view!.frame.width * 0.50
-        let maxY = startPoint.y + view!.frame.width * 0.50
-        let minX = startPoint.x - view!.frame.width * 0.50
+        let maxX = startPoint.x + view!.frame.width * 0.75
+        let maxY = startPoint.y + view!.frame.width * 0.75
+        let minX = startPoint.x - view!.frame.width * 0.75
         
         let slope = calcSlope(originPoint: startPoint, touchPoint: touchPoint)
         let intercept = calcYIntercept(point: touchPoint, slope: slope)

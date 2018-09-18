@@ -54,7 +54,7 @@ class BlockGenerator {
                 let posY = CGFloat(ceilingHeight! - (width! * 1))
                 let pos = CGPoint(x: posX, y: posY)
                 let block = Block()
-                let size = CGSize(width: width!, height: width!)
+                let size = CGSize(width: width! * 0.95, height: width! * 0.95)
                 let hitCount = Int.random(in: 1...maxHitCount!)
                 block.initBlock(num: blockCount, color: blockColors.randomElement()!, size: size, position: pos, hitCount: hitCount)
                 blockArray.append(block)
