@@ -35,10 +35,13 @@ protocol Item {
     
     // This function checks to see if the item should be removed from the item array in the generator and handles anything to be done before it removes the item from the scene; use this function for any animation before the item is removed
     //
+    // Arguments:
+    //   - scene: The game scene; the item decides whether or not it should be removed from the scene
+    //
     // Returns true if the item should be removed; false otherwise
     //
     // NOTE: ItemGenerator may take this item and hand it off to another handler or manager such as Balls being handed off to BallManager and Currency being handed off to CurrencyManager
-    func removeItem() -> Bool
+    func removeItem(scene: SKScene) -> Bool
     
     // This returns an SKNode item contained within the class
     func getNode() -> SKNode

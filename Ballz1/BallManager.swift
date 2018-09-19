@@ -17,6 +17,8 @@ class BallManager {
     
     private var ballRadius : CGFloat?
     private var ballArray : [BallItem] = []
+    // Balls that have just been added from the ItemGenerator
+    private var newBallArray : [BallItem] = []
     
     private var firstBallReturned = false
     
@@ -73,6 +75,24 @@ class BallManager {
         state += 1
     }
     
+    public func checkNewArray() {
+        let array = newBallArray.filter {
+            $0.setBitmasks()
+            self.ballArray.append($0)
+            return false
+        }
+        newBallArray = array
+    }
+    
+    public func returnAllToOrigin() {
+        for ball in ballArray {
+            if ball.getNode().position != originPoint! {
+                ball.setBitmasks()
+                ball.returnToOrigin(point: originPoint!)
+            }
+        }
+    }
+    
     public func getOriginPoint() -> CGPoint {
         return originPoint!
     }
@@ -103,6 +123,11 @@ class BallManager {
             scene!.addChild(ball.node!)
         }
         addLabel()
+    }
+    
+    public func addBall(ball: BallItem) {
+        ballArray.append(ball)
+        numberOfBalls = ballArray.count
     }
     
     public func shootBall() {

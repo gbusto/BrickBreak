@@ -64,9 +64,13 @@ class HitBlockItem: Item {
         labelNode!.text = "\(hitCount!)"
     }
     
-    func removeItem() -> Bool {
+    func removeItem(scene: SKScene) -> Bool {
         // This is where the block bust animation will go
-        return (hitCount! <= 0)
+        if hitCount! <= 0 {
+            scene.removeChildren(in: [node!])
+            return true
+        }
+        return false
     }
     
     func getNode() -> SKNode {

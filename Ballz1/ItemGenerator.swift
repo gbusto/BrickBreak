@@ -33,7 +33,8 @@ class ItemGenerator {
     private var minItemsPerRow = Int(2)
     
     // Number of items that this generator has generated
-    private var numItemsGenerated = Int(0)
+    // This is set to 11 to cheat, so when we add balls from ItemManager to BallManager we don't have overlapping names
+    private var numItemsGenerated = Int(11)
     
     // Width for each item (mostly used for blocks)
     private var itemWidth : CGFloat?
@@ -72,7 +73,8 @@ class ItemGenerator {
         groundHeight = ground
         
         // Initialize the allowed item types with only one type for now
-        itemTypeDict[HIT_BLOCK] = totalPercentage
+        itemTypeDict[HIT_BLOCK] = 60
+        itemTypeDict[BALL] = 40
     }
     
     public func addItemType(type: Int, percentage: Int) {
@@ -88,29 +90,50 @@ class ItemGenerator {
                     // If no item was picked, loop back around
                     continue
                 }
-                let posX = CGFloat(i) * itemWidth!
-                let posY = CGFloat(ceilingHeight! - (itemWidth! * 1))
-                let pos = CGPoint(x: posX, y: posY)
+    
                 switch type {
                 case HIT_BLOCK:
-                    let size = CGSize(width: itemWidth!, height: itemWidth!)
+                    let posX = CGFloat(i) * itemWidth!
+                    let posY = CGFloat(ceilingHeight! - (itemWidth! * 1))
+                    let pos = CGPoint(x: posX, y: posY)
+                    
+                    let size = CGSize(width: itemWidth! * 0.95, height: itemWidth! * 0.95)
                     let item = HitBlockItem()
                     item.initItem(generator: self, num: numItemsGenerated, size: size, position: pos)
                     // XXX Might remove this, not sure if we'll ever need to use loadItem()
                     let ret = item.loadItem()
                     if false == ret {
-                        print("Failed to load item")
+                        print("Failed to load hit block item")
                     }
                     scene.addChild(item.getNode())
-                    print("Adding block at position \(pos)")
+                    print("Adding block at row position \(i)")
                     itemArray.append(item)
-                    numItemsGenerated += 1
+                    break
+                case BALL:
+                    // Put the ball in the center of its row position
+                    let posX = (CGFloat(i) * itemWidth!) + (itemWidth! / 2)
+                    let posY = CGFloat(ceilingHeight! - (itemWidth! * 1)) + (itemWidth! / 2)
+                    let pos = CGPoint(x: posX, y: posY)
+                    
+                    let radius = view!.frame.width * 0.018
+                    let size = CGSize(width: radius, height: radius)
+                    let item = BallItem()
+                    item.initItem(generator: self, num: numItemsGenerated, size: size, position: pos)
+                    // XXX Might remove this, not sure if we'll ever need to use loadItem()
+                    let ret = item.loadItem()
+                    if false == ret {
+                        print("Failed to load ball item")
+                    }
+                    scene.addChild(item.getNode())
+                    print("Adding ball at row spot \(i) position \(pos)")
+                    itemArray.append(item)
                     break
                 default:
                     // Shouldn't ever hit the default case; if we do just loop back around
                     print("Hit default case. Item type is \(type)")
                     continue
                 }
+                numItemsGenerated += 1
             }
         }
         
@@ -139,12 +162,13 @@ class ItemGenerator {
         }
     }
     
-    public func removeItems(scene: SKScene) {
+    public func removeItems(scene: SKScene) -> [Item] {
+        var array : [Item] = []
         let newItemArray = itemArray.filter {
             // Perform a remove action if needed
-            if $0.removeItem() {
-                scene.removeChildren(in: [$0.getNode()])
+            if $0.removeItem(scene: scene) {
                 // Remove this item from the array
+                array.append($0)
                 return false
             }
             // Keep this item in the array
@@ -152,6 +176,19 @@ class ItemGenerator {
         }
         
         itemArray = newItemArray
+        
+        return array
+    }
+    
+    public func checkItemContact() {
+        for item in itemArray {
+            let node = item.getNode()
+            if node.name!.starts(with: "ball") {
+                if node.physicsBody!.allContactedBodies().count > 0 {
+                    item.hitItem()
+                }
+            }
+        }
     }
     
     public func canAddRow(groundHeight: CGFloat) -> Bool {
@@ -168,7 +205,7 @@ class ItemGenerator {
     // MARK: Private functions
     private func pickItem() -> Int {
         for itemType in itemTypeDict.keys {
-            if Int.random(in: 1...100) < itemTypeDict[itemType]! {
+            if Int.random(in: 1...totalPercentage) < itemTypeDict[itemType]! {
                 return itemType
             }
         }

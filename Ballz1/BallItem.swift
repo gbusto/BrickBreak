@@ -20,6 +20,9 @@ class BallItem: Item {
     // The generator handling this object
     private var generator : ItemGenerator?
     
+    // Only used in the hitItem() function
+    private var hasFallen = false
+    
     // Ball radius
     private var radius : CGFloat?
     
@@ -38,6 +41,7 @@ class BallItem: Item {
         self.generator = generator
         let ball = SKShapeNode(circleOfRadius: radius!)
         ball.position = position
+        ball.zPosition = 100
         ball.fillColor = .white
         ball.name = "ball\(num)"
         
@@ -61,16 +65,26 @@ class BallItem: Item {
     
     public func loadItem() -> Bool {
         // This will be used by the ItemGenerator, not the BallManager
+        node!.physicsBody!.contactTestBitMask = categoryBitMask
         return true
     }
     
     public func hitItem() {
         // This will be used by the ItemGenerator, not the BallManager
+        // This will be called when a ball that was shot hits a ball that is in an item row
+        // Remove all collision bit maskes
+        print("BALL WAS HIT")
+        node!.physicsBody!.contactTestBitMask = UInt32(0b0100)
+        node!.physicsBody!.categoryBitMask = 0
+        node!.physicsBody!.collisionBitMask = UInt32(0b0100)
+        node!.run(SKAction.applyImpulse(CGVector(dx: 0, dy: -10), duration: 0.1))
+        hasFallen = true
     }
     
-    public func removeItem() -> Bool {
+    public func removeItem(scene: SKScene) -> Bool {
         // This will be used by the ItemGenerator, not the BallManager
-        return true
+        // This gets called every tick of the scene so this needs to be enclosed
+        return hasFallen
     }
     
     public func getNode() -> SKNode {
@@ -83,6 +97,12 @@ class BallItem: Item {
         node!.run(SKAction.move(to: point, duration: 0.2))
         node!.physicsBody?.isResting = true
         isResting = true
+    }
+    
+    public func setBitmasks() {
+        node!.physicsBody!.collisionBitMask = collisionBitMask
+        node!.physicsBody!.categoryBitMask = categoryBitMask
+        node!.physicsBody!.contactTestBitMask = contactTestBitMask
     }
     
     public func returnToOrigin(point: CGPoint) {

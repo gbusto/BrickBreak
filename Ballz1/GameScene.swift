@@ -40,6 +40,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Stuff for collisions
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitMask = UInt32(0b0001)
+    private var groundCategoryBitmask = UInt32(0b0101)
     
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -49,10 +50,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if (nameA?.starts(with: "ball"))! {
             if nameB! == "ground" {
                 // Stop the ball at this exact point if it's the first ball to hit the ground
+                //ballManager!.checkNewArray()
                 ballManager!.markBallInactive(name: nameA!)
             }
             else if (nameB?.starts(with: "block"))! {
                 // A block was hit
+                itemGenerator!.hit(name: nameB!)
+            }
+            else if (nameB?.starts(with: "ball"))! {
+                // A ball hit a ball item
                 itemGenerator!.hit(name: nameB!)
             }
         }
@@ -60,10 +66,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if (nameB?.starts(with: "ball"))! {
             if nameA! == "ground" {
                 // Stop the ball at this exact point if it's the first ball to hit the ground
+                //ballManager!.checkNewArray()
                 ballManager!.markBallInactive(name: nameB!)
             }
             else if (nameA?.starts(with: "block"))! {
                 // A block was hit
+                itemGenerator!.hit(name: nameA!)
+            }
+            else if (nameA?.starts(with: "ball"))! {
                 itemGenerator!.hit(name: nameA!)
             }
         }
@@ -124,8 +134,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if turnOver {
-            //addRow()
             itemGenerator!.generateRow(scene: self)
+            // In the event that we just collected a ball, it will not be at the origin point so move all balls to the origin point
+            ballManager!.returnAllToOrigin()
             turnOver = false
         }
         
@@ -157,8 +168,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ballManager!.incrementState()
         }
         
-        itemGenerator!.removeItems(scene: self)
+        let removedItems = itemGenerator!.removeItems(scene: self)
+        
+        // If the item generator removed an item from it's list, check to see if it removed a ball; if it does, it now needs to be moved under the BallManager
+        for item in removedItems {
+            if item.getNode().name!.starts(with: "ball") {
+                let ball = item as! BallItem
+                ballManager!.addBall(ball: ball)
+            }
+        }
     }
+    
+    /*
+    override func didSimulatePhysics() {
+        itemGenerator!.checkItemContact()
+    }
+    */
     
     // MARK: Private functions
     private func initWalls(view: SKView) {
@@ -183,7 +208,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physBody.restitution = 0
         physBody.angularDamping = 1
         physBody.linearDamping = 1
-        physBody.categoryBitMask = categoryBitMask
+        physBody.categoryBitMask = groundCategoryBitmask
         physBody.contactTestBitMask = contactTestBitMask
         groundNode?.physicsBody = physBody
         
