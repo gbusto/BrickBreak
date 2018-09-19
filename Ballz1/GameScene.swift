@@ -12,7 +12,7 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Private attributes
-    private var numberOfBlocks = Int(8)
+    private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
     private var margin : CGFloat?
     private var radius : CGFloat?
@@ -23,7 +23,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var rightWallNode : SKNode?
     
     private var ballManager : BallManager?
-    private var blockGenerator : BlockGenerator?
+    private var itemGenerator : ItemGenerator?
     private var arrowNode : SKShapeNode?
     
     private var currentTouch : CGPoint?
@@ -53,7 +53,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             else if (nameB?.starts(with: "block"))! {
                 // A block was hit
-                blockGenerator!.hit(name: nameB!)
+                itemGenerator!.hit(name: nameB!)
             }
         }
         
@@ -64,7 +64,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             else if (nameA?.starts(with: "block"))! {
                 // A block was hit
-                blockGenerator!.hit(name: nameA!)
+                itemGenerator!.hit(name: nameA!)
             }
         }
     }
@@ -73,7 +73,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         initWalls(view: view)
         initBallManager(view: view, numBalls: numberOfBalls)
-        initBlockGenerator(view: view)
+        initItemGenerator(view: view)
         initArrowNode(view: view)
         
         physicsWorld.contactDelegate = self
@@ -81,7 +81,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if blockGenerator!.isReady() && ballManager!.isReady() {
+        if ballManager!.isReady() && itemGenerator!.isReady() {
             if let touch = touches.first {
                 let point = touch.location(in: self)
                 let originPoint = ballManager!.getOriginPoint()
@@ -95,7 +95,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if blockGenerator!.isReady() && ballManager!.isReady() {
+        if ballManager!.isReady() && itemGenerator!.isReady() {
             if let touch = touches.first {
                 let point = touch.location(in: self)
                 let originPoint = ballManager!.getOriginPoint()
@@ -105,7 +105,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if ballManager!.isReady() && blockGenerator!.isReady() && arrowIsShowing {
+        if ballManager!.isReady() && itemGenerator!.isReady() && arrowIsShowing {
             if let touch = touches.first {
                 let direction = touch.location(in: self)
                 ballManager!.setDirection(point: direction)
@@ -124,13 +124,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if turnOver {
-            addRow()
+            //addRow()
+            itemGenerator!.generateRow(scene: self)
             turnOver = false
         }
         
         // After rows have been added, check to see if we can add any more rows
-        if blockGenerator!.isReady() {
-            if false == blockGenerator!.canAddRow(groundHeight: margin!) {
+        if itemGenerator!.isReady() {
+            if false == itemGenerator!.canAddRow(groundHeight: margin!) {
                 // Game over!!!
                 self.isPaused = true
                 showGameOverLabel()
@@ -156,7 +157,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ballManager!.incrementState()
         }
         
-        blockGenerator?.removeBlocks(scene: self)
+        itemGenerator!.removeItems(scene: self)
     }
     
     // MARK: Private functions
@@ -250,18 +251,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ballManager!.addBalls()
     }
     
-    private func initBlockGenerator(view: SKView) {
-        blockGenerator = BlockGenerator()
-        blockGenerator?.initBlockGenerator(view: view, numBalls: numberOfBalls, numBlocks: numberOfBlocks,
-                                           ceiling: view.frame.height - margin!, ground: margin!)
+    private func initItemGenerator(view: SKView) {
+        itemGenerator = ItemGenerator()
+        itemGenerator?.initGenerator(view: view, numBalls: numberOfBalls, numItems: numberOfItems, ceiling: view.frame.height - margin!, ground: margin!)
     }
     
     private func initArrowNode(view: SKView) {
         arrowNode = SKShapeNode()
-    }
-    
-    private func addRow() {
-        blockGenerator!.generateRow(scene: self)
     }
     
     private func updateArrow(startPoint: CGPoint, touchPoint: CGPoint) {

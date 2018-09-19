@@ -20,6 +20,10 @@
 		032A60EC214D87D0005C1D9D /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A60EB214D87D0005C1D9D /* Block.swift */; };
 		032A60EE214D8A9C005C1D9D /* BlockGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */; };
 		039193BB214F6105008F0E46 /* BlockColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039193BA214F6105008F0E46 /* BlockColor.swift */; };
+		03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4212151C37800206A84 /* ItemGenerator.swift */; };
+		03F9A4242151C3D600206A84 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4232151C3D600206A84 /* Item.swift */; };
+		03F9A4262151D34800206A84 /* BallItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4252151D34800206A84 /* BallItem.swift */; };
+		03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4272151D56700206A84 /* HitBlockItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +63,10 @@
 		032A60EB214D87D0005C1D9D /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockGenerator.swift; sourceTree = "<group>"; };
 		039193BA214F6105008F0E46 /* BlockColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockColor.swift; sourceTree = "<group>"; };
+		03F9A4212151C37800206A84 /* ItemGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemGenerator.swift; sourceTree = "<group>"; };
+		03F9A4232151C3D600206A84 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		03F9A4252151D34800206A84 /* BallItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItem.swift; sourceTree = "<group>"; };
+		03F9A4272151D56700206A84 /* HitBlockItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitBlockItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,10 +119,14 @@
 			children = (
 				0317DE9D214B5FA300E976E2 /* AppDelegate.swift */,
 				0317DED1214B679500E976E2 /* Ball.swift */,
+				03F9A4252151D34800206A84 /* BallItem.swift */,
 				0317DED3214B6B7900E976E2 /* BallManager.swift */,
 				032A60EB214D87D0005C1D9D /* Block.swift */,
+				03F9A4272151D56700206A84 /* HitBlockItem.swift */,
 				039193BA214F6105008F0E46 /* BlockColor.swift */,
 				032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */,
+				03F9A4232151C3D600206A84 /* Item.swift */,
+				03F9A4212151C37800206A84 /* ItemGenerator.swift */,
 				0317DEA3214B5FA300E976E2 /* GameScene.swift */,
 				0317DEA5214B5FA300E976E2 /* GameViewController.swift */,
 				0317DEA7214B5FA300E976E2 /* Main.storyboard */,
@@ -274,9 +286,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */,
+				03F9A4242151C3D600206A84 /* Item.swift in Sources */,
 				0317DED2214B679500E976E2 /* Ball.swift in Sources */,
 				032A60EE214D8A9C005C1D9D /* BlockGenerator.swift in Sources */,
+				03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */,
 				0317DEA4214B5FA300E976E2 /* GameScene.swift in Sources */,
+				03F9A4262151D34800206A84 /* BallItem.swift in Sources */,
 				0317DED4214B6B7900E976E2 /* BallManager.swift in Sources */,
 				032A60EC214D87D0005C1D9D /* Block.swift in Sources */,
 				039193BB214F6105008F0E46 /* BlockColor.swift in Sources */,
