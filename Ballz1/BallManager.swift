@@ -16,7 +16,7 @@ class BallManager {
     private var numberOfBalls : Int?
     
     private var ballRadius : CGFloat?
-    private var ballArray : [Ball] = []
+    private var ballArray : [BallItem] = []
     
     private var firstBallReturned = false
     
@@ -46,15 +46,16 @@ class BallManager {
     
     
     // MARK: Public functions
-    public func initBallManager(scene: SKScene, numBalls: Int, position: CGPoint, radius: CGFloat) {
+    public func initBallManager(scene: SKScene, generator: ItemGenerator, numBalls: Int, position: CGPoint, radius: CGFloat) {
         numberOfBalls = numBalls
         originPoint = position
         self.scene = scene
         ballRadius = radius
         
         for i in 1...numBalls {
-            let ball = Ball()
-            ball.initBall(num: i, position: position, radius: radius)
+            let ball = BallItem()
+            let size = CGSize(width: radius, height: radius)
+            ball.initItem(generator: generator, num: i, size: size, position: position)
             ballArray.append(ball)
         }
         

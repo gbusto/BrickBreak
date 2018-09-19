@@ -72,8 +72,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Override functions
     override func didMove(to view: SKView) {
         initWalls(view: view)
-        initBallManager(view: view, numBalls: numberOfBalls)
         initItemGenerator(view: view)
+        initBallManager(view: view, numBalls: numberOfBalls)
         initArrowNode(view: view)
         
         physicsWorld.contactDelegate = self
@@ -243,17 +243,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(rightWallNode!)
     }
     
+    private func initItemGenerator(view: SKView) {
+        itemGenerator = ItemGenerator()
+        itemGenerator?.initGenerator(view: view, numBalls: numberOfBalls, numItems: numberOfItems, ceiling: view.frame.height - margin!, ground: margin!)
+    }
+    
     private func initBallManager(view: SKView, numBalls: Int) {
         radius = CGFloat(view.frame.width * 0.018)
         ballManager = BallManager()
         let position = CGPoint(x: view.frame.midX, y: margin! + radius!)
-        ballManager!.initBallManager(scene: self, numBalls: numBalls, position: position, radius: radius!)
+        ballManager!.initBallManager(scene: self, generator: itemGenerator!, numBalls: numBalls, position: position, radius: radius!)
         ballManager!.addBalls()
-    }
-    
-    private func initItemGenerator(view: SKView) {
-        itemGenerator = ItemGenerator()
-        itemGenerator?.initGenerator(view: view, numBalls: numberOfBalls, numItems: numberOfItems, ceiling: view.frame.height - margin!, ground: margin!)
     }
     
     private func initArrowNode(view: SKView) {
