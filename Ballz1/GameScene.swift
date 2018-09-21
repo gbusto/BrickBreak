@@ -12,7 +12,7 @@ import GameplayKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Private attributes
-    private var numberOfBlocks = Int(8)
+    private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
     private var margin : CGFloat?
     private var radius : CGFloat?
@@ -23,7 +23,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var rightWallNode : SKNode?
     
     private var ballManager : BallManager?
-    private var blockGenerator : BlockGenerator?
+    private var itemGenerator : ItemGenerator?
     private var arrowNode : SKShapeNode?
     
     private var currentTouch : CGPoint?
@@ -40,6 +40,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Stuff for collisions
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitMask = UInt32(0b0001)
+    private var groundCategoryBitmask = UInt32(0b0101)
     
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -53,7 +54,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             else if (nameB?.starts(with: "block"))! {
                 // A block was hit
-                blockGenerator!.hit(name: nameB!)
+                itemGenerator!.hit(name: nameB!)
+            }
+            else if (nameB?.starts(with: "ball"))! {
+                // A ball hit a ball item
+                itemGenerator!.hit(name: nameB!)
             }
         }
         
@@ -64,7 +69,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             else if (nameA?.starts(with: "block"))! {
                 // A block was hit
-                blockGenerator!.hit(name: nameA!)
+                itemGenerator!.hit(name: nameA!)
+            }
+            else if (nameA?.starts(with: "ball"))! {
+                itemGenerator!.hit(name: nameA!)
             }
         }
     }
@@ -72,8 +80,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Override functions
     override func didMove(to view: SKView) {
         initWalls(view: view)
+        initItemGenerator(view: view)
         initBallManager(view: view, numBalls: numberOfBalls)
-        initBlockGenerator(view: view)
         initArrowNode(view: view)
         
         physicsWorld.contactDelegate = self
@@ -81,7 +89,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if blockGenerator!.isReady() && ballManager!.isReady() {
+        if ballManager!.isReady() && itemGenerator!.isReady() {
             if let touch = touches.first {
                 let point = touch.location(in: self)
                 let originPoint = ballManager!.getOriginPoint()
@@ -95,7 +103,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if blockGenerator!.isReady() && ballManager!.isReady() {
+        if ballManager!.isReady() && itemGenerator!.isReady() {
             if let touch = touches.first {
                 let point = touch.location(in: self)
                 let originPoint = ballManager!.getOriginPoint()
@@ -105,7 +113,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if ballManager!.isReady() && blockGenerator!.isReady() && arrowIsShowing {
+        if ballManager!.isReady() && itemGenerator!.isReady() && arrowIsShowing {
             if let touch = touches.first {
                 let direction = touch.location(in: self)
                 ballManager!.setDirection(point: direction)
@@ -124,13 +132,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if turnOver {
-            addRow()
+            itemGenerator!.generateRow(scene: self)
+            // In the event that we just collected a ball, it will not be at the origin point so move all balls to the origin point
+            ballManager!.checkNewArray()
             turnOver = false
         }
         
         // After rows have been added, check to see if we can add any more rows
-        if blockGenerator!.isReady() {
-            if false == blockGenerator!.canAddRow(groundHeight: margin!) {
+        if itemGenerator!.isReady() {
+            if false == itemGenerator!.canAddRow(groundHeight: margin!) {
                 // Game over!!!
                 self.isPaused = true
                 showGameOverLabel()
@@ -156,7 +166,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ballManager!.incrementState()
         }
         
-        blockGenerator?.removeBlocks(scene: self)
+        let removedItems = itemGenerator!.removeItems(scene: self)
+        
+        // If the item generator removed an item from it's list, check to see if it removed a ball; if it does, it now needs to be moved under the BallManager
+        for item in removedItems {
+            if item.getNode().name!.starts(with: "ball") {
+                let ball = item as! BallItem
+                let newPoint = CGPoint(x: ball.getNode().position.x, y: margin! + radius!)
+                ballManager!.addBall(ball: ball, atPoint: newPoint)
+                print("Added ball \(ball.getNode().name!) to ball manager")
+            }
+        }
     }
     
     // MARK: Private functions
@@ -182,7 +202,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physBody.restitution = 0
         physBody.angularDamping = 1
         physBody.linearDamping = 1
-        physBody.categoryBitMask = categoryBitMask
+        physBody.categoryBitMask = groundCategoryBitmask
         physBody.contactTestBitMask = contactTestBitMask
         groundNode?.physicsBody = physBody
         
@@ -242,26 +262,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(rightWallNode!)
     }
     
+    private func initItemGenerator(view: SKView) {
+        itemGenerator = ItemGenerator()
+        itemGenerator?.initGenerator(view: view, numBalls: numberOfBalls, numItems: numberOfItems, ceiling: view.frame.height - margin!, ground: margin!)
+    }
+    
     private func initBallManager(view: SKView, numBalls: Int) {
         radius = CGFloat(view.frame.width * 0.018)
         ballManager = BallManager()
         let position = CGPoint(x: view.frame.midX, y: margin! + radius!)
-        ballManager!.initBallManager(scene: self, numBalls: numBalls, position: position, radius: radius!)
+        ballManager!.initBallManager(scene: self, generator: itemGenerator!, numBalls: numBalls, position: position, radius: radius!)
         ballManager!.addBalls()
-    }
-    
-    private func initBlockGenerator(view: SKView) {
-        blockGenerator = BlockGenerator()
-        blockGenerator?.initBlockGenerator(view: view, numBalls: numberOfBalls, numBlocks: numberOfBlocks,
-                                           ceiling: view.frame.height - margin!, ground: margin!)
     }
     
     private func initArrowNode(view: SKView) {
         arrowNode = SKShapeNode()
-    }
-    
-    private func addRow() {
-        blockGenerator!.generateRow(scene: self)
     }
     
     private func updateArrow(startPoint: CGPoint, touchPoint: CGPoint) {
