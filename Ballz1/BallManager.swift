@@ -78,19 +78,13 @@ class BallManager {
     public func checkNewArray() {
         let array = newBallArray.filter {
             $0.setBitmasks()
+            $0.returnToOrigin(point: originPoint!)
             self.ballArray.append($0)
+            self.updateLabel()
             return false
         }
         newBallArray = array
-    }
-    
-    public func returnAllToOrigin() {
-        for ball in ballArray {
-            if ball.getNode().position != originPoint! {
-                ball.setBitmasks()
-                ball.returnToOrigin(point: originPoint!)
-            }
-        }
+        numberOfBalls = ballArray.count
     }
     
     public func getOriginPoint() -> CGPoint {
@@ -125,9 +119,9 @@ class BallManager {
         addLabel()
     }
     
-    public func addBall(ball: BallItem) {
-        ballArray.append(ball)
-        numberOfBalls = ballArray.count
+    public func addBall(ball: BallItem, atPoint: CGPoint) {
+        newBallArray.append(ball)
+        ball.getNode().run(SKAction.move(to: atPoint, duration: 0.5))
     }
     
     public func shootBall() {
@@ -163,11 +157,13 @@ class BallManager {
             }
             if false == ball.isActive {
                 if false == firstBallReturned {
+                    print("First ball returned at point \(ball.node!.position)")
                     firstBallReturned = true
                     originPoint = ball.node!.position
                     // originPoint needs to be set before calling addLabel()
                     addLabel()
                 }
+                print("Telling ball to stop at origin point \(originPoint!)")
                 ball.stop(point: originPoint!)
                 numBallsActive -= 1
                 updateLabel()
@@ -188,16 +184,13 @@ class BallManager {
         labelNode!.color = .white
         updateLabel()
         scene!.addChild(labelNode!)
-        print("Added label at position \(newPoint)")
     }
     
     private func updateLabel() {
         labelNode!.text = "Balls: \(ballArray.count - numBallsActive)"
-        print("Updating label")
     }
     
     private func removeLabel() {
         scene!.removeChildren(in: [labelNode!])
-        print("Removed label")
     }
 }

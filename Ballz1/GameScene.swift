@@ -50,7 +50,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if (nameA?.starts(with: "ball"))! {
             if nameB! == "ground" {
                 // Stop the ball at this exact point if it's the first ball to hit the ground
-                //ballManager!.checkNewArray()
                 ballManager!.markBallInactive(name: nameA!)
             }
             else if (nameB?.starts(with: "block"))! {
@@ -66,7 +65,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if (nameB?.starts(with: "ball"))! {
             if nameA! == "ground" {
                 // Stop the ball at this exact point if it's the first ball to hit the ground
-                //ballManager!.checkNewArray()
                 ballManager!.markBallInactive(name: nameB!)
             }
             else if (nameA?.starts(with: "block"))! {
@@ -136,7 +134,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if turnOver {
             itemGenerator!.generateRow(scene: self)
             // In the event that we just collected a ball, it will not be at the origin point so move all balls to the origin point
-            ballManager!.returnAllToOrigin()
+            ballManager!.checkNewArray()
             turnOver = false
         }
         
@@ -174,16 +172,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for item in removedItems {
             if item.getNode().name!.starts(with: "ball") {
                 let ball = item as! BallItem
-                ballManager!.addBall(ball: ball)
+                let newPoint = CGPoint(x: ball.getNode().position.x, y: margin! + radius!)
+                ballManager!.addBall(ball: ball, atPoint: newPoint)
+                print("Added ball \(ball.getNode().name!) to ball manager")
             }
         }
     }
-    
-    /*
-    override func didSimulatePhysics() {
-        itemGenerator!.checkItemContact()
-    }
-    */
     
     // MARK: Private functions
     private func initWalls(view: SKView) {
