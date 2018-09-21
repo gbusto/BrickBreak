@@ -73,8 +73,8 @@ class ItemGenerator {
         groundHeight = ground
         
         // Initialize the allowed item types with only one type for now
-        itemTypeDict[HIT_BLOCK] = 60
-        itemTypeDict[BALL] = 40
+        itemTypeDict[HIT_BLOCK] = 70
+        itemTypeDict[BALL] = 30
     }
     
     public func addItemType(type: Int, percentage: Int) {
