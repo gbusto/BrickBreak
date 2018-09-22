@@ -67,6 +67,10 @@ class HitBlockItem: Item {
     func removeItem(scene: SKScene) -> Bool {
         // This is where the block bust animation will go
         if hitCount! <= 0 {
+            // Give the user some haptic feedback to let them know a block broke
+            let lightImpactFeedback = UIImpactFeedbackGenerator(style: .medium)
+            lightImpactFeedback.prepare()
+            lightImpactFeedback.impactOccurred()
             scene.removeChildren(in: [node!])
             return true
         }
