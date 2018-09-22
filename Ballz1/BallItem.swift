@@ -72,6 +72,11 @@ class BallItem: Item {
     }
     
     public func hitItem() {
+        // Generate feedback for the user here
+        let lightImpactFeedback = UIImpactFeedbackGenerator(style: .light)
+        lightImpactFeedback.prepare()
+        lightImpactFeedback.impactOccurred()
+        
         // This will be used by the ItemGenerator, not the BallManager
         // This will be called when a ball that was shot hits a ball that is in an item row
         // Remove all collision bit maskes
