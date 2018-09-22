@@ -77,6 +77,11 @@ class HitBlockItem: Item {
         return node!
     }
     
+    // MARK: Public functions
+    public func setColor(color: UIColor) {
+        node!.color = color
+    }
+    
     // MARK: Private functions
     private func initHitLabel() {
         let centerPoint = CGPoint(x: size!.width / 2, y: size!.height / 3)
