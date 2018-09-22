@@ -161,18 +161,25 @@ class BallManager {
                     firstBallReturned = true
                     originPoint = ball.node!.position
                     // originPoint needs to be set before calling addLabel()
-                    addLabel()
                 }
                 print("Telling ball to stop at origin point \(originPoint!)")
                 ball.stop(point: originPoint!)
-                numBallsActive -= 1
-                updateLabel()
             }
         }
         
-        if 0 == numBallsActive {
-            incrementState()
-            firstBallReturned = false
+        if isWaiting() {
+            var numBallsDone = 0
+            for ball in ballArray {
+                if (false == ball.isActive) && (ball.isResting) {
+                    numBallsDone += 1
+                }
+            }
+            if numBallsDone == numBallsActive {
+                incrementState()
+                firstBallReturned = false
+                numBallsActive = 0
+                addLabel()
+            }
         }
     }
     

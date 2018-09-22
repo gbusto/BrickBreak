@@ -157,7 +157,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        if ballManager!.isWaiting() {
+        if ballManager!.isShooting() || ballManager!.isWaiting() {
             ballManager!.stopInactiveBalls()
         }
         
