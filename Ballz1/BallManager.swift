@@ -79,7 +79,7 @@ class BallManager {
     
     public func checkNewArray() {
         let array = newBallArray.filter {
-            $0.setBitmasks()
+            $0.resetBall()
             $0.returnToOrigin(point: originPoint!)
             self.ballArray.append($0)
             self.updateLabel()

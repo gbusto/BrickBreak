@@ -34,6 +34,8 @@ class BallItem: Item {
     private var categoryBitMask = UInt32(0b0010)
     private var contactTestBitMask = UInt32(0b0001)
     
+    private var blueColor = UIColor(red: 102/255, green: 178/255, blue: 255/255, alpha: 1)
+    
     
     // MARK: Protocol functions
     public func initItem(generator: ItemGenerator, num: Int, size: CGSize, position: CGPoint) {
@@ -76,6 +78,7 @@ class BallItem: Item {
         node!.physicsBody!.contactTestBitMask = UInt32(0b0100)
         node!.physicsBody!.categoryBitMask = 0
         node!.physicsBody!.collisionBitMask = UInt32(0b0100)
+        node!.fillColor = blueColor
         wasHit = true
     }
     
@@ -97,10 +100,11 @@ class BallItem: Item {
         isResting = true
     }
     
-    public func setBitmasks() {
+    public func resetBall() {
         node!.physicsBody!.collisionBitMask = collisionBitMask
         node!.physicsBody!.categoryBitMask = categoryBitMask
         node!.physicsBody!.contactTestBitMask = contactTestBitMask
+        node!.fillColor = .white
     }
     
     public func returnToOrigin(point: CGPoint) {
