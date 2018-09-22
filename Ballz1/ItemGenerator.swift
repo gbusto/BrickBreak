@@ -58,7 +58,8 @@ class ItemGenerator {
     
     // An Int to let the GameScene know when the ItemGenerator is ready
     private var actionsStarted = Int(0)
-
+    
+    private var currentColor : Color?
     
     // MARK: Public functions
     public func initGenerator(view: SKView, numBalls: Int, numItems: Int,
@@ -71,6 +72,7 @@ class ItemGenerator {
         itemWidth = view.frame.width / CGFloat(numItems)
         ceilingHeight = ceiling
         groundHeight = ground
+        currentColor = Color()
         
         // Initialize the allowed item types with only one type for now
         itemTypeDict[HIT_BLOCK] = 70
@@ -83,6 +85,9 @@ class ItemGenerator {
     }
     
     public func generateRow(scene: SKScene) {
+        let color = currentColor!.changeColor()
+        print("Color is \(color)")
+        
         for i in 0...(numItemsPerRow - 1) {
             if Int.random(in: 1...100) < 60 {
                 let type = pickItem()
@@ -100,6 +105,8 @@ class ItemGenerator {
                     let size = CGSize(width: itemWidth! * 0.95, height: itemWidth! * 0.95)
                     let item = HitBlockItem()
                     item.initItem(generator: self, num: numItemsGenerated, size: size, position: pos)
+                    let block = item as HitBlockItem
+                    block.setColor(color: color)
                     // XXX Might remove this, not sure if we'll ever need to use loadItem()
                     let ret = item.loadItem()
                     if false == ret {
