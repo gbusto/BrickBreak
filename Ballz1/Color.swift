@@ -19,19 +19,19 @@ class Color {
     private var GREEN_DEC = Int(3)
     private var RED_INC = Int(4)
     
-    private var minValue = 50
+    private var minValue = 120
     private var maxValue = 255
     
     private var red = 225
-    private var green = 51
-    private var blue = 51
+    private var green = 120
+    private var blue = 120
     
     private var currentColor = UIColor.init(red: 255 / 255, green: 51 / 255, blue: 51 / 255, alpha: 1)
     
     
     // MARK: Public functions
     public func changeColor() -> UIColor {
-        let diff = 32
+        let diff = 16
         
         switch state {
         case GREEN_INC:
