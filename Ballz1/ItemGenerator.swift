@@ -158,6 +158,10 @@ class ItemGenerator {
         for item in itemArray {
             if item.getNode().name == name {
                 item.hitItem()
+                if item.getNode().name!.starts(with: "ball") {
+                    // If this item was a ball, increase the max hit count by 2 because it will be transferred over to the ball manager
+                    maxHitCount! += 2
+                }
             }
         }
     }
@@ -178,17 +182,6 @@ class ItemGenerator {
         itemArray = newItemArray
         
         return array
-    }
-    
-    public func checkItemContact() {
-        for item in itemArray {
-            let node = item.getNode()
-            if node.name!.starts(with: "ball") {
-                if node.physicsBody!.allContactedBodies().count > 0 {
-                    item.hitItem()
-                }
-            }
-        }
     }
     
     public func canAddRow(groundHeight: CGFloat) -> Bool {
