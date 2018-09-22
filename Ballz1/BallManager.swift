@@ -11,9 +11,11 @@ import GameplayKit
 
 class BallManager {
     
+    // MARK: Public properties
+    public var numberOfBalls = Int(0)
+    
     // MARK: Private properties
     private var scene : SKScene?
-    private var numberOfBalls : Int?
     
     private var ballRadius : CGFloat?
     private var ballArray : [BallItem] = []

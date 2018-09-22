@@ -22,6 +22,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var leftWallNode : SKNode?
     private var rightWallNode : SKNode?
     
+    private var scoreLabel : SKLabelNode?
+    private var gameScore = Int(0)
+    
     private var ballManager : BallManager?
     private var itemGenerator : ItemGenerator?
     private var arrowNode : SKShapeNode?
@@ -83,6 +86,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         initItemGenerator(view: view)
         initBallManager(view: view, numBalls: numberOfBalls)
         initArrowNode(view: view)
+        initScoreLabel()
         
         physicsWorld.contactDelegate = self
         self.backgroundColor = sceneColor
@@ -135,6 +139,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             itemGenerator!.generateRow(scene: self)
             // In the event that we just collected a ball, it will not be at the origin point so move all balls to the origin point
             ballManager!.checkNewArray()
+            updateScore()
             turnOver = false
         }
         
@@ -350,5 +355,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         label.zPosition = 102
         label.preferredMaxLayoutWidth = view!.frame.width
         self.addChild(label)
+    }
+    
+    private func initScoreLabel() {
+        let pos = CGPoint(x: view!.frame.midX, y: ceilingNode!.position.y + (margin! / 3))
+        scoreLabel = SKLabelNode()
+        scoreLabel!.zPosition = 103
+        scoreLabel!.position = pos
+        scoreLabel!.fontSize = margin! * 0.50
+        scoreLabel!.text = "0"
+        self.addChild(scoreLabel!)
+    }
+    
+    private func updateScore() {
+        gameScore += 1
+        scoreLabel!.text = "\(gameScore)"
     }
 }
