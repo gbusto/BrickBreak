@@ -37,6 +37,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var numTicksGap = 6
     private var numTicks = 0
     
+    private var speedupButton : SKSpriteNode?
+    private var touchStarted = false
+    
     private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
     private var marginColor = UIColor.init(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
     
@@ -87,28 +90,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         initBallManager(view: view, numBalls: numberOfBalls)
         initArrowNode(view: view)
         initScoreLabel()
+        addSpeedupButton()
         
         physicsWorld.contactDelegate = self
         self.backgroundColor = sceneColor
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if ballManager!.isReady() && itemGenerator!.isReady() {
-            if let touch = touches.first {
-                let point = touch.location(in: self)
-                let originPoint = ballManager!.getOriginPoint()
-                if false == arrowIsShowing {
-                    showArrow()
-                    arrowIsShowing = true
+        if let touch = touches.first {
+            let point = touch.location(in: self)
+            if ballManager!.isReady() && itemGenerator!.isReady() {
+                // Check to see if the touch is in the game area
+                if inGame(point: point) {
+                    let originPoint = ballManager!.getOriginPoint()
+                    if false == arrowIsShowing {
+                        showArrow()
+                        arrowIsShowing = true
+                    }
+                    updateArrow(startPoint: originPoint, touchPoint: point)
                 }
-                updateArrow(startPoint: originPoint, touchPoint: point)
+            }
+            else if ballManager!.isWaiting() {
+                if speedupButton!.contains(point) {
+                    touchStarted = true
+                }
             }
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if ballManager!.isReady() && itemGenerator!.isReady() {
-            if let touch = touches.first {
+        if let touch = touches.first {
+            if ballManager!.isReady() && itemGenerator!.isReady() && arrowIsShowing {
                 let point = touch.location(in: self)
                 let originPoint = ballManager!.getOriginPoint()
                 updateArrow(startPoint: originPoint, touchPoint: point)
@@ -117,11 +129,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if ballManager!.isReady() && itemGenerator!.isReady() && arrowIsShowing {
-            if let touch = touches.first {
-                let direction = touch.location(in: self)
-                ballManager!.setDirection(point: direction)
+        if let touch = touches.first {
+            let point = touch.location(in: self)
+            if ballManager!.isReady() && itemGenerator!.isReady() && arrowIsShowing {
+                ballManager!.setDirection(point: point)
                 ballManager!.incrementState()
+            }
+            else if ballManager!.isWaiting() {
+                if speedupButton!.contains(point) && touchStarted {
+                    // Speed up the animation
+                    print("Speeding up balls!")
+                    self.physicsWorld.speed = 2.0
+                }
             }
         }
         
@@ -136,6 +155,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if turnOver {
+            if 2.0 == self.physicsWorld.speed {
+                self.physicsWorld.speed = 1.0
+            }
             itemGenerator!.generateRow(scene: self)
             // In the event that we just collected a ball, it will not be at the origin point so move all balls to the origin point
             ballManager!.checkNewArray()
@@ -185,6 +207,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // MARK: Private functions
+    private func inGame(point: CGPoint) -> Bool {
+        return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
+    }
+    
     private func initWalls(view: SKView) {
         margin = view.frame.height * 0.10
         
@@ -370,5 +396,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private func updateScore() {
         gameScore += 1
         scoreLabel!.text = "\(gameScore)"
+    }
+    
+    private func addSpeedupButton() {
+        let size = CGSize(width: margin! / 2, height: margin! / 2)
+        let pos = CGPoint(x: view!.frame.width - size.width, y: view!.frame.height - size.height)
+        speedupButton = SKSpriteNode(imageNamed: "lightning_bolt.png")
+        if let sb = speedupButton {
+            sb.zPosition = 103
+            sb.position = pos
+            sb.size = size
+            self.addChild(speedupButton!)
+        }
+        else {
+            print("Failed to load button")
+        }
     }
 }
