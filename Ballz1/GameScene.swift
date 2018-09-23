@@ -39,6 +39,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private var speedupButton : SKSpriteNode?
     private var touchStarted = false
+    private var speedupButtonShowing = false
     
     private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
     private var marginColor = UIColor.init(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
@@ -90,7 +91,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         initBallManager(view: view, numBalls: numberOfBalls)
         initArrowNode(view: view)
         initScoreLabel()
-        addSpeedupButton()
+        initSpeedupButton()
         
         physicsWorld.contactDelegate = self
         self.backgroundColor = sceneColor
@@ -135,7 +136,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ballManager!.setDirection(point: point)
                 ballManager!.incrementState()
             }
-            else if ballManager!.isWaiting() {
+            else if ballManager!.isWaiting() && speedupButtonShowing {
                 if speedupButton!.contains(point) && touchStarted {
                     // Speed up the animation
                     print("Speeding up balls!")
@@ -158,6 +159,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if 2.0 == self.physicsWorld.speed {
                 self.physicsWorld.speed = 1.0
             }
+            hideSpeedupButton()
             itemGenerator!.generateRow(scene: self)
             // In the event that we just collected a ball, it will not be at the origin point so move all balls to the origin point
             ballManager!.checkNewArray()
@@ -186,6 +188,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if ballManager!.isShooting() || ballManager!.isWaiting() {
             ballManager!.stopInactiveBalls()
+        }
+        
+        if ballManager!.isWaiting() && (false == speedupButtonShowing) {
+            addSpeedupButton()
+            speedupButtonShowing = true
         }
         
         if ballManager!.isDone() {
@@ -398,18 +405,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel!.text = "\(gameScore)"
     }
     
-    private func addSpeedupButton() {
+    private func initSpeedupButton() {
         let size = CGSize(width: margin! / 2, height: margin! / 2)
         let pos = CGPoint(x: view!.frame.width - size.width, y: view!.frame.height - size.height)
         speedupButton = SKSpriteNode(imageNamed: "lightning_bolt.png")
         if let sb = speedupButton {
             sb.zPosition = 103
+            sb.alpha = 0
             sb.position = pos
             sb.size = size
-            self.addChild(speedupButton!)
         }
         else {
             print("Failed to load button")
+        }
+    }
+    
+    private func addSpeedupButton() {
+        if false == speedupButtonShowing {
+            speedupButton!.alpha = 0
+            speedupButton!.run(SKAction.fadeIn(withDuration: 0.5))
+            self.addChild(speedupButton!)
+            speedupButtonShowing = true
+        }
+    }
+    
+    private func hideSpeedupButton() {
+        if speedupButtonShowing {
+            speedupButton!.run(SKAction.fadeOut(withDuration: 0.5)) {
+                self.removeChildren(in: [self.speedupButton!])
+            }
+            speedupButtonShowing = false
         }
     }
 }
