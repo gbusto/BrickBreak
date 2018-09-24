@@ -18,6 +18,7 @@ class Color {
     private var BLUE_INC = Int(2)
     private var GREEN_DEC = Int(3)
     private var RED_INC = Int(4)
+    private var BLUE_DEC = Int(5)
     
     private var minValue = 120
     private var maxValue = 255
@@ -31,7 +32,7 @@ class Color {
     
     // MARK: Public functions
     public func changeColor() -> UIColor {
-        let diff = 16
+        let diff = 32
         
         switch state {
         case GREEN_INC:
@@ -54,6 +55,9 @@ class Color {
             print("RED_INC")
             red += diff
             break
+        case BLUE_DEC:
+            print("BLUE_DEC")
+            blue -= diff
         default:
             print("Bad color state")
             break
@@ -80,9 +84,14 @@ class Color {
             green = minValue
         }
         else if (red >= maxValue) && (RED_INC == state) {
-            // RED_INC to GREEN_INC
+            // RED_INC to BLUE_DEC
             incrementState()
             red = maxValue
+        }
+        else if (blue <= minValue) && (BLUE_DEC == state) {
+            // BLUE_DEC to GREEN_INC
+            incrementState()
+            blue = minValue
         }
         
         let r = CGFloat(red) / 255
@@ -95,7 +104,7 @@ class Color {
     }
     
     private func incrementState() {
-        if RED_INC == state {
+        if BLUE_DEC == state {
             state = GREEN_INC
             return
         }
