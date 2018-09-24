@@ -6,6 +6,7 @@
 //  Copyright © 2018 Self. All rights reserved.
 //
 
+import UIKit
 import SpriteKit
 import GameplayKit
 
@@ -37,10 +38,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var numTicksGap = 6
     private var numTicks = 0
     
-    private var speedupButton : SKSpriteNode?
-    private var touchStarted = false
-    private var speedupButtonShowing = false
-    
+    private var rightSwipeGesture : UISwipeGestureRecognizer?
+    private var addedGesture = false
+
     private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
     private var marginColor = UIColor.init(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
     
@@ -91,7 +91,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         initBallManager(view: view, numBalls: numberOfBalls)
         initArrowNode(view: view)
         initScoreLabel()
-        initSpeedupButton()
+        
+        rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeRight(_:)))
+        rightSwipeGesture!.direction = .right
+        rightSwipeGesture!.numberOfTouchesRequired = 1
         
         physicsWorld.contactDelegate = self
         self.backgroundColor = sceneColor
@@ -109,11 +112,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         arrowIsShowing = true
                     }
                     updateArrow(startPoint: originPoint, touchPoint: point)
-                }
-            }
-            else if ballManager!.isShooting() || ballManager!.isWaiting() {
-                if speedupButton!.contains(point) {
-                    touchStarted = true
                 }
             }
         }
@@ -136,13 +134,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ballManager!.setDirection(point: point)
                 ballManager!.incrementState()
             }
-            else if (ballManager!.isShooting() || ballManager!.isWaiting()) && speedupButtonShowing {
-                if speedupButton!.contains(point) && touchStarted {
-                    // Speed up the animation
-                    print("Speeding up balls!")
-                    self.physicsWorld.speed = 2.0
-                }
-            }
         }
         
         hideArrow()
@@ -156,10 +147,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if turnOver {
+            // Return physics simulation back to normal speed
             if 2.0 == self.physicsWorld.speed {
                 self.physicsWorld.speed = 1.0
             }
-            hideSpeedupButton()
+            
+            // Clear the gesture recognizers for now
+            view!.gestureRecognizers = []
+            addedGesture = false
+            
+            // Generate a row
             itemGenerator!.generateRow(scene: self)
             // In the event that we just collected a ball, it will not be at the origin point so move all balls to the origin point
             ballManager!.checkNewArray()
@@ -187,9 +184,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if ballManager!.isShooting() || ballManager!.isWaiting() {
-            if (false == speedupButtonShowing) {
-                addSpeedupButton()
-                speedupButtonShowing = true
+            if (false == addedGesture) {
+                view!.gestureRecognizers = [rightSwipeGesture!]
+                addedGesture = true
             }
             ballManager!.stopInactiveBalls()
         }
@@ -208,6 +205,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let newPoint = CGPoint(x: ball.getNode().position.x, y: margin! + radius!)
                 ballManager!.addBall(ball: ball, atPoint: newPoint)
                 print("Added ball \(ball.getNode().name!) to ball manager")
+            }
+        }
+    }
+    
+    // MARK: Public functions
+    // Handle right swipes
+    @objc public func handleSwipeRight(_ sender: UISwipeGestureRecognizer) {
+        let point = sender.location(in: view!)
+        if inGame(point: point) {
+            if ballManager!.isShooting() || ballManager!.isWaiting() {
+                print("Speeding up physics simulation")
+                physicsWorld.speed = 2.0
             }
         }
     }
@@ -402,38 +411,5 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private func updateScore() {
         gameScore += 1
         scoreLabel!.text = "\(gameScore)"
-    }
-    
-    private func initSpeedupButton() {
-        let size = CGSize(width: margin! / 2, height: margin! / 2)
-        let pos = CGPoint(x: view!.frame.width - size.width, y: view!.frame.height - size.height)
-        speedupButton = SKSpriteNode(imageNamed: "lightning_bolt.png")
-        if let sb = speedupButton {
-            sb.zPosition = 103
-            sb.alpha = 0
-            sb.position = pos
-            sb.size = size
-        }
-        else {
-            print("Failed to load button")
-        }
-    }
-    
-    private func addSpeedupButton() {
-        if false == speedupButtonShowing {
-            speedupButton!.alpha = 0
-            speedupButton!.run(SKAction.fadeIn(withDuration: 0.5))
-            self.addChild(speedupButton!)
-            speedupButtonShowing = true
-        }
-    }
-    
-    private func hideSpeedupButton() {
-        if speedupButtonShowing {
-            speedupButton!.run(SKAction.fadeOut(withDuration: 0.5)) {
-                self.removeChildren(in: [self.speedupButton!])
-            }
-            speedupButtonShowing = false
-        }
     }
 }
