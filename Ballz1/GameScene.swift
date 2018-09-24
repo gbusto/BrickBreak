@@ -23,6 +23,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var leftWallNode : SKNode?
     private var rightWallNode : SKNode?
     
+    private var fontName = "KohinoorBangla-Regular"
     private var scoreLabel : SKLabelNode?
     private var gameScore = Int(0)
     
@@ -395,6 +396,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let label = SKLabelNode()
         label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY - fontSize)
         label.fontSize = fontSize
+        label.fontName = fontName
         label.color = .white
         label.text = "Game Over"
         label.numberOfLines = 2
@@ -409,6 +411,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel!.zPosition = 103
         scoreLabel!.position = pos
         scoreLabel!.fontSize = margin! * 0.50
+        scoreLabel!.fontName = fontName
         scoreLabel!.text = "0"
         self.addChild(scoreLabel!)
     }
