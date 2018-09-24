@@ -32,7 +32,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var arrowNode : SKShapeNode?
     
     private var currentTouch : CGPoint?
-        
+    
+    private var gameOver = false
     private var turnOver = true
     private var arrowIsShowing = false
     
@@ -108,7 +109,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // Check to see if the touch is in the game area
                 if inGame(point: point) {
                     let originPoint = ballManager!.getOriginPoint()
-                    if false == arrowIsShowing {
+                    if (false == arrowIsShowing) && (false == gameOver) {
                         showArrow()
                         arrowIsShowing = true
                     }
@@ -174,6 +175,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // Game over!!!
                 self.isPaused = true
                 showGameOverLabel()
+                gameOver = true
             }
         }
         
