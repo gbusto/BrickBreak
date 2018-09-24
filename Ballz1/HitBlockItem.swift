@@ -62,7 +62,10 @@ class HitBlockItem: Item {
     
     func hitItem() {
         hitCount! -= 1
-        labelNode!.text = "\(hitCount!)"
+        // Don't update the label to zero; it should just disappear
+        if hitCount! > 0 {
+            labelNode!.text = "\(hitCount!)"
+        }
     }
     
     func removeItem(scene: SKScene) -> Bool {
