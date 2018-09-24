@@ -20,6 +20,7 @@ class HitBlockItem: Item {
     private var position : CGPoint?
     private var hitCount : Int?
     
+    private var fontName = "KohinoorBangla-Regular"
     private var labelNode : SKLabelNode?
     
     // Setting up properties for collisions
@@ -93,5 +94,6 @@ class HitBlockItem: Item {
         labelNode!.fontColor = .black
         labelNode!.position = centerPoint
         labelNode!.fontSize = size!.width / 2
+        labelNode!.fontName = fontName
     }
 }

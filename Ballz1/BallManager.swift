@@ -46,6 +46,7 @@ class BallManager {
     
     private var direction : CGPoint?
     
+    private var fontName = "KohinoorBangla-Regular"
     private var labelNode : SKLabelNode?
     
     
@@ -86,6 +87,7 @@ class BallManager {
             let label = SKLabelNode()
             label.text = "+\(numNewBalls)"
             label.fontSize = fontSize
+            label.fontName = fontName
             label.position = pos
             label.alpha = 0
             
@@ -184,7 +186,6 @@ class BallManager {
                     print("First ball returned at point \(ball.node!.position)")
                     firstBallReturned = true
                     originPoint = ball.node!.position
-                    // originPoint needs to be set before calling addLabel()
                 }
                 print("Telling ball to stop at origin point \(originPoint!)")
                 ball.stop(point: originPoint!)
@@ -212,6 +213,7 @@ class BallManager {
         let newPoint = CGPoint(x: originPoint!.x, y: (originPoint!.y + (ballRadius! * 1.5)))
         labelNode!.position = newPoint
         labelNode!.fontSize = ballRadius! * 3
+        labelNode!.fontName = fontName
         labelNode!.color = .white
         updateLabel()
         scene!.addChild(labelNode!)
