@@ -111,7 +111,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     updateArrow(startPoint: originPoint, touchPoint: point)
                 }
             }
-            else if ballManager!.isWaiting() {
+            else if ballManager!.isShooting() || ballManager!.isWaiting() {
                 if speedupButton!.contains(point) {
                     touchStarted = true
                 }
@@ -136,7 +136,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ballManager!.setDirection(point: point)
                 ballManager!.incrementState()
             }
-            else if ballManager!.isWaiting() && speedupButtonShowing {
+            else if (ballManager!.isShooting() || ballManager!.isWaiting()) && speedupButtonShowing {
                 if speedupButton!.contains(point) && touchStarted {
                     // Speed up the animation
                     print("Speeding up balls!")
@@ -187,12 +187,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if ballManager!.isShooting() || ballManager!.isWaiting() {
+            if (false == speedupButtonShowing) {
+                addSpeedupButton()
+                speedupButtonShowing = true
+            }
             ballManager!.stopInactiveBalls()
-        }
-        
-        if ballManager!.isWaiting() && (false == speedupButtonShowing) {
-            addSpeedupButton()
-            speedupButtonShowing = true
         }
         
         if ballManager!.isDone() {
