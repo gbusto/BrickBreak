@@ -221,6 +221,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 print("Speeding up physics simulation")
                 physicsWorld.speed = 2.0
                 numTicksGap = 3
+                flashSpeedupImage()
             }
         }
     }
@@ -415,5 +416,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private func updateScore() {
         gameScore += 1
         scoreLabel!.text = "\(gameScore)"
+    }
+    
+    private func flashSpeedupImage() {
+        let pos = CGPoint(x: self.view!.frame.midX, y: self.view!.frame.midY)
+        let size = CGSize(width: self.view!.frame.width * 0.8, height: self.view!.frame.width * 0.8)
+        let imageNode = SKSpriteNode(imageNamed: "fast_forward.png")
+        imageNode.alpha = 0
+        imageNode.position = pos
+        imageNode.size = size
+        self.addChild(imageNode)
+        
+        let action1 = SKAction.fadeAlpha(to: 0.5, duration: 0.2)
+        let action2 = SKAction.fadeAlpha(to: 0, duration: 0.2)
+        
+        imageNode.run(SKAction.sequence([action1, action2, action1, action2, action1, action2])) {
+            self.removeChildren(in: [imageNode])
+        }
     }
 }
