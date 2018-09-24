@@ -151,6 +151,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if 2.0 == self.physicsWorld.speed {
                 self.physicsWorld.speed = 1.0
             }
+            if 3 == numTicksGap {
+                numTicksGap = 6
+            }
             
             // Clear the gesture recognizers for now
             view!.gestureRecognizers = []
@@ -217,6 +220,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if ballManager!.isShooting() || ballManager!.isWaiting() {
                 print("Speeding up physics simulation")
                 physicsWorld.speed = 2.0
+                numTicksGap = 3
             }
         }
     }
