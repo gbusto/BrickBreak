@@ -78,6 +78,28 @@ class BallManager {
     }
     
     public func checkNewArray() {
+        let numNewBalls = newBallArray.count
+        if numNewBalls > 0 {
+            print("Adding label!")
+            let fontSize = CGFloat(20)
+            let pos = CGPoint(x: originPoint!.x, y: originPoint!.y + fontSize)
+            let label = SKLabelNode()
+            label.text = "+\(numNewBalls)"
+            label.fontSize = fontSize
+            label.position = pos
+            label.alpha = 0
+            
+            let vect = CGVector(dx: 0, dy: fontSize * 3)
+            let action1 = SKAction.fadeIn(withDuration: 0.5)
+            let action2 = SKAction.move(by: vect, duration: 1)
+            let action3 = SKAction.fadeOut(withDuration: 0.5)
+            scene!.addChild(label)
+            label.run(action2)
+            label.run(SKAction.sequence([action1, action3])) {
+                self.scene!.removeChildren(in: [label])
+            }
+        }
+        
         let array = newBallArray.filter {
             $0.resetBall()
             $0.returnToOrigin(point: originPoint!)
