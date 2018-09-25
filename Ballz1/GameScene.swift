@@ -24,13 +24,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var rightWallNode : SKNode?
     
     private var fontName = "KohinoorBangla-Regular"
+
     private var scoreLabel : SKLabelNode?
     private var gameScore = Int(0)
-    
+
+    private var bestScoreLabel : SKLabelNode?
+    private var bestScore = Int(0)
+
     private var ballManager : BallManager?
     private var itemGenerator : ItemGenerator?
     private var arrowNode : SKShapeNode?
-    
+
     private var currentTouch : CGPoint?
     
     private var gameOver = false
@@ -93,6 +97,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         initBallManager(view: view, numBalls: numberOfBalls)
         initArrowNode(view: view)
         initScoreLabel()
+        initBestScoreLabel()
         
         rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeRight(_:)))
         rightSwipeGesture!.direction = .right
@@ -425,9 +430,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(scoreLabel!)
     }
     
+    private func initBestScoreLabel() {
+        let pos = CGPoint(x: ceilingNode!.size.width * 0.02, y: ceilingNode!.size.height / 2)
+        bestScoreLabel = SKLabelNode()
+        bestScoreLabel!.zPosition = 103
+        bestScoreLabel!.position = pos
+        bestScoreLabel!.fontName = fontName
+        bestScoreLabel!.fontSize = margin! * 0.30
+        bestScoreLabel!.verticalAlignmentMode = .center
+        bestScoreLabel!.horizontalAlignmentMode = .left
+        bestScoreLabel!.text = "Best: \(gameScore)"
+        ceilingNode!.addChild(bestScoreLabel!)
+    }
+
     private func updateScore() {
         gameScore += 1
         scoreLabel!.text = "\(gameScore)"
+        
+        if gameScore > bestScore {
+            bestScoreLabel!.text = "Best: \(gameScore)"
+            bestScore = gameScore
+        }
     }
     
     private func flashSpeedupImage() {
@@ -446,4 +469,5 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.removeChildren(in: [imageNode])
         }
     }
+
 }
