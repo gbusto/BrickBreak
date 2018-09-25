@@ -14,27 +14,34 @@ class GameMenu: SKScene {
     
     // MARK: Private properties
     private var fontName = "KohinoorBangla-Regular"
-    private var startButton : SKSpriteNode?
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let scene = GameScene(size: self.view!.bounds.size)
+        self.view!.presentScene(scene, transition: SKTransition.fade(withDuration: 0.5))
+    }
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
-        initStartButton(view: view)
+        let color = UIColor(red: 255/255, green: 204/255, blue: 229/255, alpha: 1)
+        
+        var pos = CGPoint(x: view.frame.midX, y: view.frame.height * 0.8)
+        createLabel(position: pos, size: 80, text: "Brick", color: color)
+        pos.y = view.frame.height * 0.68
+        createLabel(position: pos, size: 80, text: "Break", color: color)
+        
+        pos.y = view.frame.height * 0.40
+        createLabel(position: pos, size: 20, text: "Tap to start", color: .white)
     }
     
-    // MARK: Private functions
-    private func initStartButton(view: SKView) {
-        let size = CGSize(width: view.frame.width * 0.4, height: view.frame.height * 0.1)
-        let color = UIColor(red: 51/255, green: 153/255, blue: 255/255, alpha: 1)
-        let pos = CGPoint(x: view.frame.midX, y: view.frame.midY)
-        startButton = SKSpriteNode(color: color, size: size)
-        startButton!.position = pos
-        
-        let label = SKLabelNode(text: "Start")
-        label.fontName = fontName
-        label.fontSize = 30
-        startButton!.addChild(label)
-        
-        self.addChild(startButton!)
+    private func createLabel(position: CGPoint, size: CGFloat, text: String, color: UIColor) {
+        let label = SKLabelNode(fontNamed: fontName)
+        label.fontColor = color
+        label.text = text
+        label.fontSize = size
+        label.position = position
+        label.verticalAlignmentMode = .center
+        label.horizontalAlignmentMode = .center
+        self.addChild(label)
     }
     
 }
