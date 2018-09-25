@@ -21,6 +21,7 @@
 		032A60EE214D8A9C005C1D9D /* BlockGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */; };
 		039193BB214F6105008F0E46 /* BlockColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039193BA214F6105008F0E46 /* BlockColor.swift */; };
 		03AE1FC82156E5F0002CEB3F /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AE1FC72156E5F0002CEB3F /* Color.swift */; };
+		03B77C51215A63010008A221 /* GameMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B77C50215A63010008A221 /* GameMenu.swift */; };
 		03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4212151C37800206A84 /* ItemGenerator.swift */; };
 		03F9A4242151C3D600206A84 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4232151C3D600206A84 /* Item.swift */; };
 		03F9A4262151D34800206A84 /* BallItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4252151D34800206A84 /* BallItem.swift */; };
@@ -65,6 +66,7 @@
 		032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockGenerator.swift; sourceTree = "<group>"; };
 		039193BA214F6105008F0E46 /* BlockColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockColor.swift; sourceTree = "<group>"; };
 		03AE1FC72156E5F0002CEB3F /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		03B77C50215A63010008A221 /* GameMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenu.swift; sourceTree = "<group>"; };
 		03F9A4212151C37800206A84 /* ItemGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemGenerator.swift; sourceTree = "<group>"; };
 		03F9A4232151C3D600206A84 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		03F9A4252151D34800206A84 /* BallItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItem.swift; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 				0317DEAA214B5FA500E976E2 /* Assets.xcassets */,
 				0317DEAC214B5FA500E976E2 /* LaunchScreen.storyboard */,
 				0317DEAF214B5FA500E976E2 /* Info.plist */,
+				03B77C50215A63010008A221 /* GameMenu.swift */,
 			);
 			path = Ballz1;
 			sourceTree = "<group>";
@@ -289,6 +292,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03B77C51215A63010008A221 /* GameMenu.swift in Sources */,
 				03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */,
 				03F9A4242151C3D600206A84 /* Item.swift in Sources */,
 				0317DED2214B679500E976E2 /* Ball.swift in Sources */,
