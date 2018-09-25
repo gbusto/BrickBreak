@@ -111,7 +111,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     let originPoint = ballManager!.getOriginPoint()
                     if (false == arrowIsShowing) && (false == gameOver) {
                         showArrow()
-                        arrowIsShowing = true
                     }
                     updateArrow(startPoint: originPoint, touchPoint: point)
                 }
@@ -121,8 +120,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
-            if ballManager!.isReady() && itemGenerator!.isReady() && arrowIsShowing {
-                let point = touch.location(in: self)
+            let point = touch.location(in: self)
+            if !inGame(point: point) {
+                hideArrow()
+            }
+            else if ballManager!.isReady() && itemGenerator!.isReady() && arrowIsShowing {
                 let originPoint = ballManager!.getOriginPoint()
                 updateArrow(startPoint: originPoint, touchPoint: point)
             }
@@ -139,7 +141,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         hideArrow()
-        arrowIsShowing = false
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -371,11 +372,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func showArrow() {
-        self.addChild(arrowNode!)
+        if (false == arrowIsShowing) {
+            self.addChild(arrowNode!)
+            arrowIsShowing = true
+        }
     }
     
     private func hideArrow() {
-        self.removeChildren(in: [arrowNode!])
+        if arrowIsShowing {
+            self.removeChildren(in: [arrowNode!])
+            arrowIsShowing = false
+        }
     }
     
     private func calcSlope(originPoint: CGPoint, touchPoint: CGPoint) -> CGFloat {
