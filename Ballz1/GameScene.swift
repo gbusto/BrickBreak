@@ -476,12 +476,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func flashSpeedupImage() {
+        let color = UIColor(red: 119/255, green: 136/255, blue: 153/255, alpha: 1)
         let pos = CGPoint(x: self.view!.frame.midX, y: self.view!.frame.midY)
         let size = CGSize(width: self.view!.frame.width * 0.8, height: self.view!.frame.width * 0.8)
         let imageNode = SKSpriteNode(imageNamed: "fast_forward.png")
         imageNode.alpha = 0
         imageNode.position = pos
         imageNode.size = size
+        
+        let label = SKLabelNode(fontNamed: fontName)
+        label.fontSize = 50
+        label.fontColor = color
+        label.horizontalAlignmentMode = .left
+        label.verticalAlignmentMode = .center
+        label.position = CGPoint(x: 0, y: 0)
+        if (2.0 == physicsWorld.speed) {
+            label.text = "x2"
+        }
+        else if (3.0 == physicsWorld.speed) {
+            label.text = "x3"
+        }
+        imageNode.addChild(label)
+        
         self.addChild(imageNode)
         
         let action1 = SKAction.fadeAlpha(to: 0.5, duration: 0.2)
