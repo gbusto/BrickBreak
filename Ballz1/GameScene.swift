@@ -44,6 +44,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var numTicksGap = 6
     private var numTicks = 0
     
+    private var showedFFTutorial = false
     private var rightSwipeGesture : UISwipeGestureRecognizer?
     private var addedGesture = false
 
@@ -197,6 +198,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if ballManager!.isShooting() || ballManager!.isWaiting() {
             if (false == addedGesture) {
+                // If we haven't shown the fast forward tutorial yet, show it
+                if (false == showedFFTutorial) {
+                    showFFTutorial()
+                }
                 view!.gestureRecognizers = [rightSwipeGesture!]
                 addedGesture = true
             }
@@ -222,11 +227,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // MARK: Public functions
-    // Handle right swipes
+    // Handle a right swipe to fast forward
     @objc public func handleSwipeRight(_ sender: UISwipeGestureRecognizer) {
         let point = sender.location(in: view!)
         if inGame(point: point) {
             if ballManager!.isShooting() || ballManager!.isWaiting() {
+                // If this is the first time we've shown the fast forward tutorial and the user swiped right.
+                if (false == showedFFTutorial) {
+                    // Remove the tutorial nodes from the scene
+                    if let ffNode = self.childNode(withName: "ffTutorial") {
+                        self.removeChildren(in: [ffNode])
+                    }
+                    if let ffLabel = self.childNode(withName: "ffLabel") {
+                        self.removeChildren(in: [ffLabel])
+                    }
+                    
+                    showedFFTutorial = true
+                }
                 print("Speeding up physics simulation")
                 physicsWorld.speed = 2.0
                 numTicksGap = 3
@@ -470,4 +487,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
 
+    // Shows the user how to fast forward the simulation
+    private func showFFTutorial() {
+        let size = CGSize(width: view!.frame.width * 0.15, height: view!.frame.width * 0.15)
+        let startPoint = CGPoint(x: view!.frame.width * 0.35, y: view!.frame.midY)
+        let endPoint = CGPoint(x: view!.frame.width * 0.65, y: view!.frame.midY)
+        
+        let ffNode = SKSpriteNode(imageNamed: "touch_image.png")
+        ffNode.position = startPoint
+        ffNode.size = size
+        ffNode.alpha = 1
+        ffNode.name = "ffTutorial"
+        self.addChild(ffNode)
+        
+        let action1 = SKAction.move(to: endPoint, duration: 0.8)
+        let action2 = SKAction.move(to: startPoint, duration: 0.1)
+        
+        let label = SKLabelNode(fontNamed: fontName)
+        label.fontColor = .white
+        label.fontSize = 20
+        label.text = "Fast forward"
+        label.name = "ffLabel"
+        label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY * 0.80)
+        self.addChild(label)
+        
+        ffNode.run(SKAction.sequence([action1, action2, action1, action2, action1])) {
+            self.removeChildren(in: [ffNode, label])
+        }
+    }
 }
