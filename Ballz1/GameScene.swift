@@ -157,10 +157,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func update(_ currentTime: TimeInterval) {
         if turnOver {
             // Return physics simulation back to normal speed
-            if 2.0 == self.physicsWorld.speed {
+            if self.physicsWorld.speed > 1.0 {
                 self.physicsWorld.speed = 1.0
-            }
-            if 3 == numTicksGap {
                 numTicksGap = 6
             }
             
@@ -245,9 +243,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     showedFFTutorial = true
                 }
                 print("Speeding up physics simulation")
-                physicsWorld.speed = 2.0
-                numTicksGap = 3
-                flashSpeedupImage()
+                if physicsWorld.speed < 3.0 {
+                    physicsWorld.speed += 1
+                    if (6 == numTicksGap) {
+                        numTicksGap = 3
+                    }
+                    else if (3 == numTicksGap) {
+                        numTicksGap = 1
+                    }
+                    flashSpeedupImage()
+                }
             }
         }
     }
