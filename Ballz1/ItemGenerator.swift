@@ -112,6 +112,7 @@ class ItemGenerator {
                     if false == ret {
                         print("Failed to load hit block item")
                     }
+                    item.getNode().alpha = 0
                     scene.addChild(item.getNode())
                     print("Adding block at row position \(i)")
                     itemArray.append(item)
@@ -131,6 +132,7 @@ class ItemGenerator {
                     if false == ret {
                         print("Failed to load ball item")
                     }
+                    item.getNode().alpha = 0
                     scene.addChild(item.getNode())
                     print("Adding ball at row spot \(i) position \(pos)")
                     itemArray.append(item)
