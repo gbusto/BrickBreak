@@ -9,6 +9,7 @@
 import UIKit
 import SpriteKit
 import GameplayKit
+import CoreGraphics
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -362,8 +363,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func updateArrow(startPoint: CGPoint, touchPoint: CGPoint) {
-        // The "box" we create around the origin point
         let maxOffset = CGFloat(200)
+        let numDashes = 6
+        var points: [CGPoint] = []
         
         let slope = calcSlope(originPoint: startPoint, touchPoint: touchPoint)
         let intercept = calcYIntercept(point: touchPoint, slope: slope)
@@ -387,12 +389,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let endPoint = CGPoint(x: newX, y: newY)
         
+        let pattern: [CGFloat] = [10, 10]
         let path = CGMutablePath()
         path.move(to: startPoint)
         path.addLine(to: endPoint)
+        let dashedPath = path.copy(dashingWithPhase: 0, lengths: pattern)
         
         let color = UIColor(red: 119/255, green: 136/255, blue: 153/255, alpha: 1)
-        arrowNode!.path = path
+        arrowNode!.path = dashedPath
         arrowNode!.strokeColor = color
         arrowNode!.lineWidth = 4
     }
