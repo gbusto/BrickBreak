@@ -210,7 +210,18 @@ class BallManager {
     
     // MARK: Private functions
     private func addLabel() {
-        let newPoint = CGPoint(x: originPoint!.x, y: (originPoint!.y + (ballRadius! * 1.5)))
+        var newPoint = CGPoint(x: originPoint!.x, y: (originPoint!.y + (ballRadius! * 1.5)))
+        // This is to prevent the ball count label from going off the screen
+        if let view = scene!.view {
+            // If we're close to the far left side, add a small amount to the x value
+            if newPoint.x < view.frame.width * 0.03 {
+                newPoint.x += view.frame.width * 0.03
+            }
+            // Opposite of the above comment
+            else if newPoint.x > view.frame.width * 0.97 {
+                newPoint.x -= view.frame.width * 0.03
+            }
+        }
         labelNode!.position = newPoint
         labelNode!.fontSize = ballRadius! * 3
         labelNode!.fontName = fontName
@@ -220,7 +231,7 @@ class BallManager {
     }
     
     private func updateLabel() {
-        labelNode!.text = "Balls: \(ballArray.count - numBallsActive)"
+        labelNode!.text = "x\(ballArray.count - numBallsActive)"
     }
     
     private func removeLabel() {
