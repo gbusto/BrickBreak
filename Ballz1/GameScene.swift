@@ -9,6 +9,7 @@
 import UIKit
 import SpriteKit
 import GameplayKit
+import CoreGraphics
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -362,10 +363,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func updateArrow(startPoint: CGPoint, touchPoint: CGPoint) {
-        // The "box" we create around the origin point
-        let maxX = startPoint.x + view!.frame.width * 0.75
-        let maxY = startPoint.y + view!.frame.width * 0.75
-        let minX = startPoint.x - view!.frame.width * 0.75
+        let maxOffset = CGFloat(200)
+        let numDashes = 6
+        var points: [CGPoint] = []
         
         let slope = calcSlope(originPoint: startPoint, touchPoint: touchPoint)
         let intercept = calcYIntercept(point: touchPoint, slope: slope)
@@ -374,28 +374,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         var newY = CGFloat(0)
         
         if (slope >= 1) || (slope <= -1) {
-            newY = maxY
+            newY = touchPoint.y + maxOffset
             newX = (newY - intercept) / slope
         }
         else if (slope < 1) && (slope > -1) {
             if (slope < 0) {
-                newX = minX
+                newX = touchPoint.x - maxOffset
             }
             else if (slope > 0) {
-                newX = maxX
+                newX = touchPoint.x + maxOffset
             }
             newY = (slope * newX) + intercept
         }
         
         let endPoint = CGPoint(x: newX, y: newY)
         
+        let pattern: [CGFloat] = [10, 10]
         let path = CGMutablePath()
         path.move(to: startPoint)
         path.addLine(to: endPoint)
+        let dashedPath = path.copy(dashingWithPhase: 0, lengths: pattern)
         
-        arrowNode!.path = path
-        arrowNode!.strokeColor = .white
-        arrowNode!.lineWidth = 2
+        let color = UIColor(red: 119/255, green: 136/255, blue: 153/255, alpha: 1)
+        arrowNode!.path = dashedPath
+        arrowNode!.strokeColor = color
+        arrowNode!.lineWidth = 4
     }
     
     private func showArrow() {
