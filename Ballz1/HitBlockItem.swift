@@ -8,6 +8,17 @@
 
 import SpriteKit
 import GameplayKit
+import CoreImage
+
+extension SKSpriteNode {
+    func addGlow(radius: Float = 30) {
+        let effectNode = SKEffectNode()
+        effectNode.shouldRasterize = true
+        addChild(effectNode)
+        effectNode.addChild(SKSpriteNode(texture: texture))
+        effectNode.filter = CIFilter(name: "CIGaussianBlur", parameters: ["inputRadius":radius])
+    }
+}
 
 class HitBlockItem: Item {
     // MARK: Public properties
@@ -24,6 +35,7 @@ class HitBlockItem: Item {
     private var labelNode : SKLabelNode?
     
     // Setting up properties for collisions
+    private var lightingBitMask = UInt32(0b0001)
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitmask = UInt32(0b0001)
     
@@ -41,6 +53,7 @@ class HitBlockItem: Item {
         node!.anchorPoint = CGPoint(x: 0, y: 0)
         node!.zPosition = 100
         node!.name = "block\(num)"
+        node!.lightingBitMask = lightingBitMask
         
         let centerPoint = CGPoint(x: size.width / 2, y: size.height / 2)
         let physBody = SKPhysicsBody(rectangleOf: size, center: centerPoint)

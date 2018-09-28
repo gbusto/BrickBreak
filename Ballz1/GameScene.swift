@@ -578,4 +578,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.removeChildren(in: [ffNode, label])
         }
     }
+    
+    private func initLightNode() {
+        let lightNode = SKLightNode()
+        lightNode.position = CGPoint(x: view!.frame.midX, y: view!.frame.height - margin!)
+        lightNode.isEnabled = true
+        lightNode.ambientColor = .white
+        lightNode.categoryBitMask = UInt32(0b0001)
+        self.addChild(lightNode)
+    }
 }
