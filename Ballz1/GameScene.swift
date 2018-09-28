@@ -145,6 +145,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ballManager!.setDirection(point: point)
                 ballManager!.incrementState()
             }
+            else if gameOver {
+                let scene = GameMenu(size: view!.bounds.size)
+                
+                scene.scaleMode = .aspectFill
+                
+                view!.ignoresSiblingOrder = true
+                view!.showsFPS = true
+                view!.showsNodeCount = true
+                
+                view!.presentScene(scene)
+            }
         }
         
         hideArrow()
@@ -180,7 +191,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if false == itemGenerator!.canAddRow(groundHeight: margin!) {
                 // Game over!!!
                 self.isPaused = true
-                showGameOverLabel()
+                showGameOverNode()
                 gameOver = true
             }
         }
@@ -364,8 +375,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private func updateArrow(startPoint: CGPoint, touchPoint: CGPoint) {
         let maxOffset = CGFloat(200)
-        let numDashes = 6
-        var points: [CGPoint] = []
         
         let slope = calcSlope(originPoint: startPoint, touchPoint: touchPoint)
         let intercept = calcYIntercept(point: touchPoint, slope: slope)
@@ -430,18 +439,48 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return intercept
     }
     
-    private func showGameOverLabel() {
+    private func showGameOverNode() {
+        let gameOverNode = SKSpriteNode(color: .darkGray, size: scene!.size)
+        gameOverNode.alpha = 0.9
+        gameOverNode.zPosition = 105
+        gameOverNode.position = CGPoint(x: 0, y: 0)
+        gameOverNode.anchorPoint = CGPoint(x: 0, y: 0)
+        self.addChild(gameOverNode)
+        
         let fontSize = view!.frame.height * 0.2
         let label = SKLabelNode()
-        label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY - fontSize)
+        label.zPosition = 106
+        label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY + (fontSize / 2))
         label.fontSize = fontSize
         label.fontName = fontName
+        label.verticalAlignmentMode = .center
+        label.horizontalAlignmentMode = .center
         label.color = .white
-        label.text = "Game Over"
-        label.numberOfLines = 2
-        label.zPosition = 102
-        label.preferredMaxLayoutWidth = view!.frame.width
+        label.text = "Game"
+        
+        let label2 = SKLabelNode()
+        label2.zPosition = 106
+        label2.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY - (fontSize / 2))
+        label2.fontSize = fontSize
+        label2.fontName = fontName
+        label2.verticalAlignmentMode = .center
+        label2.horizontalAlignmentMode = .center
+        label2.color = .white
+        label2.text = "Over"
+        
+        let label3 = SKLabelNode()
+        label3.zPosition = 106
+        label3.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY - (fontSize * 1.5))
+        label3.fontSize = fontSize * 0.2
+        label3.fontName = fontName
+        label3.verticalAlignmentMode = .center
+        label3.horizontalAlignmentMode = .center
+        label3.color = .white
+        label3.text = "Touch to restart"
+        
         self.addChild(label)
+        self.addChild(label2)
+        self.addChild(label3)
     }
     
     private func initScoreLabel() {
