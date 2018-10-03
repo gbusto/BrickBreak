@@ -15,11 +15,7 @@
 		0317DEAE214B5FA500E976E2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0317DEAC214B5FA500E976E2 /* LaunchScreen.storyboard */; };
 		0317DEB9214B5FA500E976E2 /* Ballz1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0317DEB8214B5FA500E976E2 /* Ballz1Tests.swift */; };
 		0317DEC4214B5FA500E976E2 /* Ballz1UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0317DEC3214B5FA500E976E2 /* Ballz1UITests.swift */; };
-		0317DED2214B679500E976E2 /* Ball.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0317DED1214B679500E976E2 /* Ball.swift */; };
 		0317DED4214B6B7900E976E2 /* BallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0317DED3214B6B7900E976E2 /* BallManager.swift */; };
-		032A60EC214D87D0005C1D9D /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A60EB214D87D0005C1D9D /* Block.swift */; };
-		032A60EE214D8A9C005C1D9D /* BlockGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */; };
-		039193BB214F6105008F0E46 /* BlockColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039193BA214F6105008F0E46 /* BlockColor.swift */; };
 		03AE1FC82156E5F0002CEB3F /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AE1FC72156E5F0002CEB3F /* Color.swift */; };
 		03B77C51215A63010008A221 /* GameMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B77C50215A63010008A221 /* GameMenu.swift */; };
 		03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4212151C37800206A84 /* ItemGenerator.swift */; };
@@ -60,11 +56,7 @@
 		0317DEBF214B5FA500E976E2 /* Ballz1UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Ballz1UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0317DEC3214B5FA500E976E2 /* Ballz1UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ballz1UITests.swift; sourceTree = "<group>"; };
 		0317DEC5214B5FA500E976E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0317DED1214B679500E976E2 /* Ball.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ball.swift; sourceTree = "<group>"; };
 		0317DED3214B6B7900E976E2 /* BallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallManager.swift; sourceTree = "<group>"; };
-		032A60EB214D87D0005C1D9D /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
-		032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockGenerator.swift; sourceTree = "<group>"; };
-		039193BA214F6105008F0E46 /* BlockColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockColor.swift; sourceTree = "<group>"; };
 		03AE1FC72156E5F0002CEB3F /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		03B77C50215A63010008A221 /* GameMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenu.swift; sourceTree = "<group>"; };
 		03F9A4212151C37800206A84 /* ItemGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemGenerator.swift; sourceTree = "<group>"; };
@@ -122,23 +114,19 @@
 			isa = PBXGroup;
 			children = (
 				0317DE9D214B5FA300E976E2 /* AppDelegate.swift */,
-				0317DED1214B679500E976E2 /* Ball.swift */,
-				03F9A4252151D34800206A84 /* BallItem.swift */,
 				0317DED3214B6B7900E976E2 /* BallManager.swift */,
-				032A60EB214D87D0005C1D9D /* Block.swift */,
+				03F9A4252151D34800206A84 /* BallItem.swift */,
 				03F9A4272151D56700206A84 /* HitBlockItem.swift */,
-				039193BA214F6105008F0E46 /* BlockColor.swift */,
-				032A60ED214D8A9C005C1D9D /* BlockGenerator.swift */,
 				03F9A4232151C3D600206A84 /* Item.swift */,
 				03F9A4212151C37800206A84 /* ItemGenerator.swift */,
 				0317DEA3214B5FA300E976E2 /* GameScene.swift */,
 				03AE1FC72156E5F0002CEB3F /* Color.swift */,
 				0317DEA5214B5FA300E976E2 /* GameViewController.swift */,
+				03B77C50215A63010008A221 /* GameMenu.swift */,
 				0317DEA7214B5FA300E976E2 /* Main.storyboard */,
-				0317DEAA214B5FA500E976E2 /* Assets.xcassets */,
 				0317DEAC214B5FA500E976E2 /* LaunchScreen.storyboard */,
 				0317DEAF214B5FA500E976E2 /* Info.plist */,
-				03B77C50215A63010008A221 /* GameMenu.swift */,
+				0317DEAA214B5FA500E976E2 /* Assets.xcassets */,
 			);
 			path = Ballz1;
 			sourceTree = "<group>";
@@ -295,15 +283,11 @@
 				03B77C51215A63010008A221 /* GameMenu.swift in Sources */,
 				03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */,
 				03F9A4242151C3D600206A84 /* Item.swift in Sources */,
-				0317DED2214B679500E976E2 /* Ball.swift in Sources */,
-				032A60EE214D8A9C005C1D9D /* BlockGenerator.swift in Sources */,
 				03AE1FC82156E5F0002CEB3F /* Color.swift in Sources */,
 				03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */,
 				0317DEA4214B5FA300E976E2 /* GameScene.swift in Sources */,
 				03F9A4262151D34800206A84 /* BallItem.swift in Sources */,
 				0317DED4214B6B7900E976E2 /* BallManager.swift in Sources */,
-				032A60EC214D87D0005C1D9D /* Block.swift in Sources */,
-				039193BB214F6105008F0E46 /* BlockColor.swift in Sources */,
 				0317DEA6214B5FA300E976E2 /* GameViewController.swift in Sources */,
 				0317DE9E214B5FA300E976E2 /* AppDelegate.swift in Sources */,
 			);

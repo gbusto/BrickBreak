@@ -27,8 +27,6 @@ class HitBlockItem: Item {
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitmask = UInt32(0b0001)
     
-    private var color : BlockColor?
-    
     // MARK: Protocol functions
     func initItem(generator: ItemGenerator, num: Int, size: CGSize, position: CGPoint) {
         self.size = size
