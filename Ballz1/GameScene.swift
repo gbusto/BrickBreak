@@ -304,10 +304,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func initCeiling(view: SKView, margin: CGFloat) {
-        let size = CGSize(width: view.frame.width, height: margin)
+        let size = CGSize(width: view.frame.width, height: view.safeAreaInsets.top + margin)
         ceilingNode = SKSpriteNode(color: marginColor, size: size)
         ceilingNode?.anchorPoint = CGPoint(x: 0, y: 0)
-        ceilingNode?.position = CGPoint(x: 0, y: view.frame.height - margin)
+        ceilingNode?.position = CGPoint(x: 0, y: view.frame.height - view.safeAreaInsets.top - margin)
         ceilingNode?.name = "ceiling"
         ceilingNode?.zPosition = 101
         
@@ -358,7 +358,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private func initItemGenerator(view: SKView) {
         itemGenerator = ItemGenerator()
-        itemGenerator?.initGenerator(view: view, numBalls: numberOfBalls, numItems: numberOfItems, ceiling: view.frame.height - margin!, ground: margin!)
+        itemGenerator?.initGenerator(view: view, numBalls: numberOfBalls, numItems: numberOfItems, ceiling: ceilingNode!.position.y, ground: margin!)
     }
     
     private func initBallManager(view: SKView, numBalls: Int) {
@@ -484,14 +484,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func initScoreLabel() {
-        let pos = CGPoint(x: view!.frame.midX, y: ceilingNode!.position.y + (margin! / 3))
+        let pos = CGPoint(x: view!.frame.midX, y: ceilingNode!.size.height / 2)
         scoreLabel = SKLabelNode()
         scoreLabel!.zPosition = 103
         scoreLabel!.position = pos
         scoreLabel!.fontSize = margin! * 0.50
         scoreLabel!.fontName = fontName
+        scoreLabel!.verticalAlignmentMode = .center
+        scoreLabel!.horizontalAlignmentMode = .center
         scoreLabel!.text = "0"
-        self.addChild(scoreLabel!)
+        ceilingNode!.addChild(scoreLabel!)
     }
     
     private func initBestScoreLabel() {
