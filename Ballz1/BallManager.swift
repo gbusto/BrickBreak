@@ -80,8 +80,11 @@ class BallManager {
     
     public func checkNewArray() {
         let numNewBalls = newBallArray.count
+        
+        // This is code to add a floating indicator saying how many balls you acquired last turn
+        // It generates a little label that fades in, floats up, and fades out saying +3 if you got 3 new balls that turn
         if numNewBalls > 0 {
-            print("Adding label!")
+            print("Adding floating label!")
             let fontSize = CGFloat(20)
             let pos = CGPoint(x: originPoint!.x, y: originPoint!.y + fontSize)
             let label = SKLabelNode()
@@ -103,13 +106,21 @@ class BallManager {
         }
         
         let array = newBallArray.filter {
+            // Reset the ball's contact bitmasks and other things
             $0.resetBall()
+            // Tell the ball to return to the origin point
             $0.returnToOrigin(point: originPoint!)
+            // Add the new ball to the ball manager's array
             self.ballArray.append($0)
+            // Update the label showing how many balls are collected at the origin point
             self.updateLabel()
+            // This tells the filter to remove the ball from newBallArray
             return false
         }
+        // Set the global newBallArray to an empty array now
         newBallArray = array
+        
+        // Update the number of balls the manager has
         numberOfBalls = ballArray.count
     }
     
@@ -147,6 +158,8 @@ class BallManager {
     
     public func addBall(ball: BallItem, atPoint: CGPoint) {
         newBallArray.append(ball)
+        // Update the ball name to avoid name collisions in the ball manager
+        ball.getNode().name! = "ball\(ballArray.count + newBallArray.count)"
         ball.getNode().run(SKAction.move(to: atPoint, duration: 0.5))
     }
     

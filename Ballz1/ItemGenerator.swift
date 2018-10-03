@@ -33,8 +33,7 @@ class ItemGenerator {
     private var minItemsPerRow = Int(2)
     
     // Number of items that this generator has generated
-    // This is set to 11 to cheat, so when we add balls from ItemManager to BallManager we don't have overlapping names
-    private var numItemsGenerated = Int(11)
+    private var numItemsGenerated = Int(0)
     
     // Width for each item (mostly used for blocks)
     private var itemWidth : CGFloat?
