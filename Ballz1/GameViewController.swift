@@ -26,6 +26,8 @@ class GameViewController: UIViewController {
             view.ignoresSiblingOrder = true
             view.showsFPS = true
             view.showsNodeCount = true
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(handleResignActive), name: Notification.Name.NSExtensionHostWillResignActive, object: nil)
         }
     }
 
@@ -43,5 +45,10 @@ class GameViewController: UIViewController {
 
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    // MARK: Handle notifications
+    @objc func handleResignActive() {
+        print("Got notification that app will resign active")
     }
 }
