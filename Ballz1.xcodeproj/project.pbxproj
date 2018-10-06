@@ -18,6 +18,15 @@
 		0317DED4214B6B7900E976E2 /* BallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0317DED3214B6B7900E976E2 /* BallManager.swift */; };
 		03AE1FC82156E5F0002CEB3F /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AE1FC72156E5F0002CEB3F /* Color.swift */; };
 		03B77C51215A63010008A221 /* GameMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B77C50215A63010008A221 /* GameMenu.swift */; };
+		03B8B4F0216919DD00FFD589 /* GameMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4EF216919DD00FFD589 /* GameMenuView.swift */; };
+		03B8B4F221691A0100FFD589 /* ContinuousGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4F121691A0100FFD589 /* ContinuousGameView.swift */; };
+		03B8B4F421691A0F00FFD589 /* LevelGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4F321691A0F00FFD589 /* LevelGameView.swift */; };
+		03B8B4F621691A2100FFD589 /* GameMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4F521691A2100FFD589 /* GameMenuController.swift */; };
+		03B8B4F821691A2D00FFD589 /* ContinuousGameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4F721691A2D00FFD589 /* ContinuousGameController.swift */; };
+		03B8B4FA21691A3E00FFD589 /* LevelGameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4F921691A3E00FFD589 /* LevelGameController.swift */; };
+		03B8B4FC21691A6000FFD589 /* GameMenuModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4FB21691A6000FFD589 /* GameMenuModel.swift */; };
+		03B8B4FE21691A7600FFD589 /* ContinousGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4FD21691A7600FFD589 /* ContinousGameModel.swift */; };
+		03B8B50021691A8600FFD589 /* LevelGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4FF21691A8600FFD589 /* LevelGameModel.swift */; };
 		03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4212151C37800206A84 /* ItemGenerator.swift */; };
 		03F9A4242151C3D600206A84 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4232151C3D600206A84 /* Item.swift */; };
 		03F9A4262151D34800206A84 /* BallItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4252151D34800206A84 /* BallItem.swift */; };
@@ -59,6 +68,15 @@
 		0317DED3214B6B7900E976E2 /* BallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallManager.swift; sourceTree = "<group>"; };
 		03AE1FC72156E5F0002CEB3F /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		03B77C50215A63010008A221 /* GameMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenu.swift; sourceTree = "<group>"; };
+		03B8B4EF216919DD00FFD589 /* GameMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuView.swift; sourceTree = "<group>"; };
+		03B8B4F121691A0100FFD589 /* ContinuousGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuousGameView.swift; sourceTree = "<group>"; };
+		03B8B4F321691A0F00FFD589 /* LevelGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelGameView.swift; sourceTree = "<group>"; };
+		03B8B4F521691A2100FFD589 /* GameMenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuController.swift; sourceTree = "<group>"; };
+		03B8B4F721691A2D00FFD589 /* ContinuousGameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuousGameController.swift; sourceTree = "<group>"; };
+		03B8B4F921691A3E00FFD589 /* LevelGameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelGameController.swift; sourceTree = "<group>"; };
+		03B8B4FB21691A6000FFD589 /* GameMenuModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuModel.swift; sourceTree = "<group>"; };
+		03B8B4FD21691A7600FFD589 /* ContinousGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinousGameModel.swift; sourceTree = "<group>"; };
+		03B8B4FF21691A8600FFD589 /* LevelGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelGameModel.swift; sourceTree = "<group>"; };
 		03F9A4212151C37800206A84 /* ItemGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemGenerator.swift; sourceTree = "<group>"; };
 		03F9A4232151C3D600206A84 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		03F9A4252151D34800206A84 /* BallItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItem.swift; sourceTree = "<group>"; };
@@ -120,13 +138,16 @@
 				03F9A4232151C3D600206A84 /* Item.swift */,
 				03F9A4212151C37800206A84 /* ItemGenerator.swift */,
 				0317DEA3214B5FA300E976E2 /* GameScene.swift */,
-				03AE1FC72156E5F0002CEB3F /* Color.swift */,
 				0317DEA5214B5FA300E976E2 /* GameViewController.swift */,
 				03B77C50215A63010008A221 /* GameMenu.swift */,
+				03AE1FC72156E5F0002CEB3F /* Color.swift */,
 				0317DEA7214B5FA300E976E2 /* Main.storyboard */,
 				0317DEAC214B5FA500E976E2 /* LaunchScreen.storyboard */,
 				0317DEAF214B5FA500E976E2 /* Info.plist */,
 				0317DEAA214B5FA500E976E2 /* Assets.xcassets */,
+				03B8B4EE216919C600FFD589 /* Controllers */,
+				03B8B4ED216919C000FFD589 /* Models */,
+				03B8B4EC216919B400FFD589 /* Views */,
 			);
 			path = Ballz1;
 			sourceTree = "<group>";
@@ -147,6 +168,36 @@
 				0317DEC5214B5FA500E976E2 /* Info.plist */,
 			);
 			path = Ballz1UITests;
+			sourceTree = "<group>";
+		};
+		03B8B4EC216919B400FFD589 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				03B8B4EF216919DD00FFD589 /* GameMenuView.swift */,
+				03B8B4F121691A0100FFD589 /* ContinuousGameView.swift */,
+				03B8B4F321691A0F00FFD589 /* LevelGameView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		03B8B4ED216919C000FFD589 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				03B8B4FB21691A6000FFD589 /* GameMenuModel.swift */,
+				03B8B4FD21691A7600FFD589 /* ContinousGameModel.swift */,
+				03B8B4FF21691A8600FFD589 /* LevelGameModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		03B8B4EE216919C600FFD589 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				03B8B4F521691A2100FFD589 /* GameMenuController.swift */,
+				03B8B4F721691A2D00FFD589 /* ContinuousGameController.swift */,
+				03B8B4F921691A3E00FFD589 /* LevelGameController.swift */,
+			);
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -282,14 +333,23 @@
 			files = (
 				03B77C51215A63010008A221 /* GameMenu.swift in Sources */,
 				03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */,
+				03B8B4F0216919DD00FFD589 /* GameMenuView.swift in Sources */,
+				03B8B50021691A8600FFD589 /* LevelGameModel.swift in Sources */,
 				03F9A4242151C3D600206A84 /* Item.swift in Sources */,
+				03B8B4F421691A0F00FFD589 /* LevelGameView.swift in Sources */,
 				03AE1FC82156E5F0002CEB3F /* Color.swift in Sources */,
 				03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */,
 				0317DEA4214B5FA300E976E2 /* GameScene.swift in Sources */,
 				03F9A4262151D34800206A84 /* BallItem.swift in Sources */,
+				03B8B4F821691A2D00FFD589 /* ContinuousGameController.swift in Sources */,
+				03B8B4FA21691A3E00FFD589 /* LevelGameController.swift in Sources */,
 				0317DED4214B6B7900E976E2 /* BallManager.swift in Sources */,
+				03B8B4FC21691A6000FFD589 /* GameMenuModel.swift in Sources */,
 				0317DEA6214B5FA300E976E2 /* GameViewController.swift in Sources */,
 				0317DE9E214B5FA300E976E2 /* AppDelegate.swift in Sources */,
+				03B8B4F621691A2100FFD589 /* GameMenuController.swift in Sources */,
+				03B8B4FE21691A7600FFD589 /* ContinousGameModel.swift in Sources */,
+				03B8B4F221691A0100FFD589 /* ContinuousGameView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
