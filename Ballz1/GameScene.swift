@@ -57,7 +57,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var contactTestBitMask = UInt32(0b0001)
     private var groundCategoryBitmask = UInt32(0b0101)
     
-    
+    // MVC: A view function; notifies the controller of contact between two bodies
     func didBegin(_ contact: SKPhysicsContact) {
         let nameA = contact.bodyA.node?.name!
         let nameB = contact.bodyB.node?.name!
@@ -93,6 +93,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // MARK: Override functions
+    // MVC: A view function; initializes the view based on the view type (color schemes, themes, device type, etc)
     override func didMove(to view: SKView) {
         initWalls(view: view)
         initItemGenerator(view: view)
@@ -109,9 +110,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.backgroundColor = sceneColor
     }
     
+    // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
             let point = touch.location(in: self)
+
             if ballManager!.isReady() && itemGenerator!.isReady() {
                 // Check to see if the touch is in the game area
                 if inGame(point: point) {
@@ -125,6 +128,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
             let point = touch.location(in: self)
@@ -138,6 +142,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
             let point = touch.location(in: self)
@@ -161,31 +166,47 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         hideArrow()
     }
     
+    // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         
     }
     
     // MARK: Scene update
+    // MVC: I think this code should simultaneously notify GameSceneController and also query the model
     override func update(_ currentTime: TimeInterval) {
+        // MVC: turnOver is a Bool that is a game rule; should be in the game model
+        //  The view queries the model to see if the turn is over and if it is:
+        //  The model then tells the item generator to generate a new row, the ball manager to consolidate new balls, and update the score
+        //  1. Reset the physics simulation,
+        //  2. Clear the gestures
+        //  3. Update the score label
         if turnOver {
+            // MVC: Stuff regarding the physics world should stay in the view
             // Return physics simulation back to normal speed
             if self.physicsWorld.speed > 1.0 {
                 self.physicsWorld.speed = 1.0
                 numTicksGap = 6
             }
             
+            // MVC: This should be in the view since gesture recognizers are a member of SKView
             // Clear the gesture recognizers for now
             view!.gestureRecognizers = []
             addedGesture = false
             
+            // MVC: This code should be in the model; the controller updates the model and the model adds a row; the view should query the model to display the items
             // Generate a row
             itemGenerator!.generateRow(scene: self)
+            // MVC: The ball manager checking its new ball array should also be in the model
             // In the event that we just collected a ball, it will not be at the origin point so move all balls to the origin point
             ballManager!.checkNewArray()
+            // MVC: This score update should also be in the model and this view should query the model for the score update
             updateScore()
+            // MVC: Model should update its turnOver variable
             turnOver = false
         }
         
+        // MVC: This code should be in the model; checking to see if the game is over is part of the game rules
+        // MVC: Or should it be in the controller to check whether or not the game is over?
         // After rows have been added, check to see if we can add any more rows
         if itemGenerator!.isReady() {
             if false == itemGenerator!.canAddRow(groundHeight: margin!) {
@@ -238,10 +259,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Public functions
     // Handle a right swipe to fast forward
+    // MVC: This function is called in the view
     @objc public func handleSwipeRight(_ sender: UISwipeGestureRecognizer) {
         let point = sender.location(in: view!)
         if inGame(point: point) {
+            // MVC: Here we query the model to know its state and whether or not to fast forward the simulation
+            // XXX This may be redundant; I think the right swipe gesture is only added to the view when this evaluates to true
             if ballManager!.isShooting() || ballManager!.isWaiting() {
+                // MVC: The view should query the model to see if it has shown the fast forward tutorial already
                 // If this is the first time we've shown the fast forward tutorial and the user swiped right.
                 if (false == showedFFTutorial) {
                     // Remove the tutorial nodes from the scene
@@ -254,6 +279,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     
                     showedFFTutorial = true
                 }
+                // MVC: Speeding up the physics simulation remains in the view; this doesn't have to do with the model or the controller
                 print("Speeding up physics simulation")
                 if physicsWorld.speed < 3.0 {
                     physicsWorld.speed += 1
@@ -270,10 +296,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // MARK: Private functions
+    // MVC: Clearly a view functions
     private func inGame(point: CGPoint) -> Bool {
         return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
     }
     
+    // MVC: A view function
     private func initWalls(view: SKView) {
         margin = view.frame.height * 0.10
         
@@ -282,6 +310,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         initSideWalls(view: view, margin: margin!)
     }
     
+    // MVC: A view function
     private func initGround(view: SKView, margin: CGFloat) {
         let size = CGSize(width: view.frame.width, height: margin)
         groundNode = SKSpriteNode(color: marginColor, size: size)
@@ -303,6 +332,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(groundNode!)
     }
     
+    // MVC: A view function
     private func initCeiling(view: SKView, margin: CGFloat) {
         let size = CGSize(width: view.frame.width, height: view.safeAreaInsets.top + margin)
         ceilingNode = SKSpriteNode(color: marginColor, size: size)
@@ -325,6 +355,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(ceilingNode!)
     }
     
+    // MVC: A view function
     private func initSideWalls(view: SKView, margin: CGFloat) {
         let lwStartPoint = CGPoint(x: 1, y: margin)
         let lwEndPoint = CGPoint(x: 1, y: view.frame.height - margin)
@@ -356,11 +387,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(rightWallNode!)
     }
     
+    // MVC: A model function
     private func initItemGenerator(view: SKView) {
         itemGenerator = ItemGenerator()
         itemGenerator?.initGenerator(view: view, numBalls: numberOfBalls, numItems: numberOfItems, ceiling: ceilingNode!.position.y, ground: margin!)
     }
     
+    // MVC: A model function
     private func initBallManager(view: SKView, numBalls: Int) {
         radius = CGFloat(view.frame.width * 0.018)
         ballManager = BallManager()
@@ -369,10 +402,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ballManager!.addBalls()
     }
     
+    // MVC: A view function; anything with the arrow node is a view function for now (until we allow the user to upgrade the arrow pointer style)
     private func initArrowNode(view: SKView) {
         arrowNode = SKShapeNode()
     }
     
+    // MVC: A view function
     private func updateArrow(startPoint: CGPoint, touchPoint: CGPoint) {
         let maxOffset = CGFloat(200)
         
@@ -410,6 +445,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         arrowNode!.lineWidth = 4
     }
     
+    // MVC: A view function
     private func showArrow() {
         if (false == arrowIsShowing) {
             self.addChild(arrowNode!)
@@ -417,6 +453,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // MVC: A view function
     private func hideArrow() {
         if arrowIsShowing {
             self.removeChildren(in: [arrowNode!])
@@ -424,6 +461,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // MVC: A view function (should be put in a separate file)
     private func calcSlope(originPoint: CGPoint, touchPoint: CGPoint) -> CGFloat {
         let rise = touchPoint.y - originPoint.y
         let run  = touchPoint.x - originPoint.x
@@ -431,6 +469,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return CGFloat(rise / run)
     }
     
+    // MVC: A view function (should be put in a separate file)
     private func calcYIntercept(point: CGPoint, slope: CGFloat) -> CGFloat {
         // y = mx + b <- We want to find 'b'
         // (point.y - (point.x * slope)) = b
@@ -439,6 +478,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return intercept
     }
     
+    // MVC: A view function
     private func showGameOverNode() {
         let gameOverNode = SKSpriteNode(color: .darkGray, size: scene!.size)
         gameOverNode.alpha = 0.9
@@ -483,6 +523,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(label3)
     }
     
+    // MVC: A view function (but the score is initialized in the model)
     private func initScoreLabel() {
         let pos = CGPoint(x: view!.frame.midX, y: ceilingNode!.size.height / 2)
         scoreLabel = SKLabelNode()
@@ -496,6 +537,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode!.addChild(scoreLabel!)
     }
     
+    // MVC: A view function (but the high score is initialized in the model)
+    // XXX Should rename anything with bestScore to highScore
     private func initBestScoreLabel() {
         let pos = CGPoint(x: ceilingNode!.size.width * 0.02, y: ceilingNode!.size.height / 2)
         bestScoreLabel = SKLabelNode()
@@ -509,6 +552,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode!.addChild(bestScoreLabel!)
     }
 
+    // MVC: A model function
     private func updateScore() {
         gameScore += 1
         scoreLabel!.text = "\(gameScore)"
@@ -519,6 +563,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // MVC: A view function
     private func flashSpeedupImage() {
         let color = UIColor(red: 119/255, green: 136/255, blue: 153/255, alpha: 1)
         let pos = CGPoint(x: self.view!.frame.midX, y: self.view!.frame.midY)
@@ -552,6 +597,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
 
+    // MVC: A view function
     // Shows the user how to fast forward the simulation
     private func showFFTutorial() {
         let size = CGSize(width: view!.frame.width * 0.15, height: view!.frame.width * 0.15)
