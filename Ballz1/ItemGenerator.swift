@@ -11,7 +11,7 @@ import GameplayKit
 
 class ItemGenerator {
     
-    // -------------------------------------------------------------------
+    // -------------------------------------------------------------
     // MARK: Public properties
     
     // Items for which this generator is responsible
@@ -21,7 +21,7 @@ class ItemGenerator {
     public var maxHitCount : Int?
     
     
-    // -------------------------------------------------------------------
+    // -------------------------------------------------------------
     // MARK: Private functions
     
     // The number of active balls the user has; this will influence HitBlock counts
