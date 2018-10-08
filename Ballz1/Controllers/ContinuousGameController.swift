@@ -1,24 +1,25 @@
 //
-//  GameViewController.swift
+//  ContinuousGameController.swift
 //  Ballz1
 //
-//  Created by Gabriel Busto on 9/13/18.
+//  The view controller for continuous gameplay view
+//
+//  Created by Gabriel Busto on 10/6/18.
 //  Copyright © 2018 Self. All rights reserved.
 //
 
 import UIKit
 import SpriteKit
-import GameplayKit
 
-class GameViewController: UIViewController {
-
+class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print("Loaded continuous game view")
+        
         if let view = self.view as! SKView? {
-            //let scene = GameScene(size: view.bounds.size)
-            let scene = GameMenu(size: view.bounds.size)
-            
+            let scene = ContinousGameScene(size: view.bounds.size)
             scene.scaleMode = .aspectFill
             
             view.presentScene(scene)
@@ -26,29 +27,23 @@ class GameViewController: UIViewController {
             view.ignoresSiblingOrder = true
             view.showsFPS = true
             view.showsNodeCount = true
-            
-            NotificationCenter.default.addObserver(self, selector: #selector(handleResignActive), name: Notification.Name.NSExtensionHostWillResignActive, object: nil)
         }
     }
-
+    
     override var shouldAutorotate: Bool {
         return true
     }
-
+    
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
             return .portrait
         } else {
-            return .all
+            return .portrait
         }
     }
-
+    
     override var prefersStatusBarHidden: Bool {
         return true
     }
     
-    // MARK: Handle notifications
-    @objc func handleResignActive() {
-        print("Got notification that app will resign active")
-    }
 }

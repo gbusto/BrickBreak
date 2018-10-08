@@ -169,6 +169,7 @@ class BallManager {
         numBallsActive += 1
         
         if numBallsActive == ballArray.count {
+            // Increment state from SHOOTING to WAITING
             incrementState()
             removeLabel()
         }
