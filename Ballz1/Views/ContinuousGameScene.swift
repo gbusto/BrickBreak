@@ -13,7 +13,7 @@ import SpriteKit
 import GameplayKit
 import CoreGraphics
 
-class ContinousGameView: SKScene {
+class ContinousGameScene: SKScene {
     
     // MARK: Private properties
     private var margin : CGFloat?
@@ -68,9 +68,11 @@ class ContinousGameView: SKScene {
         if let touch = touches.first {
             let point = touch.location(in: self)
          
+            /*
             if gameModel!.isMidTurn() {
                 // Show the arrow and update it
             }
+            */
         }
     }
     
@@ -79,12 +81,14 @@ class ContinousGameView: SKScene {
         if let touch = touches.first {
             let point = touch.location(in: self)
             
+            /*
             if !inGame(point: point) {
                 // Hide the arrow
             }
             else if gameModel!.isReady() && arrowIsShowing {
                 // Update the arrow location
             }
+            */
         }
     }
     
@@ -97,11 +101,13 @@ class ContinousGameView: SKScene {
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
             let point = touch.location(in: self)
-         
+            
+            /*
             if gameModel!.isReady() && arrowIsShowing {
                 // Set the direction for the balls to shoot
                 // Tell the controller to shoot the balls
             }
+            */
             // Check for game over and display the game over label
         }
         
@@ -110,6 +116,7 @@ class ContinousGameView: SKScene {
     
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
+        /*
         if gameModel!.isTurnOver() {
             // Return physics simulation to normal speed
             
@@ -136,6 +143,7 @@ class ContinousGameView: SKScene {
             
             // Tell the controller to have the model check for inactive balls to return
         }
+        */
     }
     
     // MARK: Public functions

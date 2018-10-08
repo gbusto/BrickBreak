@@ -18,20 +18,20 @@ class GameMenuController: UIViewController {
         super.viewDidLoad()
         
         if let view = self.view as! SKView? {
-            //let scene = GameScene(size: view.bounds.size)
-            //let scene = GameMenuView(size: view.bounds.size)
-            if let scene = SKScene(fileNamed: "GameMenuScene") {
-                scene.scaleMode = .aspectFill
-                
-                view.presentScene(scene)
-                
-                view.ignoresSiblingOrder = true
-                view.showsFPS = true
-                view.showsNodeCount = true
-                
-                NotificationCenter.default.addObserver(self, selector: #selector(handleResignActive), name: Notification.Name.NSExtensionHostWillResignActive, object: nil)
-            }
+            let scene = GameMenuScene(size: view.bounds.size)
+            scene.scaleMode = .aspectFill
+            
+            view.presentScene(scene)
+            
+            view.ignoresSiblingOrder = true
+            view.showsFPS = true
+            view.showsNodeCount = true
+            
         }
+    }
+    
+    @IBAction func playGame(_ sender: Any) {
+        print("Pressed button... loading continuous game scene")
     }
     
     override var shouldAutorotate: Bool {
@@ -42,16 +42,11 @@ class GameMenuController: UIViewController {
         if UIDevice.current.userInterfaceIdiom == .phone {
             return .portrait
         } else {
-            return .all
+            return .portrait
         }
     }
     
     override var prefersStatusBarHidden: Bool {
         return true
-    }
-    
-    // MARK: Handle notifications
-    @objc func handleResignActive() {
-        print("Got notification that app will resign active")
     }
 }
