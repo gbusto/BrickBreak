@@ -134,7 +134,7 @@ class ContinuousGameModel {
     }
     
     // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
-    public func handleTurnOver() {
+    public func handleTurnOver() -> Bool {
         ballManager!.checkNewArray()
         itemGenerator!.generateRow()
         
@@ -142,12 +142,18 @@ class ContinuousGameModel {
         if gameScore >= highScore {
             highScore = gameScore
         }
+        
+        if gameOver() {
+            return false
+        }
+        
         // Go from TURN_OVER state to READY state
         incrementState()
+        return true
     }
     
     public func gameOver() -> Bool {
-        return itemGenerator!.canAddRow(groundHeight: groundHeight!)
+        return !itemGenerator!.canAddRow(groundHeight: groundHeight!)
     }
     
     public func isReady() -> Bool {

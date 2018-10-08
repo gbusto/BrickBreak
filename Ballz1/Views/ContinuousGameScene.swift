@@ -140,16 +140,20 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             // Return physics simulation to normal speed
             physicsWorld.speed = 1.0
             
+            // Reset the tick delay for firing balls
+            ticksDelay = 6
+            
             // Clear gesture recognizers in the view
             view!.gestureRecognizers = []
             addedGesture = false
             
             // Tell the game model to update now that the turn has ended
-            gameModel!.handleTurnOver()
-            
-            // Check for game over
-            if gameModel!.gameOver() {
+            // Returns false if the game is over
+            if false == gameModel!.handleTurnOver() {
                 // Show gameover overlay
+                showGameOverNode()
+                self.isPaused = true
+                
                 // Display Continue? graphic
                 // Show an ad
             }
@@ -161,10 +165,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         // Ask the controller if the game is over
         
         if gameModel!.isMidTurn() {
-            print("Game model is mid turn")
             if false == addedGesture {
                 // Ask the model if we showed the fast forward tutorial
                 view!.gestureRecognizers = [rightSwipeGesture!]
+                addedGesture = true
             }
             
             // Allow the model to handle a turn
@@ -181,9 +185,24 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Public functions
     // Handle a right swipe to fast forward
-    // MVC: This function is called in the view
     @objc public func handleSwipeRight(_ sender: UISwipeGestureRecognizer) {
-        //let point = sender.location(in: view!)
+        let point = sender.location(in: view!)
+        
+        if inGame(point) {
+            if gameModel!.isMidTurn() {
+                if physicsWorld.speed < 3.0 {
+                    physicsWorld.speed += 1.0
+                    if 6 == ticksDelay {
+                        ticksDelay = 3
+                    }
+                    else if 3 == ticksDelay {
+                        ticksDelay = 1
+                    }
+                    
+                    flashSpeedupImage()
+                }
+            }
+        }
     }
     
     // MARK: Private functions
@@ -391,5 +410,110 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private func updateScore(highScore: Int, gameScore: Int) {
         scoreLabel!.text = "\(gameScore)"
         bestScoreLabel!.text = "Best: \(highScore)"
+    }
+    
+    private func flashSpeedupImage() {
+        let color = UIColor(red: 119/255, green: 136/255, blue: 153/255, alpha: 1)
+        let pos = CGPoint(x: self.view!.frame.midX, y: self.view!.frame.midY)
+        let size = CGSize(width: self.view!.frame.width * 0.8, height: self.view!.frame.width * 0.8)
+        let imageNode = SKSpriteNode(imageNamed: "fast_forward.png")
+        imageNode.alpha = 0
+        imageNode.position = pos
+        imageNode.size = size
+        
+        let label = SKLabelNode(fontNamed: fontName)
+        label.fontSize = 50
+        label.fontColor = color
+        label.horizontalAlignmentMode = .left
+        label.verticalAlignmentMode = .center
+        label.position = CGPoint(x: 0, y: 0)
+        if (2.0 == physicsWorld.speed) {
+            label.text = "x2"
+        }
+        else if (3.0 == physicsWorld.speed) {
+            label.text = "x3"
+        }
+        imageNode.addChild(label)
+        
+        self.addChild(imageNode)
+        
+        let action1 = SKAction.fadeAlpha(to: 0.5, duration: 0.2)
+        let action2 = SKAction.fadeAlpha(to: 0, duration: 0.2)
+        
+        imageNode.run(SKAction.sequence([action1, action2, action1, action2, action1, action2])) {
+            self.removeChildren(in: [imageNode])
+        }
+    }
+    
+    private func showFFTutorial() {
+        let size = CGSize(width: view!.frame.width * 0.15, height: view!.frame.width * 0.15)
+        let startPoint = CGPoint(x: view!.frame.width * 0.35, y: view!.frame.midY)
+        let endPoint = CGPoint(x: view!.frame.width * 0.65, y: view!.frame.midY)
+        
+        let ffNode = SKSpriteNode(imageNamed: "touch_image.png")
+        ffNode.position = startPoint
+        ffNode.size = size
+        ffNode.alpha = 1
+        ffNode.name = "ffTutorial"
+        self.addChild(ffNode)
+        
+        let action1 = SKAction.move(to: endPoint, duration: 0.8)
+        let action2 = SKAction.move(to: startPoint, duration: 0.1)
+        
+        let label = SKLabelNode(fontNamed: fontName)
+        label.fontColor = .white
+        label.fontSize = 20
+        label.text = "Fast forward"
+        label.name = "ffLabel"
+        label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY * 0.80)
+        self.addChild(label)
+        
+        ffNode.run(SKAction.sequence([action1, action2, action1, action2, action1])) {
+            self.removeChildren(in: [ffNode, label])
+        }
+    }
+    
+    private func showGameOverNode() {
+        let gameOverNode = SKSpriteNode(color: .darkGray, size: scene!.size)
+        gameOverNode.alpha = 0.9
+        gameOverNode.zPosition = 105
+        gameOverNode.position = CGPoint(x: 0, y: 0)
+        gameOverNode.anchorPoint = CGPoint(x: 0, y: 0)
+        self.addChild(gameOverNode)
+        
+        let fontSize = view!.frame.height * 0.2
+        let label = SKLabelNode()
+        label.zPosition = 106
+        label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY + (fontSize / 2))
+        label.fontSize = fontSize
+        label.fontName = fontName
+        label.verticalAlignmentMode = .center
+        label.horizontalAlignmentMode = .center
+        label.color = .white
+        label.text = "Game"
+        
+        let label2 = SKLabelNode()
+        label2.zPosition = 106
+        label2.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY - (fontSize / 2))
+        label2.fontSize = fontSize
+        label2.fontName = fontName
+        label2.verticalAlignmentMode = .center
+        label2.horizontalAlignmentMode = .center
+        label2.color = .white
+        label2.text = "Over"
+        
+        let label3 = SKLabelNode()
+        label3.zPosition = 106
+        label3.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY - (fontSize * 1.5))
+        label3.fontSize = fontSize * 0.2
+        label3.fontName = fontName
+        label3.verticalAlignmentMode = .center
+        label3.horizontalAlignmentMode = .center
+        label3.color = .white
+        label3.text = "Touch to restart"
+        
+        self.addChild(label)
+        self.addChild(label2)
+        self.addChild(label3)
     }
 }
