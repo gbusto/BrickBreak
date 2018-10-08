@@ -205,18 +205,18 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    // MARK: Private functions
+    // Initialize the game model (this is where the code for loading a saved game model will go)
     private func initGameModel() {
         // The controller also needs a copy of this game model object
         gameModel = ContinuousGameModel(scene: self, view: view!, ceilingHeight: ceilingNode!.position.y, groundHeight: margin!)
     }
     
-    // MVC: Clearly a view function
+    // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
     private func inGame(_ point: CGPoint) -> Bool {
         return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
     }
     
-    // MVC: A view function
+    // Initialize the different walls and physics edges
     private func initWalls(view: SKView) {
         margin = view.frame.height * 0.10
         
@@ -225,7 +225,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         initSideWalls(view: view, margin: margin!)
     }
     
-    // MVC: A view function
     private func initGround(view: SKView, margin: CGFloat) {
         let size = CGSize(width: view.frame.width, height: margin)
         groundNode = SKSpriteNode(color: marginColor, size: size)
@@ -247,7 +246,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(groundNode!)
     }
     
-    // MVC: A view function
     private func initCeiling(view: SKView, margin: CGFloat) {
         let size = CGSize(width: view.frame.width, height: view.safeAreaInsets.top + margin)
         ceilingNode = SKSpriteNode(color: marginColor, size: size)
@@ -258,42 +256,23 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         let startPoint = CGPoint(x: 0, y: 0)
         let endPoint = CGPoint(x: view.frame.width, y: 0)
-        let physBody = SKPhysicsBody(edgeFrom: startPoint, to: endPoint)
-        physBody.angularDamping = 0
-        physBody.linearDamping = 0
-        physBody.restitution = 1
-        physBody.friction = 0
-        physBody.categoryBitMask = categoryBitMask
-        physBody.contactTestBitMask = contactTestBitMask
+        let physBody = createPhysicsEdge(startPoint: startPoint, endPoint: endPoint)
         ceilingNode?.physicsBody = physBody
         
         self.addChild(ceilingNode!)
     }
     
-    // MVC: A view function
     private func initSideWalls(view: SKView, margin: CGFloat) {
         let lwStartPoint = CGPoint(x: 1, y: margin)
         let lwEndPoint = CGPoint(x: 1, y: view.frame.height - margin)
-        let leftWallEdge = SKPhysicsBody(edgeFrom: lwStartPoint, to: lwEndPoint)
-        leftWallEdge.angularDamping = 0
-        leftWallEdge.linearDamping = 0
-        leftWallEdge.restitution = 1
-        leftWallEdge.friction = 0
-        leftWallEdge.categoryBitMask = categoryBitMask
-        leftWallEdge.contactTestBitMask = contactTestBitMask
+        let leftWallEdge = createPhysicsEdge(startPoint: lwStartPoint, endPoint: lwEndPoint)
         leftWallNode = SKNode()
         leftWallNode?.physicsBody = leftWallEdge
         leftWallNode?.name = "wall"
         
         let rwStartPoint = CGPoint(x: view.frame.width, y: margin)
         let rwEndPoint = CGPoint(x: view.frame.width, y: view.frame.height - margin)
-        let rightWallEdge = SKPhysicsBody(edgeFrom: rwStartPoint, to: rwEndPoint)
-        rightWallEdge.angularDamping = 0
-        rightWallEdge.linearDamping = 0
-        rightWallEdge.restitution = 1
-        rightWallEdge.friction = 0
-        rightWallEdge.categoryBitMask = categoryBitMask
-        rightWallEdge.contactTestBitMask = contactTestBitMask
+        let rightWallEdge = createPhysicsEdge(startPoint: rwStartPoint, endPoint: rwEndPoint)
         rightWallNode = SKNode()
         rightWallNode?.physicsBody = rightWallEdge
         rightWallNode?.name = "wall"
@@ -302,7 +281,20 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(rightWallNode!)
     }
     
-    // MVC: A view function (but the score is initialized in the model)
+    // Creates a physics edge; this code can be reused for side walls and the ceiling node
+    private func createPhysicsEdge(startPoint: CGPoint, endPoint: CGPoint) -> SKPhysicsBody {
+        let physBody = SKPhysicsBody(edgeFrom: startPoint, to: endPoint)
+        physBody.angularDamping = 0
+        physBody.linearDamping = 0
+        physBody.restitution = 1
+        physBody.friction = 0
+        physBody.categoryBitMask = categoryBitMask
+        physBody.contactTestBitMask = contactTestBitMask
+        
+        return physBody
+    }
+    
+    // Initializes the current score
     private func initScoreLabel() {
         let pos = CGPoint(x: view!.frame.midX, y: ceilingNode!.size.height / 2)
         scoreLabel = SKLabelNode()
@@ -316,8 +308,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode!.addChild(scoreLabel!)
     }
     
-    // MVC: A view function (but the high score is initialized in the model)
-    // XXX Should rename anything with bestScore to highScore
+    // Initializes the high score label
     private func initBestScoreLabel() {
         let pos = CGPoint(x: ceilingNode!.size.width * 0.02, y: ceilingNode!.size.height / 2)
         bestScoreLabel = SKLabelNode()
@@ -331,12 +322,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode!.addChild(bestScoreLabel!)
     }
     
-    // MVC: A view function; anything with the arrow node is a view function for now (until we allow the user to upgrade the arrow pointer style)
+    // This arrow code should be separated into its own file because the game mode with levels will also use this
     private func initArrowNode() {
         arrowNode = SKShapeNode()
     }
     
-    // MVC: A view function
+    // Updates where the ball path projection is pointing
     private func updateArrow(startPoint: CGPoint, touchPoint: CGPoint) {
         let maxOffset = CGFloat(200)
         
@@ -374,7 +365,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         arrowNode!.lineWidth = 4
     }
     
-    // MVC: A view function
+    // Shows the ball path projection
     private func showArrow() {
         if (false == arrowIsShowing) {
             self.addChild(arrowNode!)
@@ -382,7 +373,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    // MVC: A view function
+    // Hides the ball path projection (after the user shoots the balls or moves their finger out of game play)
     private func hideArrow() {
         if arrowIsShowing {
             self.removeChildren(in: [arrowNode!])
@@ -390,7 +381,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    // MVC: A view function (should be put in a separate file)
     private func calcSlope(originPoint: CGPoint, touchPoint: CGPoint) -> CGFloat {
         let rise = touchPoint.y - originPoint.y
         let run  = touchPoint.x - originPoint.x
@@ -398,7 +388,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         return CGFloat(rise / run)
     }
     
-    // MVC: A view function (should be put in a separate file)
     private func calcYIntercept(point: CGPoint, slope: CGFloat) -> CGFloat {
         // y = mx + b <- We want to find 'b'
         // (point.y - (point.x * slope)) = b
@@ -412,6 +401,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         bestScoreLabel!.text = "Best: \(highScore)"
     }
     
+    // Flashes the fast forward image to give the user some feedback about what's happening
     private func flashSpeedupImage() {
         let color = UIColor(red: 119/255, green: 136/255, blue: 153/255, alpha: 1)
         let pos = CGPoint(x: self.view!.frame.midX, y: self.view!.frame.midY)
@@ -445,6 +435,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // Shows the user how to fast forward the simulation (not currently being used)
     private func showFFTutorial() {
         let size = CGSize(width: view!.frame.width * 0.15, height: view!.frame.width * 0.15)
         let startPoint = CGPoint(x: view!.frame.width * 0.35, y: view!.frame.midY)
@@ -473,6 +464,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // Shows the game over overlay
     private func showGameOverNode() {
         let gameOverNode = SKSpriteNode(color: .darkGray, size: scene!.size)
         gameOverNode.alpha = 0.9
