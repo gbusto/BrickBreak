@@ -43,6 +43,8 @@ class ItemGenerator {
     // groundHeight is used to know if another row can be generated; if not, it means the game is over
     private var groundHeight : CGFloat?
     
+    private var scene: SKScene?
+    
     // The SKView
     private var view : SKView?
     
@@ -61,9 +63,10 @@ class ItemGenerator {
     private var currentColor : Color?
     
     // MARK: Public functions
-    public func initGenerator(view: SKView, numBalls: Int, numItems: Int,
+    public func initGenerator(scene: SKScene, view: SKView, numBalls: Int, numItems: Int,
                               ceiling: CGFloat, ground: CGFloat) {
         
+        self.scene = scene
         self.view = view
         numberOfBalls = numBalls
         maxHitCount = numBalls * 2
@@ -83,7 +86,7 @@ class ItemGenerator {
         totalPercentage += percentage
     }
     
-    public func generateRow(scene: SKScene) {
+    public func generateRow() {
         let color = currentColor!.changeColor()
         print("Color is \(color)")
         
@@ -112,7 +115,7 @@ class ItemGenerator {
                         print("Failed to load hit block item")
                     }
                     item.getNode().alpha = 0
-                    scene.addChild(item.getNode())
+                    scene!.addChild(item.getNode())
                     print("Adding block at row position \(i)")
                     itemArray.append(item)
                     break
@@ -132,7 +135,7 @@ class ItemGenerator {
                         print("Failed to load ball item")
                     }
                     item.getNode().alpha = 0
-                    scene.addChild(item.getNode())
+                    scene!.addChild(item.getNode())
                     print("Adding ball at row spot \(i) position \(pos)")
                     itemArray.append(item)
                     break
@@ -174,11 +177,11 @@ class ItemGenerator {
         }
     }
     
-    public func removeItems(scene: SKScene) -> [Item] {
+    public func removeItems() -> [Item] {
         var array : [Item] = []
         let newItemArray = itemArray.filter {
             // Perform a remove action if needed
-            if $0.removeItem(scene: scene) {
+            if $0.removeItem(scene: scene!) {
                 // Remove this item from the array
                 array.append($0)
                 return false

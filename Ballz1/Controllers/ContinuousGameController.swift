@@ -45,4 +45,5 @@ class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
     override var prefersStatusBarHidden: Bool {
         return true
     }
+    
 }

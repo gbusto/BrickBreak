@@ -197,7 +197,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             // MVC: This code should be in the model; the controller updates the model and the model adds a row; the view should query the model to display the items
             // Generate a row
-            itemGenerator!.generateRow(scene: self)
+            itemGenerator!.generateRow()
             // MVC: The ball manager checking its new ball array should also be in the model
             // In the event that we just collected a ball, it will not be at the origin point so move all balls to the origin point
             ballManager!.checkNewArray()
@@ -246,7 +246,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ballManager!.incrementState()
         }
         
-        let removedItems = itemGenerator!.removeItems(scene: self)
+        let removedItems = itemGenerator!.removeItems()
         
         // If the item generator removed an item from it's list, check to see if it removed a ball; if it does, it now needs to be moved under the BallManager
         for item in removedItems {
@@ -392,7 +392,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MVC: A model function
     private func initItemGenerator(view: SKView) {
         itemGenerator = ItemGenerator()
-        itemGenerator?.initGenerator(view: view, numBalls: numberOfBalls, numItems: numberOfItems, ceiling: ceilingNode!.position.y, ground: margin!)
+        itemGenerator?.initGenerator(scene: self, view: view, numBalls: numberOfBalls, numItems: numberOfItems, ceiling: ceilingNode!.position.y, ground: margin!)
     }
     
     // MVC: A model function

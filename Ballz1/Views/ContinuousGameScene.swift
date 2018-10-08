@@ -13,24 +13,32 @@ import SpriteKit
 import GameplayKit
 import CoreGraphics
 
-class ContinousGameScene: SKScene {
+class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Private properties
     private var margin : CGFloat?
     private var radius : CGFloat?
     
+    // Nodes that will be shown in the view
     private var groundNode : SKSpriteNode?
     private var ceilingNode : SKSpriteNode?
     private var leftWallNode : SKNode?
     private var rightWallNode : SKNode?
     private var arrowNode : SKShapeNode?
     
+    // The game model
     private var gameModel: ContinuousGameModel?
     
     private var fontName = "KohinoorBangla-Regular"
 
+    // Score labels
     private var scoreLabel : SKLabelNode?
     private var bestScoreLabel : SKLabelNode?
+    
+    // A counter for each time update is called
+    private var numTicks = Int(0)
+    // The number of update ticks to wait before shooting another ball
+    private var ticksDelay = Int(6)
     
     // Variables for handling swipe gestures
     private var rightSwipeGesture : UISwipeGestureRecognizer?
@@ -61,6 +69,15 @@ class ContinousGameScene: SKScene {
         rightSwipeGesture!.numberOfTouchesRequired = 1
         
         self.backgroundColor = sceneColor
+        physicsWorld.contactDelegate = self
+    }
+    
+    // MVC: A view function; notifies the controller of contact between two bodies
+    func didBegin(_ contact: SKPhysicsContact) {
+        let nameA = contact.bodyA.node?.name!
+        let nameB = contact.bodyB.node?.name!
+        
+        gameModel!.handleContact(nameA: nameA!, nameB: nameB!)
     }
     
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
@@ -68,11 +85,13 @@ class ContinousGameScene: SKScene {
         if let touch = touches.first {
             let point = touch.location(in: self)
          
-            /*
-            if gameModel!.isMidTurn() {
+            if gameModel!.isReady() {
                 // Show the arrow and update it
+                if inGame(point) {
+                    showArrow()
+                    updateArrow(startPoint: gameModel!.ballManager!.getOriginPoint(), touchPoint: point)
+                }
             }
-            */
         }
     }
     
@@ -81,69 +100,83 @@ class ContinousGameScene: SKScene {
         if let touch = touches.first {
             let point = touch.location(in: self)
             
-            /*
-            if !inGame(point: point) {
+            if !inGame(point) {
                 // Hide the arrow
+                hideArrow()
             }
             else if gameModel!.isReady() && arrowIsShowing {
                 // Update the arrow location
+                updateArrow(startPoint: gameModel!.ballManager!.getOriginPoint(), touchPoint: point)
             }
-            */
         }
     }
     
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let point = touch.location(in: self)
+            
+            if gameModel!.isReady() && arrowIsShowing {
+                // Set the direction for the balls to shoot
+                gameModel!.prepareTurn(point: point)
+                print("Prepped game model to start a turn")
+            }
+        }
         
+        // Hide the arrow
+        hideArrow()
     }
     
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let touch = touches.first {
-            let point = touch.location(in: self)
-            
-            /*
-            if gameModel!.isReady() && arrowIsShowing {
-                // Set the direction for the balls to shoot
-                // Tell the controller to shoot the balls
-            }
-            */
-            // Check for game over and display the game over label
-        }
         
-        // Hide the arrow
     }
     
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
-        /*
         if gameModel!.isTurnOver() {
+            print("Turn over")
+            
             // Return physics simulation to normal speed
+            physicsWorld.speed = 1.0
             
             // Clear gesture recognizers in the view
             view!.gestureRecognizers = []
             addedGesture = false
             
-            // Tell the controller to generate a row of items
+            // Tell the game model to update now that the turn has ended
+            gameModel!.handleTurnOver()
             
-            // Tell the controller to check for new balls
-            
-            // Tell the controller update increment the model's state
+            // Check for game over
+            if gameModel!.gameOver() {
+                // Show gameover overlay
+                // Display Continue? graphic
+                // Show an ad
+            }
             
             // Check the model to update the score label
+            updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
         }
         
         // Ask the controller if the game is over
         
         if gameModel!.isMidTurn() {
+            print("Game model is mid turn")
             if false == addedGesture {
                 // Ask the model if we showed the fast forward tutorial
                 view!.gestureRecognizers = [rightSwipeGesture!]
             }
             
-            // Tell the controller to have the model check for inactive balls to return
+            // Allow the model to handle a turn
+            if numTicks >= ticksDelay {
+                gameModel!.handleTurn(shootBall: true)
+                numTicks = 0
+            }
+            else {
+                numTicks += 1
+                gameModel!.handleTurn(shootBall: false)
+            }
         }
-        */
     }
     
     // MARK: Public functions
@@ -156,11 +189,11 @@ class ContinousGameScene: SKScene {
     // MARK: Private functions
     private func initGameModel() {
         // The controller also needs a copy of this game model object
-        gameModel = ContinuousGameModel()
+        gameModel = ContinuousGameModel(scene: self, view: view!, ceilingHeight: ceilingNode!.position.y, groundHeight: margin!)
     }
     
     // MVC: Clearly a view function
-    private func inGame(point: CGPoint) -> Bool {
+    private func inGame(_ point: CGPoint) -> Bool {
         return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
     }
     
@@ -353,5 +386,10 @@ class ContinousGameScene: SKScene {
         let intercept = point.y - (point.x * slope)
         
         return intercept
+    }
+    
+    private func updateScore(highScore: Int, gameScore: Int) {
+        scoreLabel!.text = "\(gameScore)"
+        bestScoreLabel!.text = "Best: \(highScore)"
     }
 }
