@@ -15,6 +15,7 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        /*
         if let view = self.view as! SKView? {
             //let scene = GameScene(size: view.bounds.size)
             let scene = GameMenu(size: view.bounds.size)
@@ -29,6 +30,7 @@ class GameViewController: UIViewController {
             
             NotificationCenter.default.addObserver(self, selector: #selector(handleResignActive), name: Notification.Name.NSExtensionHostWillResignActive, object: nil)
         }
+        */
     }
 
     override var shouldAutorotate: Bool {

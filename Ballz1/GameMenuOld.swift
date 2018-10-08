@@ -10,7 +10,7 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
-class GameMenu: SKScene {
+class GameMenuOld: SKScene {
     
     // MARK: Private properties
     private var fontName = "KohinoorBangla-Regular"

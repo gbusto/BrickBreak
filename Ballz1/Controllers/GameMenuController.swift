@@ -19,17 +19,18 @@ class GameMenuController: UIViewController {
         
         if let view = self.view as! SKView? {
             //let scene = GameScene(size: view.bounds.size)
-            let scene = GameMenuView(size: view.bounds.size)
-            
-            scene.scaleMode = .aspectFill
-            
-            view.presentScene(scene)
-            
-            view.ignoresSiblingOrder = true
-            view.showsFPS = true
-            view.showsNodeCount = true
-            
-            NotificationCenter.default.addObserver(self, selector: #selector(handleResignActive), name: Notification.Name.NSExtensionHostWillResignActive, object: nil)
+            //let scene = GameMenuView(size: view.bounds.size)
+            if let scene = SKScene(fileNamed: "GameMenuScene") {
+                scene.scaleMode = .aspectFill
+                
+                view.presentScene(scene)
+                
+                view.ignoresSiblingOrder = true
+                view.showsFPS = true
+                view.showsNodeCount = true
+                
+                NotificationCenter.default.addObserver(self, selector: #selector(handleResignActive), name: Notification.Name.NSExtensionHostWillResignActive, object: nil)
+            }
         }
     }
     

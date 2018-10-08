@@ -150,6 +150,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ballManager!.setDirection(point: point)
                 ballManager!.incrementState()
             }
+            /*
             else if gameOver {
                 let scene = GameMenu(size: view!.bounds.size)
                 
@@ -161,6 +162,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 view!.presentScene(scene)
             }
+            */
         }
         
         hideArrow()
