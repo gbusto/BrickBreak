@@ -170,14 +170,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             
             // Tell the game model to update now that the turn has ended
             gameModel!.handleTurnOver()
-            if false == gameModel!.gameOver(floor: groundNode!.size.height, rowHeight: rowHeight!) {
-                // Show gameover overlay
-                showGameOverNode()
-                self.isPaused = true
-                
-                // Display Continue? graphic
-                // Show an ad
-            }
             
             // Get the newly generated items and add them to the view
             let items = gameModel!.generateRow()
@@ -185,16 +177,19 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 for i in 0...(items.count - 1) {
                     let item = items[i]
                     if item is SpacerItem {
+                        print("Spacer item")
                         continue
                     }
                     
                     var pos = CGPoint(x: 0, y: 0)
                     if item is HitBlockItem {
+                        print("Hit block item")
                         let posX = CGFloat(i) * rowHeight!
                         let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * 1))
                         pos = CGPoint(x: posX, y: posY)
                     }
                     else if item is BallItem {
+                        print("Ball item")
                         let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2)
                         let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * 1)) + (rowHeight! / 2)
                         pos = CGPoint(x: posX, y: posY)
@@ -227,7 +222,19 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
         }
         
-        // Ask the controller if the game is over
+        if gameModel!.isWaiting() {
+            // Check to see if the game ended after all animations are complete
+            if gameModel!.animationsDone() {
+                if false == gameModel!.gameOver(floor: groundNode!.size.height, rowHeight: rowHeight!) {
+                    // Show gameover overlay
+                    showGameOverNode()
+                    self.isPaused = true
+                    
+                    // Display Continue? graphic
+                    // Show an ad
+                }
+            }
+        }
         
         if gameModel!.isMidTurn() {
             if false == addedGesture {
