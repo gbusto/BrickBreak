@@ -14,8 +14,8 @@ class ItemGenerator {
     // -------------------------------------------------------------
     // MARK: Public properties
     
-    // Items for which this generator is responsible
-    public var itemArray : [Item] = []
+    // Rows of items for which this generator is responsible
+    public var itemArray : [[Item]] = []
     
     // Maximum hit count for a HitBlock
     public var maxHitCount : Int?
@@ -90,6 +90,8 @@ class ItemGenerator {
         let color = currentColor!.changeColor()
         print("Color is \(color)")
         
+        var newRow: [Item] = []
+
         for i in 0...(numItemsPerRow - 1) {
             if Int.random(in: 1...100) < 60 {
                 let type = pickItem()
@@ -117,7 +119,7 @@ class ItemGenerator {
                     item.getNode().alpha = 0
                     scene!.addChild(item.getNode())
                     print("Adding block at row position \(i)")
-                    itemArray.append(item)
+                    newRow.append(item)
                     break
                 case BALL:
                     // Put the ball in the center of its row position
@@ -137,7 +139,7 @@ class ItemGenerator {
                     }
                     item.getNode().alpha = 0
                     scene!.addChild(item.getNode())
-                    itemArray.append(item)
+                    newRow.append(item)
                     break
                 default:
                     // Shouldn't ever hit the default case; if we do just loop back around
@@ -148,6 +150,9 @@ class ItemGenerator {
             }
         }
         
+        itemArray.append(newRow)
+        
+        actionsStarted =
         actionsStarted = itemArray.count
         
         for item in itemArray {
@@ -214,5 +219,21 @@ class ItemGenerator {
             }
         }
         return 0
+    }
+    
+    private func createEmptyRow() -> [Item] {
+        var newEmptyRow: [Item] = []
+        for _ in 0...(numItemsPerRow - 1) {
+            newEmptyRow.append(nil)
+        }
+        
+        return newEmptyRow
+    }
+    
+    private func getNumItems() -> Int {
+        var count = Int(0)
+        for row in itemArray {
+            for slot in row
+        }
     }
 }
