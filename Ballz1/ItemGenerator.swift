@@ -117,6 +117,11 @@ class ItemGenerator {
                 }
                 numItemsGenerated += 1
             }
+                // If Int.random() didn't return a number < 60, add a spacer item anyways; each slot in a row needs to be occupied (i.e. each row must contain at least numItemsPerRow number of items)
+            else {
+                let spacer = SpacerItem()
+                newRow.append(spacer)
+            }
         }
         
         itemArray.append(newRow)
