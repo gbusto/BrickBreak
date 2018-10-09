@@ -61,6 +61,7 @@ class BallManager {
             let ball = BallItem()
             let size = CGSize(width: radius, height: radius)
             ball.initItem(generator: generator, num: i, size: size, position: position)
+            ball.getNode().name! = "bm\(i)"
             ballArray.append(ball)
         }
         
@@ -159,7 +160,7 @@ class BallManager {
     public func addBall(ball: BallItem, atPoint: CGPoint) {
         newBallArray.append(ball)
         // Update the ball name to avoid name collisions in the ball manager
-        ball.getNode().name! = "ball\(ballArray.count + newBallArray.count)"
+        ball.getNode().name! = "bm\(ballArray.count + newBallArray.count)"
         ball.getNode().run(SKAction.move(to: atPoint, duration: 0.5))
     }
     

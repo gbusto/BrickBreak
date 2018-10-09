@@ -108,7 +108,7 @@ class ContinuousGameModel {
     public func handleContact(nameA: String, nameB: String) {
         // This could be improved by renaming items based on who owns them
         // For example, items in ball manager start with bm; items in item generator start with ig
-        if nameA.starts(with: "ball") {
+        if nameA.starts(with: "bm") {
             if "ground" == nameB {
                 ballManager!.markBallInactive(name: nameA)
             }
@@ -120,7 +120,7 @@ class ContinuousGameModel {
             }
         }
         
-        if nameB.starts(with: "ball") {
+        if nameB.starts(with: "bm") {
             if "ground" == nameA {
                 ballManager!.markBallInactive(name: nameB)
             }
