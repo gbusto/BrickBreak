@@ -54,6 +54,7 @@ class ItemGenerator {
     // Total percentage that will grow as items are added to the itemTypeDict
     private var totalPercentage = Int(100)
     // Used to mark item types to know what item types are allowed to be generated
+    private var EMPTY = Int(0)
     private var HIT_BLOCK = Int(1)
     private var BALL = Int(2)
     
@@ -95,12 +96,12 @@ class ItemGenerator {
         for i in 0...(numItemsPerRow - 1) {
             if Int.random(in: 1...100) < 60 {
                 let type = pickItem()
-                if 0 == type {
-                    // If no item was picked, loop back around
-                    continue
-                }
     
                 switch type {
+                case EMPTY:
+                    let spacer = SpacerItem()
+                    newRow.append(spacer)
+                    break
                 case HIT_BLOCK:
                     let posX = CGFloat(i) * itemWidth!
                     let posY = CGFloat(ceilingHeight! - (itemWidth! * 1))
@@ -117,6 +118,7 @@ class ItemGenerator {
                         print("Failed to load hit block item")
                     }
                     item.getNode().alpha = 0
+                    // This should be removed and the view should handle this
                     scene!.addChild(item.getNode())
                     print("Adding block at row position \(i)")
                     newRow.append(item)
@@ -138,6 +140,7 @@ class ItemGenerator {
                         print("Failed to load ball item")
                     }
                     item.getNode().alpha = 0
+                    // This should be removed and the view should handle this
                     scene!.addChild(item.getNode())
                     newRow.append(item)
                     break
@@ -152,15 +155,21 @@ class ItemGenerator {
         
         itemArray.append(newRow)
         
-        actionsStarted =
-        actionsStarted = itemArray.count
+        actionsStarted = getItemCount()
         
-        for item in itemArray {
-            let action1 = SKAction.fadeIn(withDuration: 1)
-            let action2 = SKAction.moveBy(x: 0, y: -itemWidth!, duration: 1)
-            item.getNode().run(SKAction.group([action1, action2])) {
-                // Remove one from the count each time an action completes
-                self.actionsStarted -= 1
+        for row in itemArray {
+            for item in row {
+                // Don't need to move or animate spacer items
+                if item is SpacerItem {
+                    continue
+                }
+                
+                let action1 = SKAction.fadeIn(withDuration: 1)
+                let action2 = SKAction.moveBy(x: 0, y: -itemWidth!, duration: 1)
+                item.getNode().run(SKAction.group([action1, action2])) {
+                    // Remove one from the count each time an action completes
+                    self.actionsStarted -= 1
+                }
             }
         }
     }
@@ -170,46 +179,68 @@ class ItemGenerator {
         return (0 == actionsStarted)
     }
     
+    
     public func hit(name: String) {
-        for item in itemArray {
-            if item.getNode().name == name {
-                item.hitItem()
-                if item.getNode().name!.starts(with: "ball") {
-                    // If this item was a ball, increase the max hit count by 2 because it will be transferred over to the ball manager
-                    maxHitCount! += 2
+        for row in itemArray {
+            for item in row {
+                if item.getNode().name == name {
+                    item.hitItem()
+                    if item.getNode().name!.starts(with: "ball") {
+                        // If this item was a ball, increase the max hit count by 2 because it will be transferred over to the ball manager
+                        maxHitCount! += 2
+                    }
                 }
             }
         }
     }
     
+    // Looks for items that should be removed; each Item keeps track of its state and whether or not it's time for it to be removed.
+    // If item.removeItem() returns true, it's time to remove the item; it will be added to an array of items that have been removed and returned to the model
     public func removeItems() -> [Item] {
-        var array : [Item] = []
-        let newItemArray = itemArray.filter {
-            // Perform a remove action if needed
-            if $0.removeItem(scene: scene!) {
-                // Remove this item from the array
-                array.append($0)
-                return false
+        var removedItems : [Item] = []
+        
+        for i in 0...(itemArray.count - 1) {
+            let row = itemArray[i]
+            
+            let newRow = row.filter {
+                // Perform a remove action if needed (should be done in the view)
+                if $0.removeItem(scene: scene!) {
+                    // Remove this item from the array if that evaluates to true (meaning it's time to remove the item)
+                    removedItems.append($0)
+                    return false
+                }
+                // Keep this item in the array
+                return true
             }
-            // Keep this item in the array
-            return true
+            
+            itemArray[i] = newRow
         }
         
-        itemArray = newItemArray
+        // After removing all necessary items, check to see if there any empty rows that can be removed
+        removeEmptyRows()
         
-        return array
+        // Return all items that were removed
+        return removedItems
     }
     
+    // Iterate over all items to see if any are too close to the ground
+    // "Too close" is defined as: if can't add another item before hitting the ground, we're too close
     public func canAddRow(groundHeight: CGFloat) -> Bool {
-        for item in itemArray {
-            if (item.getNode().position.y - itemWidth!) < groundHeight {
-                return false
+        for row in itemArray {
+            for item in row {
+                // We don't care about spacer items
+                if item is SpacerItem {
+                    continue
+                }
+                
+                if (item.getNode().position.y - itemWidth!) < groundHeight {
+                    return false
+                }
             }
         }
         
         return true
     }
-    
     
     // MARK: Private functions
     private func pickItem() -> Int {
@@ -221,19 +252,36 @@ class ItemGenerator {
         return 0
     }
     
-    private func createEmptyRow() -> [Item] {
-        var newEmptyRow: [Item] = []
-        for _ in 0...(numItemsPerRow - 1) {
-            newEmptyRow.append(nil)
-        }
-        
-        return newEmptyRow
-    }
-    
-    private func getNumItems() -> Int {
+    private func getItemCount() -> Int {
         var count = Int(0)
         for row in itemArray {
-            for slot in row
+            for item in row {
+                if item is SpacerItem {
+                    continue
+                }
+                
+                count += 1
+            }
         }
+        
+        return count
+    }
+    
+    private func removeEmptyRows() {
+        let newItemArray = itemArray.filter {
+            for item in $0 {
+                if item is SpacerItem {
+                    continue
+                }
+                // If we encounter any items that aren't a SpacerItem, it should just be removed
+                return true
+            }
+            
+            // If we reached this point, there are only SpacerItem types so remove the row
+            print("Removing an empty row")
+            return false
+        }
+        
+        itemArray = newItemArray
     }
 }
