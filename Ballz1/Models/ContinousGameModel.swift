@@ -27,9 +27,14 @@ class ContinuousGameModel {
     private var numberOfBalls = Int(10)
     
     private var state = Int(0)
+    // READY means the game model is ready to go
     private var READY = Int(0)
+    // MID_TURN means it's in the middle of processing a user's turn and waiting for the balls to return and items to be collected
     private var MID_TURN = Int(1)
+    // TURN_OVER means the turn ended; this gives the View some time to process everything and perform any end of turn actions
     private var TURN_OVER = Int(2)
+    // WAITING means the game model is waiting for item animations to finish (i.e. the view tells the items to shift down one row while in the TURN_OVER state, so we remain in this state until all animations are finished)
+    private var WAITING = Int(3)
     
     // MARK: Initialization functions
     required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, ceilingHeight: CGFloat, groundHeight: CGFloat) {
@@ -105,7 +110,7 @@ class ContinuousGameModel {
             highScore = gameScore
         }
         
-        // Go from TURN_OVER state to READY state
+        // Go from TURN_OVER state to WAITING state
         incrementState()
     }
     
@@ -148,13 +153,22 @@ class ContinuousGameModel {
         itemGenerator!.animateItems(action)
     }
     
+    public func animationsDone() -> Bool {
+        if itemGenerator!.isReady() {
+            // Change state from WAITING to READY
+            incrementState()
+            return true
+        }
+        return false
+    }
+    
     // The floor of the game scene; if another row doesn't fit
     public func gameOver(floor: CGFloat, rowHeight: CGFloat) -> Bool {
         return itemGenerator!.canAddRow(floor, rowHeight)
     }
     
     public func incrementState() {
-        if TURN_OVER == state {
+        if WAITING == state {
             state = READY
             return
         }
@@ -174,5 +188,9 @@ class ContinuousGameModel {
     
     public func isTurnOver() -> Bool {
         return (TURN_OVER == state)
+    }
+    
+    public func isWaiting() -> Bool {
+        return (WAITING == state)
     }
 }
