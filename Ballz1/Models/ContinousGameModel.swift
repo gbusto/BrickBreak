@@ -20,9 +20,6 @@ class ContinuousGameModel {
     public var itemGenerator: ItemGenerator?
     
     // MARK: Private properties
-    // TODO: Remove the global reference for this
-    private var radius = CGFloat(0)
-    
     private var ceilingHeight: CGFloat?
     private var groundHeight: CGFloat?
     
@@ -35,7 +32,7 @@ class ContinuousGameModel {
     private var TURN_OVER = Int(2)
     
     // MARK: Initialization functions
-    required init(scene: SKScene, view: SKView, ceilingHeight: CGFloat, groundHeight: CGFloat) {
+    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, ceilingHeight: CGFloat, groundHeight: CGFloat) {
         // State should always be initialized to READY
         state = TURN_OVER
         
@@ -44,27 +41,16 @@ class ContinuousGameModel {
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
         itemGenerator = ItemGenerator()
-        itemGenerator!.initGenerator(scene: scene, view: view, numBalls: numberOfBalls, numItems: numberOfItems,
+        itemGenerator!.initGenerator(blockSize: blockSize, ballRadius: ballRadius, numBalls: numberOfBalls, numItems: numberOfItems,
                                       ceiling: ceilingHeight, ground: groundHeight)
         
-        // BallManager shouldn't display the balls; that's the view's job. Also, ball manager doesn't need an instance of the item generator
-        // TODO: (Read above)
-        radius = CGFloat(view.frame.width * 0.018)
-        let position = CGPoint(x: view.frame.midX, y: groundHeight + radius)
         ballManager = BallManager()
-        ballManager!.initBallManager(scene: scene, generator: itemGenerator!, numBalls: numberOfBalls, position: position, radius: radius)
-        // TODO: I think this code should be in the view, not in the model
-        ballManager!.addBalls()
+        ballManager!.initBallManager(generator: itemGenerator!, numBalls: numberOfBalls, radius: ballRadius)
     }
     
     // MARK: Public functions
-    public func incrementState() {
-        if TURN_OVER == state {
-            state = READY
-            return
-        }
-        
-        state += 1
+    public func getBalls() -> [BallItem] {
+        return ballManager!.ballArray
     }
     
     public func prepareTurn(point: CGPoint) {
@@ -74,19 +60,23 @@ class ContinuousGameModel {
         // Change our state from READY to MID_TURN
         incrementState()
     }
-
-    public func handleTurn(shootBall: Bool) {
-        if shootBall && ballManager!.isShooting() {
+    
+    public func shootBall() -> Bool {
+        if ballManager!.isShooting() {
             ballManager!.shootBall()
+            return true
         }
         
+        return false
+    }
+
+    public func handleTurn() -> [Item] {
         // Check to see if the user collected any ball items so far
         let removedItems = itemGenerator!.removeItems()
         for item in removedItems {
             if item.getNode().name!.starts(with: "ball") {
                 let ball = item as! BallItem
-                let newPoint = CGPoint(x: ball.getNode().position.x, y: groundHeight! + radius)
-                ballManager!.addBall(ball: ball, atPoint: newPoint)
+                ballManager!.addBall(ball: ball)
                 print("Added ball \(ball.getNode().name!) to ball manager")
             }
         }
@@ -102,6 +92,21 @@ class ContinuousGameModel {
             // Increment the ball manager's state from DONE to READY
             ballManager!.incrementState()
         }
+        
+        return removedItems
+    }
+    
+    // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
+    public func handleTurnOver() {
+        ballManager!.checkNewArray()
+        
+        gameScore += 1
+        if gameScore >= highScore {
+            highScore = gameScore
+        }
+        
+        // Go from TURN_OVER state to READY state
+        incrementState()
     }
     
     // MARK: Physics contact functions
@@ -111,6 +116,7 @@ class ContinuousGameModel {
         if nameA.starts(with: "bm") {
             if "ground" == nameB {
                 ballManager!.markBallInactive(name: nameA)
+                print("Ball hit the ground")
             }
             else if nameB.starts(with: "block") {
                 itemGenerator!.hit(name: nameB)
@@ -123,6 +129,7 @@ class ContinuousGameModel {
         if nameB.starts(with: "bm") {
             if "ground" == nameA {
                 ballManager!.markBallInactive(name: nameB)
+                print("Ball hit the ground")
             }
             else if nameA.starts(with: "block") {
                 itemGenerator!.hit(name: nameA)
@@ -133,27 +140,26 @@ class ContinuousGameModel {
         }
     }
     
-    // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
-    public func handleTurnOver() -> Bool {
-        ballManager!.checkNewArray()
-        itemGenerator!.generateRow()
-        
-        gameScore += 1
-        if gameScore >= highScore {
-            highScore = gameScore
-        }
-        
-        if gameOver() {
-            return false
-        }
-        
-        // Go from TURN_OVER state to READY state
-        incrementState()
-        return true
+    public func generateRow() -> [Item] {
+        return itemGenerator!.generateRow()
     }
     
-    public func gameOver() -> Bool {
-        return !itemGenerator!.canAddRow(groundHeight: groundHeight!)
+    public func animateItems(action: SKAction) {
+        itemGenerator!.animateItems(action)
+    }
+    
+    // The floor of the game scene; if another row doesn't fit
+    public func gameOver(floor: CGFloat, rowHeight: CGFloat) -> Bool {
+        return itemGenerator!.canAddRow(floor, rowHeight)
+    }
+    
+    public func incrementState() {
+        if TURN_OVER == state {
+            state = READY
+            return
+        }
+        
+        state += 1
     }
     
     public func isReady() -> Bool {

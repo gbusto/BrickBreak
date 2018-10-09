@@ -210,6 +210,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // MVC: This code should be in the model; checking to see if the game is over is part of the game rules
         // MVC: Or should it be in the controller to check whether or not the game is over?
         // After rows have been added, check to see if we can add any more rows
+        /*
         if itemGenerator!.isReady() {
             if false == itemGenerator!.canAddRow(groundHeight: margin!) {
                 // Game over!!!
@@ -218,6 +219,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 gameOver = true
             }
         }
+        */
         
         if ballManager!.isShooting() {
             if numTicks >= numTicksGap {
@@ -253,7 +255,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if item.getNode().name!.starts(with: "ball") {
                 let ball = item as! BallItem
                 let newPoint = CGPoint(x: ball.getNode().position.x, y: margin! + radius!)
-                ballManager!.addBall(ball: ball, atPoint: newPoint)
+                //ballManager!.addBall(ball: ball, atPoint: newPoint)
                 print("Added ball \(ball.getNode().name!) to ball manager")
             }
         }
@@ -391,17 +393,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MVC: A model function
     private func initItemGenerator(view: SKView) {
+        /*
         itemGenerator = ItemGenerator()
         itemGenerator?.initGenerator(scene: self, view: view, numBalls: numberOfBalls, numItems: numberOfItems, ceiling: ceilingNode!.position.y, ground: margin!)
+        */
     }
     
     // MVC: A model function
     private func initBallManager(view: SKView, numBalls: Int) {
+        /*
         radius = CGFloat(view.frame.width * 0.018)
         ballManager = BallManager()
         let position = CGPoint(x: view.frame.midX, y: margin! + radius!)
         ballManager!.initBallManager(scene: self, generator: itemGenerator!, numBalls: numBalls, position: position, radius: radius!)
         ballManager!.addBalls()
+        */
     }
     
     // MVC: A view function; anything with the arrow node is a view function for now (until we allow the user to upgrade the arrow pointer style)

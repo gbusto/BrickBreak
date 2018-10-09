@@ -16,14 +16,24 @@ import CoreGraphics
 class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Private properties
-    private var margin : CGFloat?
-    private var radius : CGFloat?
+    // The margin aka the ceiling height and ground height
+    private var margin: CGFloat?
+    
+    // Number of items per row
+    private var numItemsPerRow = Int(8)
+    
+    // The ball radius
+    private var ballRadius: CGFloat?
+    // The generic item width (typically the view's (width / (number of items per row))
+    private var rowHeight: CGFloat?
+    // The block size
+    private var blockSize: CGSize?
     
     // Nodes that will be shown in the view
-    private var groundNode : SKSpriteNode?
-    private var ceilingNode : SKSpriteNode?
-    private var leftWallNode : SKNode?
-    private var rightWallNode : SKNode?
+    private var groundNode: SKSpriteNode?
+    private var ceilingNode: SKSpriteNode?
+    private var leftWallNode: SKNode?
+    private var rightWallNode: SKNode?
     
     private var ballProjection = BallProjection()
     
@@ -33,8 +43,13 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var fontName = "KohinoorBangla-Regular"
 
     // Score labels
-    private var scoreLabel : SKLabelNode?
-    private var bestScoreLabel : SKLabelNode?
+    private var scoreLabel: SKLabelNode?
+    private var bestScoreLabel: SKLabelNode?
+    
+    // Ball count label
+    private var ballCountLabel: SKLabelNode?
+    private var prevBallCount = Int(0)
+    private var currentBallCount = Int(0)
     
     // A counter for each time update is called
     private var numTicks = Int(0)
@@ -42,7 +57,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var ticksDelay = Int(6)
     
     // Variables for handling swipe gestures
-    private var rightSwipeGesture : UISwipeGestureRecognizer?
+    private var rightSwipeGesture: UISwipeGestureRecognizer?
     private var addedGesture = false
     
     private var arrowIsShowing = false
@@ -59,10 +74,16 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
+        rowHeight = view.frame.width / CGFloat(numItemsPerRow)
+        ballRadius = view.frame.width * 0.018
+        blockSize = CGSize(width: rowHeight! * 0.95, height: rowHeight! * 0.95)
+        
         initWalls(view: view)
         initGameModel()
         initScoreLabel()
         initBestScoreLabel()
+        // Initialize the ball count label
+        ballCountLabel = SKLabelNode(fontNamed: fontName)
         
         rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeRight(_:)))
         rightSwipeGesture!.direction = .right
@@ -148,8 +169,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             addedGesture = false
             
             // Tell the game model to update now that the turn has ended
-            // Returns false if the game is over
-            if false == gameModel!.handleTurnOver() {
+            gameModel!.handleTurnOver()
+            if false == gameModel!.gameOver(floor: groundNode!.size.height, rowHeight: rowHeight!) {
                 // Show gameover overlay
                 showGameOverNode()
                 self.isPaused = true
@@ -157,6 +178,50 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 // Display Continue? graphic
                 // Show an ad
             }
+            
+            // Get the newly generated items and add them to the view
+            let items = gameModel!.generateRow()
+            if items.count > 0 {
+                for i in 0...(items.count - 1) {
+                    let item = items[i]
+                    if item is SpacerItem {
+                        continue
+                    }
+                    
+                    var pos = CGPoint(x: 0, y: 0)
+                    if item is HitBlockItem {
+                        let posX = CGFloat(i) * rowHeight!
+                        let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * 1))
+                        pos = CGPoint(x: posX, y: posY)
+                    }
+                    else if item is BallItem {
+                        let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2)
+                        let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * 1)) + (rowHeight! / 2)
+                        pos = CGPoint(x: posX, y: posY)
+                    }
+                    
+                    // The item will fade in
+                    item.getNode().alpha = 0
+                    item.loadItem(position: pos)
+                    self.addChild(item.getNode())
+                }
+                
+                // Move the items down in the view
+                let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
+                gameModel!.animateItems(action: action)
+            }
+            
+            // Display the label showing how many balls the user has (this needs to be done after we have collected any new balls the user acquired)
+            currentBallCount = gameModel!.getBalls().count
+            // See if the user acquired any new balls
+            let diff = currentBallCount - prevBallCount
+            if diff > 0 {
+                // Show a floating label saying how many balls the user acquired that turn
+                showBallsAcquiredLabel(count: diff)
+            }
+            // Update the previous ball count to the current count so that next time around we can see if the user acquired more balls
+            prevBallCount = currentBallCount
+            addBallCountLabel()
             
             // Check the model to update the score label
             updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
@@ -171,14 +236,36 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 addedGesture = true
             }
             
-            // Allow the model to handle a turn
+            // Shoot a ball with a delay count of ticksDelay
+            // This code is still pretty ugly and can probably be cleaned up
             if numTicks >= ticksDelay {
-                gameModel!.handleTurn(shootBall: true)
+                if gameModel!.shootBall() {
+                    currentBallCount -= 1
+                    if 0 == currentBallCount {
+                        removeBallCountLabel()
+                    }
+                    else {
+                        updateBallCountLabel()
+                    }
+                }
                 numTicks = 0
             }
             else {
                 numTicks += 1
-                gameModel!.handleTurn(shootBall: false)
+            }
+            
+            // Allow the model to handle a turn
+            let removedItems = gameModel!.handleTurn()
+            for item in removedItems {
+                if item is HitBlockItem {
+                    // We want to remove block items from the scene completely
+                    self.removeChildren(in: [item.getNode()])
+                }
+                else {
+                    // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
+                    let newPoint = CGPoint(x: item.getNode().position.x, y: groundNode!.size.height + ballRadius!)
+                    item.getNode().run(SKAction.move(to: newPoint, duration: 0.5))
+                }
             }
         }
     }
@@ -208,7 +295,18 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // Initialize the game model (this is where the code for loading a saved game model will go)
     private func initGameModel() {
         // The controller also needs a copy of this game model object
-        gameModel = ContinuousGameModel(scene: self, view: view!, ceilingHeight: ceilingNode!.position.y, groundHeight: margin!)
+        gameModel = ContinuousGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, ceilingHeight: ceilingNode!.position.y, groundHeight: margin!)
+        
+        // Add the balls to the scene
+        let ballPosition = CGPoint(x: view!.frame.midX, y: groundNode!.size.height + ballRadius!)
+        let balls = gameModel!.getBalls()
+        currentBallCount = balls.count
+        prevBallCount = balls.count
+        for ball in balls {
+            ball.loadItem(position: ballPosition)
+            ball.resetBall()
+            self.addChild(ball.getNode())
+        }
     }
     
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
@@ -322,8 +420,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode!.addChild(bestScoreLabel!)
     }
     
-    
-    
     private func updateScore(highScore: Int, gameScore: Int) {
         scoreLabel!.text = "\(gameScore)"
         bestScoreLabel!.text = "Best: \(highScore)"
@@ -435,5 +531,57 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(label)
         self.addChild(label2)
         self.addChild(label3)
+    }
+    
+    private func addBallCountLabel() {
+        currentBallCount = gameModel!.getBalls().count
+        let originPoint = gameModel!.ballManager!.getOriginPoint()
+        var newPoint = CGPoint(x: originPoint.x, y: (originPoint.y + (ballRadius! * 1.5)))
+        // This is to prevent the ball count label from going off the screen
+        if newPoint.x < view!.frame.width * 0.03 {
+            // If we're close to the far left side, add a small amount to the x value
+            newPoint.x += view!.frame.width * 0.03
+        }
+        else if newPoint.x > view!.frame.width * 0.97 {
+            // Opposite of the above comment
+            newPoint.x -= view!.frame.width * 0.03
+        }
+        
+        ballCountLabel!.position = newPoint
+        ballCountLabel!.fontSize = ballRadius! * 3
+        ballCountLabel!.color = .white
+        
+        updateBallCountLabel()
+        self.addChild(ballCountLabel!)
+    }
+    
+    private func updateBallCountLabel() {
+        ballCountLabel!.text = "x\(currentBallCount)"
+    }
+    
+    private func removeBallCountLabel() {
+        self.removeChildren(in: [ballCountLabel!])
+    }
+    
+    private func showBallsAcquiredLabel(count: Int) {
+        let fontSize = ballRadius! * 2
+        let originPoint = gameModel!.ballManager!.getOriginPoint()
+        let pos = CGPoint(x: originPoint.x, y: originPoint.y + fontSize)
+        let label = SKLabelNode()
+        label.text = "+\(count)"
+        label.fontSize = fontSize
+        label.fontName = fontName
+        label.position = pos
+        label.alpha = 0
+        
+        let vect = CGVector(dx: 0, dy: fontSize * 3)
+        let action1 = SKAction.fadeIn(withDuration: 0.5)
+        let action2 = SKAction.move(by: vect, duration: 1)
+        let action3 = SKAction.fadeOut(withDuration: 0.5)
+        self.addChild(label)
+        label.run(action2)
+        label.run(SKAction.sequence([action1, action3])) {
+            self.scene!.removeChildren(in: [label])
+        }
     }
 }

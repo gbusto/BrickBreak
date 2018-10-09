@@ -13,12 +13,10 @@ class BallManager {
     
     // MARK: Public properties
     public var numberOfBalls = Int(0)
+    public var ballArray : [BallItem] = []
     
     // MARK: Private properties
-    private var scene : SKScene?
-    
     private var ballRadius : CGFloat?
-    private var ballArray : [BallItem] = []
     // Balls that have just been added from the ItemGenerator
     private var newBallArray : [BallItem] = []
     
@@ -51,16 +49,14 @@ class BallManager {
     
     
     // MARK: Public functions
-    public func initBallManager(scene: SKScene, generator: ItemGenerator, numBalls: Int, position: CGPoint, radius: CGFloat) {
+    public func initBallManager(generator: ItemGenerator, numBalls: Int, radius: CGFloat) {
         numberOfBalls = numBalls
-        originPoint = position
-        self.scene = scene
         ballRadius = radius
         
         for i in 1...numBalls {
             let ball = BallItem()
             let size = CGSize(width: radius, height: radius)
-            ball.initItem(generator: generator, num: i, size: size, position: position)
+            ball.initItem(generator: generator, num: i, size: size)
             ball.getNode().name! = "bm\(i)"
             ballArray.append(ball)
         }
@@ -80,32 +76,6 @@ class BallManager {
     }
     
     public func checkNewArray() {
-        let numNewBalls = newBallArray.count
-        
-        // This is code to add a floating indicator saying how many balls you acquired last turn
-        // It generates a little label that fades in, floats up, and fades out saying +3 if you got 3 new balls that turn
-        if numNewBalls > 0 {
-            print("Adding floating label!")
-            let fontSize = CGFloat(20)
-            let pos = CGPoint(x: originPoint!.x, y: originPoint!.y + fontSize)
-            let label = SKLabelNode()
-            label.text = "+\(numNewBalls)"
-            label.fontSize = fontSize
-            label.fontName = fontName
-            label.position = pos
-            label.alpha = 0
-            
-            let vect = CGVector(dx: 0, dy: fontSize * 3)
-            let action1 = SKAction.fadeIn(withDuration: 0.5)
-            let action2 = SKAction.move(by: vect, duration: 1)
-            let action3 = SKAction.fadeOut(withDuration: 0.5)
-            scene!.addChild(label)
-            label.run(action2)
-            label.run(SKAction.sequence([action1, action3])) {
-                self.scene!.removeChildren(in: [label])
-            }
-        }
-        
         let array = newBallArray.filter {
             // Reset the ball's contact bitmasks and other things
             $0.resetBall()
@@ -113,8 +83,6 @@ class BallManager {
             $0.returnToOrigin(point: originPoint!)
             // Add the new ball to the ball manager's array
             self.ballArray.append($0)
-            // Update the label showing how many balls are collected at the origin point
-            self.updateLabel()
             // This tells the filter to remove the ball from newBallArray
             return false
         }
@@ -126,6 +94,10 @@ class BallManager {
     }
     
     public func getOriginPoint() -> CGPoint {
+        if let op = originPoint {
+            return op
+        }
+        originPoint = ballArray[0].getNode().position
         return originPoint!
     }
     
@@ -149,19 +121,10 @@ class BallManager {
         direction = point
     }
     
-    // This is only called once
-    public func addBalls() {
-        for ball in ballArray {
-            scene!.addChild(ball.node!)
-        }
-        addLabel()
-    }
-    
-    public func addBall(ball: BallItem, atPoint: CGPoint) {
+    public func addBall(ball: BallItem) {//, atPoint: CGPoint) {
         newBallArray.append(ball)
         // Update the ball name to avoid name collisions in the ball manager
         ball.getNode().name! = "bm\(ballArray.count + newBallArray.count)"
-        ball.getNode().run(SKAction.move(to: atPoint, duration: 0.5))
     }
     
     public func shootBall() {
@@ -172,10 +135,6 @@ class BallManager {
         if numBallsActive == ballArray.count {
             // Increment state from SHOOTING to WAITING
             incrementState()
-            removeLabel()
-        }
-        else {
-            updateLabel()
         }
     }
     
@@ -218,38 +177,7 @@ class BallManager {
                 incrementState()
                 firstBallReturned = false
                 numBallsActive = 0
-                addLabel()
             }
         }
-    }
-    
-    // MARK: Private functions
-    private func addLabel() {
-        var newPoint = CGPoint(x: originPoint!.x, y: (originPoint!.y + (ballRadius! * 1.5)))
-        // This is to prevent the ball count label from going off the screen
-        if let view = scene!.view {
-            // If we're close to the far left side, add a small amount to the x value
-            if newPoint.x < view.frame.width * 0.03 {
-                newPoint.x += view.frame.width * 0.03
-            }
-            // Opposite of the above comment
-            else if newPoint.x > view.frame.width * 0.97 {
-                newPoint.x -= view.frame.width * 0.03
-            }
-        }
-        labelNode!.position = newPoint
-        labelNode!.fontSize = ballRadius! * 3
-        labelNode!.fontName = fontName
-        labelNode!.color = .white
-        updateLabel()
-        scene!.addChild(labelNode!)
-    }
-    
-    private func updateLabel() {
-        labelNode!.text = "x\(ballArray.count - numBallsActive)"
-    }
-    
-    private func removeLabel() {
-        scene!.removeChildren(in: [labelNode!])
     }
 }
