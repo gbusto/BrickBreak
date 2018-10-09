@@ -129,6 +129,7 @@ class ItemGenerator {
                     let size = CGSize(width: radius, height: radius)
                     let item = BallItem()
                     item.initItem(generator: self, num: numItemsGenerated, size: size, position: pos)
+                    print("Added ball with number \(numItemsGenerated)")
                     // XXX Might remove this, not sure if we'll ever need to use loadItem()
                     let ret = item.loadItem()
                     if false == ret {
@@ -136,7 +137,6 @@ class ItemGenerator {
                     }
                     item.getNode().alpha = 0
                     scene!.addChild(item.getNode())
-                    print("Adding ball at row spot \(i) position \(pos)")
                     itemArray.append(item)
                     break
                 default:
