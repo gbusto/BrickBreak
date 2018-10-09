@@ -16,17 +16,21 @@ protocol Item {
     // Arguments:
     //   - num: A number to append to a name; used in collision dectection to tell what item was hit
     //   - size: Size of the item (circles will just use size.width as a radius
-    //   - position: Where to position the node on the screen
     //
     // Returns nothing
-    func initItem(generator: ItemGenerator, num: Int, size: CGSize, position: CGPoint)
+    //
+    // NOTE: Item position will be set by the view
+    func initItem(generator: ItemGenerator, num: Int, size: CGSize)
     
     // This function is called to allow the item to perform any actions before being displayed
+    //
+    // Arguments:
+    //    - position: The item's position in the view
     //
     // Returns true if item loading was successful
     //
     // NOTE: To ensure all actions have been completed, each Item will have a ready attribute to determine if the item's action is complete
-    func loadItem() -> Bool
+    func loadItem(position: CGPoint) -> Bool
     
     // This function is called when an item is hit by a ball; blocks will light up, change color, decrement count, etc
     //
@@ -35,13 +39,10 @@ protocol Item {
     
     // This function checks to see if the item should be removed from the item array in the generator and handles anything to be done before it removes the item from the scene; use this function for any animation before the item is removed
     //
-    // Arguments:
-    //   - scene: The game scene; the item decides whether or not it should be removed from the scene
-    //
     // Returns true if the item should be removed; false otherwise
     //
     // NOTE: ItemGenerator may take this item and hand it off to another handler or manager such as Balls being handed off to BallManager and Currency being handed off to CurrencyManager
-    func removeItem(scene: SKScene) -> Bool
+    func removeItem() -> Bool
     
     // This returns an SKNode item contained within the class
     func getNode() -> SKNode

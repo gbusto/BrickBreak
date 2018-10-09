@@ -28,14 +28,12 @@ class HitBlockItem: Item {
     private var contactTestBitmask = UInt32(0b0001)
     
     // MARK: Protocol functions
-    func initItem(generator: ItemGenerator, num: Int, size: CGSize, position: CGPoint) {
+    func initItem(generator: ItemGenerator, num: Int, size: CGSize) {
         self.size = size
-        self.position = position
         self.generator = generator
         hitCount = Int.random(in: 1...generator.maxHitCount!)
         
         node = SKSpriteNode(color: .gray, size: size)
-        node!.position = position
         node!.anchorPoint = CGPoint(x: 0, y: 0)
         node!.zPosition = 100
         node!.name = "block\(num)"
@@ -54,7 +52,10 @@ class HitBlockItem: Item {
         node!.addChild(labelNode!)
     }
     
-    func loadItem() -> Bool {
+    // This should also handle coloring the item appropriately
+    func loadItem(position: CGPoint) -> Bool {
+        self.position = position
+        node!.position = position
         return true
     }
     
@@ -66,14 +67,13 @@ class HitBlockItem: Item {
         }
     }
     
-    func removeItem(scene: SKScene) -> Bool {
+    func removeItem() -> Bool {
         // This is where the block bust animation will go
         if hitCount! <= 0 {
             // Give the user some haptic feedback to let them know a block broke
             let lightImpactFeedback = UIImpactFeedbackGenerator(style: .medium)
             lightImpactFeedback.prepare()
             lightImpactFeedback.impactOccurred()
-            scene.removeChildren(in: [node!])
             return true
         }
         return false

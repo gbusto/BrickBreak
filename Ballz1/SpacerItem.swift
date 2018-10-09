@@ -11,11 +11,11 @@ import SpriteKit
 // This is an item that we use as a placeholder empty item
 class SpacerItem: Item {
     
-    func initItem(generator: ItemGenerator, num: Int, size: CGSize, position: CGPoint) {
+    func initItem(generator: ItemGenerator, num: Int, size: CGSize) {
         // Pass
     }
     
-    func loadItem() -> Bool {
+    func loadItem(position: CGPoint) -> Bool {
         return true
     }
     
@@ -23,7 +23,7 @@ class SpacerItem: Item {
         // Pass
     }
     
-    func removeItem(scene: SKScene) -> Bool {
+    func removeItem() -> Bool {
         return false
     }
     

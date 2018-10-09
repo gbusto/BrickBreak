@@ -35,7 +35,7 @@ class ContinuousGameModel {
     private var TURN_OVER = Int(2)
     
     // MARK: Initialization functions
-    required init(scene: SKScene, view: SKView, ceilingHeight: CGFloat, groundHeight: CGFloat) {
+    required init(scene: SKScene, view: SKView, blockSize: CGSize, ballRadius: CGFloat, ceilingHeight: CGFloat, groundHeight: CGFloat) {
         // State should always be initialized to READY
         state = TURN_OVER
         
@@ -44,7 +44,7 @@ class ContinuousGameModel {
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
         itemGenerator = ItemGenerator()
-        itemGenerator!.initGenerator(scene: scene, view: view, numBalls: numberOfBalls, numItems: numberOfItems,
+        itemGenerator!.initGenerator(blockSize: blockSize, ballRadius: ballRadius, numBalls: numberOfBalls, numItems: numberOfItems,
                                       ceiling: ceilingHeight, ground: groundHeight)
         
         // BallManager shouldn't display the balls; that's the view's job. Also, ball manager doesn't need an instance of the item generator
@@ -75,7 +75,7 @@ class ContinuousGameModel {
         incrementState()
     }
 
-    public func handleTurn(shootBall: Bool) {
+    public func handleTurn(shootBall: Bool) -> [Item] {
         if shootBall && ballManager!.isShooting() {
             ballManager!.shootBall()
         }
@@ -102,6 +102,8 @@ class ContinuousGameModel {
             // Increment the ball manager's state from DONE to READY
             ballManager!.incrementState()
         }
+        
+        return removedItems
     }
     
     // MARK: Physics contact functions
@@ -111,6 +113,7 @@ class ContinuousGameModel {
         if nameA.starts(with: "bm") {
             if "ground" == nameB {
                 ballManager!.markBallInactive(name: nameA)
+                print("Ball hit the ground")
             }
             else if nameB.starts(with: "block") {
                 itemGenerator!.hit(name: nameB)
@@ -123,6 +126,7 @@ class ContinuousGameModel {
         if nameB.starts(with: "bm") {
             if "ground" == nameA {
                 ballManager!.markBallInactive(name: nameB)
+                print("Ball hit the ground")
             }
             else if nameA.starts(with: "block") {
                 itemGenerator!.hit(name: nameA)
@@ -134,26 +138,29 @@ class ContinuousGameModel {
     }
     
     // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
-    public func handleTurnOver() -> Bool {
+    public func handleTurnOver() {
         ballManager!.checkNewArray()
-        itemGenerator!.generateRow()
         
         gameScore += 1
         if gameScore >= highScore {
             highScore = gameScore
         }
         
-        if gameOver() {
-            return false
-        }
-        
         // Go from TURN_OVER state to READY state
         incrementState()
-        return true
     }
     
-    public func gameOver() -> Bool {
-        return !itemGenerator!.canAddRow(groundHeight: groundHeight!)
+    public func generatorRow() -> [Item] {
+        return itemGenerator!.generateRow()
+    }
+    
+    public func animateItems(action: SKAction) {
+        itemGenerator!.animateItems(action)
+    }
+    
+    // The floor of the game scene; if another row doesn't fit
+    public func gameOver(floor: CGFloat, rowHeight: CGFloat) -> Bool {
+        return itemGenerator!.canAddRow(floor, rowHeight)
     }
     
     public func isReady() -> Bool {

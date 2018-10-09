@@ -210,6 +210,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // MVC: This code should be in the model; checking to see if the game is over is part of the game rules
         // MVC: Or should it be in the controller to check whether or not the game is over?
         // After rows have been added, check to see if we can add any more rows
+        /*
         if itemGenerator!.isReady() {
             if false == itemGenerator!.canAddRow(groundHeight: margin!) {
                 // Game over!!!
@@ -218,6 +219,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 gameOver = true
             }
         }
+        */
         
         if ballManager!.isShooting() {
             if numTicks >= numTicksGap {
@@ -391,8 +393,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MVC: A model function
     private func initItemGenerator(view: SKView) {
+        /*
         itemGenerator = ItemGenerator()
         itemGenerator?.initGenerator(scene: self, view: view, numBalls: numberOfBalls, numItems: numberOfItems, ceiling: ceilingNode!.position.y, ground: margin!)
+        */
     }
     
     // MVC: A model function

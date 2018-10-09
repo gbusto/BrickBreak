@@ -38,11 +38,10 @@ class BallItem: Item {
     
     
     // MARK: Protocol functions
-    public func initItem(generator: ItemGenerator, num: Int, size: CGSize, position: CGPoint) {
+    public func initItem(generator: ItemGenerator, num: Int, size: CGSize) {
         radius = size.width
         self.generator = generator
         let ball = SKShapeNode(circleOfRadius: radius!)
-        ball.position = position
         ball.zPosition = 100
         ball.fillColor = .white
         ball.name = "ball\(num)"
@@ -61,12 +60,14 @@ class BallItem: Item {
         physBody.usesPreciseCollisionDetection = true
         
         ball.physicsBody = physBody
-        origin = position
         node = ball
     }
     
-    public func loadItem() -> Bool {
-        // This will be used by the ItemGenerator, not the BallManager
+    public func loadItem(position: CGPoint) -> Bool {
+        origin = position
+        node!.position = position
+        
+        // May need to change this for the BallManager
         node!.physicsBody!.contactTestBitMask = categoryBitMask
         return true
     }
@@ -87,7 +88,7 @@ class BallItem: Item {
         wasHit = true
     }
     
-    public func removeItem(scene: SKScene) -> Bool {
+    public func removeItem() -> Bool {
         // This will be used by the ItemGenerator, not the BallManager
         // This gets called every tick of the scene so this needs to be enclosed
         return wasHit

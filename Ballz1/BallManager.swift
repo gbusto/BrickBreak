@@ -60,8 +60,10 @@ class BallManager {
         for i in 1...numBalls {
             let ball = BallItem()
             let size = CGSize(width: radius, height: radius)
-            ball.initItem(generator: generator, num: i, size: size, position: position)
+            ball.initItem(generator: generator, num: i, size: size)
+            ball.loadItem(position: position)
             ball.getNode().name! = "bm\(i)"
+            ball.resetBall()
             ballArray.append(ball)
         }
         

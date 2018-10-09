@@ -16,8 +16,18 @@ import CoreGraphics
 class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Private properties
+    // The margin aka the ceiling height and ground height
     private var margin : CGFloat?
-    private var radius : CGFloat?
+    
+    // Number of items per row
+    private var numItemsPerRow = Int(8)
+    
+    // The ball radius
+    private var ballRadius : CGFloat?
+    // The generic item width (typically the view's (width / (number of items per row))
+    private var rowHeight: CGFloat?
+    // The block size
+    private var blockSize: CGSize?
     
     // Nodes that will be shown in the view
     private var groundNode : SKSpriteNode?
@@ -59,6 +69,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
+        rowHeight = view.frame.width / CGFloat(numItemsPerRow)
+        ballRadius = view.frame.width * 0.018
+        blockSize = CGSize(width: rowHeight! * 0.95, height: rowHeight! * 0.95)
+        
         initWalls(view: view)
         initGameModel()
         initScoreLabel()
@@ -148,14 +162,46 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             addedGesture = false
             
             // Tell the game model to update now that the turn has ended
-            // Returns false if the game is over
-            if false == gameModel!.handleTurnOver() {
+            gameModel!.handleTurnOver()
+            if false == gameModel!.gameOver(floor: groundNode!.size.height, rowHeight: rowHeight!) {
                 // Show gameover overlay
                 showGameOverNode()
                 self.isPaused = true
                 
                 // Display Continue? graphic
                 // Show an ad
+            }
+            
+            // Get the newly generated items and add them to the view
+            let items = gameModel!.generatorRow()
+            if items.count > 0 {
+                for i in 0...(items.count - 1) {
+                    let item = items[i]
+                    if item is SpacerItem {
+                        continue
+                    }
+                    
+                    var pos = CGPoint(x: 0, y: 0)
+                    if item is HitBlockItem {
+                        let posX = CGFloat(i) * rowHeight!
+                        let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * 1))
+                        pos = CGPoint(x: posX, y: posY)
+                    }
+                    else if item is BallItem {
+                        let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2)
+                        let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * 1)) + (rowHeight! / 2)
+                        pos = CGPoint(x: posX, y: posY)
+                    }
+                    
+                    // The item will fade in
+                    item.getNode().alpha = 0
+                    item.loadItem(position: pos)
+                    self.addChild(item.getNode())
+                }
+                
+                // Move the items down in the view
+                let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
+                gameModel!.animateItems(action: action)
             }
             
             // Check the model to update the score label
@@ -172,13 +218,19 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             // Allow the model to handle a turn
+            // This is ugly... after separating view from model, clean this up a bit
+            var removedItems: [Item] = []
             if numTicks >= ticksDelay {
-                gameModel!.handleTurn(shootBall: true)
+                removedItems = gameModel!.handleTurn(shootBall: true)
                 numTicks = 0
             }
             else {
                 numTicks += 1
-                gameModel!.handleTurn(shootBall: false)
+                removedItems = gameModel!.handleTurn(shootBall: false)
+            }
+            
+            for item in removedItems {
+                self.removeChildren(in: [item.getNode()])
             }
         }
     }
@@ -208,7 +260,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // Initialize the game model (this is where the code for loading a saved game model will go)
     private func initGameModel() {
         // The controller also needs a copy of this game model object
-        gameModel = ContinuousGameModel(scene: self, view: view!, ceilingHeight: ceilingNode!.position.y, groundHeight: margin!)
+        gameModel = ContinuousGameModel(scene: self, view: view!, blockSize: blockSize!, ballRadius: ballRadius!, ceilingHeight: ceilingNode!.position.y, groundHeight: margin!)
     }
     
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
@@ -321,8 +373,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         bestScoreLabel!.text = "Best: \(gameModel!.highScore)"
         ceilingNode!.addChild(bestScoreLabel!)
     }
-    
-    
     
     private func updateScore(highScore: Int, gameScore: Int) {
         scoreLabel!.text = "\(gameScore)"
