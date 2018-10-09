@@ -86,7 +86,7 @@ class ItemGenerator {
         
         var newRow: [Item] = []
 
-        for i in 0...(numItemsPerRow - 1) {
+        for _ in 0...(numItemsPerRow - 1) {
             if Int.random(in: 1...100) < 60 {
                 let type = pickItem()
     

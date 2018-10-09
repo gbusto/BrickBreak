@@ -401,11 +401,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MVC: A model function
     private func initBallManager(view: SKView, numBalls: Int) {
+        /*
         radius = CGFloat(view.frame.width * 0.018)
         ballManager = BallManager()
         let position = CGPoint(x: view.frame.midX, y: margin! + radius!)
         ballManager!.initBallManager(scene: self, generator: itemGenerator!, numBalls: numBalls, position: position, radius: radius!)
         ballManager!.addBalls()
+        */
     }
     
     // MVC: A view function; anything with the arrow node is a view function for now (until we allow the user to upgrade the arrow pointer style)
