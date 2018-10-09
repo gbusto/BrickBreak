@@ -24,7 +24,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var ceilingNode : SKSpriteNode?
     private var leftWallNode : SKNode?
     private var rightWallNode : SKNode?
-    private var arrowNode : SKShapeNode?
+    
+    private var ballProjection = BallProjection()
     
     // The game model
     private var gameModel: ContinuousGameModel?
@@ -59,7 +60,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Override functions
     override func didMove(to view: SKView) {
         initWalls(view: view)
-        initArrowNode()
         initGameModel()
         initScoreLabel()
         initBestScoreLabel()
@@ -88,8 +88,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             if gameModel!.isReady() {
                 // Show the arrow and update it
                 if inGame(point) {
-                    showArrow()
-                    updateArrow(startPoint: gameModel!.ballManager!.getOriginPoint(), touchPoint: point)
+                    ballProjection.showArrow(scene: self)
+                    ballProjection.updateArrow(startPoint: gameModel!.ballManager!.getOriginPoint(), touchPoint: point)
                 }
             }
         }
@@ -102,11 +102,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             
             if !inGame(point) {
                 // Hide the arrow
-                hideArrow()
+                ballProjection.hideArrow(scene: self)
             }
-            else if gameModel!.isReady() && arrowIsShowing {
+            else if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Update the arrow location
-                updateArrow(startPoint: gameModel!.ballManager!.getOriginPoint(), touchPoint: point)
+                ballProjection.updateArrow(startPoint: gameModel!.ballManager!.getOriginPoint(), touchPoint: point)
             }
         }
     }
@@ -116,7 +116,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         if let touch = touches.first {
             let point = touch.location(in: self)
             
-            if gameModel!.isReady() && arrowIsShowing {
+            if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Set the direction for the balls to shoot
                 gameModel!.prepareTurn(point: point)
                 print("Prepped game model to start a turn")
@@ -124,7 +124,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // Hide the arrow
-        hideArrow()
+        ballProjection.hideArrow(scene: self)
     }
     
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
@@ -322,79 +322,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode!.addChild(bestScoreLabel!)
     }
     
-    // This arrow code should be separated into its own file because the game mode with levels will also use this
-    private func initArrowNode() {
-        arrowNode = SKShapeNode()
-    }
     
-    // Updates where the ball path projection is pointing
-    private func updateArrow(startPoint: CGPoint, touchPoint: CGPoint) {
-        let maxOffset = CGFloat(200)
-        
-        let slope = calcSlope(originPoint: startPoint, touchPoint: touchPoint)
-        let intercept = calcYIntercept(point: touchPoint, slope: slope)
-        
-        var newX = CGFloat(0)
-        var newY = CGFloat(0)
-        
-        if (slope >= 1) || (slope <= -1) {
-            newY = touchPoint.y + maxOffset
-            newX = (newY - intercept) / slope
-        }
-        else if (slope < 1) && (slope > -1) {
-            if (slope < 0) {
-                newX = touchPoint.x - maxOffset
-            }
-            else if (slope > 0) {
-                newX = touchPoint.x + maxOffset
-            }
-            newY = (slope * newX) + intercept
-        }
-        
-        let endPoint = CGPoint(x: newX, y: newY)
-        
-        let pattern: [CGFloat] = [10, 10]
-        let path = CGMutablePath()
-        path.move(to: startPoint)
-        path.addLine(to: endPoint)
-        let dashedPath = path.copy(dashingWithPhase: 0, lengths: pattern)
-        
-        let color = UIColor(red: 119/255, green: 136/255, blue: 153/255, alpha: 1)
-        arrowNode!.path = dashedPath
-        arrowNode!.strokeColor = color
-        arrowNode!.lineWidth = 4
-    }
-    
-    // Shows the ball path projection
-    private func showArrow() {
-        if (false == arrowIsShowing) {
-            self.addChild(arrowNode!)
-            arrowIsShowing = true
-        }
-    }
-    
-    // Hides the ball path projection (after the user shoots the balls or moves their finger out of game play)
-    private func hideArrow() {
-        if arrowIsShowing {
-            self.removeChildren(in: [arrowNode!])
-            arrowIsShowing = false
-        }
-    }
-    
-    private func calcSlope(originPoint: CGPoint, touchPoint: CGPoint) -> CGFloat {
-        let rise = touchPoint.y - originPoint.y
-        let run  = touchPoint.x - originPoint.x
-        
-        return CGFloat(rise / run)
-    }
-    
-    private func calcYIntercept(point: CGPoint, slope: CGFloat) -> CGFloat {
-        // y = mx + b <- We want to find 'b'
-        // (point.y - (point.x * slope)) = b
-        let intercept = point.y - (point.x * slope)
-        
-        return intercept
-    }
     
     private func updateScore(highScore: Int, gameScore: Int) {
         scoreLabel!.text = "\(gameScore)"

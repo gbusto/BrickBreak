@@ -30,6 +30,7 @@
 		03F9A4242151C3D600206A84 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4232151C3D600206A84 /* Item.swift */; };
 		03F9A4262151D34800206A84 /* BallItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4252151D34800206A84 /* BallItem.swift */; };
 		03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4272151D56700206A84 /* HitBlockItem.swift */; };
+		F2677A7E216C3FFF00CE3FC0 /* BallProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +80,7 @@
 		03F9A4232151C3D600206A84 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		03F9A4252151D34800206A84 /* BallItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItem.swift; sourceTree = "<group>"; };
 		03F9A4272151D56700206A84 /* HitBlockItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitBlockItem.swift; sourceTree = "<group>"; };
+		F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallProjection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 				03F9A4232151C3D600206A84 /* Item.swift */,
 				03F9A4212151C37800206A84 /* ItemGenerator.swift */,
 				0317DEA3214B5FA300E976E2 /* GameScene.swift */,
+				F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */,
 				03AE1FC72156E5F0002CEB3F /* Color.swift */,
 				0317DEA7214B5FA300E976E2 /* Main.storyboard */,
 				0317DEAC214B5FA500E976E2 /* LaunchScreen.storyboard */,
@@ -334,6 +337,7 @@
 				03B8B50021691A8600FFD589 /* LevelGameModel.swift in Sources */,
 				03F9A4242151C3D600206A84 /* Item.swift in Sources */,
 				03B8B4F421691A0F00FFD589 /* LevelGameView.swift in Sources */,
+				F2677A7E216C3FFF00CE3FC0 /* BallProjection.swift in Sources */,
 				03AE1FC82156E5F0002CEB3F /* Color.swift in Sources */,
 				03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */,
 				0317DEA4214B5FA300E976E2 /* GameScene.swift in Sources */,
