@@ -85,8 +85,8 @@ class ContinuousGameModel {
         for item in removedItems {
             if item.getNode().name!.starts(with: "ball") {
                 let ball = item as! BallItem
-                let newPoint = CGPoint(x: ball.getNode().position.x, y: groundHeight! + radius)
-                ballManager!.addBall(ball: ball, atPoint: newPoint)
+                //let newPoint = CGPoint(x: ball.getNode().position.x, y: groundHeight! + radius)
+                ballManager!.addBall(ball: ball)
                 print("Added ball \(ball.getNode().name!) to ball manager")
             }
         }
@@ -104,6 +104,19 @@ class ContinuousGameModel {
         }
         
         return removedItems
+    }
+    
+    // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
+    public func handleTurnOver() {
+        ballManager!.checkNewArray()
+        
+        gameScore += 1
+        if gameScore >= highScore {
+            highScore = gameScore
+        }
+        
+        // Go from TURN_OVER state to READY state
+        incrementState()
     }
     
     // MARK: Physics contact functions
@@ -137,20 +150,7 @@ class ContinuousGameModel {
         }
     }
     
-    // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
-    public func handleTurnOver() {
-        ballManager!.checkNewArray()
-        
-        gameScore += 1
-        if gameScore >= highScore {
-            highScore = gameScore
-        }
-        
-        // Go from TURN_OVER state to READY state
-        incrementState()
-    }
-    
-    public func generatorRow() -> [Item] {
+    public func generateRow() -> [Item] {
         return itemGenerator!.generateRow()
     }
     

@@ -255,7 +255,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if item.getNode().name!.starts(with: "ball") {
                 let ball = item as! BallItem
                 let newPoint = CGPoint(x: ball.getNode().position.x, y: margin! + radius!)
-                ballManager!.addBall(ball: ball, atPoint: newPoint)
+                //ballManager!.addBall(ball: ball, atPoint: newPoint)
                 print("Added ball \(ball.getNode().name!) to ball manager")
             }
         }

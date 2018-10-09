@@ -159,11 +159,10 @@ class BallManager {
         addLabel()
     }
     
-    public func addBall(ball: BallItem, atPoint: CGPoint) {
+    public func addBall(ball: BallItem) {//, atPoint: CGPoint) {
         newBallArray.append(ball)
         // Update the ball name to avoid name collisions in the ball manager
         ball.getNode().name! = "bm\(ballArray.count + newBallArray.count)"
-        ball.getNode().run(SKAction.move(to: atPoint, duration: 0.5))
     }
     
     public func shootBall() {

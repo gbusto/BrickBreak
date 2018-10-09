@@ -173,7 +173,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             // Get the newly generated items and add them to the view
-            let items = gameModel!.generatorRow()
+            let items = gameModel!.generateRow()
             if items.count > 0 {
                 for i in 0...(items.count - 1) {
                     let item = items[i]
@@ -230,7 +230,15 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             for item in removedItems {
-                self.removeChildren(in: [item.getNode()])
+                if item is HitBlockItem {
+                    // We want to remove block items from the scene completely
+                    self.removeChildren(in: [item.getNode()])
+                }
+                else {
+                    // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
+                    let newPoint = CGPoint(x: item.getNode().position.x, y: groundNode!.size.height + ballRadius!)
+                    item.getNode().run(SKAction.move(to: newPoint, duration: 0.5))
+                }
             }
         }
     }
