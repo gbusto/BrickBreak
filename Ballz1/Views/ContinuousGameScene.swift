@@ -462,7 +462,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             lossRiskLabel!.text = "One round left!"
         }
         else {
-            lossRiskLabel!.text = ""
+            lossRiskLabel!.text = " "
         }
     }
     

@@ -212,8 +212,8 @@ class ItemGenerator {
                 if item is SpacerItem {
                     continue
                 }
-                // rowHeight*2 allows to check if we are close to losing
-                if (item.getNode().position.y - rowHeight*3) < floor {
+                print("!!!! \(item.getNode().position.y)")
+                if (130 ... 156 ~= item.getNode().position.y) {
                     return true
                 }
             }
