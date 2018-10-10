@@ -212,18 +212,18 @@ class ItemGenerator {
                 if item is SpacerItem {
                     continue
                 }
-                print("!!!! \(item.getNode().position.y)")
-                if (130 ... 156 ~= item.getNode().position.y) {
+                // 131 Double -> Int is the y position of a block about to cause a loss
+                if Int(item.getNode().position.y) == 131 {
+                    print("Loss risk")
                     return true
                 }
             }
         }
-        return false;
+        return false
     }
     
     // Iterate over all items to see if any are too close to the ground
     // "Too close" is defined as: if can't add another item before hitting the ground, we're too close
-    // plastner: I think this function is broken? Im getting early game overs
     public func canAddRow(_ floor: CGFloat, _ rowHeight: CGFloat) -> Bool {
         for row in itemArray {
             for item in row {
@@ -237,7 +237,6 @@ class ItemGenerator {
                 }
             }
         }
-        
         return true
     }
     

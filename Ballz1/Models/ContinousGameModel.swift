@@ -16,7 +16,7 @@ class ContinuousGameModel {
     public var gameScore = Int(0)
     public var highScore = Int(0)
     // Tracks if close to losing
-    public var lossRisk = false
+    public var lossRiskBool = false
     
     public var ballManager: BallManager?
     public var itemGenerator: ItemGenerator?
