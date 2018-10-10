@@ -20,7 +20,7 @@ protocol Item {
     // Returns nothing
     //
     // NOTE: Item position will be set by the view
-    func initItem(generator: ItemGenerator, num: Int, size: CGSize)
+    func initItem(num: Int, size: CGSize)
     
     // This function is called to allow the item to perform any actions before being displayed
     //

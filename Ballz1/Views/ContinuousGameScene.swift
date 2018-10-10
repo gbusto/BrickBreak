@@ -82,8 +82,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         initGameModel()
         initScoreLabel()
         initBestScoreLabel()
-        // Initialize the ball count label
-        ballCountLabel = SKLabelNode(fontNamed: fontName)
         
         rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeRight(_:)))
         rightSwipeGesture!.direction = .right
@@ -218,8 +216,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             prevBallCount = currentBallCount
             addBallCountLabel()
             
-            gameModel!.updateGameState()
-            
             // Check the model to update the score label
             updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
         }
@@ -311,8 +307,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         // The controller also needs a copy of this game model object
         gameModel = ContinuousGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!)
         
+        // Initialize the ball count label
+        ballCountLabel = SKLabelNode(fontNamed: fontName)
+        
         // Add the balls to the scene
-        let ballPosition = CGPoint(x: view!.frame.midX, y: groundNode!.size.height + ballRadius!)
+        var ballPosition = gameModel!.ballManager!.getOriginPoint()
         let balls = gameModel!.getBalls()
         currentBallCount = balls.count
         prevBallCount = balls.count

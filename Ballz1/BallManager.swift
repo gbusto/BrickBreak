@@ -26,6 +26,9 @@ class BallManager {
     
     private var originPoint : CGPoint?
     
+    private var bmState: BallManagerState?
+    static let BallManagerPath = "BallManager"
+    
     // MARK: State values
     // READY state means that all balls are at rest, all animations are complete
     // Changes from this state by GameScene when the user touches the screen to fire balls
@@ -45,20 +48,74 @@ class BallManager {
     private var direction : CGPoint?
     
     
+    // MARK: State handling code
+    struct BallManagerState: Codable {
+        var numberOfBalls: Int
+        var originPoint: CGPoint?
+        
+        enum CodingKeys: String, CodingKey {
+            case numberOfBalls
+            case originPoint
+        }
+    }
+    
+    public func saveState(restorationPath: URL) {
+        let url = restorationPath.appendingPathComponent(BallManager.BallManagerPath)
+        
+        do {
+            // Update the ball manager's state before we save it
+            bmState!.numberOfBalls = numberOfBalls
+            print("Saving ball manager with \(numberOfBalls) number of balls")
+            bmState!.originPoint = originPoint
+            
+            let data = try PropertyListEncoder().encode(self.bmState!)
+            try data.write(to: url)
+            print("Saved ball manager state")
+        }
+        catch {
+            print("Error saving ball manager state: \(error)")
+        }
+    }
+    
+    public func loadState(restorationPath: URL) -> Bool {
+        do {
+            let data = try Data(contentsOf: restorationPath)
+            bmState = try PropertyListDecoder().decode(BallManagerState.self, from: data)
+            print("Loaded ball manager state")
+            return true
+        }
+        catch {
+            print("Error loading ball manager state: \(error)")
+            return false
+        }
+    }
+    
+    
     // MARK: Public functions
-    required init(generator: ItemGenerator, numBalls: Int, radius: CGFloat, restorationPath: String) {
-        numberOfBalls = numBalls
+    required init(numBalls: Int, radius: CGFloat, restorationPath: URL) {
         ballRadius = radius
         
-        for i in 1...numBalls {
+        let url = restorationPath.appendingPathComponent(BallManager.BallManagerPath)
+        if false == loadState(restorationPath: url) {
+            bmState = BallManagerState(numberOfBalls: numBalls, originPoint: nil)
+        }
+
+        numberOfBalls = bmState!.numberOfBalls
+        originPoint = bmState!.originPoint
+        
+        for i in 1...numberOfBalls {
             let ball = BallItem()
             let size = CGSize(width: radius, height: radius)
-            ball.initItem(generator: generator, num: i, size: size)
+            ball.initItem(num: i, size: size)
             ball.getNode().name! = "bm\(i)"
             ballArray.append(ball)
         }
 
         state = READY
+    }
+    
+    required init() {
+        // Empty constructor
     }
     
     public func incrementState() {

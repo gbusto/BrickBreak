@@ -89,7 +89,7 @@ class ItemGenerator {
                     break
                 case HIT_BLOCK:
                     let item = HitBlockItem()
-                    item.initItem(generator: self, num: numItemsGenerated, size: blockSize!)
+                    item.initItem(num: numItemsGenerated, size: blockSize!)
                     let block = item as HitBlockItem
                     block.setColor(color: color)
                     newRow.append(item)
@@ -98,7 +98,7 @@ class ItemGenerator {
                     // Put the ball in the center of its row position
                     let size = CGSize(width: ballRadius!, height: ballRadius!)
                     let item = BallItem()
-                    item.initItem(generator: self, num: numItemsGenerated, size: size)
+                    item.initItem(num: numItemsGenerated, size: size)
                     print("Added ball with number \(numItemsGenerated)")
                     newRow.append(item)
                     break

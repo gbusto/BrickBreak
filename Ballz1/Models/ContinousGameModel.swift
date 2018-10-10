@@ -48,6 +48,8 @@ class ContinuousGameModel {
     static let GameStateURL = ContinuousDirURL.appendingPathComponent("GameState")
     
     
+    // MARK: State handling code
+    // This struct is used for managing persistent data (such as your overall high score, currency amount, what level you're on, etc)
     struct PersistentData: Codable {
         var highScore: Int
         
@@ -58,7 +60,7 @@ class ContinuousGameModel {
         }
     }
     
-    
+    // This struct is used for managing any state from this class that is required to save the user's place
     struct GameState: Codable {
         var gameScore: Int
         
@@ -67,43 +69,16 @@ class ContinuousGameModel {
         }
     }
     
-    // MARK: Initialization functions
-    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat) {
-        // State should always be initialized to READY
-        state = TURN_OVER
-
-        if false == loadState() {
-            persistentData = PersistentData(highScore: highScore)
-            gameState = GameState(gameScore: gameScore)
-        }
-        
-        highScore = persistentData!.highScore
-        print("High score is \(highScore)")
-        gameScore = gameState!.gameScore
-        print("Game score is \(gameScore)")
-        
-        // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
-        itemGenerator = ItemGenerator()
-        itemGenerator!.initGenerator(blockSize: blockSize, ballRadius: ballRadius, numBalls: numberOfBalls, numItems: numberOfItems)
-        
-        ballManager = BallManager(generator: itemGenerator!, numBalls: numberOfBalls, radius: ballRadius, restorationPath: "")
-    }
-    
-    // MARK: Public functions
-    public func getBalls() -> [BallItem] {
-        return ballManager!.ballArray
-    }
-    
-    public func prepareTurn(point: CGPoint) {
-        ballManager!.setDirection(point: point)
-        // Change the ball manager's state from READY to SHOOTING
-        ballManager!.incrementState()
-        // Change our state from READY to MID_TURN
-        incrementState()
-    }
-    
     public func saveState() {
         do {
+            // Save persistent data (for now it's just the high score
+            if persistentData!.highScore != highScore {
+                persistentData!.highScore = highScore
+            }
+            
+            // Save game state stuff (right now it's just the current game score)
+            gameState!.gameScore = gameScore
+            
             // Create the App directory Documents/BB
             if false == FileManager.default.fileExists(atPath: ContinuousGameModel.AppDirURL.path) {
                 try FileManager.default.createDirectory(at: ContinuousGameModel.AppDirURL, withIntermediateDirectories: true, attributes: nil)
@@ -125,6 +100,9 @@ class ContinuousGameModel {
             let gameData = try PropertyListEncoder().encode(self.gameState!)
             try gameData.write(to: ContinuousGameModel.GameStateURL, options: .completeFileProtectionUnlessOpen)
             print("Wrote game state data to file")
+            
+            // Save the ball manager's state
+            ballManager!.saveState(restorationPath: ContinuousGameModel.ContinuousDirURL)
         }
         catch {
             print("Error encoding game state: \(error)")
@@ -149,6 +127,40 @@ class ContinuousGameModel {
             print("Error decoding game state: \(error)")
             return false
         }
+    }
+    
+    // MARK: Initialization functions
+    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat) {
+        // State should always be initialized to READY
+        state = TURN_OVER
+        
+        if false == loadState() {
+            persistentData = PersistentData(highScore: highScore)
+            gameState = GameState(gameScore: gameScore)
+        }
+        
+        highScore = persistentData!.highScore
+        gameScore = gameState!.gameScore
+        
+        // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
+        itemGenerator = ItemGenerator()
+        itemGenerator!.initGenerator(blockSize: blockSize, ballRadius: ballRadius, numBalls: numberOfBalls, numItems: numberOfItems)
+        
+        // This function will either load ball manager with a saved state or the default ball manager state
+        ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationPath: ContinuousGameModel.ContinuousDirURL)
+    }
+    
+    // MARK: Public functions
+    public func getBalls() -> [BallItem] {
+        return ballManager!.ballArray
+    }
+    
+    public func prepareTurn(point: CGPoint) {
+        ballManager!.setDirection(point: point)
+        // Change the ball manager's state from READY to SHOOTING
+        ballManager!.incrementState()
+        // Change our state from READY to MID_TURN
+        incrementState()
     }
     
     public func shootBall() -> Bool {
@@ -197,16 +209,6 @@ class ContinuousGameModel {
         
         // Go from TURN_OVER state to WAITING state
         incrementState()
-    }
-    
-    public func updateGameState() {
-        // Save persistent data (for now it's just the high score
-        if persistentData!.highScore != highScore {
-            persistentData!.highScore = highScore
-        }
-        
-        // Save game state stuff (right now it's just the current game score)
-        gameState!.gameScore = gameScore
     }
     
     // MARK: Physics contact functions
