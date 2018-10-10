@@ -44,12 +44,9 @@ class BallManager {
     
     private var direction : CGPoint?
     
-    private var fontName = "KohinoorBangla-Regular"
-    private var labelNode : SKLabelNode?
-    
     
     // MARK: Public functions
-    public func initBallManager(generator: ItemGenerator, numBalls: Int, radius: CGFloat) {
+    required init(generator: ItemGenerator, numBalls: Int, radius: CGFloat, restorationPath: String) {
         numberOfBalls = numBalls
         ballRadius = radius
         
@@ -60,8 +57,6 @@ class BallManager {
             ball.getNode().name! = "bm\(i)"
             ballArray.append(ball)
         }
-        
-        labelNode = SKLabelNode()
 
         state = READY
     }

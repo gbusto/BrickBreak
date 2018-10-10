@@ -20,7 +20,7 @@ class ContinuousGameModel {
     public var itemGenerator: ItemGenerator?
     
     // MARK: Private properties
-    private var gameState: GameState?
+    private var persistentData: PersistentData?
     
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
@@ -37,10 +37,13 @@ class ContinuousGameModel {
     
     // For storing data
     static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
-    static let DataURL = AppDirectory.appendingPathComponent("continuous")
+    // This is the main app directory
+    static let AppURL = AppDirectory.appendingPathComponent("BB")
+    // This is persistent data that will contain the high score and currency
+    static let PersistentDataURL = AppURL.appendingPathComponent("PersistentData")
     
     
-    struct GameState: Codable {
+    struct PersistentData: Codable {
         var highScore: Int
         
         // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
@@ -56,17 +59,16 @@ class ContinuousGameModel {
         state = TURN_OVER
 
         if false == loadState() {
-            gameState = GameState(highScore: highScore)
+            persistentData = PersistentData(highScore: highScore)
         }
         
-        highScore = gameState!.highScore
+        highScore = persistentData!.highScore
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
         itemGenerator = ItemGenerator()
         itemGenerator!.initGenerator(blockSize: blockSize, ballRadius: ballRadius, numBalls: numberOfBalls, numItems: numberOfItems)
         
-        ballManager = BallManager()
-        ballManager!.initBallManager(generator: itemGenerator!, numBalls: numberOfBalls, radius: ballRadius)
+        ballManager = BallManager(generator: itemGenerator!, numBalls: numberOfBalls, radius: ballRadius, restorationPath: "")
     }
     
     // MARK: Public functions
@@ -84,20 +86,25 @@ class ContinuousGameModel {
     
     public func saveState() {
         do {
-            let data = try PropertyListEncoder().encode(self.gameState!)
-            try data.write(to: ContinuousGameModel.DataURL, options: .completeFileProtectionUnlessOpen)
+            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.AppURL.path) {
+                try FileManager.default.createDirectory(at: ContinuousGameModel.AppURL, withIntermediateDirectories: true, attributes: nil)
+            }
+            let data = try PropertyListEncoder().encode(self.persistentData!)
+            try data.write(to: ContinuousGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
+            print("URL is \(ContinuousGameModel.PersistentDataURL)")
             print("Saved game state")
         }
         catch {
+            print("URL is \(ContinuousGameModel.PersistentDataURL)")
             print("Error encoding game state: \(error)")
         }
     }
     
     public func loadState() -> Bool {
         do {
-            gameState = GameState(highScore: 0)
-            let data = try Data(contentsOf: ContinuousGameModel.DataURL)
-            gameState = try PropertyListDecoder().decode(GameState.self, from: data)
+            persistentData = PersistentData(highScore: 0)
+            let data = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
+            persistentData = try PropertyListDecoder().decode(PersistentData.self, from: data)
             print("Successfully loaded game state")
             return true
         }
@@ -149,7 +156,7 @@ class ContinuousGameModel {
         gameScore += 1
         if gameScore >= highScore {
             highScore = gameScore
-            gameState!.highScore = highScore
+            persistentData!.highScore = highScore
         }
         
         // Go from TURN_OVER state to WAITING state
