@@ -277,6 +277,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    public func saveState() {
+        print("Saving game state")
+        gameModel!.saveState()
+    }
+    
     // MARK: Public functions
     // Handle a right swipe to fast forward
     @objc public func handleSwipeRight(_ sender: UISwipeGestureRecognizer) {
@@ -302,7 +307,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // Initialize the game model (this is where the code for loading a saved game model will go)
     private func initGameModel() {
         // The controller also needs a copy of this game model object
-        gameModel = ContinuousGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, ceilingHeight: ceilingNode!.position.y, groundHeight: margin!)
+        gameModel = ContinuousGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!)
         
         // Add the balls to the scene
         let ballPosition = CGPoint(x: view!.frame.midX, y: groundNode!.size.height + ballRadius!)

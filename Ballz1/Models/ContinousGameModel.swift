@@ -20,8 +20,7 @@ class ContinuousGameModel {
     public var itemGenerator: ItemGenerator?
     
     // MARK: Private properties
-    private var ceilingHeight: CGFloat?
-    private var groundHeight: CGFloat?
+    private var gameState: GameState?
     
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
@@ -36,18 +35,35 @@ class ContinuousGameModel {
     // WAITING means the game model is waiting for item animations to finish (i.e. the view tells the items to shift down one row while in the TURN_OVER state, so we remain in this state until all animations are finished)
     private var WAITING = Int(3)
     
+    // For storing data
+    static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let DataURL = AppDirectory.appendingPathComponent("continuous")
+    
+    
+    struct GameState: Codable {
+        var highScore: Int
+        
+        // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
+        // Read Apple's documentation on CodingKey protocol and Codable
+        enum CodingKeys: String, CodingKey {
+            case highScore
+        }
+    }
+    
     // MARK: Initialization functions
-    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, ceilingHeight: CGFloat, groundHeight: CGFloat) {
+    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat) {
         // State should always be initialized to READY
         state = TURN_OVER
+
+        if false == loadState() {
+            gameState = GameState(highScore: highScore)
+        }
         
-        self.ceilingHeight = ceilingHeight
-        self.groundHeight = groundHeight
+        highScore = gameState!.highScore
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
         itemGenerator = ItemGenerator()
-        itemGenerator!.initGenerator(blockSize: blockSize, ballRadius: ballRadius, numBalls: numberOfBalls, numItems: numberOfItems,
-                                      ceiling: ceilingHeight, ground: groundHeight)
+        itemGenerator!.initGenerator(blockSize: blockSize, ballRadius: ballRadius, numBalls: numberOfBalls, numItems: numberOfItems)
         
         ballManager = BallManager()
         ballManager!.initBallManager(generator: itemGenerator!, numBalls: numberOfBalls, radius: ballRadius)
@@ -64,6 +80,31 @@ class ContinuousGameModel {
         ballManager!.incrementState()
         // Change our state from READY to MID_TURN
         incrementState()
+    }
+    
+    public func saveState() {
+        do {
+            let data = try PropertyListEncoder().encode(self.gameState!)
+            try data.write(to: ContinuousGameModel.DataURL, options: .completeFileProtectionUnlessOpen)
+            print("Saved game state")
+        }
+        catch {
+            print("Error encoding game state: \(error)")
+        }
+    }
+    
+    public func loadState() -> Bool {
+        do {
+            gameState = GameState(highScore: 0)
+            let data = try Data(contentsOf: ContinuousGameModel.DataURL)
+            gameState = try PropertyListDecoder().decode(GameState.self, from: data)
+            print("Successfully loaded game state")
+            return true
+        }
+        catch {
+            print("Error decoding game state: \(error)")
+            return false
+        }
     }
     
     public func shootBall() -> Bool {
@@ -108,6 +149,7 @@ class ContinuousGameModel {
         gameScore += 1
         if gameScore >= highScore {
             highScore = gameScore
+            gameState!.highScore = highScore
         }
         
         // Go from TURN_OVER state to WAITING state

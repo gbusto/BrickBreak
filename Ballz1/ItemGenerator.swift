@@ -35,11 +35,6 @@ class ItemGenerator {
     // Number of items that this generator has generated
     private var numItemsGenerated = Int(0)
     
-    // ceilingHeight is used to know where items should be generated
-    private var ceilingHeight : CGFloat?
-    // groundHeight is used to know if another row can be generated; if not, it means the game is over
-    private var groundHeight : CGFloat?
-    
     private var blockSize: CGSize?
     private var ballRadius: CGFloat?
     
@@ -59,16 +54,13 @@ class ItemGenerator {
     private var currentColor : Color?
     
     // MARK: Public functions
-    public func initGenerator(blockSize: CGSize, ballRadius: CGFloat, numBalls: Int, numItems: Int,
-                              ceiling: CGFloat, ground: CGFloat) {
+    public func initGenerator(blockSize: CGSize, ballRadius: CGFloat, numBalls: Int, numItems: Int) {
         
         self.blockSize = blockSize
         self.ballRadius = ballRadius
         numberOfBalls = numBalls
         maxHitCount = numBalls * 2
         numItemsPerRow = numItems
-        ceilingHeight = ceiling
-        groundHeight = ground
         currentColor = Color()
         
         // Initialize the allowed item types with only one type for now
