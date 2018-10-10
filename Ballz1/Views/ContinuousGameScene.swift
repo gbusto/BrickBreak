@@ -71,6 +71,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var contactTestBitMask = UInt32(0b0001)
     private var groundCategoryBitmask = UInt32(0b0101)
     
+    // Detecting loss risk
+    private var lossRiskLabel: SKLabelNode?
+    
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -82,6 +85,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         initGameModel()
         initScoreLabel()
         initBestScoreLabel()
+        initLossRiskLabel()
         // Initialize the ball count label
         ballCountLabel = SKLabelNode(fontNamed: fontName)
         
@@ -219,12 +223,22 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             addBallCountLabel()
             
             // Check the model to update the score label
-            updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
+            updateStatusBar(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore, lossRisk: gameModel!.lossRisk)
         }
         
         if gameModel!.isWaiting() {
             // Check to see if the game ended after all animations are complete
             if gameModel!.animationsDone() {
+                // If we are 2 rounds away from losing
+                if true == gameModel!.almostGameOver(floor: groundNode!.size.height, rowHeight: rowHeight!) {
+                    // Alert user that they need to destroy the closest blocks
+                    gameModel!.lossRisk = true;
+                }
+                else {
+                    // Reset loss risk if bottom blocks have been cleared
+                    gameModel!.lossRisk = false;
+                }
+                // If we can't add another row
                 if false == gameModel!.gameOver(floor: groundNode!.size.height, rowHeight: rowHeight!) {
                     // Show gameover overlay
                     showGameOverNode()
@@ -427,9 +441,29 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode!.addChild(bestScoreLabel!)
     }
     
-    private func updateScore(highScore: Int, gameScore: Int) {
+    // Initialize loss risk notification
+    private func initLossRiskLabel() {
+        let pos = CGPoint(x: ceilingNode!.size.width, y: ceilingNode!.size.height / 2)
+        lossRiskLabel = SKLabelNode()
+        lossRiskLabel!.zPosition = 103
+        lossRiskLabel!.position = pos
+        lossRiskLabel!.fontName = fontName
+        lossRiskLabel!.fontSize = margin! * 0.30
+        lossRiskLabel!.verticalAlignmentMode = .center
+        lossRiskLabel!.horizontalAlignmentMode = .right
+        lossRiskLabel!.text = ""
+        ceilingNode!.addChild(lossRiskLabel!)
+    }
+    
+    private func updateStatusBar(highScore: Int, gameScore: Int, lossRisk: Bool) {
         scoreLabel!.text = "\(gameScore)"
         bestScoreLabel!.text = "Best: \(highScore)"
+        if lossRisk == true {
+            lossRiskLabel!.text = "One round left!"
+        }
+        else {
+            lossRiskLabel!.text = ""
+        }
     }
     
     // Flashes the fast forward image to give the user some feedback about what's happening
@@ -494,6 +528,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             self.removeChildren(in: [ffNode, label])
         }
     }
+    
     
     // Shows the game over overlay
     private func showGameOverNode() {

@@ -204,8 +204,26 @@ class ItemGenerator {
         return removedItems
     }
     
+    // Iterate over all items to see if any are at risk
+    // "At risk" is defined as: if two more turns would lose the game
+    public func lossRisk(_ floor: CGFloat, _ rowHeight: CGFloat) -> Bool {
+        for row in itemArray {
+            for item in row {
+                if item is SpacerItem {
+                    continue
+                }
+                // rowHeight*2 allows to check if we are close to losing
+                if (item.getNode().position.y - rowHeight*3) < floor {
+                    return true
+                }
+            }
+        }
+        return false;
+    }
+    
     // Iterate over all items to see if any are too close to the ground
     // "Too close" is defined as: if can't add another item before hitting the ground, we're too close
+    // plastner: I think this function is broken? Im getting early game overs
     public func canAddRow(_ floor: CGFloat, _ rowHeight: CGFloat) -> Bool {
         for row in itemArray {
             for item in row {
