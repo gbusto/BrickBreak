@@ -13,18 +13,18 @@ class BallManager {
     
     // MARK: Public properties
     public var numberOfBalls = Int(0)
-    public var ballArray : [BallItem] = []
+    public var ballArray: [BallItem] = []
     
     // MARK: Private properties
-    private var ballRadius : CGFloat?
+    private var ballRadius: CGFloat?
     // Balls that have just been added from the ItemGenerator
-    private var newBallArray : [BallItem] = []
+    private var newBallArray: [BallItem] = []
     
     private var firstBallReturned = false
     
     private var numBallsActive = 0
     
-    private var originPoint : CGPoint?
+    private var originPoint: CGPoint?
     
     private var bmState: BallManagerState?
     static let BallManagerPath = "BallManager"
@@ -59,13 +59,12 @@ class BallManager {
         }
     }
     
-    public func saveState(restorationPath: URL) {
-        let url = restorationPath.appendingPathComponent(BallManager.BallManagerPath)
+    public func saveState(restorationURL: URL) {
+        let url = restorationURL.appendingPathComponent(BallManager.BallManagerPath)
         
         do {
             // Update the ball manager's state before we save it
             bmState!.numberOfBalls = numberOfBalls
-            print("Saving ball manager with \(numberOfBalls) number of balls")
             bmState!.originPoint = originPoint
             
             let data = try PropertyListEncoder().encode(self.bmState!)
@@ -77,9 +76,9 @@ class BallManager {
         }
     }
     
-    public func loadState(restorationPath: URL) -> Bool {
+    public func loadState(restorationURL: URL) -> Bool {
         do {
-            let data = try Data(contentsOf: restorationPath)
+            let data = try Data(contentsOf: restorationURL)
             bmState = try PropertyListDecoder().decode(BallManagerState.self, from: data)
             print("Loaded ball manager state")
             return true
@@ -92,11 +91,11 @@ class BallManager {
     
     
     // MARK: Public functions
-    required init(numBalls: Int, radius: CGFloat, restorationPath: URL) {
+    required init(numBalls: Int, radius: CGFloat, restorationURL: URL) {
         ballRadius = radius
         
-        let url = restorationPath.appendingPathComponent(BallManager.BallManagerPath)
-        if false == loadState(restorationPath: url) {
+        let url = restorationURL.appendingPathComponent(BallManager.BallManagerPath)
+        if false == loadState(restorationURL: url) {
             bmState = BallManagerState(numberOfBalls: numBalls, originPoint: nil)
         }
 
@@ -209,11 +208,9 @@ class BallManager {
             }
             if false == ball.isActive {
                 if false == firstBallReturned {
-                    print("First ball returned at point \(ball.node!.position)")
                     firstBallReturned = true
                     originPoint = ball.node!.position
                 }
-                print("Telling ball to stop at origin point \(originPoint!)")
                 ball.stop(point: originPoint!)
             }
         }

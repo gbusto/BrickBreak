@@ -12,11 +12,11 @@ import GameplayKit
 class HitBlockItem: Item {
     // MARK: Public properties
     public var node : SKSpriteNode?
+    public var hitCount : Int?
     
     // MARK: Private properties
     private var size : CGSize?
     private var position : CGPoint?
-    private var hitCount : Int?
     
     private var fontName = "KohinoorBangla-Regular"
     private var labelNode : SKLabelNode?
@@ -83,6 +83,11 @@ class HitBlockItem: Item {
     // MARK: Public functions
     public func setColor(color: UIColor) {
         node!.color = color
+    }
+    
+    public func updateHitCount(count: Int) {
+        hitCount = count
+        labelNode!.text = "\(hitCount!)"
     }
     
     // MARK: Private functions

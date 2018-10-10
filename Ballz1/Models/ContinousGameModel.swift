@@ -102,7 +102,10 @@ class ContinuousGameModel {
             print("Wrote game state data to file")
             
             // Save the ball manager's state
-            ballManager!.saveState(restorationPath: ContinuousGameModel.ContinuousDirURL)
+            ballManager!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
+            
+            // Save the item generator's state
+            itemGenerator!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
         }
         catch {
             print("Error encoding game state: \(error)")
@@ -111,6 +114,13 @@ class ContinuousGameModel {
     
     public func loadState() -> Bool {
         do {
+            /*
+            try FileManager.default.removeItem(atPath: ContinuousGameModel.PersistentDataURL.path)
+            try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
+            try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
+            return false
+            */
+            
             // Load the persistent data
             let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
             persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
@@ -132,8 +142,6 @@ class ContinuousGameModel {
     // MARK: Initialization functions
     required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat) {
         // State should always be initialized to READY
-        state = TURN_OVER
-        
         if false == loadState() {
             persistentData = PersistentData(highScore: highScore)
             gameState = GameState(gameScore: gameScore)
@@ -142,12 +150,14 @@ class ContinuousGameModel {
         highScore = persistentData!.highScore
         gameScore = gameState!.gameScore
         
-        // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
-        itemGenerator = ItemGenerator()
-        itemGenerator!.initGenerator(blockSize: blockSize, ballRadius: ballRadius, numBalls: numberOfBalls, numItems: numberOfItems)
-        
         // This function will either load ball manager with a saved state or the default ball manager state
-        ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationPath: ContinuousGameModel.ContinuousDirURL)
+        ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: ContinuousGameModel.ContinuousDirURL)
+        
+        // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
+        itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius, maxHitCount: ballManager!.numberOfBalls * 2, numItems: numberOfItems, restorationURL: ContinuousGameModel.ContinuousDirURL)
+        if 0 == itemGenerator!.itemArray.count {
+            state = TURN_OVER
+        }
     }
     
     // MARK: Public functions
@@ -179,7 +189,6 @@ class ContinuousGameModel {
             if item.getNode().name!.starts(with: "ball") {
                 let ball = item as! BallItem
                 ballManager!.addBall(ball: ball)
-                print("Added ball \(ball.getNode().name!) to ball manager")
             }
         }
         
@@ -218,7 +227,6 @@ class ContinuousGameModel {
         if nameA.starts(with: "bm") {
             if "ground" == nameB {
                 ballManager!.markBallInactive(name: nameA)
-                print("Ball hit the ground")
             }
             else if nameB.starts(with: "block") {
                 itemGenerator!.hit(name: nameB)
@@ -231,7 +239,6 @@ class ContinuousGameModel {
         if nameB.starts(with: "bm") {
             if "ground" == nameA {
                 ballManager!.markBallInactive(name: nameB)
-                print("Ball hit the ground")
             }
             else if nameA.starts(with: "block") {
                 itemGenerator!.hit(name: nameA)

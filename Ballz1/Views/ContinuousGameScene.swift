@@ -107,8 +107,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             if gameModel!.isReady() {
                 // Show the arrow and update it
                 if inGame(point) {
+                    let originPoint = gameModel!.ballManager!.getOriginPoint()
                     ballProjection.showArrow(scene: self)
-                    ballProjection.updateArrow(startPoint: gameModel!.ballManager!.getOriginPoint(), touchPoint: point)
+                    ballProjection.updateArrow(startPoint: originPoint, touchPoint: point)
                 }
             }
         }
@@ -125,7 +126,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             }
             else if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Update the arrow location
-                ballProjection.updateArrow(startPoint: gameModel!.ballManager!.getOriginPoint(), touchPoint: point)
+                let originPoint = gameModel!.ballManager!.getOriginPoint()
+                ballProjection.updateArrow(startPoint: originPoint, touchPoint: point)
             }
         }
     }
@@ -171,38 +173,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             
             // Get the newly generated items and add them to the view
             let items = gameModel!.generateRow()
-            if items.count > 0 {
-                for i in 0...(items.count - 1) {
-                    let item = items[i]
-                    if item is SpacerItem {
-                        print("Spacer item")
-                        continue
-                    }
-                    
-                    var pos = CGPoint(x: 0, y: 0)
-                    if item is HitBlockItem {
-                        print("Hit block item")
-                        let posX = CGFloat(i) * rowHeight!
-                        let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * 1))
-                        pos = CGPoint(x: posX, y: posY)
-                    }
-                    else if item is BallItem {
-                        print("Ball item")
-                        let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2)
-                        let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * 1)) + (rowHeight! / 2)
-                        pos = CGPoint(x: posX, y: posY)
-                    }
-                    
-                    // The item will fade in
-                    item.getNode().alpha = 0
-                    item.loadItem(position: pos)
-                    self.addChild(item.getNode())
-                }
-                
-                // Move the items down in the view
-                let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
-                gameModel!.animateItems(action: action)
-            }
+            addRowToView(rowNum: 1, items: items)
+            
+            // Move the items down in the view
+            let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
+            gameModel!.animateItems(action: action)
             
             // Display the label showing how many balls the user has (this needs to be done after we have collected any new balls the user acquired)
             currentBallCount = gameModel!.getBalls().count
@@ -302,6 +277,34 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    private func addRowToView(rowNum: Int, items: [Item]) {
+        if items.count > 0 {
+            for i in 0...(items.count - 1) {
+                let item = items[i]
+                if item is SpacerItem {
+                    continue
+                }
+                
+                var pos = CGPoint(x: 0, y: 0)
+                if item is HitBlockItem {
+                    let posX = CGFloat(i) * rowHeight!
+                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
+                    pos = CGPoint(x: posX, y: posY)
+                }
+                else if item is BallItem {
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2)
+                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum))) + (rowHeight! / 2)
+                    pos = CGPoint(x: posX, y: posY)
+                }
+                
+                // The item will fade in
+                item.getNode().alpha = 0
+                item.loadItem(position: pos)
+                self.addChild(item.getNode())
+            }
+        }
+    }
+    
     // Initialize the game model (this is where the code for loading a saved game model will go)
     private func initGameModel() {
         // The controller also needs a copy of this game model object
@@ -311,7 +314,13 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ballCountLabel = SKLabelNode(fontNamed: fontName)
         
         // Add the balls to the scene
-        var ballPosition = gameModel!.ballManager!.getOriginPoint()
+        var ballPosition = CGPoint(x: view!.frame.midX, y: groundNode!.size.height + ballRadius!)
+        if gameModel!.isReady() {
+            // This means we loaded a saved game state so get the origin point
+            ballPosition = gameModel!.ballManager!.getOriginPoint()
+            addBallCountLabel()
+        }
+        
         let balls = gameModel!.getBalls()
         currentBallCount = balls.count
         prevBallCount = balls.count
@@ -320,6 +329,17 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             ball.resetBall()
             self.addChild(ball.getNode())
         }
+        
+        let itemArray = gameModel!.itemGenerator!.itemArray
+        var count = itemArray.count
+        for row in itemArray {
+            addRowToView(rowNum: count, items: row)
+            count -= 1
+        }
+        
+        // Move the items down in the view
+        let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
+        gameModel!.animateItems(action: action)
     }
     
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
