@@ -21,6 +21,7 @@ class ContinuousGameModel {
     
     // MARK: Private properties
     private var persistentData: PersistentData?
+    private var gameState: GameState?
     
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
@@ -38,9 +39,13 @@ class ContinuousGameModel {
     // For storing data
     static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     // This is the main app directory
-    static let AppURL = AppDirectory.appendingPathComponent("BB")
+    static let AppDirURL = AppDirectory.appendingPathComponent("BB")
     // This is persistent data that will contain the high score and currency
-    static let PersistentDataURL = AppURL.appendingPathComponent("PersistentData")
+    static let PersistentDataURL = AppDirURL.appendingPathComponent("PersistentData")
+    // The directory to store game state for this game type
+    static let ContinuousDirURL = AppDirURL.appendingPathComponent("ContinuousDir")
+    // The path where game state is stored for this game mode
+    static let GameStateURL = ContinuousDirURL.appendingPathComponent("GameState")
     
     
     struct PersistentData: Codable {
@@ -53,6 +58,15 @@ class ContinuousGameModel {
         }
     }
     
+    
+    struct GameState: Codable {
+        var gameScore: Int
+        
+        enum CodingKeys: String, CodingKey {
+            case gameScore
+        }
+    }
+    
     // MARK: Initialization functions
     required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat) {
         // State should always be initialized to READY
@@ -60,9 +74,13 @@ class ContinuousGameModel {
 
         if false == loadState() {
             persistentData = PersistentData(highScore: highScore)
+            gameState = GameState(gameScore: gameScore)
         }
         
         highScore = persistentData!.highScore
+        print("High score is \(highScore)")
+        gameScore = gameState!.gameScore
+        print("Game score is \(gameScore)")
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
         itemGenerator = ItemGenerator()
@@ -86,26 +104,45 @@ class ContinuousGameModel {
     
     public func saveState() {
         do {
-            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.AppURL.path) {
-                try FileManager.default.createDirectory(at: ContinuousGameModel.AppURL, withIntermediateDirectories: true, attributes: nil)
+            // Create the App directory Documents/BB
+            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.AppDirURL.path) {
+                try FileManager.default.createDirectory(at: ContinuousGameModel.AppDirURL, withIntermediateDirectories: true, attributes: nil)
+                print("Created app directory in Documents")
             }
-            let data = try PropertyListEncoder().encode(self.persistentData!)
-            try data.write(to: ContinuousGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
-            print("URL is \(ContinuousGameModel.PersistentDataURL)")
-            print("Saved game state")
+            
+            // Create the directory for this game mode (Documents/BB/ContinuousDir)
+            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.ContinuousDirURL.path) {
+                try FileManager.default.createDirectory(at: ContinuousGameModel.ContinuousDirURL, withIntermediateDirectories: true, attributes: nil)
+                print("Created directory for continuous game state")
+            }
+            
+            // Save the persistent data
+            let pData = try PropertyListEncoder().encode(self.persistentData!)
+            try pData.write(to: ContinuousGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
+            print("Wrote persistent data to file")
+            
+            // Save the game state
+            let gameData = try PropertyListEncoder().encode(self.gameState!)
+            try gameData.write(to: ContinuousGameModel.GameStateURL, options: .completeFileProtectionUnlessOpen)
+            print("Wrote game state data to file")
         }
         catch {
-            print("URL is \(ContinuousGameModel.PersistentDataURL)")
             print("Error encoding game state: \(error)")
         }
     }
     
     public func loadState() -> Bool {
         do {
-            persistentData = PersistentData(highScore: 0)
-            let data = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
-            persistentData = try PropertyListDecoder().decode(PersistentData.self, from: data)
-            print("Successfully loaded game state")
+            // Load the persistent data
+            let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
+            persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
+            print("Loaded persistent data")
+            
+            // Load game state for this game mode
+            let gameData = try Data(contentsOf: ContinuousGameModel.GameStateURL)
+            gameState = try PropertyListDecoder().decode(GameState.self, from: gameData)
+            print("Loaded game state")
+            
             return true
         }
         catch {
@@ -156,11 +193,20 @@ class ContinuousGameModel {
         gameScore += 1
         if gameScore >= highScore {
             highScore = gameScore
-            persistentData!.highScore = highScore
         }
         
         // Go from TURN_OVER state to WAITING state
         incrementState()
+    }
+    
+    public func updateGameState() {
+        // Save persistent data (for now it's just the high score
+        if persistentData!.highScore != highScore {
+            persistentData!.highScore = highScore
+        }
+        
+        // Save game state stuff (right now it's just the current game score)
+        gameState!.gameScore = gameScore
     }
     
     // MARK: Physics contact functions

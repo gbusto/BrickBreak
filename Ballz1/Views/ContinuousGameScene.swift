@@ -218,6 +218,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             prevBallCount = currentBallCount
             addBallCountLabel()
             
+            gameModel!.updateGameState()
+            
             // Check the model to update the score label
             updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
         }
