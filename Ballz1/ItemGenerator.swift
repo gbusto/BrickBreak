@@ -204,6 +204,24 @@ class ItemGenerator {
         return removedItems
     }
     
+    // Iterate over all items to see if any are at risk
+    // "At risk" is defined as: if two more turns would lose the game
+    public func lossRisk(_ floor: CGFloat, _ rowHeight: CGFloat) -> Bool {
+        for row in itemArray {
+            for item in row {
+                if item is SpacerItem {
+                    continue
+                }
+                // 131 Double -> Int is the y position of a block about to cause a loss
+                if Int(item.getNode().position.y) == 131 {
+                    print("Loss risk")
+                    return true
+                }
+            }
+        }
+        return false
+    }
+    
     // Iterate over all items to see if any are too close to the ground
     // "Too close" is defined as: if can't add another item before hitting the ground, we're too close
     public func canAddRow(_ floor: CGFloat, _ rowHeight: CGFloat) -> Bool {
@@ -219,7 +237,6 @@ class ItemGenerator {
                 }
             }
         }
-        
         return true
     }
     

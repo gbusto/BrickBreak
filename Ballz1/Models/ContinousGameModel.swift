@@ -15,6 +15,8 @@ class ContinuousGameModel {
     // MARK: Public properties
     public var gameScore = Int(0)
     public var highScore = Int(0)
+    // Tracks if close to losing
+    public var lossRiskBool = false
     
     public var ballManager: BallManager?
     public var itemGenerator: ItemGenerator?
@@ -25,6 +27,8 @@ class ContinuousGameModel {
     
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
+    
+
     
     private var state = Int(0)
     // READY means the game model is ready to go
@@ -160,6 +164,10 @@ class ContinuousGameModel {
             return true
         }
         return false
+    }
+
+    public func almostGameOver(floor: CGFloat, rowHeight: CGFloat) -> Bool {
+        return itemGenerator!.lossRisk(floor, rowHeight)
     }
     
     // The floor of the game scene; if another row doesn't fit
