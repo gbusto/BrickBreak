@@ -205,8 +205,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         // Wait for animations to finish and then check for game over
         if gameModel!.isWaiting() {
-            // Check to see if the game ended after all animations are complete
             if gameModel!.animationsDone() {
+                // Check to see if the game ended after all animations are complete
                 if gameModel!.gameOver(floor: groundNode!.size.height, rowHeight: rowHeight!) {
                     // Show gameover overlay
                     showGameOverNode()
@@ -214,6 +214,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     
                     // Display Continue? graphic
                     // Show an ad
+                }
+                // Check to see if we are at risk of losing the game
+                else if gameModel!.lossRisk(floor: groundNode!.size.height, rowHeight: rowHeight!) {
+                    // Flash notification to user
+                    flashWarning()
                 }
             }
         }
@@ -692,5 +697,19 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         label.run(SKAction.sequence([action1, action3])) {
             self.scene!.removeChildren(in: [label])
         }
+    }
+    
+    private func flashWarning() {
+        let width = view!.frame.width
+        let node = SKSpriteNode(imageNamed: "warning")
+        node.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
+        node.size = CGSize(width: width, height: width)
+        node.zPosition = 105
+        node.alpha = 0
+        self.addChild(node)
+        
+        let action1 = SKAction.fadeAlpha(by: 0.3, duration: 0.5)
+        let action2 = SKAction.fadeOut(withDuration: 0.5)
+        node.run(SKAction.sequence([action1, action2, action1, action2]))
     }
 }
