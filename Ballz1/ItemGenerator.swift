@@ -266,18 +266,26 @@ class ItemGenerator {
         
         for i in 0...(itemArray.count - 1) {
             let row = itemArray[i]
+            var newRow: [Item] = []
             
-            let newRow = row.filter {
+            // Remove items that should be removed and add them to an array that we will return
+            // If an item is removed, replace it with a spacer item
+            let _ = row.filter {
                 // Perform a remove action if needed
                 if $0.removeItem() {
                     // Remove this item from the array if that evaluates to true (meaning it's time to remove the item)
                     removedItems.append($0)
+                    // Replace it with a spacer item
+                    let item = SpacerItem()
+                    newRow.append(item)
                     return false
                 }
                 // Keep this item in the array
+                newRow.append($0)
                 return true
             }
             
+            // Assign the newly created row to this index
             itemArray[i] = newRow
         }
         
