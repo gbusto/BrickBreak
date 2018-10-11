@@ -36,6 +36,8 @@ class ContinuousGameModel {
     // WAITING means the game model is waiting for item animations to finish (i.e. the view tells the items to shift down one row while in the TURN_OVER state, so we remain in this state until all animations are finished)
     private var WAITING = Int(3)
     
+    private var GAME_OVER = Int(255)
+    
     // For storing data
     static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     // This is the main app directory
@@ -70,31 +72,52 @@ class ContinuousGameModel {
     }
     
     public func saveState() {
+        savePersistentState()
+        saveGameState()
+    }
+    
+    public func savePersistentState() {
         do {
-            // Save persistent data (for now it's just the high score
-            if persistentData!.highScore != highScore {
-                persistentData!.highScore = highScore
-            }
-            
-            // Save game state stuff (right now it's just the current game score)
-            gameState!.gameScore = gameScore
-            
             // Create the App directory Documents/BB
             if false == FileManager.default.fileExists(atPath: ContinuousGameModel.AppDirURL.path) {
                 try FileManager.default.createDirectory(at: ContinuousGameModel.AppDirURL, withIntermediateDirectories: true, attributes: nil)
                 print("Created app directory in Documents")
             }
             
-            // Create the directory for this game mode (Documents/BB/ContinuousDir)
-            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.ContinuousDirURL.path) {
-                try FileManager.default.createDirectory(at: ContinuousGameModel.ContinuousDirURL, withIntermediateDirectories: true, attributes: nil)
-                print("Created directory for continuous game state")
+            // Save persistent data (for now it's just the high score) even after a game over
+            if persistentData!.highScore != highScore {
+                persistentData!.highScore = highScore
             }
             
             // Save the persistent data
             let pData = try PropertyListEncoder().encode(self.persistentData!)
             try pData.write(to: ContinuousGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
             print("Wrote persistent data to file")
+        }
+        catch {
+            print("Error saving persistent state: \(error)")
+        }
+    }
+    
+    public func saveGameState() {
+        do {
+            // If it's a game over, don't do anything
+            if GAME_OVER == state {
+                print("GAME OVER STATE")
+                clearGameState()
+                return
+            }
+            
+            // Don't save any of this stuff after a game over
+
+            // Create the directory for this game mode (Documents/BB/ContinuousDir)
+            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.ContinuousDirURL.path) {
+                try FileManager.default.createDirectory(at: ContinuousGameModel.ContinuousDirURL, withIntermediateDirectories: true, attributes: nil)
+                print("Created directory for continuous game state")
+            }
+            
+            // Save game state stuff (right now it's just the current game score)
+            gameState!.gameScore = gameScore
             
             // Save the game state
             let gameData = try PropertyListEncoder().encode(self.gameState!)
@@ -112,7 +135,22 @@ class ContinuousGameModel {
         }
     }
     
-    public func loadState() -> Bool {
+    public func loadPersistentState() -> Bool {
+        do {
+            // Load the persistent data
+            let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
+            persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
+            print("Loaded persistent data")
+            
+            return true
+        }
+        catch {
+            print("Error decoding persistent game state: \(error)")
+            return false
+        }
+    }
+    
+    public func loadGameState() -> Bool {
         do {
             /*
             try FileManager.default.removeItem(atPath: ContinuousGameModel.PersistentDataURL.path)
@@ -120,11 +158,6 @@ class ContinuousGameModel {
             try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
             return false
             */
-            
-            // Load the persistent data
-            let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
-            persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
-            print("Loaded persistent data")
             
             // Load game state for this game mode
             let gameData = try Data(contentsOf: ContinuousGameModel.GameStateURL)
@@ -139,11 +172,24 @@ class ContinuousGameModel {
         }
     }
     
+    public func clearGameState() {
+        do {
+             try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
+             try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
+        }
+        catch {
+            print("Error clearing state: \(error)")
+        }
+    }
+    
     // MARK: Initialization functions
     required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat) {
         // State should always be initialized to READY
-        if false == loadState() {
+        if false == loadPersistentState() {
             persistentData = PersistentData(highScore: highScore)
+        }
+        
+        if false == loadGameState() {
             gameState = GameState(gameScore: gameScore)
         }
         
@@ -268,7 +314,12 @@ class ContinuousGameModel {
     
     // The floor of the game scene; if another row doesn't fit
     public func gameOver(floor: CGFloat, rowHeight: CGFloat) -> Bool {
-        return itemGenerator!.canAddRow(floor, rowHeight)
+        print("CHECKING GAME OVER?!?!?!")
+        if false == itemGenerator!.canAddRow(floor, rowHeight) {
+            state = GAME_OVER
+            return true
+        }
+        return false
     }
     
     public func incrementState() {

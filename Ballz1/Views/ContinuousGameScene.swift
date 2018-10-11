@@ -198,7 +198,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         if gameModel!.isWaiting() {
             // Check to see if the game ended after all animations are complete
             if gameModel!.animationsDone() {
-                if false == gameModel!.gameOver(floor: groundNode!.size.height, rowHeight: rowHeight!) {
+                if gameModel!.gameOver(floor: groundNode!.size.height, rowHeight: rowHeight!) {
                     // Show gameover overlay
                     showGameOverNode()
                     self.isPaused = true
