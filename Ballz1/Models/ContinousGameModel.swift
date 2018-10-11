@@ -76,8 +76,11 @@ class ContinuousGameModel {
     }
     
     public func saveState() {
-        savePersistentState()
-        saveGameState()
+        // If we're in the middle of a turn, we don't want to save the state. Users could exploit this to cheat
+        if isReady() {
+            savePersistentState()
+            saveGameState()
+        }
     }
     
     public func savePersistentState() {
