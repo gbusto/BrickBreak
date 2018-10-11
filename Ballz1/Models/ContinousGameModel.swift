@@ -91,11 +91,12 @@ class ContinuousGameModel {
                 print("Created app directory in Documents")
             }
             
-            // Save persistent data (for now it's just the high score) even after a game over
+            // Check if the user beat their high score; if they did then save it
             if persistentData!.highScore != highScore {
                 persistentData!.highScore = highScore
-                persistentData!.currencyAmount = currencyAmount
             }
+            // Save the user's current currency amount
+            persistentData!.currencyAmount = currencyAmount
             
             // Save the persistent data
             let pData = try PropertyListEncoder().encode(self.persistentData!)
@@ -145,6 +146,10 @@ class ContinuousGameModel {
     
     public func loadPersistentState() -> Bool {
         do {
+            // COMMENT ME OUT
+            //try FileManager.default.removeItem(atPath: ContinuousGameModel.PersistentDataURL.path)
+            //return false
+            
             // Load the persistent data
             let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
             persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
@@ -160,12 +165,10 @@ class ContinuousGameModel {
     
     public func loadGameState() -> Bool {
         do {
-            /*
-            try FileManager.default.removeItem(atPath: ContinuousGameModel.PersistentDataURL.path)
-            try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
-            try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
-            return false
-            */
+            // COMMENT ME OUT
+            //try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
+            //try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
+            //return false
             
             // Load game state for this game mode
             let gameData = try Data(contentsOf: ContinuousGameModel.GameStateURL)
