@@ -104,6 +104,10 @@ class ItemGenerator {
                         newItemRow.append(BALL)
                         itemHitCountRow.append(0)
                     }
+                    else if item is CurrencyItem {
+                        newItemRow.append(CURRENCY)
+                        itemHitCountRow.append(0)
+                    }
                 }
                 savedItemArray.append(newItemRow)
                 savedHitCountArray.append(itemHitCountRow)
