@@ -323,9 +323,13 @@ class ContinuousGameModel {
         return false
     }
     
+    public func lossRisk(floor: CGFloat, rowHeight: CGFloat) -> Bool {
+        return !itemGenerator!.canAddItems(floor, rowHeight, 2)
+    }
+    
     // The floor of the game scene; if another row doesn't fit
     public func gameOver(floor: CGFloat, rowHeight: CGFloat) -> Bool {
-        if false == itemGenerator!.canAddRow(floor, rowHeight) {
+        if false == itemGenerator!.canAddItems(floor, rowHeight, 1) {
             state = GAME_OVER
             return true
         }

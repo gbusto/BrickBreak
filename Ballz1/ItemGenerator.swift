@@ -338,7 +338,7 @@ class ItemGenerator {
     
     // Iterate over all items to see if any are too close to the ground
     // "Too close" is defined as: if can't add another item before hitting the ground, we're too close
-    public func canAddRow(_ floor: CGFloat, _ rowHeight: CGFloat) -> Bool {
+    public func canAddItems(_ floor: CGFloat, _ rowHeight: CGFloat, _ numRows: Int) -> Bool {
         for row in itemArray {
             for item in row {
                 // We don't care about spacer items
@@ -346,7 +346,7 @@ class ItemGenerator {
                     continue
                 }
                 
-                if (item.getNode().position.y - rowHeight) < floor {
+                if (item.getNode().position.y - (rowHeight * CGFloat(numRows))) < floor {
                     return false
                 }
             }
