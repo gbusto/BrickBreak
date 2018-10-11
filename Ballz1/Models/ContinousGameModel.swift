@@ -16,6 +16,8 @@ class ContinuousGameModel {
     public var gameScore = Int(0)
     public var highScore = Int(0)
     
+    public var currencyAmount = Int(0)
+    
     public var ballManager: BallManager?
     public var itemGenerator: ItemGenerator?
     
@@ -54,11 +56,13 @@ class ContinuousGameModel {
     // This struct is used for managing persistent data (such as your overall high score, currency amount, what level you're on, etc)
     struct PersistentData: Codable {
         var highScore: Int
+        var currencyAmount: Int
         
         // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
         // Read Apple's documentation on CodingKey protocol and Codable
         enum CodingKeys: String, CodingKey {
             case highScore
+            case currencyAmount
         }
     }
     
@@ -87,6 +91,7 @@ class ContinuousGameModel {
             // Save persistent data (for now it's just the high score) even after a game over
             if persistentData!.highScore != highScore {
                 persistentData!.highScore = highScore
+                persistentData!.currencyAmount = currencyAmount
             }
             
             // Save the persistent data
@@ -186,14 +191,18 @@ class ContinuousGameModel {
     required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat) {
         // State should always be initialized to READY
         if false == loadPersistentState() {
-            persistentData = PersistentData(highScore: highScore)
+            // Defaults to load highScore of 0 and currencyAmount of 0
+            persistentData = PersistentData(highScore: highScore, currencyAmount: currencyAmount)
         }
         
         if false == loadGameState() {
+            // Defaults to loading gameScore of 0
             gameState = GameState(gameScore: gameScore)
         }
         
+        // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
         highScore = persistentData!.highScore
+        currencyAmount = persistentData!.currencyAmount
         gameScore = gameState!.gameScore
         
         // This function will either load ball manager with a saved state or the default ball manager state
@@ -229,12 +238,17 @@ class ContinuousGameModel {
     }
 
     public func handleTurn() -> [Item] {
-        // Check to see if the user collected any ball items so far
+        // Check to see if the user collected any balls or currency items so far
         let removedItems = itemGenerator!.removeItems()
         for item in removedItems {
-            if item.getNode().name!.starts(with: "ball") {
+            if item is BallItem {
+                // Transfer ownership of the from the item generator to the ball manager
                 let ball = item as! BallItem
                 ballManager!.addBall(ball: ball)
+            }
+            else if item is CurrencyItem {
+                // Increment the current amount
+                currencyAmount += 1
             }
         }
         
@@ -268,16 +282,13 @@ class ContinuousGameModel {
     
     // MARK: Physics contact functions
     public func handleContact(nameA: String, nameB: String) {
-        // This could be improved by renaming items based on who owns them
-        // For example, items in ball manager start with bm; items in item generator start with ig
+        // Items that start with the name bm are ball manager balls. They are named differently from the other items so we can quickly check if a ball manager ball is interacting with an item from the item generator
+        // Add any extra cases in here if they need special attention
         if nameA.starts(with: "bm") {
             if "ground" == nameB {
                 ballManager!.markBallInactive(name: nameA)
             }
-            else if nameB.starts(with: "block") {
-                itemGenerator!.hit(name: nameB)
-            }
-            else if nameB.starts(with: "ball") {
+            else {
                 itemGenerator!.hit(name: nameB)
             }
         }
@@ -286,10 +297,7 @@ class ContinuousGameModel {
             if "ground" == nameA {
                 ballManager!.markBallInactive(name: nameB)
             }
-            else if nameA.starts(with: "block") {
-                itemGenerator!.hit(name: nameA)
-            }
-            else if nameA.starts(with: "ball") {
+            else {
                 itemGenerator!.hit(name: nameA)
             }
         }

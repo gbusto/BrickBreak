@@ -43,12 +43,16 @@ class ItemGenerator {
     // Item types that this generator can generate; for example, after 100 turns, maybe you want to start adding special kinds of blocks
     // The format is [ITEM_TYPE: PERCENTAGE_TO_GENERATE]
     private var itemTypeDict: [Int: Int] = [:]
-    // Total percentage that will grow as items are added to the itemTypeDict
-    private var totalPercentage = Int(100)
+    // This is an array containing the item types
+    // There is exist as many items types in the array as the percentage; for example, if hit blocks have a 65% chance of being selected, there will be 65 hit blocks in this array
+    private var itemTypeArray: [Int] = []
+    // Total percentage that will grow as items are added to the itemTypeDict; it is updated in the addItemType function
+    private var totalPercentage = Int(0)
     // Used to mark item types to know what item types are allowed to be generated
     private var EMPTY = Int(0)
     private var HIT_BLOCK = Int(1)
     private var BALL = Int(2)
+    private var CURRENCY = Int(3)
     
     // An Int to let holder of this object know when the ItemGenerator is ready
     private var actionsStarted = Int(0)
@@ -62,6 +66,7 @@ class ItemGenerator {
         // An array of tuples where index 0 is the item type (EMPTY, HIT_BLOCK, BALL, etc) and index 1 is the hit block count (it's only really needed for hit block items)
         var itemArray: [[Int]]
         var itemHitCountArray: [[Int]]
+        var itemTypeArray: [Int]
         
         enum CodingKeys: String, CodingKey {
             case maxHitCount
@@ -69,6 +74,7 @@ class ItemGenerator {
             case itemTypeDict
             case itemArray
             case itemHitCountArray
+            case itemTypeArray
         }
     }
     
@@ -105,6 +111,7 @@ class ItemGenerator {
             
             igState!.itemArray = savedItemArray
             igState!.itemHitCountArray = savedHitCountArray
+            igState!.itemTypeArray = itemTypeArray
             
             let data = try PropertyListEncoder().encode(igState!)
             try data.write(to: url)
@@ -138,18 +145,19 @@ class ItemGenerator {
         // Try to load state and if not initialize things to their default values
         if false == loadState(restorationURL: url) {
             // Initialize the allowed item types with only one type for now
-            itemTypeDict[HIT_BLOCK] = 70
-            itemTypeDict[BALL] = 30
+            totalPercentage = 0
+            addItemType(type: HIT_BLOCK, percentage: 65)
+            addItemType(type: BALL, percentage: 25)
+            addItemType(type: CURRENCY, percentage: 10)
             
-            totalPercentage = 100
-            
-            igState = ItemGeneratorState(maxHitCount: maxHitCount, totalPercentage: totalPercentage, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [])
+            igState = ItemGeneratorState(maxHitCount: maxHitCount, totalPercentage: totalPercentage, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], itemTypeArray: itemTypeArray)
         }
         
         // Set these global variables based on the item generator state
         self.maxHitCount = igState!.maxHitCount
         self.totalPercentage = igState!.totalPercentage
         self.itemTypeDict = igState!.itemTypeDict
+        self.itemTypeArray = igState!.itemTypeArray
         
         // Load items into the item array based on our saved item array and item hit count array
         if igState!.itemArray.count > 0 {
@@ -161,17 +169,18 @@ class ItemGenerator {
                     let item = generateItem(itemType: itemType)
                     newRow.append(item!)
                     if item! is SpacerItem {
-                        print("Loaded a spacer item")
                         continue
                     }
                     else if item! is HitBlockItem {
                         let block = item! as! HitBlockItem
                         // Load the block's hit count
                         block.updateHitCount(count: igState!.itemHitCountArray[i][j])
-                        print("Loaded a hit block item")
                     }
                     else if item! is BallItem {
-                        print("Loaded a ball item")
+                        // Don't need to do anything
+                    }
+                    else if item! is CurrencyItem {
+                        // Don't need to do anything
                     }
                     numItemsGenerated += 1
                 }
@@ -184,20 +193,39 @@ class ItemGenerator {
     public func addItemType(type: Int, percentage: Int) {
         itemTypeDict[type] = percentage
         totalPercentage += percentage
+
+        itemTypeArray = []
+        for itemType in itemTypeDict.keys {
+            let percentage = itemTypeDict[itemType]
+            print("Adding \(percentage!) items of type \(itemType)")
+            for _ in 1...percentage! {
+                itemTypeArray.append(itemType)
+            }
+        }
     }
     
     public func generateRow() -> [Item] {
         var newRow: [Item] = []
 
-        for _ in 0...(numItemsPerRow - 1) {
+        var str = ""
+        for _ in 1...numItemsPerRow {
             if Int.random(in: 1...100) < 60 {
-                let type = pickItem()
+                // Remove pickItem()
+                let type = itemTypeArray.randomElement()!
     
                 let item = generateItem(itemType: type)
                 newRow.append(item!)
-                // If it's not a spacer item we want to increment the item count
-                if item! is SpacerItem {
-                    continue
+                if item! is BallItem {
+                    str += "[B]"
+                }
+                else if item! is HitBlockItem {
+                    str += "[H]"
+                }
+                else if item! is CurrencyItem {
+                    str += "[C]"
+                }
+                else {
+                    print("Unknown item...?")
                 }
                 numItemsGenerated += 1
             }
@@ -205,8 +233,10 @@ class ItemGenerator {
             else {
                 let spacer = SpacerItem()
                 newRow.append(spacer)
+                str += "[S]"
             }
         }
+        print(str)
         
         itemArray.append(newRow)
         
@@ -214,10 +244,16 @@ class ItemGenerator {
     }
     
     public func animateItems(_ action: SKAction) {
+        // This count will not include spacer items, so they should be skipped in the animation loop below
         actionsStarted = getItemCount()
         
         for row in itemArray {
             for item in row {
+                if item is SpacerItem {
+                    // SpacerItems aren't included in the actionsStarted count so skip their animation here
+                    continue
+                }
+                
                 // If the item is invisible, have it fade in
                 if 0 == item.getNode().alpha {
                     // If this is the newest row
@@ -318,15 +354,21 @@ class ItemGenerator {
     }
     
     // MARK: Private functions
+    // Randomly pick an item from the item type dictionary
     private func pickItem() -> Int {
+        var array: [Int] = []
         for itemType in itemTypeDict.keys {
-            if Int.random(in: 1...totalPercentage) < itemTypeDict[itemType]! {
-                return itemType
+            let percentage = itemTypeDict[itemType]
+            print("Adding \(percentage!) items of type \(itemType)")
+            for _ in 1...percentage! {
+                array.append(itemType)
             }
         }
-        return 0
+        
+        return array.randomElement()!
     }
     
+    // Actually generate the item to be placed in the array
     private func generateItem(itemType: Int) -> Item? {
         switch itemType {
         case EMPTY:
@@ -342,11 +384,16 @@ class ItemGenerator {
             let item = BallItem()
             item.initItem(num: numItemsGenerated, size: size)
             return item
+        case CURRENCY:
+            let item = CurrencyItem()
+            item.initItem(num: numItemsGenerated, size: blockSize!)
+            return item
         default:
             return nil
         }
     }
     
+    // Gets the item count (doesn't include spacer items)
     private func getItemCount() -> Int {
         var count = Int(0)
         for row in itemArray {

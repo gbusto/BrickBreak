@@ -28,6 +28,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var rowHeight: CGFloat?
     // The block size
     private var blockSize: CGSize?
+    // The currency size
+    private var currencySize: CGSize?
     
     // Nodes that will be shown in the view
     private var groundNode: SKSpriteNode?
@@ -45,6 +47,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // Score labels
     private var scoreLabel: SKLabelNode?
     private var bestScoreLabel: SKLabelNode?
+    private var currencyLabel: SKLabelNode?
+    private var currencyNode: SKSpriteNode?
     
     // Ball count label
     private var ballCountLabel: SKLabelNode?
@@ -79,11 +83,13 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         rowHeight = view.frame.width / CGFloat(numItemsPerRow)
         ballRadius = view.frame.width * 0.018
         blockSize = CGSize(width: rowHeight! * 0.95, height: rowHeight! * 0.95)
+        currencySize = CGSize(width: rowHeight! * 0.80, height: rowHeight! * 0.80)
         
         initWalls(view: view)
         initGameModel()
         initScoreLabel()
         initBestScoreLabel()
+        initCurrencyLabels()
         
         rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeRight(_:)))
         rightSwipeGesture!.direction = .right
@@ -245,10 +251,23 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     // We want to remove block items from the scene completely
                     self.removeChildren(in: [item.getNode()])
                 }
-                else {
+                else if item is BallItem {
                     // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
                     let newPoint = CGPoint(x: item.getNode().position.x, y: groundNode!.size.height + ballRadius!)
                     item.getNode().run(SKAction.move(to: newPoint, duration: 0.5))
+                }
+                else if item is CurrencyItem {
+                    // Since this node is an SKSpriteNode, we want to get the center of it's position
+                    let node = item.getNode() as! SKSpriteNode
+                    let posX = node.position.x + node.size.width / 2
+                    let posY = node.position.y + node.size.height / 2
+                    let position = CGPoint(x: posX, y: posY)
+                    // Remove the item from the scene
+                    self.removeChildren(in: [item.getNode()])
+                    // Show a green dollar sign floating up after item is removed
+                    showCurrencyAcquiredLabel(itemPosition: position)
+                    // Update the currency count
+                    updateCurrency(currency: gameModel!.currencyAmount)
                 }
             }
         }
@@ -293,11 +312,17 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 
                 var pos = CGPoint(x: 0, y: 0)
                 if item is HitBlockItem {
+                    // Do any
                     let posX = CGFloat(i) * rowHeight!
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                     let block = item as! HitBlockItem
                     block.setColor(color: color)
+                }
+                else if item is CurrencyItem {
+                    let posX = CGFloat(i) * rowHeight!
+                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
+                    pos = CGPoint(x: posX, y: posY)
                 }
                 else if item is BallItem {
                     let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2)
@@ -461,9 +486,32 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode!.addChild(bestScoreLabel!)
     }
     
+    private func initCurrencyLabels() {
+        let pos = CGPoint(x: ceilingNode!.size.width * 0.90, y: ceilingNode!.size.height / 1.5)
+        currencyNode = SKSpriteNode(imageNamed: "money_coin")
+        currencyNode!.position = pos
+        currencyNode!.zPosition = 103
+        currencyNode!.size = currencySize!
+        ceilingNode!.addChild(currencyNode!)
+        
+        let labelPos = CGPoint(x: ceilingNode!.size.width * 0.90, y: ceilingNode!.size.height / 3.5)
+        currencyLabel = SKLabelNode(fontNamed: fontName)
+        currencyLabel!.position = labelPos
+        currencyLabel!.zPosition = 103
+        currencyLabel!.fontSize = ceilingNode!.size.height * 0.25
+        currencyLabel!.verticalAlignmentMode = .center
+        currencyLabel!.horizontalAlignmentMode = .center
+        currencyLabel!.text = "\(gameModel!.currencyAmount)"
+        ceilingNode!.addChild(currencyLabel!)
+    }
+    
     private func updateScore(highScore: Int, gameScore: Int) {
         scoreLabel!.text = "\(gameScore)"
         bestScoreLabel!.text = "Best: \(highScore)"
+    }
+    
+    private func updateCurrency(currency: Int) {
+        currencyLabel!.text = "\(currency)"
     }
     
     // Flashes the fast forward image to give the user some feedback about what's happening
@@ -613,6 +661,26 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         label.fontSize = fontSize
         label.fontName = fontName
         label.position = pos
+        label.alpha = 0
+        
+        let vect = CGVector(dx: 0, dy: fontSize * 3)
+        let action1 = SKAction.fadeIn(withDuration: 0.5)
+        let action2 = SKAction.move(by: vect, duration: 1)
+        let action3 = SKAction.fadeOut(withDuration: 0.5)
+        self.addChild(label)
+        label.run(action2)
+        label.run(SKAction.sequence([action1, action3])) {
+            self.scene!.removeChildren(in: [label])
+        }
+    }
+    
+    private func showCurrencyAcquiredLabel(itemPosition: CGPoint) {
+        let fontSize = ballRadius! * 3
+        let label = SKLabelNode(fontNamed: fontName)
+        label.text = "$"
+        label.fontSize = fontSize
+        label.position = itemPosition
+        label.fontColor = .green
         label.alpha = 0
         
         let vect = CGVector(dx: 0, dy: fontSize * 3)

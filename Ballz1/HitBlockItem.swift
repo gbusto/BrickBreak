@@ -43,6 +43,8 @@ class HitBlockItem: Item {
         physBody.linearDamping = 0
         physBody.restitution = 1
         physBody.friction = 0
+        physBody.categoryBitMask = categoryBitMask
+        physBody.contactTestBitMask = contactTestBitmask
         node!.physicsBody = physBody
         
         initHitLabel()
