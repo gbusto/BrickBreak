@@ -210,7 +210,6 @@ class ItemGenerator {
         var str = ""
         for _ in 1...numItemsPerRow {
             if Int.random(in: 1...100) < 60 {
-                // Remove pickItem()
                 let type = itemTypeArray.randomElement()!
     
                 let item = generateItem(itemType: type)
@@ -354,20 +353,6 @@ class ItemGenerator {
     }
     
     // MARK: Private functions
-    // Randomly pick an item from the item type dictionary
-    private func pickItem() -> Int {
-        var array: [Int] = []
-        for itemType in itemTypeDict.keys {
-            let percentage = itemTypeDict[itemType]
-            print("Adding \(percentage!) items of type \(itemType)")
-            for _ in 1...percentage! {
-                array.append(itemType)
-            }
-        }
-        
-        return array.randomElement()!
-    }
-    
     // Actually generate the item to be placed in the array
     private func generateItem(itemType: Int) -> Item? {
         switch itemType {
