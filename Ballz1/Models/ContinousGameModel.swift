@@ -77,7 +77,7 @@ class ContinuousGameModel {
     
     public func saveState() {
         // If we're in the middle of a turn, we don't want to save the state. Users could exploit this to cheat
-        if isReady() {
+        if isReady() || isGameOver() {
             savePersistentState()
             saveGameState()
         }
@@ -339,6 +339,8 @@ class ContinuousGameModel {
     public func incrementState() {
         if WAITING == state {
             state = READY
+            // Save state after each turn
+            saveState()
             return
         }
         
@@ -361,5 +363,9 @@ class ContinuousGameModel {
     
     public func isWaiting() -> Bool {
         return (WAITING == state)
+    }
+    
+    public func isGameOver() -> Bool {
+        return (GAME_OVER == state)
     }
 }
