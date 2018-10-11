@@ -336,8 +336,8 @@ class ItemGenerator {
         return removedItems
     }
     
-    // Iterate over all items to see if any are too close to the ground
-    // "Too close" is defined as: if can't add another item before hitting the ground, we're too close
+    // Iterate over all items to see if any are within (rowHeight * numRows) of the floor
+    // Returns true if it can items, false otherwise
     public func canAddItems(_ floor: CGFloat, _ rowHeight: CGFloat, _ numRows: Int) -> Bool {
         for row in itemArray {
             for item in row {
