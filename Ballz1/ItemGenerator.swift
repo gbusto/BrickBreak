@@ -53,8 +53,6 @@ class ItemGenerator {
     // An Int to let holder of this object know when the ItemGenerator is ready
     private var actionsStarted = Int(0)
     
-    private var currentColor : Color?
-    
     
     // MARK: State handling functions
     struct ItemGeneratorState: Codable {
@@ -135,7 +133,6 @@ class ItemGenerator {
         self.blockSize = blockSize
         self.ballRadius = ballRadius
         numItemsPerRow = numItems
-        currentColor = Color()
         
         let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
         // Try to load state and if not initialize things to their default values
@@ -190,9 +187,6 @@ class ItemGenerator {
     }
     
     public func generateRow() -> [Item] {
-        // Need to get colors working again
-        let color = currentColor!.changeColor()
-        
         var newRow: [Item] = []
 
         for _ in 0...(numItemsPerRow - 1) {
@@ -289,7 +283,7 @@ class ItemGenerator {
         
         // After removing all necessary items, check to see if there any empty rows that can be removed
         //removeEmptyRows()
-        popEmptyRows()
+        removeEmptyRows()
         
         // Return all items that were removed
         return removedItems
@@ -375,7 +369,7 @@ class ItemGenerator {
      
      which is incorrect. The layout of the items should be exactly the same.
      */
-    private func popEmptyRows() {
+    private func removeEmptyRows() {
         while true {
             // If there are no rows left, return out
             if 0 == itemArray.count {
@@ -393,23 +387,5 @@ class ItemGenerator {
             // If it is empty, remove it from the array and loop around to check the row before that
             let _ = itemArray.remove(at: 0)
         }
-    }
-    
-    private func removeEmptyRows() {
-        let newItemArray = itemArray.filter {
-            for item in $0 {
-                if item is SpacerItem {
-                    continue
-                }
-                // If we encounter any items that aren't a SpacerItem, it should just be removed
-                return true
-            }
-            
-            // If we reached this point, there are only SpacerItem types so remove the row
-            print("Removing an empty row")
-            return false
-        }
-        
-        itemArray = newItemArray
     }
 }

@@ -66,6 +66,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
     private var marginColor = UIColor.init(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
     
+    private var blockColor = Color()
+    
     // Stuff for collisions
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitMask = UInt32(0b0001)
@@ -195,6 +197,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
         }
         
+        // Wait for animations to finish and then check for game over
         if gameModel!.isWaiting() {
             // Check to see if the game ended after all animations are complete
             if gameModel!.animationsDone() {
@@ -209,6 +212,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        // Actions to perform while in the middle of a turn
         if gameModel!.isMidTurn() {
             if false == addedGesture {
                 // Ask the model if we showed the fast forward tutorial
@@ -278,6 +282,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func addRowToView(rowNum: Int, items: [Item]) {
+        let color = blockColor.changeColor()
+        
         if items.count > 0 {
             for i in 0...(items.count - 1) {
                 let item = items[i]
@@ -290,6 +296,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     let posX = CGFloat(i) * rowHeight!
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
+                    let block = item as! HitBlockItem
+                    block.setColor(color: color)
                 }
                 else if item is BallItem {
                     let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2)

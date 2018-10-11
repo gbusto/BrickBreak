@@ -314,7 +314,6 @@ class ContinuousGameModel {
     
     // The floor of the game scene; if another row doesn't fit
     public func gameOver(floor: CGFloat, rowHeight: CGFloat) -> Bool {
-        print("CHECKING GAME OVER?!?!?!")
         if false == itemGenerator!.canAddRow(floor, rowHeight) {
             state = GAME_OVER
             return true
