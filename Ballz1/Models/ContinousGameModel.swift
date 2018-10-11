@@ -20,8 +20,8 @@ class ContinuousGameModel {
     public var itemGenerator: ItemGenerator?
     
     // MARK: Private properties
-    private var ceilingHeight: CGFloat?
-    private var groundHeight: CGFloat?
+    private var persistentData: PersistentData?
+    private var gameState: GameState?
     
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
@@ -36,21 +36,174 @@ class ContinuousGameModel {
     // WAITING means the game model is waiting for item animations to finish (i.e. the view tells the items to shift down one row while in the TURN_OVER state, so we remain in this state until all animations are finished)
     private var WAITING = Int(3)
     
-    // MARK: Initialization functions
-    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, ceilingHeight: CGFloat, groundHeight: CGFloat) {
-        // State should always be initialized to READY
-        state = TURN_OVER
+    private var GAME_OVER = Int(255)
+    
+    // For storing data
+    static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    // This is the main app directory
+    static let AppDirURL = AppDirectory.appendingPathComponent("BB")
+    // This is persistent data that will contain the high score and currency
+    static let PersistentDataURL = AppDirURL.appendingPathComponent("PersistentData")
+    // The directory to store game state for this game type
+    static let ContinuousDirURL = AppDirURL.appendingPathComponent("ContinuousDir")
+    // The path where game state is stored for this game mode
+    static let GameStateURL = ContinuousDirURL.appendingPathComponent("GameState")
+    
+    
+    // MARK: State handling code
+    // This struct is used for managing persistent data (such as your overall high score, currency amount, what level you're on, etc)
+    struct PersistentData: Codable {
+        var highScore: Int
         
-        self.ceilingHeight = ceilingHeight
-        self.groundHeight = groundHeight
+        // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
+        // Read Apple's documentation on CodingKey protocol and Codable
+        enum CodingKeys: String, CodingKey {
+            case highScore
+        }
+    }
+    
+    // This struct is used for managing any state from this class that is required to save the user's place
+    struct GameState: Codable {
+        var gameScore: Int
+        
+        enum CodingKeys: String, CodingKey {
+            case gameScore
+        }
+    }
+    
+    public func saveState() {
+        savePersistentState()
+        saveGameState()
+    }
+    
+    public func savePersistentState() {
+        do {
+            // Create the App directory Documents/BB
+            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.AppDirURL.path) {
+                try FileManager.default.createDirectory(at: ContinuousGameModel.AppDirURL, withIntermediateDirectories: true, attributes: nil)
+                print("Created app directory in Documents")
+            }
+            
+            // Save persistent data (for now it's just the high score) even after a game over
+            if persistentData!.highScore != highScore {
+                persistentData!.highScore = highScore
+            }
+            
+            // Save the persistent data
+            let pData = try PropertyListEncoder().encode(self.persistentData!)
+            try pData.write(to: ContinuousGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
+            print("Wrote persistent data to file")
+        }
+        catch {
+            print("Error saving persistent state: \(error)")
+        }
+    }
+    
+    public func saveGameState() {
+        do {
+            // If it's a game over, don't do anything
+            if GAME_OVER == state {
+                print("GAME OVER STATE")
+                clearGameState()
+                return
+            }
+            
+            // Don't save any of this stuff after a game over
+
+            // Create the directory for this game mode (Documents/BB/ContinuousDir)
+            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.ContinuousDirURL.path) {
+                try FileManager.default.createDirectory(at: ContinuousGameModel.ContinuousDirURL, withIntermediateDirectories: true, attributes: nil)
+                print("Created directory for continuous game state")
+            }
+            
+            // Save game state stuff (right now it's just the current game score)
+            gameState!.gameScore = gameScore
+            
+            // Save the game state
+            let gameData = try PropertyListEncoder().encode(self.gameState!)
+            try gameData.write(to: ContinuousGameModel.GameStateURL, options: .completeFileProtectionUnlessOpen)
+            print("Wrote game state data to file")
+            
+            // Save the ball manager's state
+            ballManager!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
+            
+            // Save the item generator's state
+            itemGenerator!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
+        }
+        catch {
+            print("Error encoding game state: \(error)")
+        }
+    }
+    
+    public func loadPersistentState() -> Bool {
+        do {
+            // Load the persistent data
+            let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
+            persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
+            print("Loaded persistent data")
+            
+            return true
+        }
+        catch {
+            print("Error decoding persistent game state: \(error)")
+            return false
+        }
+    }
+    
+    public func loadGameState() -> Bool {
+        do {
+            /*
+            try FileManager.default.removeItem(atPath: ContinuousGameModel.PersistentDataURL.path)
+            try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
+            try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
+            return false
+            */
+            
+            // Load game state for this game mode
+            let gameData = try Data(contentsOf: ContinuousGameModel.GameStateURL)
+            gameState = try PropertyListDecoder().decode(GameState.self, from: gameData)
+            print("Loaded game state")
+            
+            return true
+        }
+        catch {
+            print("Error decoding game state: \(error)")
+            return false
+        }
+    }
+    
+    public func clearGameState() {
+        do {
+             try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
+             try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
+        }
+        catch {
+            print("Error clearing state: \(error)")
+        }
+    }
+    
+    // MARK: Initialization functions
+    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat) {
+        // State should always be initialized to READY
+        if false == loadPersistentState() {
+            persistentData = PersistentData(highScore: highScore)
+        }
+        
+        if false == loadGameState() {
+            gameState = GameState(gameScore: gameScore)
+        }
+        
+        highScore = persistentData!.highScore
+        gameScore = gameState!.gameScore
+        
+        // This function will either load ball manager with a saved state or the default ball manager state
+        ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: ContinuousGameModel.ContinuousDirURL)
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
-        itemGenerator = ItemGenerator()
-        itemGenerator!.initGenerator(blockSize: blockSize, ballRadius: ballRadius, numBalls: numberOfBalls, numItems: numberOfItems,
-                                      ceiling: ceilingHeight, ground: groundHeight)
-        
-        ballManager = BallManager()
-        ballManager!.initBallManager(generator: itemGenerator!, numBalls: numberOfBalls, radius: ballRadius)
+        itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius, maxHitCount: ballManager!.numberOfBalls * 2, numItems: numberOfItems, restorationURL: ContinuousGameModel.ContinuousDirURL)
+        if 0 == itemGenerator!.itemArray.count {
+            state = TURN_OVER
+        }
     }
     
     // MARK: Public functions
@@ -82,7 +235,6 @@ class ContinuousGameModel {
             if item.getNode().name!.starts(with: "ball") {
                 let ball = item as! BallItem
                 ballManager!.addBall(ball: ball)
-                print("Added ball \(ball.getNode().name!) to ball manager")
             }
         }
         
@@ -121,7 +273,6 @@ class ContinuousGameModel {
         if nameA.starts(with: "bm") {
             if "ground" == nameB {
                 ballManager!.markBallInactive(name: nameA)
-                print("Ball hit the ground")
             }
             else if nameB.starts(with: "block") {
                 itemGenerator!.hit(name: nameB)
@@ -134,7 +285,6 @@ class ContinuousGameModel {
         if nameB.starts(with: "bm") {
             if "ground" == nameA {
                 ballManager!.markBallInactive(name: nameB)
-                print("Ball hit the ground")
             }
             else if nameA.starts(with: "block") {
                 itemGenerator!.hit(name: nameA)
@@ -164,7 +314,11 @@ class ContinuousGameModel {
     
     // The floor of the game scene; if another row doesn't fit
     public func gameOver(floor: CGFloat, rowHeight: CGFloat) -> Bool {
-        return itemGenerator!.canAddRow(floor, rowHeight)
+        if false == itemGenerator!.canAddRow(floor, rowHeight) {
+            state = GAME_OVER
+            return true
+        }
+        return false
     }
     
     public func incrementState() {

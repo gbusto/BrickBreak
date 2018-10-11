@@ -13,18 +13,21 @@ class BallManager {
     
     // MARK: Public properties
     public var numberOfBalls = Int(0)
-    public var ballArray : [BallItem] = []
+    public var ballArray: [BallItem] = []
     
     // MARK: Private properties
-    private var ballRadius : CGFloat?
+    private var ballRadius: CGFloat?
     // Balls that have just been added from the ItemGenerator
-    private var newBallArray : [BallItem] = []
+    private var newBallArray: [BallItem] = []
     
     private var firstBallReturned = false
     
     private var numBallsActive = 0
     
-    private var originPoint : CGPoint?
+    private var originPoint: CGPoint?
+    
+    private var bmState: BallManagerState?
+    static let BallManagerPath = "BallManager"
     
     // MARK: State values
     // READY state means that all balls are at rest, all animations are complete
@@ -44,26 +47,74 @@ class BallManager {
     
     private var direction : CGPoint?
     
-    private var fontName = "KohinoorBangla-Regular"
-    private var labelNode : SKLabelNode?
+    
+    // MARK: State handling code
+    struct BallManagerState: Codable {
+        var numberOfBalls: Int
+        var originPoint: CGPoint?
+        
+        enum CodingKeys: String, CodingKey {
+            case numberOfBalls
+            case originPoint
+        }
+    }
+    
+    public func saveState(restorationURL: URL) {
+        let url = restorationURL.appendingPathComponent(BallManager.BallManagerPath)
+        
+        do {
+            // Update the ball manager's state before we save it
+            bmState!.numberOfBalls = numberOfBalls
+            bmState!.originPoint = originPoint
+            
+            let data = try PropertyListEncoder().encode(self.bmState!)
+            try data.write(to: url)
+            print("Saved ball manager state")
+        }
+        catch {
+            print("Error saving ball manager state: \(error)")
+        }
+    }
+    
+    public func loadState(restorationURL: URL) -> Bool {
+        do {
+            let data = try Data(contentsOf: restorationURL)
+            bmState = try PropertyListDecoder().decode(BallManagerState.self, from: data)
+            print("Loaded ball manager state")
+            return true
+        }
+        catch {
+            print("Error loading ball manager state: \(error)")
+            return false
+        }
+    }
     
     
     // MARK: Public functions
-    public func initBallManager(generator: ItemGenerator, numBalls: Int, radius: CGFloat) {
-        numberOfBalls = numBalls
+    required init(numBalls: Int, radius: CGFloat, restorationURL: URL) {
         ballRadius = radius
         
-        for i in 1...numBalls {
+        let url = restorationURL.appendingPathComponent(BallManager.BallManagerPath)
+        if false == loadState(restorationURL: url) {
+            bmState = BallManagerState(numberOfBalls: numBalls, originPoint: nil)
+        }
+
+        numberOfBalls = bmState!.numberOfBalls
+        originPoint = bmState!.originPoint
+        
+        for i in 1...numberOfBalls {
             let ball = BallItem()
             let size = CGSize(width: radius, height: radius)
-            ball.initItem(generator: generator, num: i, size: size)
+            ball.initItem(num: i, size: size)
             ball.getNode().name! = "bm\(i)"
             ballArray.append(ball)
         }
-        
-        labelNode = SKLabelNode()
 
         state = READY
+    }
+    
+    required init() {
+        // Empty constructor
     }
     
     public func incrementState() {
@@ -157,11 +208,9 @@ class BallManager {
             }
             if false == ball.isActive {
                 if false == firstBallReturned {
-                    print("First ball returned at point \(ball.node!.position)")
                     firstBallReturned = true
                     originPoint = ball.node!.position
                 }
-                print("Telling ball to stop at origin point \(originPoint!)")
                 ball.stop(point: originPoint!)
             }
         }

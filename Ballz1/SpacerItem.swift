@@ -11,7 +11,7 @@ import SpriteKit
 // This is an item that we use as a placeholder empty item
 class SpacerItem: Item {
     
-    func initItem(generator: ItemGenerator, num: Int, size: CGSize) {
+    func initItem(num: Int, size: CGSize) {
         // Pass
     }
     

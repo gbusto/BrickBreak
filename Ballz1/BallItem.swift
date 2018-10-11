@@ -17,9 +17,6 @@ class BallItem: Item {
     public var isResting = true
     
     // MARK: Private functions
-    // The generator handling this object
-    private var generator : ItemGenerator?
-    
     // Only used in the hitItem() function
     private var wasHit = false
     
@@ -38,9 +35,8 @@ class BallItem: Item {
     
     
     // MARK: Protocol functions
-    public func initItem(generator: ItemGenerator, num: Int, size: CGSize) {
+    public func initItem(num: Int, size: CGSize) {
         radius = size.width
-        self.generator = generator
         let ball = SKShapeNode(circleOfRadius: radius!)
         ball.zPosition = 100
         ball.fillColor = .white

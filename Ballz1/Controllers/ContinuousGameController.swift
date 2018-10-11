@@ -13,6 +13,8 @@ import SpriteKit
 
 class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
     
+    private var scene: SKScene?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -20,6 +22,8 @@ class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
         
         if let view = self.view as! SKView? {
             let scene = ContinousGameScene(size: view.bounds.size)
+            self.scene = scene
+            
             scene.scaleMode = .aspectFill
             
             view.presentScene(scene)
@@ -28,6 +32,14 @@ class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
             view.showsFPS = true
             view.showsNodeCount = true
         }
+        
+        let notification = Notification(name: .init("appTerminate"))
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
+    }
+    
+    @objc func handleAppTerminate() {
+        let contScene = scene as! ContinousGameScene
+        contScene.saveState()
     }
     
     override var shouldAutorotate: Bool {

@@ -15,14 +15,16 @@ class ItemGenerator {
     // MARK: Public properties
     
     // Rows of items for which this generator is responsible
-    public var itemArray : [[Item]] = []
+    public var itemArray: [[Item]] = []
     
     // Maximum hit count for a HitBlock
-    public var maxHitCount : Int?
+    public var maxHitCount = Int(10)
     
     
     // -------------------------------------------------------------
-    // MARK: Private functions
+    // MARK: Private attributes
+    private var igState: ItemGeneratorState?
+    static let ItemGeneratorPath = "ItemGenerator"
     
     // The number of active balls the user has; this will influence HitBlock counts
     private var numberOfBalls = Int(0)
@@ -35,17 +37,12 @@ class ItemGenerator {
     // Number of items that this generator has generated
     private var numItemsGenerated = Int(0)
     
-    // ceilingHeight is used to know where items should be generated
-    private var ceilingHeight : CGFloat?
-    // groundHeight is used to know if another row can be generated; if not, it means the game is over
-    private var groundHeight : CGFloat?
-    
     private var blockSize: CGSize?
     private var ballRadius: CGFloat?
     
     // Item types that this generator can generate; for example, after 100 turns, maybe you want to start adding special kinds of blocks
     // The format is [ITEM_TYPE: PERCENTAGE_TO_GENERATE]
-    private var itemTypeDict : [Int: Int] = [:]
+    private var itemTypeDict: [Int: Int] = [:]
     // Total percentage that will grow as items are added to the itemTypeDict
     private var totalPercentage = Int(100)
     // Used to mark item types to know what item types are allowed to be generated
@@ -56,24 +53,132 @@ class ItemGenerator {
     // An Int to let holder of this object know when the ItemGenerator is ready
     private var actionsStarted = Int(0)
     
-    private var currentColor : Color?
+    
+    // MARK: State handling functions
+    struct ItemGeneratorState: Codable {
+        var maxHitCount: Int
+        var totalPercentage: Int
+        var itemTypeDict: [Int: Int]
+        // An array of tuples where index 0 is the item type (EMPTY, HIT_BLOCK, BALL, etc) and index 1 is the hit block count (it's only really needed for hit block items)
+        var itemArray: [[Int]]
+        var itemHitCountArray: [[Int]]
+        
+        enum CodingKeys: String, CodingKey {
+            case maxHitCount
+            case totalPercentage
+            case itemTypeDict
+            case itemArray
+            case itemHitCountArray
+        }
+    }
+    
+    public func saveState(restorationURL: URL) {
+        let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
+        do {
+            igState!.maxHitCount = maxHitCount
+            igState!.totalPercentage = totalPercentage
+            igState!.itemTypeDict = itemTypeDict
+            
+            var savedItemArray: [[Int]] = []
+            var savedHitCountArray: [[Int]] = []
+            for row in itemArray {
+                var newItemRow: [Int] = []
+                var itemHitCountRow: [Int] = []
+                for item in row {
+                    if item is SpacerItem {
+                        newItemRow.append(EMPTY)
+                        itemHitCountRow.append(0)
+                    }
+                    else if item is HitBlockItem {
+                        let block = item as! HitBlockItem
+                        newItemRow.append(HIT_BLOCK)
+                        itemHitCountRow.append(block.hitCount!)
+                    }
+                    else if item is BallItem {
+                        newItemRow.append(BALL)
+                        itemHitCountRow.append(0)
+                    }
+                }
+                savedItemArray.append(newItemRow)
+                savedHitCountArray.append(itemHitCountRow)
+            }
+            
+            igState!.itemArray = savedItemArray
+            igState!.itemHitCountArray = savedHitCountArray
+            
+            let data = try PropertyListEncoder().encode(igState!)
+            try data.write(to: url)
+            print("Saved item generator state")
+        }
+        catch {
+            print("Failed to save item generator state: \(error)")
+        }
+    }
+    
+    public func loadState(restorationURL: URL) -> Bool {
+        do {
+            let data = try Data(contentsOf: restorationURL)
+            igState = try PropertyListDecoder().decode(ItemGeneratorState.self, from: data)
+            print("Loaded item generator state")
+            return true
+        }
+        catch {
+            print("Failed to load item generator state: \(error)")
+            return false
+        }
+    }
     
     // MARK: Public functions
-    public func initGenerator(blockSize: CGSize, ballRadius: CGFloat, numBalls: Int, numItems: Int,
-                              ceiling: CGFloat, ground: CGFloat) {
-        
+    required init(blockSize: CGSize, ballRadius: CGFloat, maxHitCount: Int, numItems: Int, restorationURL: URL) {
         self.blockSize = blockSize
         self.ballRadius = ballRadius
-        numberOfBalls = numBalls
-        maxHitCount = numBalls * 2
         numItemsPerRow = numItems
-        ceilingHeight = ceiling
-        groundHeight = ground
-        currentColor = Color()
         
-        // Initialize the allowed item types with only one type for now
-        itemTypeDict[HIT_BLOCK] = 70
-        itemTypeDict[BALL] = 30
+        let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
+        // Try to load state and if not initialize things to their default values
+        if false == loadState(restorationURL: url) {
+            // Initialize the allowed item types with only one type for now
+            itemTypeDict[HIT_BLOCK] = 70
+            itemTypeDict[BALL] = 30
+            
+            totalPercentage = 100
+            
+            igState = ItemGeneratorState(maxHitCount: maxHitCount, totalPercentage: totalPercentage, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [])
+        }
+        
+        // Set these global variables based on the item generator state
+        self.maxHitCount = igState!.maxHitCount
+        self.totalPercentage = igState!.totalPercentage
+        self.itemTypeDict = igState!.itemTypeDict
+        
+        // Load items into the item array based on our saved item array and item hit count array
+        if igState!.itemArray.count > 0 {
+            for i in 0...(igState!.itemArray.count - 1) {
+                var newRow: [Item] = []
+                let row = igState!.itemArray[i]
+                for j in 0...(row.count - 1) {
+                    let itemType = row[j]
+                    let item = generateItem(itemType: itemType)
+                    newRow.append(item!)
+                    if item! is SpacerItem {
+                        print("Loaded a spacer item")
+                        continue
+                    }
+                    else if item! is HitBlockItem {
+                        let block = item! as! HitBlockItem
+                        // Load the block's hit count
+                        block.updateHitCount(count: igState!.itemHitCountArray[i][j])
+                        print("Loaded a hit block item")
+                    }
+                    else if item! is BallItem {
+                        print("Loaded a ball item")
+                    }
+                    numItemsGenerated += 1
+                }
+                print("Added new row to the item array")
+                itemArray.append(newRow)
+            }
+        }
     }
     
     public func addItemType(type: Int, percentage: Int) {
@@ -82,42 +187,21 @@ class ItemGenerator {
     }
     
     public func generateRow() -> [Item] {
-        let color = currentColor!.changeColor()
-        
         var newRow: [Item] = []
 
         for _ in 0...(numItemsPerRow - 1) {
             if Int.random(in: 1...100) < 60 {
                 let type = pickItem()
     
-                switch type {
-                case EMPTY:
-                    let spacer = SpacerItem()
-                    newRow.append(spacer)
-                    break
-                case HIT_BLOCK:
-                    let item = HitBlockItem()
-                    item.initItem(generator: self, num: numItemsGenerated, size: blockSize!)
-                    let block = item as HitBlockItem
-                    block.setColor(color: color)
-                    newRow.append(item)
-                    break
-                case BALL:
-                    // Put the ball in the center of its row position
-                    let size = CGSize(width: ballRadius!, height: ballRadius!)
-                    let item = BallItem()
-                    item.initItem(generator: self, num: numItemsGenerated, size: size)
-                    print("Added ball with number \(numItemsGenerated)")
-                    newRow.append(item)
-                    break
-                default:
-                    // Shouldn't ever hit the default case; if we do just loop back around
-                    print("Hit default case. Item type is \(type)")
+                let item = generateItem(itemType: type)
+                newRow.append(item!)
+                // If it's not a spacer item we want to increment the item count
+                if item! is SpacerItem {
                     continue
                 }
                 numItemsGenerated += 1
             }
-                // If Int.random() didn't return a number < 60, add a spacer item anyways; each slot in a row needs to be occupied (i.e. each row must contain at least numItemsPerRow number of items)
+            // If Int.random() didn't return a number < 60, add a spacer item anyways; each slot in a row needs to be occupied (i.e. each row must contain at least numItemsPerRow number of items)
             else {
                 let spacer = SpacerItem()
                 newRow.append(spacer)
@@ -163,7 +247,7 @@ class ItemGenerator {
                     item.hitItem()
                     if item.getNode().name!.starts(with: "ball") {
                         // If this item was a ball, increase the max hit count by 2 because it will be transferred over to the ball manager
-                        maxHitCount! += 2
+                        maxHitCount += 2
                     }
                 }
             }
@@ -198,6 +282,7 @@ class ItemGenerator {
         }
         
         // After removing all necessary items, check to see if there any empty rows that can be removed
+        //removeEmptyRows()
         removeEmptyRows()
         
         // Return all items that were removed
@@ -219,6 +304,7 @@ class ItemGenerator {
                 }
             }
         }
+        print("New number of rows \(itemArray.count)")
         
         return true
     }
@@ -231,6 +317,26 @@ class ItemGenerator {
             }
         }
         return 0
+    }
+    
+    private func generateItem(itemType: Int) -> Item? {
+        switch itemType {
+        case EMPTY:
+            let item = SpacerItem()
+            return item
+        case HIT_BLOCK:
+            let item = HitBlockItem()
+            item.initItem(num: numItemsGenerated, size: blockSize!)
+            // Need to set block color here
+            return item
+        case BALL:
+            let size = CGSize(width: ballRadius!, height: ballRadius!)
+            let item = BallItem()
+            item.initItem(num: numItemsGenerated, size: size)
+            return item
+        default:
+            return nil
+        }
     }
     
     private func getItemCount() -> Int {
@@ -248,21 +354,38 @@ class ItemGenerator {
         return count
     }
     
+    /*
+     This is how we need to remove empty rows. If we have rows of items like these:
+     [H] [S] [S] [B]
+     [S] [S] [H] [S]
+     [H] [S] [S] [H]
+     (where H == hit block, B == ball, and S == spacer item)
+     
+     And we break the hit block in the 2nd row, we want that row to remain all spacer items in
+     the event that we quit the game and come back. If we just remove that row as soon as it's
+     empty and quit the game and have the item generator reload, the rows will look like this:
+     [H] [S] [S] [B]
+     [H] [S] [S] [H]
+     
+     which is incorrect. The layout of the items should be exactly the same.
+     */
     private func removeEmptyRows() {
-        let newItemArray = itemArray.filter {
-            for item in $0 {
+        while true {
+            // If there are no rows left, return out
+            if 0 == itemArray.count {
+                return
+            }
+            
+            let row = itemArray[0]
+            for item in row {
                 if item is SpacerItem {
                     continue
                 }
-                // If we encounter any items that aren't a SpacerItem, it should just be removed
-                return true
+                // As soon as we get to a row that doesn't just contain spacer items, return
+                return
             }
-            
-            // If we reached this point, there are only SpacerItem types so remove the row
-            print("Removing an empty row")
-            return false
+            // If it is empty, remove it from the array and loop around to check the row before that
+            let _ = itemArray.remove(at: 0)
         }
-        
-        itemArray = newItemArray
     }
 }

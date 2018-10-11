@@ -12,13 +12,11 @@ import GameplayKit
 class HitBlockItem: Item {
     // MARK: Public properties
     public var node : SKSpriteNode?
+    public var hitCount : Int?
     
     // MARK: Private properties
-    private var generator : ItemGenerator?
-    
     private var size : CGSize?
     private var position : CGPoint?
-    private var hitCount : Int?
     
     private var fontName = "KohinoorBangla-Regular"
     private var labelNode : SKLabelNode?
@@ -28,10 +26,9 @@ class HitBlockItem: Item {
     private var contactTestBitmask = UInt32(0b0001)
     
     // MARK: Protocol functions
-    func initItem(generator: ItemGenerator, num: Int, size: CGSize) {
+    func initItem(num: Int, size: CGSize) {
         self.size = size
-        self.generator = generator
-        hitCount = Int.random(in: 1...generator.maxHitCount!)
+        hitCount = Int.random(in: 1...30)
         
         node = SKSpriteNode(color: .gray, size: size)
         node!.anchorPoint = CGPoint(x: 0, y: 0)
@@ -86,6 +83,11 @@ class HitBlockItem: Item {
     // MARK: Public functions
     public func setColor(color: UIColor) {
         node!.color = color
+    }
+    
+    public func updateHitCount(count: Int) {
+        hitCount = count
+        labelNode!.text = "\(hitCount!)"
     }
     
     // MARK: Private functions
