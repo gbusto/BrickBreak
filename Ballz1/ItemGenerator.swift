@@ -20,14 +20,10 @@ class ItemGenerator {
     // Maximum hit count for a HitBlock
     public var maxHitCount = Int(10)
     
-    
     // -------------------------------------------------------------
     // MARK: Private attributes
     private var igState: ItemGeneratorState?
     static let ItemGeneratorPath = "ItemGenerator"
-    
-    // The number of active balls the user has; this will influence HitBlock counts
-    private var numberOfBalls = Int(0)
     
     // Number of items to fit on each row
     private var numItemsPerRow = Int(0)
@@ -366,7 +362,9 @@ class ItemGenerator {
         case HIT_BLOCK:
             let item = HitBlockItem()
             item.initItem(num: numItemsGenerated, size: blockSize!)
-            // Need to set block color here
+            let block = item as HitBlockItem
+            let min = Int(maxHitCount / 2)
+            block.setHitCount(count: Int.random(in: min...maxHitCount))
             return item
         case BALL:
             let size = CGSize(width: ballRadius!, height: ballRadius!)
