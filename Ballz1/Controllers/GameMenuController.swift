@@ -34,6 +34,10 @@ class GameMenuController: UIViewController {
         print("Pressed button... loading continuous game scene")
     }
     
+    @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
+        // Apparently this is necessary for unwinding views
+    }
+    
     override var shouldAutorotate: Bool {
         return true
     }

@@ -110,9 +110,8 @@ class ContinuousGameModel {
     
     public func saveGameState() {
         do {
-            // If it's a game over, don't do anything
+            // If it's a game over, clear the game state so we start fresh next time
             if GAME_OVER == state {
-                print("GAME OVER STATE")
                 clearGameState()
                 return
             }

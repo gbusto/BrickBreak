@@ -22,16 +22,16 @@
                                 <rect key="frame" x="20" y="44" width="374" height="618"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Brick Break" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.20000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="xH8-wW-N8G">
-                                        <rect key="frame" x="10" y="0.0" width="354.5" height="410"/>
+                                        <rect key="frame" x="10" y="0.0" width="354.5" height="493"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="180"/>
                                         <color key="textColor" red="0.81422688880939187" green="1" blue="0.63209300752693998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="jcc-nl-bVB">
-                                        <rect key="frame" x="50" y="460" width="274" height="158"/>
+                                        <rect key="frame" x="50" y="543" width="274" height="75"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0b5-Nx-3KM">
-                                                <rect key="frame" x="0.0" y="49.5" width="274" height="59"/>
+                                                <rect key="frame" x="0.0" y="8" width="274" height="59"/>
                                                 <color key="backgroundColor" red="0.47948489742189621" green="0.54436011520170158" blue="0.7249929969792539" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" title="Play">
@@ -76,8 +76,12 @@
                         <color key="backgroundColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <viewLayoutGuide key="safeArea" id="onz-3b-lSx"/>
                     </view>
+                    <connections>
+                        <segue destination="BdV-NT-BI6" kind="unwind" identifier="unwindToGameMenu" unwindAction="prepareForUnwindWithSegue:" id="NLm-Il-qcR"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bKq-uJ-cqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="BdV-NT-BI6" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1029" y="-9"/>
         </scene>
