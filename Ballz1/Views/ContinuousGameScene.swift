@@ -120,6 +120,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     ballProjection.updateArrow(startPoint: originPoint, touchPoint: point)
                 }
             }
+            
+            // If the game is over and the user taps the screen, tell the view controller to return to the game menu
+            if gameModel!.isGameOver() {
+                gameModel!.saveState()
+                sendGameOverNotification()
+            }
         }
     }
     
@@ -711,5 +717,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let action1 = SKAction.fadeAlpha(by: 0.3, duration: 0.5)
         let action2 = SKAction.fadeOut(withDuration: 0.5)
         node.run(SKAction.sequence([action1, action2, action1, action2]))
+    }
+    
+    private func sendGameOverNotification() {
+        let notification = Notification(name: .init("gameOver"))
+        NotificationCenter.default.post(notification)
     }
 }

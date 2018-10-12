@@ -35,11 +35,18 @@ class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
         
         let notification = Notification(name: .init("appTerminate"))
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
+        
+        let gameOverNotification = Notification(name: .init("gameOver"))
+        NotificationCenter.default.addObserver(self, selector: #selector(handleGameOver), name: gameOverNotification.name, object: nil)
     }
     
     @objc func handleAppTerminate() {
         let contScene = scene as! ContinousGameScene
         contScene.saveState()
+    }
+    
+    @objc func handleGameOver() {
+        self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
     }
     
     override var shouldAutorotate: Bool {
