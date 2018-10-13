@@ -204,10 +204,17 @@ class ItemGenerator {
         self.blockTypeArray = igState!.blockTypeArray
         self.nonBlockTypeArray = igState!.nonBlockTypeArray
         
+        // A boolean flag that says if we have an odd number of rows; used for loading stone blocks in the correct state
+        let oddNumRows = (igState!.itemArray.count % 2 == 1)
+        
         // Load items into the item array based on our saved item array and item hit count array
         if igState!.itemArray.count > 0 {
             for i in 0...(igState!.itemArray.count - 1) {
                 var newRow: [Item] = []
+                
+                // This is for ensuring stone blocks load in the correct state
+                let isOddRow = (i % 2 == 1)
+                
                 let row = igState!.itemArray[i]
                 for j in 0...(row.count - 1) {
                     let itemType = row[j]
@@ -225,6 +232,14 @@ class ItemGenerator {
                         let block = item! as! StoneHitBlockItem
                         // Load the block's hit count
                         block.updateHitCount(count: igState!.itemHitCountArray[i][j])
+                        if oddNumRows && isOddRow {
+                            // If there are an odd number of rows in the item array, the stone blocks in the odd rows should be stone; this ensures that the state is correct for when the view calls animateItems() which will trigger the stone block to change state
+                            block.changeState(duration: 0)
+                        }
+                        else if (false == oddNumRows) && (false == isOddRow) {
+                            // If there are an even number of rows in the item array, the stone blocks in the even rows should be stone
+                            block.changeState(duration: 0)
+                        }
                     }
                     else if item! is BallItem {
                         // Don't need to do anything
