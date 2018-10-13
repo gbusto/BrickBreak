@@ -58,6 +58,7 @@ class ItemGenerator {
     private static let BALL = Int(2)
     private static let CURRENCY = Int(3)
     private static let STONE_BLOCK = Int(4)
+    private static let BOMB = Int(5)
     
     // An Int to let holder of this object know when the ItemGenerator is ready
     private var actionsStarted = Int(0)
@@ -139,6 +140,10 @@ class ItemGenerator {
                         newItemRow.append(ItemGenerator.STONE_BLOCK)
                         itemHitCountRow.append(block.hitCount!)
                     }
+                    else if item is BombItem {
+                        newItemRow.append(ItemGenerator.BOMB)
+                        itemHitCountRow.append(0)
+                    }
                     else if item is BallItem {
                         newItemRow.append(ItemGenerator.BALL)
                         itemHitCountRow.append(0)
@@ -189,11 +194,12 @@ class ItemGenerator {
         // Try to load state and if not initialize things to their default values
         if false == loadState(restorationURL: url) {
             // Initialize the allowed item types with only one type for now
-            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 90)
-            addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 10)
-            addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 80)
-            addNonBlockItemType(type: ItemGenerator.CURRENCY, percentage: 10)
-            addNonBlockItemType(type: ItemGenerator.BALL, percentage: 10)
+            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 95)
+            addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 5)
+            addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 82)
+            addNonBlockItemType(type: ItemGenerator.CURRENCY, percentage: 8)
+            addNonBlockItemType(type: ItemGenerator.BALL, percentage: 8)
+            addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
             
             igState = ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
         }
@@ -240,6 +246,9 @@ class ItemGenerator {
                             // If there are an even number of rows in the item array, the stone blocks in the even rows should be stone
                             block.changeState(duration: 0)
                         }
+                    }
+                    else if item! is BombItem {
+                        // Don't need to do anything
                     }
                     else if item! is BallItem {
                         // Don't need to do anything
@@ -393,6 +402,23 @@ class ItemGenerator {
                         // If this item was a ball, increase the max hit count by 2 because it will be transferred over to the ball manager
                         numberOfBalls += 1
                     }
+                    else if item.getNode().name!.starts(with: "bomb") {
+                        // If a bomb item was hit, get all adjacent items
+                        let items = getAdjacentItems(to: item)
+                        // Iterate over each item
+                        for item in items {
+                            // Set hit block item count to 0
+                            if item is HitBlockItem {
+                                let hitBlock = item as! HitBlockItem
+                                hitBlock.hitCount! = 0
+                            }
+                            // Set stone block item count to 0
+                            else if item is StoneHitBlockItem {
+                                let stoneBlock = item as! StoneHitBlockItem
+                                stoneBlock.hitCount! = 0
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -476,12 +502,15 @@ class ItemGenerator {
             block.setHitCount(count: choices.randomElement()!)
             return item
         case ItemGenerator.STONE_BLOCK:
-            print("GENERATING STONE BLOCK ITEM!!!")
             let item = StoneHitBlockItem()
             item.initItem(num: numItemsGenerated, size: blockSize!)
             let block = item as StoneHitBlockItem
             let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2]
             block.setHitCount(count: choices.randomElement()!)
+            return item
+        case ItemGenerator.BOMB:
+            let item = BombItem()
+            item.initItem(num: numItemsGenerated, size: blockSize!)
             return item
         case ItemGenerator.BALL:
             let size = CGSize(width: ballRadius!, height: ballRadius!)
@@ -507,6 +536,88 @@ class ItemGenerator {
     
     private func getHardPatternPercent() -> Int {
         return (easyPatternPercent + intermediatePatternPercent + hardPatternPercent)
+    }
+    
+    // Finds the row index of a given item or nil if it wasn't found (it shouldn't ever return nil, but just in case)
+    private func findItemRowIndex(_ item: Item) -> Int? {
+        if 0 == itemArray.count {
+            return nil
+        }
+        
+        let itemName = item.getNode().name!
+        
+        for i in 0...(itemArray.count - 1) {
+            let row = itemArray[i]
+            let foundItem = row.contains { $0.getNode().name! == itemName }
+            if foundItem {
+                return i
+            }
+        }
+        
+        return nil
+    }
+    
+    // Find the item's index within its row (shouldn't ever return nil, but it should be checked anyways)
+    private func itemIndexInRow(lookFor: Item, rowIndex: Int) -> Int? {
+        let name = lookFor.getNode().name!
+        let row = itemArray[rowIndex]
+        for i in 0...(row.count - 1) {
+            let item = row[i]
+            if name == item.getNode().name! {
+                return i
+            }
+        }
+        
+        return nil
+    }
+    
+    // This could be improved and refactored
+    private func getAdjacentItems(to: Item) -> [Item] {
+        var adjacentItems: [Item] = []
+        
+        // 1. Find the row that the item is in
+        // 2. Find the index of the item in that row
+        // 3. Find (rowIndex - 1) and get the items at (itemIndex - 1, itemIndex, and itemIndex + 1)
+        // 4. Find rowIndex and get the items at (itemIndex - 1 and itemIndex + 1)
+        // 5. Find (rowIndex + 1) and get the items at (itemIndex - 1, itemIndex, and itemIndex + 1)
+        // 6. Return that list
+        
+        // Find the row index of the item if it exists
+        if let rowIndex = findItemRowIndex(to) {
+            // Find the item's index in that row
+            if let itemIndex = itemIndexInRow(lookFor: to, rowIndex: rowIndex) {
+                // Iterate over all the rows in the item array
+                for i in 0...(itemArray.count - 1) {
+                    // If the row is before or after the item's row, add items at (itemIndex - 1, itemIndex, and itemIndex + 1)
+                    if (i == (rowIndex - 1)) || (i == (rowIndex + 1)) {
+                        // Iterate over the row to find adjacent items
+                        let row = itemArray[i]
+                        for j in 0...(row.count - 1) {
+                            if (j == (itemIndex - 1)) || (j == (itemIndex)) || (j == (itemIndex + 1)) {
+                                adjacentItems.append(row[j])
+                            }
+                        }
+                    }
+                    // If this is the row the item is in, we just need to find the item before it and after it
+                    else if (i == rowIndex) {
+                        let row = itemArray[i]
+                        for j in 0...(row.count - 1) {
+                            if (j == (itemIndex - 1)) || (j == (itemIndex + 1)) {
+                                adjacentItems.append(row[j])
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                print("FAILED TO FIND ITEM INDEX IN ITS ROW")
+            }
+        }
+        else {
+            print("FAILED TO FIND THE ITEM'S ROW INDEX")
+        }
+        
+        return adjacentItems
     }
     
     // Gets the item count (doesn't include spacer items)
