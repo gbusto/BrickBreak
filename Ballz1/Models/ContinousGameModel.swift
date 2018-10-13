@@ -146,8 +146,8 @@ class ContinuousGameModel {
     public func loadPersistentState() -> Bool {
         do {
             // COMMENT ME OUT
-            try FileManager.default.removeItem(atPath: ContinuousGameModel.PersistentDataURL.path)
-            return false
+            //try FileManager.default.removeItem(atPath: ContinuousGameModel.PersistentDataURL.path)
+            //return false
             
             // Load the persistent data
             let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
@@ -165,9 +165,9 @@ class ContinuousGameModel {
     public func loadGameState() -> Bool {
         do {
             // COMMENT ME OUT
-            try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
-            try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
-            return false
+            //try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
+            //try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
+            //return false
             
             // Load game state for this game mode
             let gameData = try Data(contentsOf: ContinuousGameModel.GameStateURL)
@@ -309,6 +309,23 @@ class ContinuousGameModel {
     }
     
     public func generateRow() -> [Item] {
+        let count = itemGenerator!.getBlockCount()
+        // If the user is doing well and there are no items on the screen, generate a harder pattern
+        if count <= 4 {
+            itemGenerator!.easyPatternPercent = 10
+            itemGenerator!.intermediatePatternPercent = 30
+            itemGenerator!.hardPatternPercent = 60
+        }
+        // If they have <= 6 items on the screen, increase the difficult of getting a harder pattern
+        else if (count > 4) && (count <= 8) {
+            itemGenerator!.easyPatternPercent = 20
+            itemGenerator!.intermediatePatternPercent = 40
+            itemGenerator!.hardPatternPercent = 40
+        }
+        // Otherwise reset the pattern difficulty distribution back to defaults
+        else {
+            itemGenerator!.resetDifficulty()
+        }
         return itemGenerator!.generateRow()
     }
     

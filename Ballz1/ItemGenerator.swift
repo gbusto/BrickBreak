@@ -20,6 +20,12 @@ class ItemGenerator {
     // Maximum hit count for a HitBlock
     public var numberOfBalls = Int(10)
     
+    // These variables can be used to tweak the pattern distribution as needed
+    // These are used by the model to tweak pattern difficulty distribution
+    public var hardPatternPercent = 10
+    public var intermediatePatternPercent = 25
+    public var easyPatternPercent = 65
+    
     // -------------------------------------------------------------
     // MARK: Private attributes
     private var igState: ItemGeneratorState?
@@ -53,6 +59,7 @@ class ItemGenerator {
     
     // An Int to let holder of this object know when the ItemGenerator is ready
     private var actionsStarted = Int(0)
+    
     
     // The distribution for these patterns should be 65, 25, 10 (easy, intermediate, hard)
     private static let EASY_PATTERNS: [[Int]] = [
@@ -232,27 +239,47 @@ class ItemGenerator {
         }
     }
     
+    public func getBlockCount() -> Int {
+        var count = 0
+        for row in itemArray {
+            for item in row {
+                if item is HitBlockItem {
+                    count += 1
+                }
+            }
+        }
+        
+        return count
+    }
+    
+    // Used by the model to reset the pattern difficulty distribution
+    public func resetDifficulty() {
+        easyPatternPercent = 65
+        intermediatePatternPercent = 25
+        hardPatternPercent = 10
+    }
+    
     public func generateRow() -> [Item] {
         var newRow: [Item] = []
         
         // Pick from one of the pattern difficulties
         var pattern: [Int] = []
         let num = Int.random(in: 1...100)
-        if num < 65 {
+        if num < easyPatternPercent {
             // Easy pattern
             pattern = ItemGenerator.EASY_PATTERNS.randomElement()!
         }
-        else if (num >= 65) && (num < 90) {
+        else if (num >= easyPatternPercent) && (num < intermediatePatternPercent) {
             // Medium pattern
             pattern = ItemGenerator.INTERMEDIATE_PATTERNS.randomElement()!
         }
-        else if (num >= 90) {
+        else if (num >= hardPatternPercent) {
             // Hard pattern
             pattern = ItemGenerator.HARD_PATTERNS.randomElement()!
         }
-                
+        
+        // Slot counter
         var i = 0
-        var str = ""
         while i < numItemsPerRow {
             // Loop over the pattern (it could <= numItemsPerRow so we don't want to make assumptions about size)
             for j in 0...(pattern.count - 1) {
@@ -267,26 +294,6 @@ class ItemGenerator {
                     // Generate a non-block type
                     let itemType = nonBlockTypeArray.randomElement()!
                     item = generateItem(itemType: itemType)!
-                }
-                
-                // DEBUG
-                if item is SpacerItem {
-                    str += "[S]"
-                }
-                // DEBUG
-                else if item is CurrencyItem {
-                    str += "[C]"
-                }
-                // DEBUG
-                else if item is BallItem {
-                    str += "[B]"
-                }
-                // DEBUG
-                else if item is HitBlockItem {
-                    str += "[H]"
-                }
-                else {
-                    str += "[?]"
                 }
                 
                 // Add the item to the row
@@ -304,8 +311,8 @@ class ItemGenerator {
             }
         }
         
-        // DEBUG
-        print(str)
+        // Append the new row to the generator's item array
+        itemArray.append(newRow)
         
         // Return the newly generated row
         return newRow
