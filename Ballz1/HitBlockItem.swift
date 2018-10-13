@@ -28,7 +28,6 @@ class HitBlockItem: Item {
     // MARK: Protocol functions
     func initItem(num: Int, size: CGSize) {
         self.size = size
-        hitCount = Int.random(in: 1...30)
         
         node = SKSpriteNode(color: .gray, size: size)
         node!.anchorPoint = CGPoint(x: 0, y: 0)
@@ -46,9 +45,6 @@ class HitBlockItem: Item {
         physBody.categoryBitMask = categoryBitMask
         physBody.contactTestBitMask = contactTestBitmask
         node!.physicsBody = physBody
-        
-        initHitLabel()
-        node!.addChild(labelNode!)
     }
     
     // This should also handle coloring the item appropriately
@@ -85,6 +81,12 @@ class HitBlockItem: Item {
     // MARK: Public functions
     public func setColor(color: UIColor) {
         node!.color = color
+    }
+    
+    public func setHitCount(count: Int) {
+        hitCount = count
+        initHitLabel()
+        node!.addChild(labelNode!)
     }
     
     public func updateHitCount(count: Int) {

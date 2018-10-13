@@ -18,16 +18,12 @@ class ItemGenerator {
     public var itemArray: [[Item]] = []
     
     // Maximum hit count for a HitBlock
-    public var maxHitCount = Int(10)
-    
+    public var numberOfBalls = Int(10)
     
     // -------------------------------------------------------------
     // MARK: Private attributes
     private var igState: ItemGeneratorState?
     static let ItemGeneratorPath = "ItemGenerator"
-    
-    // The number of active balls the user has; this will influence HitBlock counts
-    private var numberOfBalls = Int(0)
     
     // Number of items to fit on each row
     private var numItemsPerRow = Int(0)
@@ -60,7 +56,7 @@ class ItemGenerator {
     
     // MARK: State handling functions
     struct ItemGeneratorState: Codable {
-        var maxHitCount: Int
+        var numberOfBalls: Int
         var totalPercentage: Int
         var itemTypeDict: [Int: Int]
         // An array of tuples where index 0 is the item type (EMPTY, HIT_BLOCK, BALL, etc) and index 1 is the hit block count (it's only really needed for hit block items)
@@ -69,7 +65,7 @@ class ItemGenerator {
         var itemTypeArray: [Int]
         
         enum CodingKeys: String, CodingKey {
-            case maxHitCount
+            case numberOfBalls
             case totalPercentage
             case itemTypeDict
             case itemArray
@@ -81,7 +77,7 @@ class ItemGenerator {
     public func saveState(restorationURL: URL) {
         let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
         do {
-            igState!.maxHitCount = maxHitCount
+            igState!.numberOfBalls = numberOfBalls
             igState!.totalPercentage = totalPercentage
             igState!.itemTypeDict = itemTypeDict
             
@@ -140,7 +136,7 @@ class ItemGenerator {
     }
     
     // MARK: Public functions
-    required init(blockSize: CGSize, ballRadius: CGFloat, maxHitCount: Int, numItems: Int, restorationURL: URL) {
+    required init(blockSize: CGSize, ballRadius: CGFloat, numberOfBalls: Int, numItems: Int, restorationURL: URL) {
         self.blockSize = blockSize
         self.ballRadius = ballRadius
         numItemsPerRow = numItems
@@ -154,11 +150,11 @@ class ItemGenerator {
             addItemType(type: BALL, percentage: 25)
             addItemType(type: CURRENCY, percentage: 10)
             
-            igState = ItemGeneratorState(maxHitCount: maxHitCount, totalPercentage: totalPercentage, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], itemTypeArray: itemTypeArray)
+            igState = ItemGeneratorState(numberOfBalls: numberOfBalls, totalPercentage: totalPercentage, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], itemTypeArray: itemTypeArray)
         }
         
         // Set these global variables based on the item generator state
-        self.maxHitCount = igState!.maxHitCount
+        self.numberOfBalls = igState!.numberOfBalls
         self.totalPercentage = igState!.totalPercentage
         self.itemTypeDict = igState!.itemTypeDict
         self.itemTypeArray = igState!.itemTypeArray
@@ -286,7 +282,7 @@ class ItemGenerator {
                     item.hitItem()
                     if item.getNode().name!.starts(with: "ball") {
                         // If this item was a ball, increase the max hit count by 2 because it will be transferred over to the ball manager
-                        maxHitCount += 2
+                        numberOfBalls += 1
                     }
                 }
             }
@@ -366,7 +362,9 @@ class ItemGenerator {
         case HIT_BLOCK:
             let item = HitBlockItem()
             item.initItem(num: numItemsGenerated, size: blockSize!)
-            // Need to set block color here
+            let block = item as HitBlockItem
+            let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2]
+            block.setHitCount(count: choices.randomElement()!)
             return item
         case BALL:
             let size = CGSize(width: ballRadius!, height: ballRadius!)
