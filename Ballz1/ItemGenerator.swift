@@ -609,12 +609,6 @@ class ItemGenerator {
                     }
                 }
             }
-            else {
-                print("FAILED TO FIND ITEM INDEX IN ITS ROW")
-            }
-        }
-        else {
-            print("FAILED TO FIND THE ITEM'S ROW INDEX")
         }
         
         return adjacentItems
