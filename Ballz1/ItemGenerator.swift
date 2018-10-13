@@ -265,15 +265,15 @@ class ItemGenerator {
         // Pick from one of the pattern difficulties
         var pattern: [Int] = []
         let num = Int.random(in: 1...100)
-        if num < easyPatternPercent {
+        if num < getEasyPatternPercent() {
             // Easy pattern
             pattern = ItemGenerator.EASY_PATTERNS.randomElement()!
         }
-        else if (num >= easyPatternPercent) && (num < intermediatePatternPercent) {
+        else if (num >= getEasyPatternPercent()) && (num < getIntermediatePatternPercent()) {
             // Medium pattern
             pattern = ItemGenerator.INTERMEDIATE_PATTERNS.randomElement()!
         }
-        else if (num >= hardPatternPercent) {
+        else { // num is >= intermediatePatternPercent so pick a hard pattern
             // Hard pattern
             pattern = ItemGenerator.HARD_PATTERNS.randomElement()!
         }
@@ -454,6 +454,18 @@ class ItemGenerator {
         default:
             return nil
         }
+    }
+    
+    private func getEasyPatternPercent() -> Int {
+        return easyPatternPercent
+    }
+    
+    private func getIntermediatePatternPercent() -> Int {
+        return (easyPatternPercent + intermediatePatternPercent)
+    }
+    
+    private func getHardPatternPercent() -> Int {
+        return (easyPatternPercent + intermediatePatternPercent + hardPatternPercent)
     }
     
     // Gets the item count (doesn't include spacer items)
