@@ -39,38 +39,68 @@ class ItemGenerator {
     // Item types that this generator can generate; for example, after 100 turns, maybe you want to start adding special kinds of blocks
     // The format is [ITEM_TYPE: PERCENTAGE_TO_GENERATE]
     private var itemTypeDict: [Int: Int] = [:]
-    // This is an array containing the item types
-    // There is exist as many items types in the array as the percentage; for example, if hit blocks have a 65% chance of being selected, there will be 65 hit blocks in this array
-    private var itemTypeArray: [Int] = []
-    // Total percentage that will grow as items are added to the itemTypeDict; it is updated in the addItemType function
-    private var totalPercentage = Int(0)
+    
+    // There exist as many block types in this array as its percentage; for example, if hit blocks have a 65% chance of being selected, there will be 65 hit blocks in this array
+    private var blockTypeArray: [Int] = []
+    // This works the same as the above array, but this is only for non block item types (currency, balls, spacer items, etc)
+    private var nonBlockTypeArray: [Int] = []
+    
     // Used to mark item types to know what item types are allowed to be generated
-    private var EMPTY = Int(0)
-    private var HIT_BLOCK = Int(1)
-    private var BALL = Int(2)
-    private var CURRENCY = Int(3)
+    private static let SPACER = Int(0)
+    private static let HIT_BLOCK = Int(1)
+    private static let BALL = Int(2)
+    private static let CURRENCY = Int(3)
     
     // An Int to let holder of this object know when the ItemGenerator is ready
     private var actionsStarted = Int(0)
+    
+    // The distribution for these patterns should be 65, 25, 10 (easy, intermediate, hard)
+    private static let EASY_PATTERNS: [[Int]] = [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
+        [0, 0, 0, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 0, 0 ,0 ,0 ,0 ,0],
+        [0, 0, 0, 0, 0, 0, 1, 1],
+    ]
+    
+    private static let INTERMEDIATE_PATTERNS: [[Int]] = [
+        [1, 1, 0, 0],
+        [0, 0, 1, 1],
+        [1, 0, 0, 1],
+        [1, 0, 1, 0],
+        [1, 1, 0, 0, 0, 0, 1, 1],
+        [0, 0, 1, 1, 1, 1, 0, 0],
+    ]
+    
+    private static let HARD_PATTERNS: [[Int]] = [
+        [1, 1, 1, 0],
+        [0, 1, 1, 1],
+        [1, 1, 0, 1, 1, 0],
+        [1, 0, 1, 1, 0],
+        [0, 0, 1, 1, 1, 1]
+    ]
     
     
     // MARK: State handling functions
     struct ItemGeneratorState: Codable {
         var numberOfBalls: Int
-        var totalPercentage: Int
         var itemTypeDict: [Int: Int]
-        // An array of tuples where index 0 is the item type (EMPTY, HIT_BLOCK, BALL, etc) and index 1 is the hit block count (it's only really needed for hit block items)
+        // An array of tuples where index 0 is the item type (SPACER, HIT_BLOCK, BALL, etc) and index 1 is the hit block count (it's only really needed for hit block items)
         var itemArray: [[Int]]
         var itemHitCountArray: [[Int]]
-        var itemTypeArray: [Int]
+        var blockTypeArray: [Int]
+        var nonBlockTypeArray: [Int]
         
         enum CodingKeys: String, CodingKey {
             case numberOfBalls
-            case totalPercentage
             case itemTypeDict
             case itemArray
             case itemHitCountArray
-            case itemTypeArray
+            case blockTypeArray
+            case nonBlockTypeArray
         }
     }
     
@@ -78,7 +108,6 @@ class ItemGenerator {
         let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
         do {
             igState!.numberOfBalls = numberOfBalls
-            igState!.totalPercentage = totalPercentage
             igState!.itemTypeDict = itemTypeDict
             
             var savedItemArray: [[Int]] = []
@@ -88,20 +117,20 @@ class ItemGenerator {
                 var itemHitCountRow: [Int] = []
                 for item in row {
                     if item is SpacerItem {
-                        newItemRow.append(EMPTY)
+                        newItemRow.append(ItemGenerator.SPACER)
                         itemHitCountRow.append(0)
                     }
                     else if item is HitBlockItem {
                         let block = item as! HitBlockItem
-                        newItemRow.append(HIT_BLOCK)
+                        newItemRow.append(ItemGenerator.HIT_BLOCK)
                         itemHitCountRow.append(block.hitCount!)
                     }
                     else if item is BallItem {
-                        newItemRow.append(BALL)
+                        newItemRow.append(ItemGenerator.BALL)
                         itemHitCountRow.append(0)
                     }
                     else if item is CurrencyItem {
-                        newItemRow.append(CURRENCY)
+                        newItemRow.append(ItemGenerator.CURRENCY)
                         itemHitCountRow.append(0)
                     }
                 }
@@ -111,7 +140,8 @@ class ItemGenerator {
             
             igState!.itemArray = savedItemArray
             igState!.itemHitCountArray = savedHitCountArray
-            igState!.itemTypeArray = itemTypeArray
+            igState!.blockTypeArray = blockTypeArray
+            igState!.nonBlockTypeArray = nonBlockTypeArray
             
             let data = try PropertyListEncoder().encode(igState!)
             try data.write(to: url)
@@ -145,19 +175,19 @@ class ItemGenerator {
         // Try to load state and if not initialize things to their default values
         if false == loadState(restorationURL: url) {
             // Initialize the allowed item types with only one type for now
-            totalPercentage = 0
-            addItemType(type: HIT_BLOCK, percentage: 65)
-            addItemType(type: BALL, percentage: 25)
-            addItemType(type: CURRENCY, percentage: 10)
+            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 100)
+            addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 80)
+            addNonBlockItemType(type: ItemGenerator.CURRENCY, percentage: 10)
+            addNonBlockItemType(type: ItemGenerator.BALL, percentage: 10)
             
-            igState = ItemGeneratorState(numberOfBalls: numberOfBalls, totalPercentage: totalPercentage, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], itemTypeArray: itemTypeArray)
+            igState = ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
         }
         
         // Set these global variables based on the item generator state
         self.numberOfBalls = igState!.numberOfBalls
-        self.totalPercentage = igState!.totalPercentage
         self.itemTypeDict = igState!.itemTypeDict
-        self.itemTypeArray = igState!.itemTypeArray
+        self.blockTypeArray = igState!.blockTypeArray
+        self.nonBlockTypeArray = igState!.nonBlockTypeArray
         
         // Load items into the item array based on our saved item array and item hit count array
         if igState!.itemArray.count > 0 {
@@ -190,55 +220,94 @@ class ItemGenerator {
         }
     }
     
-    public func addItemType(type: Int, percentage: Int) {
-        itemTypeDict[type] = percentage
-        totalPercentage += percentage
-
-        itemTypeArray = []
-        for itemType in itemTypeDict.keys {
-            let percentage = itemTypeDict[itemType]
-            print("Adding \(percentage!) items of type \(itemType)")
-            for _ in 1...percentage! {
-                itemTypeArray.append(itemType)
-            }
+    public func addBlockItemType(type: Int, percentage: Int) {
+        for _ in 1...percentage {
+            blockTypeArray.append(type)
+        }
+    }
+    
+    public func addNonBlockItemType(type: Int, percentage: Int) {
+        for _ in 1...percentage {
+            nonBlockTypeArray.append(type)
         }
     }
     
     public func generateRow() -> [Item] {
         var newRow: [Item] = []
-
+        
+        // Pick from one of the pattern difficulties
+        var pattern: [Int] = []
+        let num = Int.random(in: 1...100)
+        if num < 65 {
+            // Easy pattern
+            pattern = ItemGenerator.EASY_PATTERNS.randomElement()!
+        }
+        else if (num >= 65) && (num < 90) {
+            // Medium pattern
+            pattern = ItemGenerator.INTERMEDIATE_PATTERNS.randomElement()!
+        }
+        else if (num >= 90) {
+            // Hard pattern
+            pattern = ItemGenerator.HARD_PATTERNS.randomElement()!
+        }
+                
+        var i = 0
         var str = ""
-        for _ in 1...numItemsPerRow {
-            if Int.random(in: 1...100) < 60 {
-                let type = itemTypeArray.randomElement()!
-    
-                let item = generateItem(itemType: type)
-                newRow.append(item!)
-                if item! is BallItem {
-                    str += "[B]"
-                }
-                else if item! is HitBlockItem {
-                    str += "[H]"
-                }
-                else if item! is CurrencyItem {
-                    str += "[C]"
+        while i < numItemsPerRow {
+            // Loop over the pattern (it could <= numItemsPerRow so we don't want to make assumptions about size)
+            for j in 0...(pattern.count - 1) {
+                var item: Item
+                // Generate the item
+                if 1 == pattern[j] {
+                    // If it's a 1, generate a block type
+                    let itemType = blockTypeArray.randomElement()!
+                    item = generateItem(itemType: itemType)!
                 }
                 else {
-                    print("Unknown item...?")
+                    // Generate a non-block type
+                    let itemType = nonBlockTypeArray.randomElement()!
+                    item = generateItem(itemType: itemType)!
                 }
-                numItemsGenerated += 1
-            }
-            // If Int.random() didn't return a number < 60, add a spacer item anyways; each slot in a row needs to be occupied (i.e. each row must contain at least numItemsPerRow number of items)
-            else {
-                let spacer = SpacerItem()
-                newRow.append(spacer)
-                str += "[S]"
+                
+                // DEBUG
+                if item is SpacerItem {
+                    str += "[S]"
+                }
+                // DEBUG
+                else if item is CurrencyItem {
+                    str += "[C]"
+                }
+                // DEBUG
+                else if item is BallItem {
+                    str += "[B]"
+                }
+                // DEBUG
+                else if item is HitBlockItem {
+                    str += "[H]"
+                }
+                else {
+                    str += "[?]"
+                }
+                
+                // Add the item to the row
+                newRow.append(item)
+                if false == (item is SpacerItem) {
+                    // If it's anything but a spacer item, increase the number of items generated
+                    numItemsGenerated += 1
+                }
+                
+                // Increment our row slot counter (we want to stop at numItemsPerRow)
+                i += 1
+                if i == numItemsPerRow {
+                    break
+                }
             }
         }
+        
+        // DEBUG
         print(str)
         
-        itemArray.append(newRow)
-        
+        // Return the newly generated row
         return newRow
     }
     
@@ -356,22 +425,22 @@ class ItemGenerator {
     // Actually generate the item to be placed in the array
     private func generateItem(itemType: Int) -> Item? {
         switch itemType {
-        case EMPTY:
+        case ItemGenerator.SPACER:
             let item = SpacerItem()
             return item
-        case HIT_BLOCK:
+        case ItemGenerator.HIT_BLOCK:
             let item = HitBlockItem()
             item.initItem(num: numItemsGenerated, size: blockSize!)
             let block = item as HitBlockItem
             let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2]
             block.setHitCount(count: choices.randomElement()!)
             return item
-        case BALL:
+        case ItemGenerator.BALL:
             let size = CGSize(width: ballRadius!, height: ballRadius!)
             let item = BallItem()
             item.initItem(num: numItemsGenerated, size: size)
             return item
-        case CURRENCY:
+        case ItemGenerator.CURRENCY:
             let item = CurrencyItem()
             item.initItem(num: numItemsGenerated, size: blockSize!)
             return item

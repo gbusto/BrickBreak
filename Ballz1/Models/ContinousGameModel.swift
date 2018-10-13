@@ -146,8 +146,8 @@ class ContinuousGameModel {
     public func loadPersistentState() -> Bool {
         do {
             // COMMENT ME OUT
-            //try FileManager.default.removeItem(atPath: ContinuousGameModel.PersistentDataURL.path)
-            //return false
+            try FileManager.default.removeItem(atPath: ContinuousGameModel.PersistentDataURL.path)
+            return false
             
             // Load the persistent data
             let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
@@ -165,9 +165,9 @@ class ContinuousGameModel {
     public func loadGameState() -> Bool {
         do {
             // COMMENT ME OUT
-            //try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
-            //try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
-            //return false
+            try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
+            try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
+            return false
             
             // Load game state for this game mode
             let gameData = try Data(contentsOf: ContinuousGameModel.GameStateURL)
