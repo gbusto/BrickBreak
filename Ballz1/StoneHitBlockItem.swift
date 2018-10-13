@@ -23,7 +23,7 @@ class StoneHitBlockItem: Item {
     // true if the item is currently stone
     private var isStone = true
     
-    private var originalColor: UIColor?
+    private var originalColor: UIColor = .white
     
     // Setting up properties for collisions
     private var categoryBitMask = UInt32(0b0001)
@@ -101,7 +101,7 @@ class StoneHitBlockItem: Item {
             node!.run(action)
         }
         else {
-            let action = SKAction.colorize(with: originalColor!, colorBlendFactor: 1.0, duration: duration)
+            let action = SKAction.colorize(with: originalColor, colorBlendFactor: 1.0, duration: duration)
             node!.run(action)
         }
     }
