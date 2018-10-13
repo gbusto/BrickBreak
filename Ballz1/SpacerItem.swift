@@ -11,8 +11,10 @@ import SpriteKit
 // This is an item that we use as a placeholder empty item
 class SpacerItem: Item {
     
+    public var node: SKNode?
+    
     func initItem(num: Int, size: CGSize) {
-        // Pass
+        // Don't need to do anything here
     }
     
     func loadItem(position: CGPoint) -> Bool {
@@ -28,7 +30,14 @@ class SpacerItem: Item {
     }
     
     func getNode() -> SKNode {
-        return SKNode()
+        // This is to avoid issues when unwrapping node names
+        if let node = self.node {
+            return node
+        }
+        
+        node = SKNode()
+        node!.name = "spacer"
+        return node!
     }
     
 }

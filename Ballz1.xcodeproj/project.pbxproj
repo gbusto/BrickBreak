@@ -28,6 +28,7 @@
 		03B8B50021691A8600FFD589 /* LevelGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4FF21691A8600FFD589 /* LevelGameModel.swift */; };
 		03B8B542216AB2B300FFD589 /* BrickBreak.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03B8B541216AB2B300FFD589 /* BrickBreak.storyboard */; };
 		03F4C93B217235DA00D38D84 /* StoneHitBlockItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F4C93A217235DA00D38D84 /* StoneHitBlockItem.swift */; };
+		03F4C93D2172756000D38D84 /* BombItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F4C93C2172756000D38D84 /* BombItem.swift */; };
 		03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4212151C37800206A84 /* ItemGenerator.swift */; };
 		03F9A4242151C3D600206A84 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4232151C3D600206A84 /* Item.swift */; };
 		03F9A4262151D34800206A84 /* BallItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4252151D34800206A84 /* BallItem.swift */; };
@@ -80,6 +81,7 @@
 		03B8B4FF21691A8600FFD589 /* LevelGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelGameModel.swift; sourceTree = "<group>"; };
 		03B8B541216AB2B300FFD589 /* BrickBreak.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = BrickBreak.storyboard; sourceTree = "<group>"; };
 		03F4C93A217235DA00D38D84 /* StoneHitBlockItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoneHitBlockItem.swift; sourceTree = "<group>"; };
+		03F4C93C2172756000D38D84 /* BombItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BombItem.swift; sourceTree = "<group>"; };
 		03F9A4212151C37800206A84 /* ItemGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemGenerator.swift; sourceTree = "<group>"; };
 		03F9A4232151C3D600206A84 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		03F9A4252151D34800206A84 /* BallItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItem.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				0317DED3214B6B7900E976E2 /* BallManager.swift */,
 				03F9A4272151D56700206A84 /* HitBlockItem.swift */,
 				03F4C93A217235DA00D38D84 /* StoneHitBlockItem.swift */,
+				03F4C93C2172756000D38D84 /* BombItem.swift */,
 				0342D218216F7C5B00FE5760 /* CurrencyItem.swift */,
 				03F9A4252151D34800206A84 /* BallItem.swift */,
 				0342D216216CEC8700FE5760 /* SpacerItem.swift */,
@@ -338,6 +341,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03F4C93D2172756000D38D84 /* BombItem.swift in Sources */,
 				03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */,
 				03B8B4F0216919DD00FFD589 /* GameMenuScene.swift in Sources */,
 				03B8B50021691A8600FFD589 /* LevelGameModel.swift in Sources */,

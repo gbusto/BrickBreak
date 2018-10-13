@@ -29,8 +29,6 @@ class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
-            view.showsFPS = true
-            view.showsNodeCount = true
         }
         
         let notification = Notification(name: .init("appTerminate"))
