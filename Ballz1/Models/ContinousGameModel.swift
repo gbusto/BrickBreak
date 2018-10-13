@@ -214,7 +214,7 @@ class ContinuousGameModel {
         ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: ContinuousGameModel.ContinuousDirURL)
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
-        itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius, maxHitCount: ballManager!.numberOfBalls * 2, numItems: numberOfItems, restorationURL: ContinuousGameModel.ContinuousDirURL)
+        itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius, numberOfBalls: ballManager!.numberOfBalls, numItems: numberOfItems, restorationURL: ContinuousGameModel.ContinuousDirURL)
         if 0 == itemGenerator!.itemArray.count {
             state = TURN_OVER
         }
