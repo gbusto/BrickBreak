@@ -27,6 +27,7 @@
 		03B8B4FE21691A7600FFD589 /* ContinousGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4FD21691A7600FFD589 /* ContinousGameModel.swift */; };
 		03B8B50021691A8600FFD589 /* LevelGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4FF21691A8600FFD589 /* LevelGameModel.swift */; };
 		03B8B542216AB2B300FFD589 /* BrickBreak.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03B8B541216AB2B300FFD589 /* BrickBreak.storyboard */; };
+		03F4C93B217235DA00D38D84 /* StoneHitBlockItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F4C93A217235DA00D38D84 /* StoneHitBlockItem.swift */; };
 		03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4212151C37800206A84 /* ItemGenerator.swift */; };
 		03F9A4242151C3D600206A84 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4232151C3D600206A84 /* Item.swift */; };
 		03F9A4262151D34800206A84 /* BallItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4252151D34800206A84 /* BallItem.swift */; };
@@ -78,6 +79,7 @@
 		03B8B4FD21691A7600FFD589 /* ContinousGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinousGameModel.swift; sourceTree = "<group>"; };
 		03B8B4FF21691A8600FFD589 /* LevelGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelGameModel.swift; sourceTree = "<group>"; };
 		03B8B541216AB2B300FFD589 /* BrickBreak.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = BrickBreak.storyboard; sourceTree = "<group>"; };
+		03F4C93A217235DA00D38D84 /* StoneHitBlockItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoneHitBlockItem.swift; sourceTree = "<group>"; };
 		03F9A4212151C37800206A84 /* ItemGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemGenerator.swift; sourceTree = "<group>"; };
 		03F9A4232151C3D600206A84 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		03F9A4252151D34800206A84 /* BallItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItem.swift; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 				0317DE9D214B5FA300E976E2 /* AppDelegate.swift */,
 				0317DED3214B6B7900E976E2 /* BallManager.swift */,
 				03F9A4272151D56700206A84 /* HitBlockItem.swift */,
+				03F4C93A217235DA00D38D84 /* StoneHitBlockItem.swift */,
 				0342D218216F7C5B00FE5760 /* CurrencyItem.swift */,
 				03F9A4252151D34800206A84 /* BallItem.swift */,
 				0342D216216CEC8700FE5760 /* SpacerItem.swift */,
@@ -341,6 +344,7 @@
 				03F9A4242151C3D600206A84 /* Item.swift in Sources */,
 				03B8B4F421691A0F00FFD589 /* LevelGameView.swift in Sources */,
 				0342D219216F7C5B00FE5760 /* CurrencyItem.swift in Sources */,
+				03F4C93B217235DA00D38D84 /* StoneHitBlockItem.swift in Sources */,
 				F2677A7E216C3FFF00CE3FC0 /* BallProjection.swift in Sources */,
 				03AE1FC82156E5F0002CEB3F /* Color.swift in Sources */,
 				03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */,

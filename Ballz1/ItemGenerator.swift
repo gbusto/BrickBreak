@@ -51,11 +51,13 @@ class ItemGenerator {
     // This works the same as the above array, but this is only for non block item types (currency, balls, spacer items, etc)
     private var nonBlockTypeArray: [Int] = []
     
+    // These should probably be some kind of enum
     // Used to mark item types to know what item types are allowed to be generated
     private static let SPACER = Int(0)
     private static let HIT_BLOCK = Int(1)
     private static let BALL = Int(2)
     private static let CURRENCY = Int(3)
+    private static let STONE_BLOCK = Int(4)
     
     // An Int to let holder of this object know when the ItemGenerator is ready
     private var actionsStarted = Int(0)
@@ -132,6 +134,11 @@ class ItemGenerator {
                         newItemRow.append(ItemGenerator.HIT_BLOCK)
                         itemHitCountRow.append(block.hitCount!)
                     }
+                    else if item is StoneHitBlockItem {
+                        let block = item as! StoneHitBlockItem
+                        newItemRow.append(ItemGenerator.STONE_BLOCK)
+                        itemHitCountRow.append(block.hitCount!)
+                    }
                     else if item is BallItem {
                         newItemRow.append(ItemGenerator.BALL)
                         itemHitCountRow.append(0)
@@ -182,7 +189,8 @@ class ItemGenerator {
         // Try to load state and if not initialize things to their default values
         if false == loadState(restorationURL: url) {
             // Initialize the allowed item types with only one type for now
-            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 100)
+            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 90)
+            addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 10)
             addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 80)
             addNonBlockItemType(type: ItemGenerator.CURRENCY, percentage: 10)
             addNonBlockItemType(type: ItemGenerator.BALL, percentage: 10)
@@ -210,6 +218,11 @@ class ItemGenerator {
                     }
                     else if item! is HitBlockItem {
                         let block = item! as! HitBlockItem
+                        // Load the block's hit count
+                        block.updateHitCount(count: igState!.itemHitCountArray[i][j])
+                    }
+                    else if item! is StoneHitBlockItem {
+                        let block = item! as! StoneHitBlockItem
                         // Load the block's hit count
                         block.updateHitCount(count: igState!.itemHitCountArray[i][j])
                     }
@@ -329,6 +342,11 @@ class ItemGenerator {
                     continue
                 }
                 
+                if item is StoneHitBlockItem {
+                    let block = item as! StoneHitBlockItem
+                    block.changeState(duration: action.duration)
+                }
+                
                 // If the item is invisible, have it fade in
                 if 0 == item.getNode().alpha {
                     // If this is the newest row
@@ -439,6 +457,14 @@ class ItemGenerator {
             let item = HitBlockItem()
             item.initItem(num: numItemsGenerated, size: blockSize!)
             let block = item as HitBlockItem
+            let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2]
+            block.setHitCount(count: choices.randomElement()!)
+            return item
+        case ItemGenerator.STONE_BLOCK:
+            print("GENERATING STONE BLOCK ITEM!!!")
+            let item = StoneHitBlockItem()
+            item.initItem(num: numItemsGenerated, size: blockSize!)
+            let block = item as StoneHitBlockItem
             let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2]
             block.setHitCount(count: choices.randomElement()!)
             return item
