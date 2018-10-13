@@ -262,6 +262,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     // We want to remove block items from the scene completely
                     self.removeChildren(in: [item.getNode()])
                 }
+                else if item is StoneHitBlockItem {
+                    self.removeChildren(in: [item.getNode()])
+                }
                 else if item is BallItem {
                     // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
                     let newPoint = CGPoint(x: item.getNode().position.x, y: groundNode!.size.height + ballRadius!)
@@ -323,11 +326,17 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 
                 var pos = CGPoint(x: 0, y: 0)
                 if item is HitBlockItem {
-                    // Do any
                     let posX = CGFloat(i) * rowHeight!
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                     let block = item as! HitBlockItem
+                    block.setColor(color: color)
+                }
+                else if item is StoneHitBlockItem {
+                    let posX = CGFloat(i) * rowHeight!
+                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
+                    pos = CGPoint(x: posX, y: posY)
+                    let block = item as! StoneHitBlockItem
                     block.setColor(color: color)
                 }
                 else if item is CurrencyItem {
