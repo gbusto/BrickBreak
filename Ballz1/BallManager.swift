@@ -189,6 +189,23 @@ class BallManager {
         }
     }
     
+    public func returnBalls() {
+        for ball in ballArray {
+            if ball.isActive {
+                ball.isActive = false
+            }
+        }
+        
+        firstBallReturned = true
+        
+        numBallsActive = ballArray.count
+        
+        // Increment state from SHOOTING to WAITING
+        if isShooting() {
+            incrementState()
+        }
+    }
+    
     public func markBallInactive(name: String) {
         for ball in ballArray {
             if ball.node!.name == name {
@@ -223,9 +240,17 @@ class BallManager {
                 }
             }
             if numBallsDone == numBallsActive {
+                // Increment state from WAITING to DONE
                 incrementState()
                 firstBallReturned = false
                 numBallsActive = 0
+                
+                // In the event that the user forced all balls to return and some balls haven't been fired yet, they should be moved to the new origin point
+                for ball in ballArray {
+                    if ball.getNode().position != originPoint! {
+                        ball.stop(point: originPoint!)
+                    }
+                }
             }
         }
     }

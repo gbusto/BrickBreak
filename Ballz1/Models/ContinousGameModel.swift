@@ -241,6 +241,11 @@ class ContinuousGameModel {
         
         return false
     }
+    
+    // End the turn early (in the event of a swipe down/ball return gesture)
+    public func endTurn() {
+        ballManager!.returnBalls()
+    }
 
     public func handleTurn() -> [Item] {
         // Check to see if the user collected any balls or currency items so far
