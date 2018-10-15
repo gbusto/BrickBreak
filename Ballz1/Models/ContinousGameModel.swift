@@ -241,6 +241,10 @@ class ContinuousGameModel {
         
         return false
     }
+    
+    public func endTurn() {
+        ballManager!.returnAllBalls()
+    }
 
     public func handleTurn() -> [Item] {
         // Check to see if the user collected any balls or currency items so far
@@ -262,6 +266,7 @@ class ContinuousGameModel {
         
         // Wait for the ball manager to finish
         if ballManager!.isDone() {
+            print("BALL MANAGER IS DONE")
             // Increment state from MID_TURN to TURN_OVER
             incrementState()
             
@@ -336,6 +341,7 @@ class ContinuousGameModel {
     public func animationsDone() -> Bool {
         if itemGenerator!.isReady() {
             // Change state from WAITING to READY
+            print("MODEL IS READY")
             incrementState()
             return true
         }
