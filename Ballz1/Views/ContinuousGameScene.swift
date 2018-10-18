@@ -246,6 +246,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             if swipedDown {
                 // Handle ball return gesture
                 gameModel!.endTurn()
+                swipedDown = false
             }
             
             // Shoot a ball with a delay count of ticksDelay
