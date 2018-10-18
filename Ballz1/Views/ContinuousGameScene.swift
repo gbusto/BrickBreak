@@ -62,7 +62,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // Variables for handling swipe gestures
     private var rightSwipeGesture: UISwipeGestureRecognizer?
+    private var downSwipeGesture: UISwipeGestureRecognizer?
     private var addedGesture = false
+    private var swipedDown = false
     
     private var arrowIsShowing = false
     
@@ -91,9 +93,13 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         initBestScoreLabel()
         initCurrencyLabels()
         
-        rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeRight(_:)))
+        rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleRightSwipe(_:)))
         rightSwipeGesture!.direction = .right
         rightSwipeGesture!.numberOfTouchesRequired = 1
+        
+        downSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleDownSwipe(_:)))
+        downSwipeGesture!.direction = .down
+        downSwipeGesture!.numberOfTouchesRequired = 1
         
         self.backgroundColor = sceneColor
         physicsWorld.contactDelegate = self
@@ -233,8 +239,14 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         if gameModel!.isMidTurn() {
             if false == addedGesture {
                 // Ask the model if we showed the fast forward tutorial
-                view!.gestureRecognizers = [rightSwipeGesture!]
+                view!.gestureRecognizers = [rightSwipeGesture!, downSwipeGesture!]
                 addedGesture = true
+            }
+            
+            if swipedDown {
+                // Handle ball return gesture
+                gameModel!.endTurn()
+                swipedDown = false
             }
             
             // Shoot a ball with a delay count of ticksDelay
@@ -297,7 +309,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Public functions
     // Handle a right swipe to fast forward
-    @objc public func handleSwipeRight(_ sender: UISwipeGestureRecognizer) {
+    @objc public func handleRightSwipe(_ sender: UISwipeGestureRecognizer) {
         let point = sender.location(in: view!)
         
         if inGame(point) {
@@ -313,6 +325,17 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     
                     flashSpeedupImage()
                 }
+            }
+        }
+    }
+    
+    // Handle a down swipe to return balls
+    @objc public func handleDownSwipe(_ sender: UISwipeGestureRecognizer) {
+        let point = sender.location(in: view!)
+        
+        if inGame(point) {
+            if gameModel!.isMidTurn() {
+                swipedDown = true
             }
         }
     }
@@ -373,6 +396,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         // Initialize the ball count label
         ballCountLabel = SKLabelNode(fontNamed: fontName)
+        ballCountLabel!.name = "ballCountLabel"
         
         // Add the balls to the scene
         var ballPosition = CGPoint(x: view!.frame.midX, y: groundNode!.size.height + ballRadius!)
@@ -669,7 +693,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ballCountLabel!.color = .white
         
         updateBallCountLabel()
-        self.addChild(ballCountLabel!)
+        if let _ = self.childNode(withName: "ballCountLabel") {
+            // If this label is already displayed, don't display it again
+        }
+        else {
+            self.addChild(ballCountLabel!)
+        }
     }
     
     private func updateBallCountLabel() {

@@ -241,6 +241,10 @@ class ContinuousGameModel {
         
         return false
     }
+    
+    public func endTurn() {
+        ballManager!.returnAllBalls()
+    }
 
     public func handleTurn() -> [Item] {
         // Check to see if the user collected any balls or currency items so far
