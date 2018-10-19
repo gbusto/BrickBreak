@@ -43,12 +43,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var gameModel: ContinuousGameModel?
     
     private var fontName = "KohinoorBangla-Regular"
-
-    // Score labels
-    private var scoreLabel: SKLabelNode?
-    private var bestScoreLabel: SKLabelNode?
-    private var currencyLabel: SKLabelNode?
-    private var currencyNode: SKSpriteNode?
     
     // Ball count label
     private var ballCountLabel: SKLabelNode?
@@ -89,9 +83,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         initWalls(view: view)
         initGameModel()
-        initScoreLabel()
-        initBestScoreLabel()
-        initCurrencyLabels()
         
         rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleRightSwipe(_:)))
         rightSwipeGesture!.direction = .right
@@ -295,8 +286,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     self.removeChildren(in: [item.getNode()])
                     // Show a green dollar sign floating up after item is removed
                     showCurrencyAcquiredLabel(itemPosition: position)
-                    // Update the currency count
-                    updateCurrency(currency: gameModel!.currencyAmount)
                 }
             }
         }
@@ -406,6 +395,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             addBallCountLabel()
         }
         
+        updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
+        
         let balls = gameModel!.getBalls()
         currentBallCount = balls.count
         prevBallCount = balls.count
@@ -469,6 +460,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode?.position = CGPoint(x: 0, y: view.frame.height - view.safeAreaInsets.top - margin)
         ceilingNode?.name = "ceiling"
         ceilingNode?.zPosition = 101
+        ceilingNode?.alpha = 0
         
         let startPoint = CGPoint(x: 0, y: 0)
         let endPoint = CGPoint(x: view.frame.width, y: 0)
@@ -510,60 +502,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         return physBody
     }
     
-    // Initializes the current score
-    private func initScoreLabel() {
-        let pos = CGPoint(x: view!.frame.midX, y: ceilingNode!.size.height / 2)
-        scoreLabel = SKLabelNode()
-        scoreLabel!.zPosition = 103
-        scoreLabel!.position = pos
-        scoreLabel!.fontSize = margin! * 0.50
-        scoreLabel!.fontName = fontName
-        scoreLabel!.verticalAlignmentMode = .center
-        scoreLabel!.horizontalAlignmentMode = .center
-        scoreLabel!.text = "\(gameModel!.gameScore)"
-        ceilingNode!.addChild(scoreLabel!)
-    }
-    
-    // Initializes the high score label
-    private func initBestScoreLabel() {
-        let pos = CGPoint(x: ceilingNode!.size.width * 0.02, y: ceilingNode!.size.height / 2)
-        bestScoreLabel = SKLabelNode()
-        bestScoreLabel!.zPosition = 103
-        bestScoreLabel!.position = pos
-        bestScoreLabel!.fontName = fontName
-        bestScoreLabel!.fontSize = margin! * 0.30
-        bestScoreLabel!.verticalAlignmentMode = .center
-        bestScoreLabel!.horizontalAlignmentMode = .left
-        bestScoreLabel!.text = "Best: \(gameModel!.highScore)"
-        ceilingNode!.addChild(bestScoreLabel!)
-    }
-    
-    private func initCurrencyLabels() {
-        let pos = CGPoint(x: ceilingNode!.size.width * 0.90, y: ceilingNode!.size.height / 1.5)
-        currencyNode = SKSpriteNode(imageNamed: "money_coin")
-        currencyNode!.position = pos
-        currencyNode!.zPosition = 103
-        currencyNode!.size = currencySize!
-        ceilingNode!.addChild(currencyNode!)
-        
-        let labelPos = CGPoint(x: ceilingNode!.size.width * 0.90, y: ceilingNode!.size.height / 3.5)
-        currencyLabel = SKLabelNode(fontNamed: fontName)
-        currencyLabel!.position = labelPos
-        currencyLabel!.zPosition = 103
-        currencyLabel!.fontSize = ceilingNode!.size.height * 0.25
-        currencyLabel!.verticalAlignmentMode = .center
-        currencyLabel!.horizontalAlignmentMode = .center
-        currencyLabel!.text = "\(gameModel!.currencyAmount)"
-        ceilingNode!.addChild(currencyLabel!)
-    }
-    
     private func updateScore(highScore: Int, gameScore: Int) {
-        scoreLabel!.text = "\(gameScore)"
-        bestScoreLabel!.text = "Best: \(highScore)"
-    }
-    
-    private func updateCurrency(currency: Int) {
-        currencyLabel!.text = "\(currency)"
+        let notification = Notification(name: .init("updateScore"))
+        NotificationCenter.default.post(name: notification.name, object: nil, userInfo: ["score": gameScore, "highScore": highScore])
     }
     
     // Flashes the fast forward image to give the user some feedback about what's happening

@@ -15,10 +15,22 @@ class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
     
     private var scene: SKScene?
     
+    @IBOutlet weak var gameScoreLabel: UILabel!
+    @IBOutlet weak var highScoreLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         print("Loaded continuous game view")
+        
+        let notification = Notification(name: .init("appTerminate"))
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
+        
+        let gameOverNotification = Notification(name: .init("gameOver"))
+        NotificationCenter.default.addObserver(self, selector: #selector(handleGameOver), name: gameOverNotification.name, object: nil)
+        
+        let updateScoreNotification = Notification(name: .init("updateScore"))
+        NotificationCenter.default.addObserver(self, selector: #selector(updateScore(_:)), name: updateScoreNotification.name, object: nil)
         
         if let view = self.view as! SKView? {
             let scene = ContinousGameScene(size: view.bounds.size)
@@ -30,12 +42,6 @@ class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
             
             view.ignoresSiblingOrder = true
         }
-        
-        let notification = Notification(name: .init("appTerminate"))
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
-        
-        let gameOverNotification = Notification(name: .init("gameOver"))
-        NotificationCenter.default.addObserver(self, selector: #selector(handleGameOver), name: gameOverNotification.name, object: nil)
     }
     
     @objc func handleAppTerminate() {
@@ -45,6 +51,16 @@ class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
     
     @objc func handleGameOver() {
         self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+    }
+    
+    @objc func updateScore(_ notification: Notification) {
+        if let userInfo = notification.userInfo {
+            let score = userInfo["score"]!
+            let highScore = userInfo["highScore"]!
+            
+            self.gameScoreLabel.text = "\(score)"
+            self.highScoreLabel.text = "\(highScore)"
+        }
     }
     
     override var shouldAutorotate: Bool {
