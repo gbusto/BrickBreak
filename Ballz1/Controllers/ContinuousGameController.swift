@@ -11,7 +11,7 @@
 import UIKit
 import SpriteKit
 
-class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
+class ContinuousGameController: UIViewController {
     
     private var scene: SKScene?
     
@@ -51,6 +51,15 @@ class ContinuousGameController: UIViewController, SKPhysicsContactDelegate {
     
     @objc func handleGameOver() {
         self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+    }
+    
+    // Necessary for the currency button to be able to perform actions
+    @IBAction func showStoreScene(_ sender: Any) {
+        print("Showing store scene now")
+    }
+
+    @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
+        // Necessary for unwinding views
     }
     
     @objc func updateScore(_ notification: Notification) {
