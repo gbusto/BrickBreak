@@ -146,8 +146,8 @@
                                             <constraint firstAttribute="height" constant="40" id="cX5-GD-XX5"/>
                                         </constraints>
                                     </button>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Upgrades" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="kbX-2b-1r6">
-                                        <rect key="frame" x="139" y="5.6666666666666643" width="116" height="29"/>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Purchases" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="kbX-2b-1r6">
+                                        <rect key="frame" x="134.66666666666666" y="5.6666666666666643" width="124.99999999999997" height="29"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="24"/>
