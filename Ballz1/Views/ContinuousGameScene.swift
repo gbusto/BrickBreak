@@ -33,7 +33,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // Nodes that will be shown in the view
     private var groundNode: SKSpriteNode?
-    private var ceilingNode: SKSpriteNode?
+    private var ceilingNode: SKShapeNode?
     private var leftWallNode: SKNode?
     private var rightWallNode: SKNode?
     
@@ -454,18 +454,20 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func initCeiling(view: SKView, margin: CGFloat) {
-        let size = CGSize(width: view.frame.width, height: view.safeAreaInsets.top + margin)
-        ceilingNode = SKSpriteNode(color: marginColor, size: size)
-        ceilingNode?.anchorPoint = CGPoint(x: 0, y: 0)
-        ceilingNode?.position = CGPoint(x: 0, y: view.frame.height - view.safeAreaInsets.top - margin)
-        ceilingNode?.name = "ceiling"
-        ceilingNode?.zPosition = 101
-        ceilingNode?.alpha = 0
-        
         let startPoint = CGPoint(x: 0, y: 0)
         let endPoint = CGPoint(x: view.frame.width, y: 0)
         let physBody = createPhysicsEdge(startPoint: startPoint, endPoint: endPoint)
-        ceilingNode?.physicsBody = physBody
+        
+        let ceilingLine = CGMutablePath()
+        ceilingLine.move(to: startPoint)
+        ceilingLine.addLine(to: endPoint)
+        ceilingNode = SKShapeNode()
+        ceilingNode!.path = ceilingLine
+        ceilingNode!.name = "ceiling"
+        ceilingNode!.strokeColor = marginColor
+        ceilingNode!.lineWidth = 1
+        ceilingNode!.physicsBody = physBody
+        ceilingNode!.position = CGPoint(x: 0, y: view.frame.height - 20 - margin)
         
         self.addChild(ceilingNode!)
     }
