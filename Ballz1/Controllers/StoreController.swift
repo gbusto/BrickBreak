@@ -1,10 +1,8 @@
 //
-//  GameMenuController.swift
+//  StoreController.swift
 //  Ballz1
 //
-//  Controller for the game menu to handle button clicks and taps
-//
-//  Created by Gabriel Busto on 10/6/18.
+//  Created by hemingway on 10/19/18.
 //  Copyright © 2018 Self. All rights reserved.
 //
 
@@ -12,27 +10,19 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
-class GameMenuController: UIViewController {
+class StoreController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         if let view = self.view as! SKView? {
-            let scene = GameMenuScene(size: view.bounds.size)
+            let scene = StoreScene(size: view.bounds.size)
             scene.scaleMode = .aspectFill
             
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
         }
-    }
-    
-    @IBAction func playGame(_ sender: Any) {
-        print("Pressed button... loading continuous game scene")
-    }
-    
-    @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
-        // Apparently this is necessary for unwinding views
     }
     
     override var shouldAutorotate: Bool {

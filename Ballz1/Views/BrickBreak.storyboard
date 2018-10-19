@@ -101,6 +101,10 @@
                                             <constraint firstAttribute="width" constant="50" id="xB1-fN-oCU"/>
                                         </constraints>
                                         <state key="normal" image="money_coin"/>
+                                        <connections>
+                                            <action selector="showStoreScene:" destination="SQo-9G-tie" eventType="touchUpInside" id="tTN-GB-m2O"/>
+                                            <segue destination="5An-r9-mk2" kind="show" id="kAX-gL-OKg"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </stackView>
@@ -124,8 +128,65 @@
             </objects>
             <point key="canvasLocation" x="1028" y="-9.4452773613193415"/>
         </scene>
+        <!--Store Controller-->
+        <scene sceneID="In7-BN-nXd">
+            <objects>
+                <viewController id="5An-r9-mk2" customClass="StoreController" customModule="Ballz1" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="zBj-FV-tZX" customClass="SKView">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="3jw-eD-1QI">
+                                <rect key="frame" x="10" y="54" width="394" height="40"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dqS-N3-qCk">
+                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="40" id="29E-VQ-Huf"/>
+                                            <constraint firstAttribute="height" constant="40" id="cX5-GD-XX5"/>
+                                        </constraints>
+                                    </button>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Upgrades" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="kbX-2b-1r6">
+                                        <rect key="frame" x="139" y="5.6666666666666643" width="116" height="29"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="24"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dvb-sl-bZo">
+                                        <rect key="frame" x="354" y="0.0" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="2iU-tx-Hbf"/>
+                                            <constraint firstAttribute="width" constant="40" id="e35-pF-nA2"/>
+                                        </constraints>
+                                        <state key="normal" image="exit_button"/>
+                                        <connections>
+                                            <segue destination="32C-Pe-iWH" kind="unwind" unwindAction="prepareForUnwindWithSegue:" id="pRe-7X-mp7"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="tintColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="3jw-eD-1QI" firstAttribute="top" secondItem="aQn-CU-kwh" secondAttribute="top" constant="10" id="Tb9-st-ElO"/>
+                            <constraint firstItem="3jw-eD-1QI" firstAttribute="leading" secondItem="aQn-CU-kwh" secondAttribute="leading" constant="10" id="fh6-ed-etL"/>
+                            <constraint firstItem="aQn-CU-kwh" firstAttribute="trailing" secondItem="3jw-eD-1QI" secondAttribute="trailing" constant="10" id="kei-3a-ra9"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="aQn-CU-kwh"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EMq-WX-NKy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="32C-Pe-iWH" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="1999" y="-6"/>
+        </scene>
     </scenes>
     <resources>
+        <image name="exit_button" width="512" height="512"/>
         <image name="money_coin" width="1540" height="1504"/>
     </resources>
 </document>
