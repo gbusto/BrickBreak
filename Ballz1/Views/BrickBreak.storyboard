@@ -107,6 +107,10 @@
                                         </connections>
                                     </button>
                                 </subviews>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="bNb-UM-NRp" appends="YES" id="C4a-a9-A7X"/>
+                                </connections>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -125,6 +129,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bKq-uJ-cqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="BdV-NT-BI6" userLabel="Exit" sceneMemberID="exit"/>
+                <tapGestureRecognizer id="bNb-UM-NRp">
+                    <connections>
+                        <action selector="statusBarTapped:" destination="SQo-9G-tie" id="nad-LH-fBE"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1028" y="-9.4452773613193415"/>
         </scene>

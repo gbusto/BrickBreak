@@ -44,6 +44,10 @@ class ContinuousGameController: UIViewController {
         }
     }
     
+    @IBAction func statusBarTapped(_ sender: Any) {
+        
+    }
+    
     @objc func handleAppTerminate() {
         let contScene = scene as! ContinousGameScene
         contScene.saveState()

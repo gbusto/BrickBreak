@@ -467,7 +467,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode!.strokeColor = marginColor
         ceilingNode!.lineWidth = 1
         ceilingNode!.physicsBody = physBody
-        ceilingNode!.position = CGPoint(x: 0, y: view.frame.height - 20 - margin)
+        ceilingNode!.position = CGPoint(x: 0, y: view.frame.height - view.safeAreaInsets.top - margin)
         
         self.addChild(ceilingNode!)
     }
