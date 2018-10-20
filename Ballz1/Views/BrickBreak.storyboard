@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ys3-oF-MJh">
-    <device id="retina6_5" orientation="portrait">
+    <device id="retina5_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -15,23 +15,23 @@
             <objects>
                 <viewController id="Ys3-oF-MJh" customClass="GameMenuController" customModule="Ballz1" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="cTL-9e-TUL" customClass="SKView">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="9Jl-GQ-Wvn">
-                                <rect key="frame" x="20" y="44" width="374" height="618"/>
+                                <rect key="frame" x="20" y="20" width="374" height="516"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Brick Break" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.20000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="xH8-wW-N8G">
-                                        <rect key="frame" x="9.6666666666666572" y="0.0" width="354.66666666666674" height="493"/>
+                                        <rect key="frame" x="9.6666666666666572" y="0.0" width="354.66666666666674" height="342.33333333333331"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="180"/>
                                         <color key="textColor" red="0.81422688880939187" green="1" blue="0.63209300752693998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="jcc-nl-bVB">
-                                        <rect key="frame" x="50" y="543" width="274" height="75"/>
+                                        <rect key="frame" x="50" y="392.33333333333331" width="274" height="123.66666666666669"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0b5-Nx-3KM">
-                                                <rect key="frame" x="0.0" y="8" width="274" height="59"/>
+                                                <rect key="frame" x="0.0" y="32.333333333333371" width="274" height="59"/>
                                                 <color key="backgroundColor" red="0.47948489742189621" green="0.54436011520170158" blue="0.7249929969792539" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" title="Play">
@@ -71,11 +71,11 @@
             <objects>
                 <viewController id="SQo-9G-tie" customClass="ContinuousGameController" customModule="Ballz1" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="OMB-xp-lQC" customClass="SKView">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" translatesAutoresizingMaskIntoConstraints="NO" id="fvE-kJ-god">
-                                <rect key="frame" x="10" y="54" width="394" height="50"/>
+                                <rect key="frame" x="10" y="30" width="394" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="50" placeholderIntrinsicHeight="50" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7yN-Nr-Ust">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -142,11 +142,11 @@
             <objects>
                 <viewController id="5An-r9-mk2" customClass="StoreController" customModule="Ballz1" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="zBj-FV-tZX" customClass="SKView">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="3jw-eD-1QI">
-                                <rect key="frame" x="10" y="54" width="394" height="40"/>
+                                <rect key="frame" x="10" y="30" width="394" height="40"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dqS-N3-qCk">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
