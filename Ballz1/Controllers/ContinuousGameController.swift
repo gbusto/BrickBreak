@@ -23,6 +23,9 @@ class ContinuousGameController: UIViewController {
         
         print("Loaded continuous game view")
         
+        let backgroundNotification = Notification(name: .NSExtensionHostWillResignActive)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingBackground), name: backgroundNotification.name, object: nil)
+        
         let notification = Notification(name: .init("appTerminate"))
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
         
@@ -46,7 +49,20 @@ class ContinuousGameController: UIViewController {
     
     @IBAction func statusBarTapped(_ sender: Any) {
         let scene = self.scene as! ContinousGameScene
-        scene.showPauseScreen()
+        if let view = self.view as! SKView? {
+            scene.isPaused = true
+            view.isPaused = true
+            scene.showPauseScreen()
+        }
+    }
+    
+    @objc func handleAppGoingBackground() {
+        let scene = self.scene as! ContinousGameScene
+        if let view = self.view as! SKView? {
+            scene.isPaused = true
+            view.isPaused = true
+            scene.showPauseScreen()
+        }
     }
     
     @objc func handleAppTerminate() {

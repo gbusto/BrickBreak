@@ -315,8 +315,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func showPauseScreen() {
-        self.isPaused = true
-        
         let blur = UIBlurEffect(style: .dark)
         blurView = UIVisualEffectView(effect: blur)
         blurView!.frame = view!.frame
@@ -349,19 +347,40 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(unpause))
         tapGesture.numberOfTapsRequired = 2
+        tapGesture.name = "tapGesture"
         
-        view!.gestureRecognizers = [tapGesture]
+        if let _ = view!.gestureRecognizers {
+            // If paused in the middle of the turn, we want to append this recognizer to the current list of recognizers
+            view!.gestureRecognizers!.append(tapGesture)
+        }
+        else {
+            // If we're not in the middle of a turn, we can just set the recognizer array to this single element
+            view!.gestureRecognizers = [tapGesture]
+        }
     }
     
     @objc private func unpause() {
         print("Unpausing")
         self.isPaused = false
+        self.view!.isPaused = false
         
         blurView!.removeFromSuperview()
         pausedLabel!.removeFromSuperview()
         pausedLabel2!.removeFromSuperview()
         
-        view!.gestureRecognizers = []
+        // In the event that we're still in the middle of a turn where we want to recognizer fast forward and ball return gestures, we only want to remove the tap gesture recognizer
+        if let recognizers = view!.gestureRecognizers {
+            let newArray = recognizers.filter {
+                if let name = $0.name {
+                    if name == "tapGesture" {
+                        return false
+                    }
+                }
+                return true
+            }
+            
+            view!.gestureRecognizers = newArray
+        }
     }
     
     // MARK: Public functions
