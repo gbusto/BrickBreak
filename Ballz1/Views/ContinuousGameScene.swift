@@ -111,15 +111,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
-            if isPaused {
-                return
-            }
-            
             let point = touch.location(in: self)
          
             if gameModel!.isReady() {
                 // Show the arrow and update it
-                if inGame(point) {
+                if inGame(point) && (false == self.isPaused) {
                     let originPoint = gameModel!.ballManager!.getOriginPoint()
                     ballProjection.showArrow(scene: self)
                     ballProjection.updateArrow(startPoint: originPoint, touchPoint: point)
@@ -137,10 +133,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
-            if isPaused {
-                return
-            }
-            
             let point = touch.location(in: self)
             
             if !inGame(point) {
@@ -158,10 +150,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
-            if isPaused {
-                return
-            }
-            
             let point = touch.location(in: self)
             
             if gameModel!.isReady() && ballProjection.arrowShowing {
@@ -177,16 +165,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if isPaused {
-            return
-        }
+        
     }
     
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if gameModel!.isTurnOver() {
-            print("Turn over")
-            
             // Return physics simulation to normal speed
             physicsWorld.speed = 1.0
             
@@ -360,7 +344,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     @objc private func unpause() {
-        print("Unpausing")
         self.isPaused = false
         self.view!.isPaused = false
         
