@@ -62,6 +62,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var arrowIsShowing = false
     
+    private var blurView: UIView?
+    private var pausedLabel: UILabel?
+    private var pausedLabel2: UILabel?
+    
     // Colors for the scene
     private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
     private var marginColor = UIColor.init(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
@@ -107,6 +111,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
+            if isPaused {
+                return
+            }
+            
             let point = touch.location(in: self)
          
             if gameModel!.isReady() {
@@ -129,6 +137,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
+            if isPaused {
+                return
+            }
+            
             let point = touch.location(in: self)
             
             if !inGame(point) {
@@ -146,6 +158,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
+            if isPaused {
+                return
+            }
+            
             let point = touch.location(in: self)
             
             if gameModel!.isReady() && ballProjection.arrowShowing {
@@ -161,7 +177,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+        if isPaused {
+            return
+        }
     }
     
     // MARK: Scene update
@@ -294,6 +312,56 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     public func saveState() {
         print("Saving game state")
         gameModel!.saveState()
+    }
+    
+    public func showPauseScreen() {
+        self.isPaused = true
+        
+        let blur = UIBlurEffect(style: .dark)
+        blurView = UIVisualEffectView(effect: blur)
+        blurView!.frame = view!.frame
+        view!.addSubview(blurView!)
+        
+        let fontSize = CGFloat(40)
+        let point = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
+        let size = CGSize(width: view!.frame.width * 0.7, height: view!.frame.height * 0.3)
+        let rect = CGRect(origin: point, size: size)
+        pausedLabel = UILabel(frame: rect)
+        pausedLabel!.center = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
+        pausedLabel!.textAlignment = .center
+        pausedLabel!.font = UIFont(name: fontName, size: fontSize)
+        pausedLabel!.text = "Paused"
+        pausedLabel!.textColor = .white
+        pausedLabel!.adjustsFontSizeToFitWidth = true
+        view!.addSubview(pausedLabel!)
+        
+        let point2 = CGPoint(x: view!.frame.midX, y: view!.frame.midY + 40)
+        let size2 = CGSize(width: view!.frame.width * 0.7, height: view!.frame.height * 0.3)
+        let rect2 = CGRect(origin: point2, size: size2)
+        pausedLabel2 = UILabel(frame: rect2)
+        pausedLabel2!.center = CGPoint(x: view!.frame.midX, y: view!.frame.midY + 40)
+        pausedLabel2!.textAlignment = .center
+        pausedLabel2!.font = UIFont(name: fontName, size: fontSize / 2)
+        pausedLabel2!.text = "Double tap to unpause"
+        pausedLabel2!.textColor = .white
+        pausedLabel2!.adjustsFontSizeToFitWidth = true
+        view!.addSubview(pausedLabel2!)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(unpause))
+        tapGesture.numberOfTapsRequired = 2
+        
+        view!.gestureRecognizers = [tapGesture]
+    }
+    
+    @objc private func unpause() {
+        print("Unpausing")
+        self.isPaused = false
+        
+        blurView!.removeFromSuperview()
+        pausedLabel!.removeFromSuperview()
+        pausedLabel2!.removeFromSuperview()
+        
+        view!.gestureRecognizers = []
     }
     
     // MARK: Public functions
@@ -467,7 +535,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode!.strokeColor = marginColor
         ceilingNode!.lineWidth = 1
         ceilingNode!.physicsBody = physBody
-        ceilingNode!.position = CGPoint(x: 0, y: view.frame.height - 20 - margin)
+        ceilingNode!.position = CGPoint(x: 0, y: view.frame.height - view.safeAreaInsets.top - margin)
         
         self.addChild(ceilingNode!)
     }
