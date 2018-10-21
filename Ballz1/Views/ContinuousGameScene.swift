@@ -610,10 +610,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let size = CGSize(width: self.view!.frame.width * 0.8, height: self.view!.frame.width * 0.8)
         let imageNode = SKSpriteNode(imageNamed: "fast_forward.png")
         imageNode.alpha = 0
+        imageNode.zPosition = 101
         imageNode.position = pos
         imageNode.size = size
         
         let label = SKLabelNode(fontNamed: fontName)
+        label.zPosition = imageNode.zPosition
         label.fontSize = 50
         label.fontColor = color
         label.horizontalAlignmentMode = .left
