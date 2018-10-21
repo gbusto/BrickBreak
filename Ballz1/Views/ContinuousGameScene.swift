@@ -31,6 +31,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // The currency size
     private var currencySize: CGSize?
     
+    private var ballCountLabelMargin = CGFloat(0.05)
+    
     // Nodes that will be shown in the view
     private var groundNode: SKSpriteNode?
     private var ceilingNode: SKShapeNode?
@@ -725,11 +727,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let originPoint = gameModel!.ballManager!.getOriginPoint()
         var newPoint = CGPoint(x: originPoint.x, y: (originPoint.y + (ballRadius! * 1.5)))
         // This is to prevent the ball count label from going off the screen
-        if newPoint.x < view!.frame.width * 0.03 {
+        if newPoint.x < view!.frame.width * ballCountLabelMargin {
             // If we're close to the far left side, add a small amount to the x value
             newPoint.x += view!.frame.width * 0.03
         }
-        else if newPoint.x > view!.frame.width * 0.97 {
+        else if newPoint.x > view!.frame.width * (1.0 - ballCountLabelMargin) {
             // Opposite of the above comment
             newPoint.x -= view!.frame.width * 0.03
         }
