@@ -21,6 +21,8 @@ class ContinuousGameModel {
     public var ballManager: BallManager?
     public var itemGenerator: ItemGenerator?
     
+    public var userWasSaved = false
+    
     // MARK: Private properties
     private var persistentData: PersistentData?
     private var gameState: GameState?
@@ -69,9 +71,11 @@ class ContinuousGameModel {
     // This struct is used for managing any state from this class that is required to save the user's place
     struct GameState: Codable {
         var gameScore: Int
+        var userWasSaved: Bool
         
         enum CodingKeys: String, CodingKey {
             case gameScore
+            case userWasSaved
         }
     }
     
@@ -126,6 +130,7 @@ class ContinuousGameModel {
             
             // Save game state stuff (right now it's just the current game score)
             gameState!.gameScore = gameScore
+            gameState!.userWasSaved = userWasSaved
             
             // Save the game state
             let gameData = try PropertyListEncoder().encode(self.gameState!)
@@ -202,13 +207,14 @@ class ContinuousGameModel {
         
         if false == loadGameState() {
             // Defaults to loading gameScore of 0
-            gameState = GameState(gameScore: gameScore)
+            gameState = GameState(gameScore: gameScore, userWasSaved: userWasSaved)
         }
         
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
         highScore = persistentData!.highScore
         currencyAmount = persistentData!.currencyAmount
         gameScore = gameState!.gameScore
+        userWasSaved = gameState!.userWasSaved
         
         // This function will either load ball manager with a saved state or the default ball manager state
         ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: ContinuousGameModel.ContinuousDirURL)
@@ -244,6 +250,12 @@ class ContinuousGameModel {
     
     public func endTurn() {
         ballManager!.returnAllBalls()
+    }
+    
+    public func saveUser() -> [Item] {
+        state = READY
+        userWasSaved = true
+        return itemGenerator!.removeFirstRow()
     }
 
     public func handleTurn() -> [Item] {
