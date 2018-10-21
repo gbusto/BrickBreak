@@ -664,9 +664,20 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    public func isGameOverShowing() -> Bool {
+        // If a child node with name "gameOver" is showing, return true
+        if let _ = self.childNode(withName: "gameOver") {
+            return true
+        }
+        
+        // Otherwise return false
+        return false
+    }
+    
     // Shows the game over overlay
     public func showGameOverNode() {
         let gameOverNode = SKSpriteNode(color: .darkGray, size: scene!.size)
+        gameOverNode.name = "gameOver"
         gameOverNode.alpha = 0.9
         gameOverNode.zPosition = 105
         gameOverNode.position = CGPoint(x: 0, y: 0)

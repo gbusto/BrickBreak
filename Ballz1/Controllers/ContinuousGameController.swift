@@ -87,6 +87,12 @@ class ContinuousGameController: UIViewController {
     
     @objc func handleAppGoingBackground() {
         let scene = self.scene as! ContinousGameScene
+        
+        // Don't pause the game when it goes to the background if the gameover overlay is showing
+        if scene.isGameOverShowing() {
+            return
+        }
+        
         if let view = self.view as! SKView? {
             // If the view is paused from showing the Continue? dialog then don't pause the game when it moves to the background
             if false == view.isPaused {
