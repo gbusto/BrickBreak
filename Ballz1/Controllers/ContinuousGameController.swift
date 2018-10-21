@@ -26,6 +26,9 @@ class ContinuousGameController: UIViewController {
         let backgroundNotification = Notification(name: .NSExtensionHostWillResignActive)
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingBackground), name: backgroundNotification.name, object: nil)
         
+        let continueNotification = Notification(name: .init("continueGame"))
+        NotificationCenter.default.addObserver(self, selector: #selector(showContinueButton), name: continueNotification.name, object: nil)
+        
         let notification = Notification(name: .init("appTerminate"))
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
         
@@ -47,6 +50,32 @@ class ContinuousGameController: UIViewController {
         }
     }
     
+    @objc func showContinueButton() {
+        if let view = self.view as! SKView? {
+            view.isPaused = true
+            
+            let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
+            let yesAction = UIAlertAction(title: "Yes", style: .default) { (handler: UIAlertAction) in
+                print("Pressed yes button")
+                let scene = self.scene as! ContinousGameScene
+                // Save the user!
+                scene.saveUser()
+                view.isPaused = false
+            }
+            let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
+                print("Pressed no button")
+                let scene = self.scene as! ContinousGameScene
+                // Should be able to just call handleGameOver()
+                scene.endGame()
+            }
+            
+            alert.addAction(yesAction)
+            alert.addAction(noAction)
+            
+            present(alert, animated: false, completion: nil)
+        }
+    }
+    
     @IBAction func statusBarTapped(_ sender: Any) {
         let scene = self.scene as! ContinousGameScene
         if let view = self.view as! SKView? {
@@ -59,9 +88,12 @@ class ContinuousGameController: UIViewController {
     @objc func handleAppGoingBackground() {
         let scene = self.scene as! ContinousGameScene
         if let view = self.view as! SKView? {
-            scene.isPaused = true
-            view.isPaused = true
-            scene.showPauseScreen()
+            // If the view is paused from showing the Continue? dialog then don't pause the game when it moves to the background
+            if false == view.isPaused {
+                scene.isPaused = true
+                view.isPaused = true
+                scene.showPauseScreen()
+            }
         }
     }
     

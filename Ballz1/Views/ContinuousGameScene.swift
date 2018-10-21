@@ -122,7 +122,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
             
-            // If the game is over and the user taps the screen, tell the view controller to return to the game menu
             if gameModel!.isGameOver() {
                 gameModel!.saveState()
                 sendGameOverNotification()
@@ -213,12 +212,16 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             if gameModel!.animationsDone() {
                 // Check to see if the game ended after all animations are complete
                 if gameModel!.gameOver(floor: groundNode!.size.height, rowHeight: rowHeight!) {
-                    // Show gameover overlay
-                    showGameOverNode()
-                    self.isPaused = true
-                    
-                    // Display Continue? graphic
-                    // Show an ad
+                    // If the user hasn't been saved yet, allow them to be saved
+                    if false == gameModel!.userWasSaved {
+                        // Display Continue? graphic
+                        showContinueButton()
+                        // Show an ad
+                    }
+                    else {
+                        // Otherwise show the gameover overlay
+                        showGameOverNode()
+                    }
                 }
                 // Check to see if we are at risk of losing the game
                 else if gameModel!.lossRisk(floor: groundNode!.size.height, rowHeight: rowHeight!) {
@@ -296,6 +299,25 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     public func saveState() {
         print("Saving game state")
         gameModel!.saveState()
+    }
+    
+    public func endGame() {
+        gameModel!.saveState()
+        sendGameOverNotification()
+    }
+    
+    public func saveUser() {
+        let fadeOut = SKAction.fadeOut(withDuration: 1)
+        let items = gameModel!.saveUser()
+        for item in items {
+            if item is SpacerItem {
+                continue
+            }
+            
+            item.getNode().run(fadeOut) {
+                self.removeChildren(in: [item.getNode()])
+            }
+        }
     }
     
     public func showPauseScreen() {
@@ -643,7 +665,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // Shows the game over overlay
-    private func showGameOverNode() {
+    public func showGameOverNode() {
         let gameOverNode = SKSpriteNode(color: .darkGray, size: scene!.size)
         gameOverNode.alpha = 0.9
         gameOverNode.zPosition = 105
@@ -779,7 +801,14 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func sendGameOverNotification() {
+        // Send a notification to this scene's view controller to unwind to the game menu
         let notification = Notification(name: .init("gameOver"))
+        NotificationCenter.default.post(notification)
+    }
+    
+    private func showContinueButton() {
+        // Send a notification to this scene's view controller to display the continue alert
+        let notification = Notification(name: .init("continueGame"))
         NotificationCenter.default.post(notification)
     }
 }
