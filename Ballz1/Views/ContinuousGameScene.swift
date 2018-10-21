@@ -120,7 +120,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 if inGame(point) && (false == self.isPaused) {
                     let originPoint = gameModel!.ballManager!.getOriginPoint()
                     ballProjection.showArrow(scene: self)
-                    ballProjection.updateArrow(startPoint: originPoint, touchPoint: point)
+                    ballProjection.updateArrow(startPoint: originPoint, touchPoint: point, ceilingHeight: ceilingNode!.position.y)
                 }
             }
             
@@ -143,7 +143,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             else if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Update the arrow location
                 let originPoint = gameModel!.ballManager!.getOriginPoint()
-                ballProjection.updateArrow(startPoint: originPoint, touchPoint: point)
+                ballProjection.updateArrow(startPoint: originPoint, touchPoint: point, ceilingHeight: ceilingNode!.position.y)
             }
         }
     }
