@@ -308,6 +308,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         sendGameOverNotification()
     }
     
+    public func getCurrencyAmount() -> Int {
+        return gameModel!.currencyAmount
+    }
+    
+    // Save the user from losing a game by clearing out the row that's about to end the game
     public func saveUser() {
         let fadeOut = SKAction.fadeOut(withDuration: 1)
         let items = gameModel!.saveUser()

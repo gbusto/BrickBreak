@@ -11,7 +11,10 @@ import SpriteKit
 import GameplayKit
 
 class StoreController: UIViewController {
+    var currencyAmount: Int = 0
     
+    @IBOutlet weak var currencyLabel: UILabel!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -22,6 +25,9 @@ class StoreController: UIViewController {
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
+            
+            // This should be set by the calling view controller
+            currencyLabel.text = "\(currencyAmount)"
         }
     }
     

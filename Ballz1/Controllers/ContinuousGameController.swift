@@ -112,6 +112,15 @@ class ContinuousGameController: UIViewController {
         self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // If the next controller we're transitioning to is the StoreController, set the currency label to the amount of currency the user has
+        if segue.destination is StoreController {
+            let scene = self.scene as! ContinousGameScene
+            let destController = segue.destination as! StoreController
+            destController.currencyAmount = scene.getCurrencyAmount()
+        }
+    }
+    
     // Necessary for the currency button to be able to perform actions
     @IBAction func showStoreScene(_ sender: Any) {
         print("Showing store scene now")
