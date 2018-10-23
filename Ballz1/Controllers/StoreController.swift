@@ -31,6 +31,15 @@ class StoreController: UIViewController {
         }
     }
     
+    @IBAction func purchaseUndo(_ sender: Any) {
+        // Handling the user clicking the Undo purchase
+        // Loading the name and cost should come from a data structure of some kind
+        
+        let cost: Int = 100
+        
+        print("User tried to purchase Undo")
+    }
+    
     override var shouldAutorotate: Bool {
         return true
     }
