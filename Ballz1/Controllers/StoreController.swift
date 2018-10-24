@@ -14,7 +14,11 @@ class StoreController: UIViewController {
     var currencyAmount: Int = 0
     
     @IBOutlet weak var currencyLabel: UILabel!
-
+    
+    // Stuff for the undo button
+    @IBOutlet weak var undoButton: UIButton!
+    @IBOutlet weak var undoCurrencyAmount: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -28,6 +32,9 @@ class StoreController: UIViewController {
             
             // This should be set by the calling view controller
             currencyLabel.text = "\(currencyAmount)"
+            
+            // Perform any actions on the button and label to set it up
+            setupUndoButton()
         }
     }
     
@@ -38,6 +45,15 @@ class StoreController: UIViewController {
         let cost: Int = 100
         
         print("User tried to purchase Undo")
+    }
+    
+    private func setupUndoButton() {
+        let uca = Int(undoCurrencyAmount.text!)!
+        // If the user doesn't have enough currency to purchase this item then disable the button and set the label color to red
+        if currencyAmount < uca {
+            undoButton.isEnabled = false
+            undoCurrencyAmount.textColor = .red
+        }
     }
     
     override var shouldAutorotate: Bool {

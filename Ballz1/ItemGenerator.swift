@@ -51,6 +51,8 @@ class ItemGenerator {
     // This works the same as the above array, but this is only for non block item types (currency, balls, spacer items, etc)
     private var nonBlockTypeArray: [Int] = []
     
+    private var prevTurnState = ItemGeneratorPrevTurn(itemArray: [], itemHitCountArray: [])
+    
     // These should probably be some kind of enum
     // Used to mark item types to know what item types are allowed to be generated
     private static let SPACER = Int(0)
@@ -114,51 +116,66 @@ class ItemGenerator {
         }
     }
     
+    // The struct for stuff needed to restore state from the previous turn
+    struct ItemGeneratorPrevTurn {
+        var itemArray: [[Int]]
+        var itemHitCountArray: [[Int]]
+    }
+    
+    // Backs up the items (used for saving state and restoring user's previous turn)
+    private func backupItems() -> ItemGeneratorPrevTurn {
+        var savedItemArray: [[Int]] = []
+        var savedHitCountArray: [[Int]] = []
+        for row in itemArray {
+            var newItemRow: [Int] = []
+            var itemHitCountRow: [Int] = []
+            for item in row {
+                if item is SpacerItem {
+                    newItemRow.append(ItemGenerator.SPACER)
+                    itemHitCountRow.append(0)
+                }
+                else if item is HitBlockItem {
+                    let block = item as! HitBlockItem
+                    newItemRow.append(ItemGenerator.HIT_BLOCK)
+                    itemHitCountRow.append(block.hitCount!)
+                }
+                else if item is StoneHitBlockItem {
+                    let block = item as! StoneHitBlockItem
+                    newItemRow.append(ItemGenerator.STONE_BLOCK)
+                    itemHitCountRow.append(block.hitCount!)
+                }
+                else if item is BombItem {
+                    newItemRow.append(ItemGenerator.BOMB)
+                    itemHitCountRow.append(0)
+                }
+                else if item is BallItem {
+                    newItemRow.append(ItemGenerator.BALL)
+                    itemHitCountRow.append(0)
+                }
+                else if item is CurrencyItem {
+                    newItemRow.append(ItemGenerator.CURRENCY)
+                    itemHitCountRow.append(0)
+                }
+            }
+            savedItemArray.append(newItemRow)
+            savedHitCountArray.append(itemHitCountRow)
+        }
+        
+        let prevTurn = ItemGeneratorPrevTurn(itemArray: savedItemArray, itemHitCountArray: savedHitCountArray)
+        return prevTurn
+    }
+    
     public func saveState(restorationURL: URL) {
         let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
         do {
             igState!.numberOfBalls = numberOfBalls
             igState!.itemTypeDict = itemTypeDict
             
-            var savedItemArray: [[Int]] = []
-            var savedHitCountArray: [[Int]] = []
-            for row in itemArray {
-                var newItemRow: [Int] = []
-                var itemHitCountRow: [Int] = []
-                for item in row {
-                    if item is SpacerItem {
-                        newItemRow.append(ItemGenerator.SPACER)
-                        itemHitCountRow.append(0)
-                    }
-                    else if item is HitBlockItem {
-                        let block = item as! HitBlockItem
-                        newItemRow.append(ItemGenerator.HIT_BLOCK)
-                        itemHitCountRow.append(block.hitCount!)
-                    }
-                    else if item is StoneHitBlockItem {
-                        let block = item as! StoneHitBlockItem
-                        newItemRow.append(ItemGenerator.STONE_BLOCK)
-                        itemHitCountRow.append(block.hitCount!)
-                    }
-                    else if item is BombItem {
-                        newItemRow.append(ItemGenerator.BOMB)
-                        itemHitCountRow.append(0)
-                    }
-                    else if item is BallItem {
-                        newItemRow.append(ItemGenerator.BALL)
-                        itemHitCountRow.append(0)
-                    }
-                    else if item is CurrencyItem {
-                        newItemRow.append(ItemGenerator.CURRENCY)
-                        itemHitCountRow.append(0)
-                    }
-                }
-                savedItemArray.append(newItemRow)
-                savedHitCountArray.append(itemHitCountRow)
-            }
+            // Backup the item array
+            let backedUpItems = backupItems()
             
-            igState!.itemArray = savedItemArray
-            igState!.itemHitCountArray = savedHitCountArray
+            igState!.itemArray = backedUpItems.itemArray
+            igState!.itemHitCountArray = backedUpItems.itemHitCountArray
             igState!.blockTypeArray = blockTypeArray
             igState!.nonBlockTypeArray = nonBlockTypeArray
             
@@ -169,6 +186,23 @@ class ItemGenerator {
         catch {
             print("Failed to save item generator state: \(error)")
         }
+    }
+    
+    public func saveTurnState() {
+        // Backup the items into this state struct
+        prevTurnState = backupItems()
+    }
+    
+    public func loadTurnState() -> Bool {
+        // Return false if the array for the previous turn is empty
+        if prevTurnState.itemArray.isEmpty {
+            return false
+        }
+        
+        // Return true if we have items to reload
+        itemArray = loadItems(items: prevTurnState.itemArray, itemHitCounts: prevTurnState.itemHitCountArray)
+        
+        return true
     }
     
     public func loadState(restorationURL: URL) -> Bool {
@@ -182,6 +216,66 @@ class ItemGenerator {
             print("Failed to load item generator state: \(error)")
             return false
         }
+    }
+    
+    // Load items into an array and return that array
+    private func loadItems(items: [[Int]], itemHitCounts: [[Int]]) -> [[Item]] {
+        // The final array we'll return
+        var array: [[Item]] = []
+        
+        // A boolean flag that says if we have an odd number of rows; used for loading stone blocks in the correct state
+        let oddNumRows = (items.count % 2 == 1)
+        
+        if items.count > 0 {
+            for i in 0...(items.count - 1) {
+                var newRow: [Item] = []
+                
+                // This is for ensuring stone blocks load in the correct state
+                let isOddRow = (i % 2 == 1)
+                
+                let row = items[i]
+                for j in 0...(row.count - 1) {
+                    let itemType = row[j]
+                    let item = generateItem(itemType: itemType)
+                    newRow.append(item!)
+                    if item! is SpacerItem {
+                        continue
+                    }
+                    else if item! is HitBlockItem {
+                        let block = item! as! HitBlockItem
+                        // Load the block's hit count
+                        block.updateHitCount(count: itemHitCounts[i][j])
+                    }
+                    else if item! is StoneHitBlockItem {
+                        let block = item! as! StoneHitBlockItem
+                        // Load the block's hit count
+                        block.updateHitCount(count: itemHitCounts[i][j])
+                        if oddNumRows && isOddRow {
+                            // If there are an odd number of rows in the item array, the stone blocks in the odd rows should be stone; this ensures that the state is correct for when the view calls animateItems() which will trigger the stone block to change state
+                            block.changeState(duration: 0)
+                        }
+                        else if (false == oddNumRows) && (false == isOddRow) {
+                            // If there are an even number of rows in the item array, the stone blocks in the even rows should be stone
+                            block.changeState(duration: 0)
+                        }
+                    }
+                    else if item! is BombItem {
+                        // Don't need to do anything
+                    }
+                    else if item! is BallItem {
+                        // Don't need to do anything
+                    }
+                    else if item! is CurrencyItem {
+                        // Don't need to do anything
+                    }
+                    numItemsGenerated += 1
+                }
+                print("Added new row to the item array")
+                array.append(newRow)
+            }
+        }
+        
+        return array
     }
     
     // MARK: Public functions
@@ -210,58 +304,8 @@ class ItemGenerator {
         self.blockTypeArray = igState!.blockTypeArray
         self.nonBlockTypeArray = igState!.nonBlockTypeArray
         
-        // A boolean flag that says if we have an odd number of rows; used for loading stone blocks in the correct state
-        let oddNumRows = (igState!.itemArray.count % 2 == 1)
-        
         // Load items into the item array based on our saved item array and item hit count array
-        if igState!.itemArray.count > 0 {
-            for i in 0...(igState!.itemArray.count - 1) {
-                var newRow: [Item] = []
-                
-                // This is for ensuring stone blocks load in the correct state
-                let isOddRow = (i % 2 == 1)
-                
-                let row = igState!.itemArray[i]
-                for j in 0...(row.count - 1) {
-                    let itemType = row[j]
-                    let item = generateItem(itemType: itemType)
-                    newRow.append(item!)
-                    if item! is SpacerItem {
-                        continue
-                    }
-                    else if item! is HitBlockItem {
-                        let block = item! as! HitBlockItem
-                        // Load the block's hit count
-                        block.updateHitCount(count: igState!.itemHitCountArray[i][j])
-                    }
-                    else if item! is StoneHitBlockItem {
-                        let block = item! as! StoneHitBlockItem
-                        // Load the block's hit count
-                        block.updateHitCount(count: igState!.itemHitCountArray[i][j])
-                        if oddNumRows && isOddRow {
-                            // If there are an odd number of rows in the item array, the stone blocks in the odd rows should be stone; this ensures that the state is correct for when the view calls animateItems() which will trigger the stone block to change state
-                            block.changeState(duration: 0)
-                        }
-                        else if (false == oddNumRows) && (false == isOddRow) {
-                            // If there are an even number of rows in the item array, the stone blocks in the even rows should be stone
-                            block.changeState(duration: 0)
-                        }
-                    }
-                    else if item! is BombItem {
-                        // Don't need to do anything
-                    }
-                    else if item! is BallItem {
-                        // Don't need to do anything
-                    }
-                    else if item! is CurrencyItem {
-                        // Don't need to do anything
-                    }
-                    numItemsGenerated += 1
-                }
-                print("Added new row to the item array")
-                itemArray.append(newRow)
-            }
-        }
+        itemArray = loadItems(items: igState!.itemArray, itemHitCounts: igState!.itemHitCountArray)
     }
     
     public func addBlockItemType(type: Int, percentage: Int) {

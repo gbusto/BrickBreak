@@ -30,6 +30,9 @@ class ContinuousGameModel {
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
     
+    // False when there is no previous turn data saved; true otherwise
+    private var prevTurnSaved = false
+    
     private var state = Int(0)
     // READY means the game model is ready to go
     private var READY = Int(0)
@@ -232,6 +235,11 @@ class ContinuousGameModel {
     }
     
     public func prepareTurn(point: CGPoint) {
+        // Save the item generator's turn state as soon as the user starts the next turn
+        itemGenerator!.saveTurnState()
+        
+        // Also save the ball manager's state
+        
         ballManager!.setDirection(point: point)
         // Change the ball manager's state from READY to SHOOTING
         ballManager!.incrementState()
