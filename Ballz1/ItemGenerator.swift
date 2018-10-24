@@ -202,6 +202,10 @@ class ItemGenerator {
         // Return true if we have items to reload
         itemArray = loadItems(items: prevTurnState.itemArray, itemHitCounts: prevTurnState.itemHitCountArray)
         
+        // Reset the previous turn state so we don't reload old data
+        prevTurnState.itemArray = []
+        prevTurnState.itemHitCountArray = []
+        
         return true
     }
     

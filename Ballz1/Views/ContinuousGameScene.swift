@@ -327,6 +327,17 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    public func loadPreviousTurnState() {
+        // Remove all the current item generator nodes from the screen
+        // Load the new ones on the screen
+        
+        // Reload the ball count label
+        
+        // Maybe move all this stuff into one function to load the game model's state
+        
+        gameModel!.loadPreviousTurnState()
+    }
+    
     public func showPauseScreen() {
         let blur = UIBlurEffect(style: .dark)
         blurView = UIVisualEffectView(effect: blur)

@@ -30,6 +30,8 @@ class StoreController: UIViewController {
             
             view.ignoresSiblingOrder = true
             
+            currencyAmount = 100
+            
             // This should be set by the calling view controller
             currencyLabel.text = "\(currencyAmount)"
             
@@ -45,6 +47,9 @@ class StoreController: UIViewController {
         let cost: Int = 100
         
         print("User tried to purchase Undo")
+        
+        let notification = Notification(name: .init("undoTurn"))
+        NotificationCenter.default.post(notification)
     }
     
     private func setupUndoButton() {

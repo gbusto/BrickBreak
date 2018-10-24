@@ -32,6 +32,8 @@ class ContinuousGameModel {
     
     // False when there is no previous turn data saved; true otherwise
     private var prevTurnSaved = false
+    // The previous currency amount (from the previous turn)
+    private var previousCurrencyAmount: Int = 0
     
     private var state = Int(0)
     // READY means the game model is ready to go
@@ -234,11 +236,33 @@ class ContinuousGameModel {
         return ballManager!.ballArray
     }
     
+    // Load the previous turn state
+    public func loadPreviousTurnState() {
+        if prevTurnSaved {
+            if false == itemGenerator!.loadTurnState() {
+                print("Failed to load item generator previous turn")
+            }
+            if false == ballManager!.loadTurnState() {
+                print("Failed to load ball manager previous turn")
+            }
+            
+            // We need to set this to false to avoid loading old turn state
+            prevTurnSaved = false
+        }
+    }
+    
     public func prepareTurn(point: CGPoint) {
         // Save the item generator's turn state as soon as the user starts the next turn
         itemGenerator!.saveTurnState()
         
         // Also save the ball manager's state
+        ballManager!.saveTurnState()
+        
+        // Backup the current currency amount
+        previousCurrencyAmount = currencyAmount
+        
+        // Reset this to true since we saved state
+        prevTurnSaved = true
         
         ballManager!.setDirection(point: point)
         // Change the ball manager's state from READY to SHOOTING

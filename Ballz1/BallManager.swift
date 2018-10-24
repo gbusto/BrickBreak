@@ -29,6 +29,8 @@ class BallManager {
     private var bmState: BallManagerState?
     static let BallManagerPath = "BallManager"
     
+    private var prevTurnState = BallManagerState(numberOfBalls: 0, originPoint: CGPoint(x: 0, y: 0))
+    
     // MARK: State values
     // READY state means that all balls are at rest, all animations are complete
     // Changes from this state by GameScene when the user touches the screen to fire balls
@@ -74,6 +76,33 @@ class BallManager {
         catch {
             print("Error saving ball manager state: \(error)")
         }
+    }
+    
+    public func saveTurnState() {
+        // Save the ball manager's turn state
+        prevTurnState.numberOfBalls = numberOfBalls
+        prevTurnState.originPoint = originPoint!
+    }
+    
+    public func loadTurnState() -> Bool {
+        if prevTurnState.numberOfBalls == 0 {
+            return false
+        }
+        
+        // Load the ball manager's turn state
+        numberOfBalls = prevTurnState.numberOfBalls
+        originPoint! = prevTurnState.originPoint!
+        
+        // Move all the balls to their previous origin point
+        for ball in ballArray {
+            ball.stop(point: originPoint!)
+        }
+        
+        // Reset the values so we don't try to reload the turn state again
+        prevTurnState.numberOfBalls = 0
+        prevTurnState.originPoint = CGPoint(x: 0, y: 0)
+        
+        return true
     }
     
     public func loadState(restorationURL: URL) -> Bool {
