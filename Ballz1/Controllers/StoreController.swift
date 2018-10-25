@@ -49,7 +49,7 @@ class StoreController: UIViewController {
         // Handling the user clicking the Undo purchase
         // Loading the name and cost should come from a data structure of some kind
         
-        let cost: Int = 100
+        let cost: Int = 50
         
         print("User tried to purchase Undo")
         
@@ -70,6 +70,9 @@ class StoreController: UIViewController {
         
         let myScene = self.scene as! StoreScene
         myScene.madePurchase(amount: amount, textSize: currencyLabel.font.pointSize)
+        
+        let deductCurrencyNotification = Notification(name: .init("deductCurrency"))
+        NotificationCenter.default.post(name: deductCurrencyNotification.name, object: nil, userInfo: ["amount": amount])
     }
     
     private func setupUndoButton() {

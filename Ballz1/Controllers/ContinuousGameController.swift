@@ -47,6 +47,10 @@ class ContinuousGameController: UIViewController {
         let undoNotification = Notification(name: .init("undoTurn"))
         NotificationCenter.default.addObserver(self, selector: #selector(handleUndo), name: undoNotification.name, object: nil)
         
+        // Notification to deduct currency from the game model
+        let deductCurrencyNotification = Notification(name: .init("deductCurrency"))
+        NotificationCenter.default.addObserver(self, selector: #selector(deductCurrency(_:)), name: deductCurrencyNotification.name, object: nil)
+        
         if let view = self.view as! SKView? {
             let scene = ContinousGameScene(size: view.bounds.size)
             self.scene = scene
@@ -157,6 +161,14 @@ class ContinuousGameController: UIViewController {
             
             self.gameScoreLabel.text = "\(score)"
             self.highScoreLabel.text = "\(highScore)"
+        }
+    }
+    
+    @objc func deductCurrency(_ notification: Notification) {
+        if let info = notification.userInfo {
+            let amount = info["amount"] as! Int
+            let scene = self.scene as! ContinousGameScene
+            scene.gameModel!.currencyAmount -= amount
         }
     }
     
