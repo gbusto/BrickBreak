@@ -141,7 +141,8 @@ class ContinuousGameController: UIViewController {
             // Set the currency amount in the store scene controller
             destController.currencyAmount = scene.gameModel!.currencyAmount
             // Set a boolean letting the store scene controller know whether or not the purchase Undo button should be enabled
-            destController.canPurchaseUndo = scene.gameModel!.prevTurnSaved
+            // The button is enabled IF and ONLY IF we have a previous turn saved and the game model is ready (aka turn is over)
+            destController.canPurchaseUndo = scene.gameModel!.prevTurnSaved && scene.gameModel!.isReady()
         }
     }
     
