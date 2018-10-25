@@ -23,20 +23,33 @@ class ContinuousGameController: UIViewController {
         
         print("Loaded continuous game view")
         
+        // Notification that says the app is going into the background
         let backgroundNotification = Notification(name: .NSExtensionHostWillResignActive)
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingBackground), name: backgroundNotification.name, object: nil)
         
+        // Notification to continue the game after the user was about to lose
         let continueNotification = Notification(name: .init("continueGame"))
         NotificationCenter.default.addObserver(self, selector: #selector(showContinueButton), name: continueNotification.name, object: nil)
         
+        // Notification that the app will terminate
         let notification = Notification(name: .init("appTerminate"))
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
         
+        // Notification to end the game and unwind to the game menu
         let gameOverNotification = Notification(name: .init("gameOver"))
         NotificationCenter.default.addObserver(self, selector: #selector(handleGameOver), name: gameOverNotification.name, object: nil)
         
+        // Notification to update the score labels
         let updateScoreNotification = Notification(name: .init("updateScore"))
         NotificationCenter.default.addObserver(self, selector: #selector(updateScore(_:)), name: updateScoreNotification.name, object: nil)
+        
+        // Notification to undo the user's last turn
+        let undoNotification = Notification(name: .init("undoTurn"))
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUndo), name: undoNotification.name, object: nil)
+        
+        // Notification to deduct currency from the game model
+        let deductCurrencyNotification = Notification(name: .init("deductCurrency"))
+        NotificationCenter.default.addObserver(self, selector: #selector(deductCurrency(_:)), name: deductCurrencyNotification.name, object: nil)
         
         if let view = self.view as! SKView? {
             let scene = ContinousGameScene(size: view.bounds.size)
@@ -112,12 +125,23 @@ class ContinuousGameController: UIViewController {
         self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
     }
     
+    @objc private func handleUndo() {
+        print("Got undo notification")
+
+        let contScene = scene as! ContinousGameScene
+        contScene.loadPreviousTurnState()
+    }
+    
+    // Prepare for a segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // If the next controller we're transitioning to is the StoreController, set the currency label to the amount of currency the user has
         if segue.destination is StoreController {
             let scene = self.scene as! ContinousGameScene
             let destController = segue.destination as! StoreController
-            destController.currencyAmount = scene.getCurrencyAmount()
+            // Set the currency amount in the store scene controller
+            destController.currencyAmount = scene.gameModel!.currencyAmount
+            // Set a boolean letting the store scene controller know whether or not the purchase Undo button should be enabled
+            destController.canPurchaseUndo = scene.gameModel!.prevTurnSaved
         }
     }
     
@@ -137,6 +161,14 @@ class ContinuousGameController: UIViewController {
             
             self.gameScoreLabel.text = "\(score)"
             self.highScoreLabel.text = "\(highScore)"
+        }
+    }
+    
+    @objc func deductCurrency(_ notification: Notification) {
+        if let info = notification.userInfo {
+            let amount = info["amount"] as! Int
+            let scene = self.scene as! ContinousGameScene
+            scene.gameModel!.currencyAmount -= amount
         }
     }
     
