@@ -23,6 +23,9 @@ class ContinuousGameModel {
     
     public var userWasSaved = false
     
+    // False when there is no previous turn data saved; true otherwise
+    public var prevTurnSaved = false
+    
     // MARK: Private properties
     private var persistentData: PersistentData?
     private var gameState: GameState?
@@ -30,8 +33,6 @@ class ContinuousGameModel {
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
     
-    // False when there is no previous turn data saved; true otherwise
-    private var prevTurnSaved = false
     // The previous currency amount (from the previous turn)
     private var previousCurrencyAmount: Int = 0
     
@@ -237,18 +238,33 @@ class ContinuousGameModel {
     }
     
     // Load the previous turn state
-    public func loadPreviousTurnState() {
+    public func loadPreviousTurnState() -> Bool {
         if prevTurnSaved {
             if false == itemGenerator!.loadTurnState() {
                 print("Failed to load item generator previous turn")
+                return false
             }
             if false == ballManager!.loadTurnState() {
                 print("Failed to load ball manager previous turn")
+                return false
             }
+            
+            // Undo the scores
+            if highScore == gameScore {
+                highScore -= 1
+            }
+            gameScore -= 1
+            
+            // MARK: TODO
+            // We don't need to change the currency amount; we'll make a ticket so that when you get currency and restore a turn, the currency item isn't regenerated
             
             // We need to set this to false to avoid loading old turn state
             prevTurnSaved = false
+            
+            return true
         }
+        
+        return false
     }
     
     public func prepareTurn(point: CGPoint) {

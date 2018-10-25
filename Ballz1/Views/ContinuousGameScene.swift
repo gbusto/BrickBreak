@@ -15,6 +15,10 @@ import CoreGraphics
 
 class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
+    // MARK: Public properties
+    // The game model
+    public var gameModel: ContinuousGameModel?
+    
     // MARK: Private properties
     // The margin aka the ceiling height and ground height
     private var margin: CGFloat?
@@ -40,9 +44,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var rightWallNode: SKNode?
     
     private var ballProjection = BallProjection()
-    
-    // The game model
-    private var gameModel: ContinuousGameModel?
     
     private var fontName = "KohinoorBangla-Regular"
     
@@ -308,10 +309,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         sendGameOverNotification()
     }
     
-    public func getCurrencyAmount() -> Int {
-        return gameModel!.currencyAmount
-    }
-    
     // Save the user from losing a game by clearing out the row that's about to end the game
     public func saveUser() {
         let fadeOut = SKAction.fadeOut(withDuration: 1)
@@ -328,14 +325,62 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func loadPreviousTurnState() {
+        // Get the old item array so we can remove all of those items
+        let oldItemArray = gameModel!.itemGenerator!.itemArray
+        // Get the old ball array so we can remove all of them
+        let oldBallArray = gameModel!.ballManager!.ballArray
+        
+        // Tell the item generator and game model to prepare the new item array
+        let success = gameModel!.loadPreviousTurnState()
+        
+        if false == success {
+            print("Can't load previous turn")
+            return
+        }
+        
         // Remove all the current item generator nodes from the screen
-        // Load the new ones on the screen
+        for row in oldItemArray {
+            for item in row {
+                if item is SpacerItem {
+                    continue
+                }
+                let node = item.getNode()
+                self.removeChildren(in: [node])
+            }
+        }
         
-        // Reload the ball count label
+        for ball in oldBallArray {
+            self.removeChildren(in: [ball.getNode()])
+        }
         
-        // Maybe move all this stuff into one function to load the game model's state
+        // Load the new ones on the screen (at this point the itemArray should have the previous state of items)
+        let itemArray = gameModel!.itemGenerator!.itemArray
+        var count = itemArray.count
+        for row in itemArray {
+            // Add the rows to the view
+            addRowToView(rowNum: count, items: row)
+            count -= 1
+        }
         
-        gameModel!.loadPreviousTurnState()
+        // Move the items down in the view
+        let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
+        gameModel!.animateItems(action: action)
+        
+        // At this point the ball manager's state should be updated; update the view to reflect that
+        let balls = gameModel!.getBalls()
+        let ballPosition = gameModel!.ballManager!.getOriginPoint()
+        currentBallCount = balls.count
+        prevBallCount = balls.count
+        for ball in balls {
+            ball.loadItem(position: ballPosition)
+            ball.resetBall()
+            self.addChild(ball.getNode())
+        }
+        removeBallCountLabel()
+        addBallCountLabel()
+        
+        // Update the score labels
+        updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
     }
     
     public func showPauseScreen() {

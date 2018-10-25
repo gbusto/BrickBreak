@@ -128,12 +128,16 @@ class ContinuousGameController: UIViewController {
         contScene.loadPreviousTurnState()
     }
     
+    // Prepare for a segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // If the next controller we're transitioning to is the StoreController, set the currency label to the amount of currency the user has
         if segue.destination is StoreController {
             let scene = self.scene as! ContinousGameScene
             let destController = segue.destination as! StoreController
-            destController.currencyAmount = scene.getCurrencyAmount()
+            // Set the currency amount in the store scene controller
+            destController.currencyAmount = scene.gameModel!.currencyAmount
+            // Set a boolean letting the store scene controller know whether or not the purchase Undo button should be enabled
+            destController.canPurchaseUndo = scene.gameModel!.prevTurnSaved
         }
     }
     

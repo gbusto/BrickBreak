@@ -89,14 +89,17 @@ class BallManager {
             return false
         }
         
+        // Remove any new balls from the ball array
+        let diff = numberOfBalls - prevTurnState.numberOfBalls
+        if diff > 0 {
+            for _ in 0...(diff - 1) {
+                let _ = ballArray.popLast()
+            }
+        }
+        
         // Load the ball manager's turn state
         numberOfBalls = prevTurnState.numberOfBalls
         originPoint! = prevTurnState.originPoint!
-        
-        // Move all the balls to their previous origin point
-        for ball in ballArray {
-            ball.stop(point: originPoint!)
-        }
         
         // Reset the values so we don't try to reload the turn state again
         prevTurnState.numberOfBalls = 0

@@ -11,7 +11,13 @@ import SpriteKit
 import GameplayKit
 
 class StoreController: UIViewController {
-    var currencyAmount: Int = 0
+    
+    // MARK: Public properties for controller
+    public var scene: SKScene?
+    
+    // MARK: Public properties for button states
+    public var currencyAmount: Int = 0
+    public var canPurchaseUndo: Bool = false
     
     @IBOutlet weak var currencyLabel: UILabel!
     
@@ -25,12 +31,11 @@ class StoreController: UIViewController {
         if let view = self.view as! SKView? {
             let scene = StoreScene(size: view.bounds.size)
             scene.scaleMode = .aspectFill
+            self.scene = scene
             
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
-            
-            currencyAmount = 100
             
             // This should be set by the calling view controller
             currencyLabel.text = "\(currencyAmount)"
@@ -50,6 +55,21 @@ class StoreController: UIViewController {
         
         let notification = Notification(name: .init("undoTurn"))
         NotificationCenter.default.post(notification)
+        
+        // Disable the button after purchasing an Undo
+        undoButton.isEnabled = false
+        
+        deductCurrencyAmount(amount: cost)
+    }
+    
+    // Subtract currency from the current amount
+    private func deductCurrencyAmount(amount: Int) {
+        currencyAmount -= amount
+        
+        currencyLabel.text = "\(currencyAmount)"
+        
+        let myScene = self.scene as! StoreScene
+        myScene.madePurchase(amount: amount, textSize: currencyLabel.font.pointSize)
     }
     
     private func setupUndoButton() {
@@ -58,6 +78,12 @@ class StoreController: UIViewController {
         if currencyAmount < uca {
             undoButton.isEnabled = false
             undoCurrencyAmount.textColor = .red
+        }
+        else if false == canPurchaseUndo {
+            undoButton.isEnabled = false
+        }
+        else {
+            undoButton.isEnabled = true
         }
     }
     
