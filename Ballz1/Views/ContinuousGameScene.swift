@@ -32,8 +32,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var rowHeight: CGFloat?
     // The block size
     private var blockSize: CGSize?
-    // The currency size
-    private var currencySize: CGSize?
     
     private var ballCountLabelMargin = CGFloat(0.05)
     
@@ -86,7 +84,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         rowHeight = view.frame.width / CGFloat(numItemsPerRow)
         ballRadius = view.frame.width * 0.018
         blockSize = CGSize(width: rowHeight! * 0.95, height: rowHeight! * 0.95)
-        currencySize = CGSize(width: rowHeight! * 0.80, height: rowHeight! * 0.80)
         
         initWalls(view: view)
         initGameModel()
@@ -283,17 +280,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
                     let newPoint = CGPoint(x: item.getNode().position.x, y: groundNode!.size.height + ballRadius!)
                     item.getNode().run(SKAction.move(to: newPoint, duration: 0.5))
-                }
-                else if item is CurrencyItem {
-                    // Since this node is an SKSpriteNode, we want to get the center of it's position
-                    let node = item.getNode() as! SKSpriteNode
-                    let posX = node.position.x + node.size.width / 2
-                    let posY = node.position.y + node.size.height / 2
-                    let position = CGPoint(x: posX, y: posY)
-                    // Remove the item from the scene
-                    self.removeChildren(in: [item.getNode()])
-                    // Show a green dollar sign floating up after item is removed
-                    showCurrencyAcquiredLabel(itemPosition: position)
                 }
             }
         }
@@ -510,11 +496,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     block.setColor(color: color)
                 }
                 else if item is BombItem {
-                    let posX = CGFloat(i) * rowHeight!
-                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
-                    pos = CGPoint(x: posX, y: posY)
-                }
-                else if item is CurrencyItem {
                     let posX = CGFloat(i) * rowHeight!
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
@@ -829,26 +810,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         label.fontSize = fontSize
         label.fontName = fontName
         label.position = pos
-        label.alpha = 0
-        
-        let vect = CGVector(dx: 0, dy: fontSize * 3)
-        let action1 = SKAction.fadeIn(withDuration: 0.5)
-        let action2 = SKAction.move(by: vect, duration: 1)
-        let action3 = SKAction.fadeOut(withDuration: 0.5)
-        self.addChild(label)
-        label.run(action2)
-        label.run(SKAction.sequence([action1, action3])) {
-            self.scene!.removeChildren(in: [label])
-        }
-    }
-    
-    private func showCurrencyAcquiredLabel(itemPosition: CGPoint) {
-        let fontSize = ballRadius! * 3
-        let label = SKLabelNode(fontNamed: fontName)
-        label.text = "$"
-        label.fontSize = fontSize
-        label.position = itemPosition
-        label.fontColor = .green
         label.alpha = 0
         
         let vect = CGVector(dx: 0, dy: fontSize * 3)

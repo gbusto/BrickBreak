@@ -16,8 +16,6 @@ class ContinuousGameModel {
     public var gameScore = Int(0)
     public var highScore = Int(0)
     
-    public var currencyAmount = Int(0)
-    
     public var ballManager: BallManager?
     public var itemGenerator: ItemGenerator?
     
@@ -32,9 +30,6 @@ class ContinuousGameModel {
     
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
-    
-    // The previous currency amount (from the previous turn)
-    private var previousCurrencyAmount: Int = 0
     
     private var state = Int(0)
     // READY means the game model is ready to go
@@ -52,7 +47,7 @@ class ContinuousGameModel {
     static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     // This is the main app directory
     static let AppDirURL = AppDirectory.appendingPathComponent("BB")
-    // This is persistent data that will contain the high score and currency
+    // This is persistent data that will contain the high score
     static let PersistentDataURL = AppDirURL.appendingPathComponent("PersistentData")
     // The directory to store game state for this game type
     static let ContinuousDirURL = AppDirURL.appendingPathComponent("ContinuousDir")
@@ -61,16 +56,14 @@ class ContinuousGameModel {
     
     
     // MARK: State handling code
-    // This struct is used for managing persistent data (such as your overall high score, currency amount, what level you're on, etc)
+    // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
     struct PersistentData: Codable {
         var highScore: Int
-        var currencyAmount: Int
         
         // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
         // Read Apple's documentation on CodingKey protocol and Codable
         enum CodingKeys: String, CodingKey {
             case highScore
-            case currencyAmount
         }
     }
     
@@ -105,8 +98,6 @@ class ContinuousGameModel {
             if persistentData!.highScore != highScore {
                 persistentData!.highScore = highScore
             }
-            // Save the user's current currency amount
-            persistentData!.currencyAmount = currencyAmount
             
             // Save the persistent data
             let pData = try PropertyListEncoder().encode(self.persistentData!)
@@ -207,8 +198,8 @@ class ContinuousGameModel {
     required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat) {
         // State should always be initialized to READY
         if false == loadPersistentState() {
-            // Defaults to load highScore of 0 and currencyAmount of 0
-            persistentData = PersistentData(highScore: highScore, currencyAmount: currencyAmount)
+            // Defaults to load highScore of 0
+            persistentData = PersistentData(highScore: highScore)
         }
         
         if false == loadGameState() {
@@ -218,7 +209,6 @@ class ContinuousGameModel {
         
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
         highScore = persistentData!.highScore
-        currencyAmount = persistentData!.currencyAmount
         gameScore = gameState!.gameScore
         userWasSaved = gameState!.userWasSaved
         
@@ -255,9 +245,6 @@ class ContinuousGameModel {
             }
             gameScore -= 1
             
-            // MARK: TODO
-            // We don't need to change the currency amount; we'll make a ticket so that when you get currency and restore a turn, the currency item isn't regenerated
-            
             // We need to set this to false to avoid loading old turn state
             prevTurnSaved = false
             
@@ -273,9 +260,6 @@ class ContinuousGameModel {
         
         // Also save the ball manager's state
         ballManager!.saveTurnState()
-        
-        // Backup the current currency amount
-        previousCurrencyAmount = currencyAmount
         
         // Reset this to true since we saved state
         prevTurnSaved = true
@@ -307,17 +291,13 @@ class ContinuousGameModel {
     }
 
     public func handleTurn() -> [Item] {
-        // Check to see if the user collected any balls or currency items so far
+        // Check to see if the user collected any ball items so far
         let removedItems = itemGenerator!.removeItems()
         for item in removedItems {
             if item is BallItem {
                 // Transfer ownership of the from the item generator to the ball manager
                 let ball = item as! BallItem
                 ballManager!.addBall(ball: ball)
-            }
-            else if item is CurrencyItem {
-                // Increment the current amount
-                currencyAmount += 1
             }
         }
         
