@@ -311,6 +311,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func loadPreviousTurnState() {
+        // Prevent the user from undoing a turn in the middle of a turn
+        if false == gameModel!.isReady() {
+            return
+        }
+        
         // Get the old item array so we can remove all of those items
         let oldItemArray = gameModel!.itemGenerator!.itemArray
         // Get the old ball array so we can remove all of them
