@@ -47,10 +47,6 @@ class ContinuousGameController: UIViewController {
         let undoNotification = Notification(name: .init("undoTurn"))
         NotificationCenter.default.addObserver(self, selector: #selector(handleUndo), name: undoNotification.name, object: nil)
         
-        // Notification to deduct currency from the game model
-        let deductCurrencyNotification = Notification(name: .init("deductCurrency"))
-        NotificationCenter.default.addObserver(self, selector: #selector(deductCurrency(_:)), name: deductCurrencyNotification.name, object: nil)
-        
         if let view = self.view as! SKView? {
             let scene = ContinousGameScene(size: view.bounds.size)
             self.scene = scene
@@ -134,21 +130,7 @@ class ContinuousGameController: UIViewController {
     
     // Prepare for a segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // If the next controller we're transitioning to is the StoreController, set the currency label to the amount of currency the user has
-        if segue.destination is StoreController {
-            let scene = self.scene as! ContinousGameScene
-            let destController = segue.destination as! StoreController
-            // Set the currency amount in the store scene controller
-            destController.currencyAmount = scene.gameModel!.currencyAmount
-            // Set a boolean letting the store scene controller know whether or not the purchase Undo button should be enabled
-            // The button is enabled IF and ONLY IF we have a previous turn saved and the game model is ready (aka turn is over)
-            destController.canPurchaseUndo = scene.gameModel!.prevTurnSaved && scene.gameModel!.isReady()
-        }
-    }
-    
-    // Necessary for the currency button to be able to perform actions
-    @IBAction func showStoreScene(_ sender: Any) {
-        print("Showing store scene now")
+        
     }
 
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
@@ -162,14 +144,6 @@ class ContinuousGameController: UIViewController {
             
             self.gameScoreLabel.text = "\(score)"
             self.highScoreLabel.text = "\(highScore)"
-        }
-    }
-    
-    @objc func deductCurrency(_ notification: Notification) {
-        if let info = notification.userInfo {
-            let amount = info["amount"] as! Int
-            let scene = self.scene as! ContinousGameScene
-            scene.gameModel!.currencyAmount -= amount
         }
     }
     

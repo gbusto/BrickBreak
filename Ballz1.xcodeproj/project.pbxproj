@@ -34,8 +34,6 @@
 		03F9A4262151D34800206A84 /* BallItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4252151D34800206A84 /* BallItem.swift */; };
 		03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4272151D56700206A84 /* HitBlockItem.swift */; };
 		F2677A7E216C3FFF00CE3FC0 /* BallProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */; };
-		F2AE8267217A84370024D56C /* StoreController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2AE8266217A84370024D56C /* StoreController.swift */; };
-		F2AE8269217A84810024D56C /* StoreScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2AE8268217A84810024D56C /* StoreScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,8 +87,6 @@
 		03F9A4252151D34800206A84 /* BallItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItem.swift; sourceTree = "<group>"; };
 		03F9A4272151D56700206A84 /* HitBlockItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitBlockItem.swift; sourceTree = "<group>"; };
 		F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallProjection.swift; sourceTree = "<group>"; };
-		F2AE8266217A84370024D56C /* StoreController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreController.swift; sourceTree = "<group>"; };
-		F2AE8268217A84810024D56C /* StoreScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +121,7 @@
 				0317DEB7214B5FA500E976E2 /* Ballz1Tests */,
 				0317DEC2214B5FA500E976E2 /* Ballz1UITests */,
 				0317DE9B214B5FA300E976E2 /* Products */,
+				03451B0521849AFD003033E2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -182,6 +179,13 @@
 			path = Ballz1UITests;
 			sourceTree = "<group>";
 		};
+		03451B0521849AFD003033E2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		03B8B4EC216919B400FFD589 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -189,7 +193,6 @@
 				03B8B4EF216919DD00FFD589 /* GameMenuScene.swift */,
 				03B8B4F121691A0100FFD589 /* ContinuousGameScene.swift */,
 				03B8B4F321691A0F00FFD589 /* LevelGameView.swift */,
-				F2AE8268217A84810024D56C /* StoreScene.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -210,7 +213,6 @@
 				03B8B4F521691A2100FFD589 /* GameMenuController.swift */,
 				03B8B4F721691A2D00FFD589 /* ContinuousGameController.swift */,
 				03B8B4F921691A3E00FFD589 /* LevelGameController.swift */,
-				F2AE8266217A84370024D56C /* StoreController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -283,6 +285,11 @@
 				TargetAttributes = {
 					0317DE99214B5FA300E976E2 = {
 						CreatedOnToolsVersion = 10.0;
+						SystemCapabilities = {
+							com.apple.GameCenter.iOS = {
+								enabled = 0;
+							};
+						};
 					};
 					0317DEB3214B5FA500E976E2 = {
 						CreatedOnToolsVersion = 10.0;
@@ -347,9 +354,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F2AE8269217A84810024D56C /* StoreScene.swift in Sources */,
 				03F4C93D2172756000D38D84 /* BombItem.swift in Sources */,
-				F2AE8267217A84370024D56C /* StoreController.swift in Sources */,
 				03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */,
 				03B8B4F0216919DD00FFD589 /* GameMenuScene.swift in Sources */,
 				03B8B50021691A8600FFD589 /* LevelGameModel.swift in Sources */,
