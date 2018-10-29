@@ -43,10 +43,6 @@ class ContinuousGameController: UIViewController {
         let updateScoreNotification = Notification(name: .init("updateScore"))
         NotificationCenter.default.addObserver(self, selector: #selector(updateScore(_:)), name: updateScoreNotification.name, object: nil)
         
-        // Notification to undo the user's last turn
-        let undoNotification = Notification(name: .init("undoTurn"))
-        NotificationCenter.default.addObserver(self, selector: #selector(handleUndo), name: undoNotification.name, object: nil)
-        
         if let view = self.view as! SKView? {
             let scene = ContinousGameScene(size: view.bounds.size)
             self.scene = scene
@@ -121,8 +117,8 @@ class ContinuousGameController: UIViewController {
         self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
     }
     
-    @objc private func handleUndo() {
-        print("Got undo notification")
+    @IBAction func undoTurn(_ sender: Any) {
+        // MARK: TODO - Add code here to show an ad
 
         let contScene = scene as! ContinousGameScene
         contScene.loadPreviousTurnState()
