@@ -41,7 +41,7 @@ protocol Item {
     //
     // Returns true if the item should be removed; false otherwise
     //
-    // NOTE: ItemGenerator may take this item and hand it off to another handler or manager such as Balls being handed off to BallManager and Currency being handed off to CurrencyManager
+    // NOTE: ItemGenerator may take this item and hand it off to another handler or manager such as Balls being handed off to BallManager
     func removeItem() -> Bool
     
     // This returns an SKNode item contained within the class

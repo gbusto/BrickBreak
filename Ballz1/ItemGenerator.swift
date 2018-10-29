@@ -48,7 +48,7 @@ class ItemGenerator {
     
     // There exist as many block types in this array as its percentage; for example, if hit blocks have a 65% chance of being selected, there will be 65 hit blocks in this array
     private var blockTypeArray: [Int] = []
-    // This works the same as the above array, but this is only for non block item types (currency, balls, spacer items, etc)
+    // This works the same as the above array, but this is only for non block item types (balls, spacer items, etc)
     private var nonBlockTypeArray: [Int] = []
     
     private var prevTurnState = ItemGeneratorPrevTurn(itemArray: [], itemHitCountArray: [])
@@ -58,9 +58,8 @@ class ItemGenerator {
     private static let SPACER = Int(0)
     private static let HIT_BLOCK = Int(1)
     private static let BALL = Int(2)
-    private static let CURRENCY = Int(3)
-    private static let STONE_BLOCK = Int(4)
-    private static let BOMB = Int(5)
+    private static let STONE_BLOCK = Int(3)
+    private static let BOMB = Int(4)
     
     // An Int to let holder of this object know when the ItemGenerator is ready
     private var actionsStarted = Int(0)
@@ -150,10 +149,6 @@ class ItemGenerator {
                 }
                 else if item is BallItem {
                     newItemRow.append(ItemGenerator.BALL)
-                    itemHitCountRow.append(0)
-                }
-                else if item is CurrencyItem {
-                    newItemRow.append(ItemGenerator.CURRENCY)
                     itemHitCountRow.append(0)
                 }
             }
@@ -269,9 +264,6 @@ class ItemGenerator {
                     else if item! is BallItem {
                         // Don't need to do anything
                     }
-                    else if item! is CurrencyItem {
-                        // Don't need to do anything
-                    }
                     numItemsGenerated += 1
                 }
                 print("Added new row to the item array")
@@ -294,9 +286,8 @@ class ItemGenerator {
             // Initialize the allowed item types with only one type for now
             addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 95)
             addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 5)
-            addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 82)
-            addNonBlockItemType(type: ItemGenerator.CURRENCY, percentage: 8)
-            addNonBlockItemType(type: ItemGenerator.BALL, percentage: 8)
+            addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 88)
+            addNonBlockItemType(type: ItemGenerator.BALL, percentage: 10)
             addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
             
             igState = ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
@@ -572,10 +563,6 @@ class ItemGenerator {
             let size = CGSize(width: ballRadius!, height: ballRadius!)
             let item = BallItem()
             item.initItem(num: numItemsGenerated, size: size)
-            return item
-        case ItemGenerator.CURRENCY:
-            let item = CurrencyItem()
-            item.initItem(num: numItemsGenerated, size: blockSize!)
             return item
         default:
             return nil
