@@ -73,6 +73,13 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var blockColor = Color()
     
+    // This is to keep track of the number of broken hit blocks in a given turn
+    private var brokenHitBlockCount: Int = 0
+    // A boolean because we only want to show the "on fire" encouragement once per turn
+    private var displayedOnFire: Bool = false
+    // This is the number of blocks that need to be broken in a given turn to get the "on fire" encouragement
+    private static var ON_FIRE_COUNT: Int = 8
+    
     // Stuff for collisions
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitMask = UInt32(0b0001)
@@ -205,6 +212,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             
             // Check the model to update the score label
             updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
+            
+            // Reset the number of hit blocks and the encouragements shown to the user
+            brokenHitBlockCount = 0
+            displayedOnFire = false
         }
         
         // Wait for animations to finish and then check for game over
@@ -269,9 +280,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 if item is HitBlockItem {
                     // We want to remove block items from the scene completely
                     self.removeChildren(in: [item.getNode()])
+                    brokenHitBlockCount += 1
                 }
                 else if item is StoneHitBlockItem {
                     self.removeChildren(in: [item.getNode()])
+                    brokenHitBlockCount += 1
                 }
                 else if item is BombItem {
                     self.removeChildren(in: [item.getNode()])
@@ -281,6 +294,13 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     let newPoint = CGPoint(x: item.getNode().position.x, y: groundNode!.size.height + ballRadius!)
                     item.getNode().run(SKAction.move(to: newPoint, duration: 0.5))
                 }
+            }
+            
+            // If the user has broken greater than X blocks this turn, they get an "on fire" encouragement
+            if brokenHitBlockCount > ContinousGameScene.ON_FIRE_COUNT && (false == displayedOnFire) {
+                // Display the on fire encouragement
+                displayOnFireEncouragement()
+                displayedOnFire = true
             }
         }
     }
@@ -831,5 +851,34 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         // Send a notification to this scene's view controller to display the continue alert
         let notification = Notification(name: .init("continueGame"))
         NotificationCenter.default.post(notification)
+    }
+    
+    private func displayOnFireEncouragement() {
+        let label = SKLabelNode()
+        label.text = "🔥"
+        label.fontSize = view!.frame.width * 0.5
+        label.alpha = 0
+        label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
+        label.zPosition = 105
+        
+        let text = SKLabelNode(text: "On Fire!")
+        text.fontSize = label.fontSize / 5
+        text.fontName = fontName
+        text.alpha = 0
+        text.position = CGPoint(x: view!.frame.midX, y: label.position.y - (text.fontSize * 2))
+        text.zPosition = 105
+        text.fontColor = .white
+        
+        let action1 = SKAction.fadeAlpha(to: 0.5, duration: 1)
+        let action2 = SKAction.fadeOut(withDuration: 1)
+        label.run(SKAction.sequence([action1, action2])) {
+            self.removeChildren(in: [label])
+        }
+        text.run(SKAction.sequence([action1, action2])) {
+            self.removeChildren(in: [text])
+        }
+        
+        self.addChild(label)
+        self.addChild(text)
     }
 }
