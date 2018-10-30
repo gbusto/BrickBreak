@@ -51,7 +51,7 @@ class ItemGenerator {
     // This works the same as the above array, but this is only for non block item types (balls, spacer items, etc)
     private var nonBlockTypeArray: [Int] = []
     
-    private var prevTurnState = ItemGeneratorPrevTurn(itemArray: [], itemHitCountArray: [])
+    private var prevTurnState = ItemGeneratorPrevTurn(itemArray: [], itemHitCountArray: [], numberOfBalls: 0)
     
     // These should probably be some kind of enum
     // Used to mark item types to know what item types are allowed to be generated
@@ -119,6 +119,7 @@ class ItemGenerator {
     struct ItemGeneratorPrevTurn {
         var itemArray: [[Int]]
         var itemHitCountArray: [[Int]]
+        var numberOfBalls: Int
     }
     
     // Backs up the items (used for saving state and restoring user's previous turn)
@@ -156,7 +157,7 @@ class ItemGenerator {
             savedHitCountArray.append(itemHitCountRow)
         }
         
-        let prevTurn = ItemGeneratorPrevTurn(itemArray: savedItemArray, itemHitCountArray: savedHitCountArray)
+        let prevTurn = ItemGeneratorPrevTurn(itemArray: savedItemArray, itemHitCountArray: savedHitCountArray, numberOfBalls: numberOfBalls)
         return prevTurn
     }
     
@@ -195,7 +196,7 @@ class ItemGenerator {
         }
         
         // Return true if we have items to reload
-        itemArray = loadItems(items: prevTurnState.itemArray, itemHitCounts: prevTurnState.itemHitCountArray)
+        itemArray = loadItems(items: prevTurnState.itemArray, itemHitCounts: prevTurnState.itemHitCountArray, numberOfBalls: prevTurnState.numberOfBalls)
         
         // Reset the previous turn state so we don't reload old data
         prevTurnState.itemArray = []
@@ -218,9 +219,11 @@ class ItemGenerator {
     }
     
     // Load items into an array and return that array
-    private func loadItems(items: [[Int]], itemHitCounts: [[Int]]) -> [[Item]] {
+    private func loadItems(items: [[Int]], itemHitCounts: [[Int]], numberOfBalls: Int) -> [[Item]] {
         // The final array we'll return
         var array: [[Item]] = []
+        
+        self.numberOfBalls = numberOfBalls
         
         // A boolean flag that says if we have an odd number of rows; used for loading stone blocks in the correct state
         let oddNumRows = (items.count % 2 == 1)
@@ -300,7 +303,7 @@ class ItemGenerator {
         self.nonBlockTypeArray = igState!.nonBlockTypeArray
         
         // Load items into the item array based on our saved item array and item hit count array
-        itemArray = loadItems(items: igState!.itemArray, itemHitCounts: igState!.itemHitCountArray)
+        itemArray = loadItems(items: igState!.itemArray, itemHitCounts: igState!.itemHitCountArray, numberOfBalls: numberOfBalls)
     }
     
     public func addBlockItemType(type: Int, percentage: Int) {
