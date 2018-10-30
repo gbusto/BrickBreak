@@ -279,10 +279,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             for item in removedItems {
                 if item is HitBlockItem {
                     // We want to remove block items from the scene completely
+                    // Perform break animation
                     self.removeChildren(in: [item.getNode()])
                     brokenHitBlockCount += 1
                 }
                 else if item is StoneHitBlockItem {
+                    // Perform break animation
                     self.removeChildren(in: [item.getNode()])
                     brokenHitBlockCount += 1
                 }
@@ -880,5 +882,16 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         self.addChild(label)
         self.addChild(text)
+    }
+    
+    private func blockBreakAnimation(node: SKSpriteNode) {
+        // 4x4 block matrix
+        let numSmallBlocks: Int = 16
+        let newBlockSize = CGSize(width: blockSize!.width / 4, height: blockSize!.height / 4)
+        var blockArray: [SKSpriteNode] = []
+        for i in 0...(numSmallBlocks - 1) {
+            let block = SKSpriteNode(color: node.color, size: newBlockSize)
+            
+        }
     }
 }
