@@ -227,11 +227,8 @@ class BallManager {
         }
         
         for ball in ballArray {
-            if ball.isActive {
-                ball.isActive = false
-                // Have the balls return to the origin point and mark isResting to true
-                ball.stop(point: originPoint!)
-            }
+            ball.isActive = false
+            ball.stop(point: originPoint!)
         }
         
         // Set numBallsActivet to the array size so that in stopInactiveBalls() the code will change state from WAITING to DONE
