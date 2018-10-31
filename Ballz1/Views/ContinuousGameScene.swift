@@ -237,7 +237,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 // Check to see if we are at risk of losing the game
                 else if gameModel!.lossRisk(floor: groundNode!.size.height, rowHeight: rowHeight!) {
                     // Flash notification to user
-                    flashWarning()
+                    //flashWarning()
+                    displayEncouragement(emoji: "😬", text: "Careful!")
                 }
             }
         }
@@ -299,7 +300,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             // If the user has broken greater than X blocks this turn, they get an "on fire" encouragement
             if brokenHitBlockCount > ContinousGameScene.ON_FIRE_COUNT && (false == displayedOnFire) {
                 // Display the on fire encouragement
-                displayOnFireEncouragement()
+                displayEncouragement(emoji: "🔥", text: "On fire!")
                 displayedOnFire = true
             }
         }
@@ -550,6 +551,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             ballPosition = gameModel!.ballManager!.getOriginPoint()
             addBallCountLabel()
         }
+        else {
+            // We're starting a new game
+            displayEncouragement(emoji: "🎬", text: "Action!")
+        }
         
         updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
         
@@ -663,6 +668,57 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private func updateScore(highScore: Int, gameScore: Int) {
         let notification = Notification(name: .init("updateScore"))
         NotificationCenter.default.post(name: notification.name, object: nil, userInfo: ["score": gameScore, "highScore": highScore])
+        
+        /*
+         'Cheers! 🍻' - 1000
+         'Magical 🎩' - 900
+         'Rock star! 🎸' - 800
+         'Cruisin 🛳' - 700
+         'Sick 🤒' - 600
+         'You're a star 🤩' - 500
+         'Killin it! 😵' - 400
+         'Awesome 👍' - 300
+         'Pretty slick 😏' - 200
+         'Cool dude 😎' - 100
+         'Piece of cake 🎂' - 50
+         'New high score! 🍾' - for a new high score
+         'Action! 🎬' - Starting a new game
+         'Phew! Close one 😅' - After saving yourself from a loss (aka more than one row away from losing after almost losing)
+         'Careful! 😬' - Before you lose
+        */
+        if 50 == gameScore {
+            displayEncouragement(emoji: "🎂", text: "Piece of cake")
+        }
+        else if 100 == gameScore {
+            displayEncouragement(emoji: "😎", text: "Cool, dude")
+        }
+        else if 200 == gameScore {
+            displayEncouragement(emoji: "😏", text: "Pretty slick")
+        }
+        else if 300 == gameScore {
+            displayEncouragement(emoji: "👍", text: "Awesome!")
+        }
+        else if 400 == gameScore {
+            displayEncouragement(emoji: "😵", text: "Killin it!")
+        }
+        else if 500 == gameScore {
+            displayEncouragement(emoji: "🤩", text: "You're a star")
+        }
+        else if 600 == gameScore {
+            displayEncouragement(emoji: "🤒", text: "Sick!")
+        }
+        else if 700 == gameScore {
+            displayEncouragement(emoji: "🛳", text: "Cruisin")
+        }
+        else if 800 == gameScore {
+            displayEncouragement(emoji: "🎸", text: "Rock star")
+        }
+        else if 900 == gameScore {
+            displayEncouragement(emoji: "🎩", text: "Magical!")
+        }
+        else if 1000 == gameScore {
+            displayEncouragement(emoji: "🍻", text: "Cheers!")
+        }
     }
     
     // Flashes the fast forward image to give the user some feedback about what's happening
@@ -853,15 +909,15 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         NotificationCenter.default.post(notification)
     }
     
-    private func displayOnFireEncouragement() {
+    private func displayEncouragement(emoji: String, text: String) {
         let label = SKLabelNode()
-        label.text = "🔥"
+        label.text = emoji
         label.fontSize = view!.frame.width * 0.5
         label.alpha = 0
         label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
         label.zPosition = 105
         
-        let text = SKLabelNode(text: "On Fire!")
+        let text = SKLabelNode(text: text)
         text.fontSize = label.fontSize / 5
         text.fontName = fontName
         text.alpha = 0
@@ -869,12 +925,13 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         text.zPosition = 105
         text.fontColor = .white
         
-        let action1 = SKAction.fadeAlpha(to: 0.5, duration: 1)
-        let action2 = SKAction.fadeOut(withDuration: 1)
-        label.run(SKAction.sequence([action1, action2])) {
+        let action1 = SKAction.fadeIn(withDuration: 1)
+        let action2 = SKAction.wait(forDuration: 1)
+        let action3 = SKAction.fadeOut(withDuration: 1)
+        label.run(SKAction.sequence([action1, action2, action3])) {
             self.removeChildren(in: [label])
         }
-        text.run(SKAction.sequence([action1, action2])) {
+        text.run(SKAction.sequence([action1, action2, action3])) {
             self.removeChildren(in: [text])
         }
         
