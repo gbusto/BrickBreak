@@ -160,10 +160,8 @@ class BallManager {
     
     public func checkNewArray() {
         let array = newBallArray.filter {
-            // Reset the ball's contact bitmasks and other things
-            $0.resetBall()
-            // Tell the ball to return to the origin point
-            $0.returnToOrigin(point: originPoint!)
+            // Tell the ball to return to the origin point and reset its physics bitmasks
+            $0.stop(point: originPoint!)
             // Add the new ball to the ball manager's array
             self.ballArray.append($0)
             // This tells the filter to remove the ball from newBallArray
@@ -228,6 +226,9 @@ class BallManager {
         
         for ball in ballArray {
             ball.isActive = false
+            ball.getNode().physicsBody!.collisionBitMask = 0
+            ball.getNode().physicsBody!.categoryBitMask = 0
+            ball.getNode().physicsBody!.contactTestBitMask = 0
             ball.stop(point: originPoint!)
         }
         
