@@ -237,8 +237,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 // Check to see if we are at risk of losing the game
                 else if gameModel!.lossRisk(floor: groundNode!.size.height, rowHeight: rowHeight!) {
                     // Flash notification to user
-                    //flashWarning()
                     displayEncouragement(emoji: "😬", text: "Careful!")
+                    startFlashingRed()
+                }
+                else {
+                    stopFlashingRed()
                 }
             }
         }
@@ -328,6 +331,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             item.getNode().run(fadeOut) {
                 self.removeChildren(in: [item.getNode()])
             }
+        }
+        
+        // If the user isn't at risk of losing right now then stop flashing red
+        if false == gameModel!.lossRisk(floor: groundNode!.size.height, rowHeight: rowHeight!) {
+            stopFlashingRed()
         }
     }
     
@@ -883,20 +891,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    private func flashWarning() {
-        let width = view!.frame.width
-        let node = SKSpriteNode(imageNamed: "warning")
-        node.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
-        node.size = CGSize(width: width, height: width)
-        node.zPosition = 105
-        node.alpha = 0
-        self.addChild(node)
-        
-        let action1 = SKAction.fadeAlpha(by: 0.3, duration: 0.5)
-        let action2 = SKAction.fadeOut(withDuration: 0.5)
-        node.run(SKAction.sequence([action1, action2, action1, action2]))
-    }
-    
     private func sendGameOverNotification() {
         // Send a notification to this scene's view controller to unwind to the game menu
         let notification = Notification(name: .init("gameOver"))
@@ -937,5 +931,37 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         self.addChild(label)
         self.addChild(text)
+    }
+    
+    private func startFlashingRed() {
+        // If the screen is already flashing red then don't do anything
+        if let node = self.childNode(withName: "warningNode") {
+            return
+        }
+        
+        let darkRed = UIColor(red: 153/255, green: 0, blue: 0, alpha: 1)
+        let action1 = SKAction.fadeAlpha(by: 0.5, duration: 1)
+        let action2 = SKAction.fadeOut(withDuration: 1)
+        
+        let frontNode = SKSpriteNode(color: darkRed, size: view!.frame.size)
+        frontNode.anchorPoint = CGPoint(x: 0, y: 0)
+        frontNode.position = CGPoint(x: 0, y: 0)
+        frontNode.zPosition = 100
+        frontNode.alpha = 0
+        frontNode.name = "warningNode"
+        
+        let sequence = SKAction.sequence([action1, action2])
+        
+        frontNode.run(SKAction.repeatForever(sequence))
+
+        self.addChild(frontNode)
+    }
+    
+    private func stopFlashingRed() {
+        if let node = self.childNode(withName: "warningNode") {
+            node.run(SKAction.fadeOut(withDuration: 1)) {
+                self.removeChildren(in: [node])
+            }
+        }
     }
 }
