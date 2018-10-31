@@ -97,7 +97,9 @@ class BallItem: Item {
     
     // MARK: Public functions
     public func stop(point: CGPoint) {
-        node!.run(SKAction.move(to: point, duration: 0.2))
+        node!.run(SKAction.move(to: point, duration: 0.2)) {
+            self.resetBall()
+        }
         node!.physicsBody?.isResting = true
         isResting = true
     }
@@ -107,10 +109,6 @@ class BallItem: Item {
         node!.physicsBody!.categoryBitMask = categoryBitMask
         node!.physicsBody!.contactTestBitMask = contactTestBitMask
         node!.fillColor = .white
-    }
-    
-    public func returnToOrigin(point: CGPoint) {
-        node!.run(SKAction.move(to: point, duration: 0.1))
     }
     
     public func fire(point: CGPoint) {
