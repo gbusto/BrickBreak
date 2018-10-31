@@ -97,6 +97,11 @@ class BallItem: Item {
     
     // MARK: Public functions
     public func stop(point: CGPoint) {
+        if node!.hasActions() {
+            // If the node is currently executing any actions, just stop them so we can stop the ball now
+            node!.removeAllActions()
+        }
+        // Now with all actions stopped, we can tell the ball to return to this point
         node!.run(SKAction.move(to: point, duration: 0.2)) {
             self.resetBall()
         }
