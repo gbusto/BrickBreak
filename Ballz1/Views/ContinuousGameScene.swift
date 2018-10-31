@@ -961,6 +961,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         if let node = self.childNode(withName: "warningNode") {
             node.run(SKAction.fadeOut(withDuration: 1)) {
                 self.removeChildren(in: [node])
+                self.displayEncouragement(emoji: "😅", text: "Phew! Close one")
             }
         }
     }
