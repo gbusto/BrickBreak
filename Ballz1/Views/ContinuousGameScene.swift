@@ -237,7 +237,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 // Check to see if we are at risk of losing the game
                 else if gameModel!.lossRisk(floor: groundNode!.size.height, rowHeight: rowHeight!) {
                     // Flash notification to user
-                    displayEncouragement(emoji: "😬", text: "Careful!")
                     startFlashingRed()
                 }
                 else {
@@ -939,6 +938,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
         
+        // Display this warning to the user
+        displayEncouragement(emoji: "😬", text: "Careful!")
+
         let darkRed = UIColor(red: 153/255, green: 0, blue: 0, alpha: 1)
         let action1 = SKAction.fadeAlpha(by: 0.5, duration: 1)
         let action2 = SKAction.fadeOut(withDuration: 1)
