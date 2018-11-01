@@ -400,6 +400,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         // Update the score labels
         updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
+        
+        if let _ = self.childNode(withName: "warningNode") {
+            // If we're currently flashing red to warn the user, remove that node from the screen
+            self.stopFlashingRed()
+        }
     }
     
     public func showPauseScreen() {
