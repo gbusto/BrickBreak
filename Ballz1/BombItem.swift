@@ -20,7 +20,7 @@ class BombItem: Item {
     private var contactTestBitmask = UInt32(0b0010)
     
     func initItem(num: Int, size: CGSize) {
-        node = SKSpriteNode(imageNamed: "bomb")
+        node = SKSpriteNode(imageNamed: "black_bomb")
         node!.size = size
         node!.name = "bomb\(num)"
         
