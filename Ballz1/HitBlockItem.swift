@@ -83,6 +83,10 @@ class HitBlockItem: Item {
         node!.color = color
     }
     
+    public func setTexture(texture: SKTexture) {
+        node!.texture = texture
+    }
+    
     public func setHitCount(count: Int) {
         hitCount = count
         initHitLabel()
@@ -98,9 +102,10 @@ class HitBlockItem: Item {
     private func initHitLabel() {
         let centerPoint = CGPoint(x: size!.width / 2, y: size!.height / 3)
         labelNode = SKLabelNode(text: "\(hitCount!)")
-        labelNode!.fontColor = .black
+        labelNode!.fontColor = .white
         labelNode!.position = centerPoint
         labelNode!.fontSize = size!.width / 2
         labelNode!.fontName = fontName
+        labelNode!.zPosition = 100
     }
 }

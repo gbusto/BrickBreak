@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03053571218DFEAF0038D1D8 /* ColorScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03053570218DFEAF0038D1D8 /* ColorScheme.swift */; };
 		0317DE9E214B5FA300E976E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0317DE9D214B5FA300E976E2 /* AppDelegate.swift */; };
 		0317DEA9214B5FA300E976E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0317DEA7214B5FA300E976E2 /* Main.storyboard */; };
 		0317DEAE214B5FA500E976E2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0317DEAC214B5FA500E976E2 /* LaunchScreen.storyboard */; };
@@ -50,6 +51,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		03053570218DFEAF0038D1D8 /* ColorScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorScheme.swift; sourceTree = "<group>"; };
 		0317DE9A214B5FA300E976E2 /* Ballz1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ballz1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0317DE9D214B5FA300E976E2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0317DEA8214B5FA300E976E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				03F9A4212151C37800206A84 /* ItemGenerator.swift */,
 				F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */,
 				03AE1FC72156E5F0002CEB3F /* Color.swift */,
+				03053570218DFEAF0038D1D8 /* ColorScheme.swift */,
 				0317DEA7214B5FA300E976E2 /* Main.storyboard */,
 				0317DEAC214B5FA500E976E2 /* LaunchScreen.storyboard */,
 				0317DEAF214B5FA500E976E2 /* Info.plist */,
@@ -352,6 +355,7 @@
 				03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */,
 				03F9A4262151D34800206A84 /* BallItem.swift in Sources */,
 				03B8B4F821691A2D00FFD589 /* ContinuousGameController.swift in Sources */,
+				03053571218DFEAF0038D1D8 /* ColorScheme.swift in Sources */,
 				0317DED4214B6B7900E976E2 /* BallManager.swift in Sources */,
 				03B8B4FC21691A6000FFD589 /* GameMenuModel.swift in Sources */,
 				0317DE9E214B5FA300E976E2 /* AppDelegate.swift in Sources */,

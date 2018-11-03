@@ -23,6 +23,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // The margin aka the ceiling height and ground height
     private var margin: CGFloat?
     
+    private var theme: ColorScheme?
+    
     // Number of items per row
     private var numItemsPerRow = Int(8)
     
@@ -92,6 +94,15 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ballRadius = view.frame.width * 0.018
         blockSize = CGSize(width: rowHeight! * 0.95, height: rowHeight! * 0.95)
         
+        // Setting the background color
+        theme = LightTheme(backgroundSize: view.frame.size, blockSize: blockSize!)
+        let node = SKSpriteNode(texture: theme!.backgroundTexture)
+        node.size = view.frame.size
+        node.anchorPoint = CGPoint(x: 0, y: 0)
+        node.position = CGPoint(x: 0, y: 0)
+        node.zPosition = 0
+        self.addChild(node)
+        
         initWalls(view: view)
         initGameModel()
         
@@ -103,7 +114,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         downSwipeGesture!.direction = .down
         downSwipeGesture!.numberOfTouchesRequired = 1
         
-        self.backgroundColor = sceneColor
+        //self.backgroundColor = sceneColor
+        
         physicsWorld.contactDelegate = self
     }
     
@@ -519,7 +531,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                     let block = item as! HitBlockItem
-                    block.setColor(color: color)
+                    //block.setColor(color: color)
+                    block.setTexture(texture: theme!.blockTexture)
                 }
                 else if item is StoneHitBlockItem {
                     let posX = CGFloat(i) * rowHeight!
@@ -611,6 +624,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         groundNode?.anchorPoint = CGPoint(x: 0, y: 0)
         groundNode?.position = CGPoint(x: 0, y: 0)
         groundNode?.name = "ground"
+        groundNode?.zPosition = 100
         
         let startPoint = CGPoint(x: 0, y: margin)
         let endPoint = CGPoint(x: view.frame.width, y: margin)
@@ -635,6 +649,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingLine.move(to: startPoint)
         ceilingLine.addLine(to: endPoint)
         ceilingNode = SKShapeNode()
+        ceilingNode?.zPosition = 100
         ceilingNode!.path = ceilingLine
         ceilingNode!.name = "ceiling"
         ceilingNode!.strokeColor = marginColor
