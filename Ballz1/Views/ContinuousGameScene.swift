@@ -20,10 +20,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     public var gameModel: ContinuousGameModel?
     
     // MARK: Private properties
+    private var colorScheme: GameSceneColorScheme?
+    
     // The margin aka the ceiling height and ground height
     private var margin: CGFloat?
-    
-    private var theme: ColorScheme?
     
     // Number of items per row
     private var numItemsPerRow = Int(8)
@@ -45,7 +45,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var ballProjection = BallProjection()
     
-    private var fontName = "KohinoorBangla-Regular"
+    private var fontName: String = "HelveticaNeue"
     
     // Ball count label
     private var ballCountLabel: SKLabelNode?
@@ -94,14 +94,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ballRadius = view.frame.width * 0.018
         blockSize = CGSize(width: rowHeight! * 0.95, height: rowHeight! * 0.95)
         
-        // Setting the background color
-        theme = LightTheme(backgroundSize: view.frame.size, blockSize: blockSize!)
-        let node = SKSpriteNode(texture: theme!.backgroundTexture)
-        node.size = view.frame.size
-        node.anchorPoint = CGPoint(x: 0, y: 0)
-        node.position = CGPoint(x: 0, y: 0)
-        node.zPosition = 0
-        self.addChild(node)
+        colorScheme = GameSceneColorScheme(backgroundSize: view.frame.size, blockSize: blockSize!)
+        fontName = colorScheme!.fontName
         
         initWalls(view: view)
         initGameModel()
@@ -114,7 +108,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         downSwipeGesture!.direction = .down
         downSwipeGesture!.numberOfTouchesRequired = 1
         
-        //self.backgroundColor = sceneColor
+        let backgroundNode = SKSpriteNode(color: .white, size: view.frame.size)
+        backgroundNode.position = CGPoint(x: 0, y: 0)
+        backgroundNode.anchorPoint = CGPoint(x: 0, y: 0)
+        backgroundNode.texture = colorScheme!.backgroundTexture
+        self.addChild(backgroundNode)
+        //self.backgroundColor = colorScheme!.backgroundColor
         
         physicsWorld.contactDelegate = self
     }
@@ -531,15 +530,16 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                     let block = item as! HitBlockItem
-                    //block.setColor(color: color)
-                    block.setTexture(texture: theme!.blockTexture)
+                    block.setColor(texture: colorScheme!.blockTexture, textColor: colorScheme!.blockTextColor)
                 }
                 else if item is StoneHitBlockItem {
                     let posX = CGFloat(i) * rowHeight!
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                     let block = item as! StoneHitBlockItem
-                    block.setColor(color: color)
+                    block.setColor(coloredTexture: colorScheme!.blockTexture,
+                                   grayTexture: colorScheme!.stoneTexture,
+                                   textColor: colorScheme!.blockTextColor)
                 }
                 else if item is BombItem {
                     let posX = CGFloat(i) * rowHeight!
@@ -550,6 +550,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2)
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum))) + (rowHeight! / 2)
                     pos = CGPoint(x: posX, y: posY)
+                    let ball = item as! BallItem
+                    ball.setColor(color: colorScheme!.hitBallColor)
                 }
                 
                 // The item will fade in
@@ -649,7 +651,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingLine.move(to: startPoint)
         ceilingLine.addLine(to: endPoint)
         ceilingNode = SKShapeNode()
-        ceilingNode?.zPosition = 100
+        ceilingNode?.zPosition = 101
         ceilingNode!.path = ceilingLine
         ceilingNode!.name = "ceiling"
         ceilingNode!.strokeColor = marginColor
@@ -868,7 +870,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         ballCountLabel!.position = newPoint
-        ballCountLabel!.fontSize = ballRadius! * 3
+        ballCountLabel!.fontSize = ballRadius! * 2.5
         ballCountLabel!.color = .white
         
         updateBallCountLabel()
@@ -968,7 +970,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let frontNode = SKSpriteNode(color: darkRed, size: view!.frame.size)
         frontNode.anchorPoint = CGPoint(x: 0, y: 0)
         frontNode.position = CGPoint(x: 0, y: 0)
-        frontNode.zPosition = 100
+        frontNode.zPosition = 101
         frontNode.alpha = 0
         frontNode.name = "warningNode"
         

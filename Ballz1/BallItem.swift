@@ -26,12 +26,12 @@ class BallItem: Item {
     // The bullet's starting point
     private var origin : CGPoint?
     
+    private var hitBallColor: UIColor?
+    
     // Setting up properties for collisions
     private var collisionBitMask = UInt32(0b0001)
     private var categoryBitMask = UInt32(0b0010)
     private var contactTestBitMask = UInt32(0b0001)
-    
-    private var blueColor = UIColor(red: 102/255, green: 178/255, blue: 255/255, alpha: 1)
     
     
     // MARK: Protocol functions
@@ -80,7 +80,7 @@ class BallItem: Item {
         node!.physicsBody!.contactTestBitMask = UInt32(0b0100)
         node!.physicsBody!.categoryBitMask = 0
         node!.physicsBody!.collisionBitMask = UInt32(0b0100)
-        node!.fillColor = blueColor
+        node!.fillColor = hitBallColor!
         wasHit = true
     }
     
@@ -94,6 +94,9 @@ class BallItem: Item {
         return node!
     }
     
+    public func setColor(color: UIColor) {
+        hitBallColor = color
+    }
     
     // MARK: Public functions
     public func stop(point: CGPoint) {

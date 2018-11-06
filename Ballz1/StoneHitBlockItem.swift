@@ -17,13 +17,14 @@ class StoneHitBlockItem: Item {
     private var size : CGSize?
     private var position : CGPoint?
     
-    private var fontName = "KohinoorBangla-Regular"
+    private var fontName = "Menlo-Regular"
     private var labelNode : SKLabelNode?
     
     // true if the item is currently stone
     private var isStone = true
     
-    private var originalColor: UIColor = .white
+    private var originalTexture: SKTexture?
+    private var grayTexture: SKTexture?
     
     // Setting up properties for collisions
     private var categoryBitMask = UInt32(0b0001)
@@ -86,9 +87,16 @@ class StoneHitBlockItem: Item {
     }
     
     // MARK: Public functions
-    public func setColor(color: UIColor) {
-        node!.color = color
-        originalColor = color
+    public func setColor(coloredTexture: SKTexture, grayTexture: SKTexture, textColor: UIColor) {
+        self.grayTexture = grayTexture
+        originalTexture = coloredTexture
+        labelNode!.fontColor = textColor
+        if isStone {
+            node!.texture = grayTexture
+        }
+        else {
+            node!.texture = coloredTexture
+        }
     }
     
     public func changeState(duration: TimeInterval) {
@@ -97,12 +105,18 @@ class StoneHitBlockItem: Item {
         isStone = !isStone
         
         if isStone {
-            let action = SKAction.colorize(with: .gray, colorBlendFactor: 1.0, duration: duration)
-            node!.run(action)
+            //let action = SKAction.colorize(with: grayTexture!, colorBlendFactor: 1.0, duration: duration)
+            if let _ = grayTexture {
+                let action = SKAction.setTexture(grayTexture!)
+                node!.run(action)
+            }
         }
         else {
-            let action = SKAction.colorize(with: originalColor, colorBlendFactor: 1.0, duration: duration)
-            node!.run(action)
+            //let action = SKAction.colorize(with: originalTexture!, colorBlendFactor: 1.0, duration: duration)
+            if let _ = originalTexture {
+                let action = SKAction.setTexture(originalTexture!)
+                node!.run(action)
+            }
         }
     }
     
@@ -123,7 +137,8 @@ class StoneHitBlockItem: Item {
         labelNode = SKLabelNode(text: "\(hitCount!)")
         labelNode!.fontColor = .black
         labelNode!.position = centerPoint
-        labelNode!.fontSize = size!.width / 2
+        labelNode!.fontSize = size!.width / 2.4
         labelNode!.fontName = fontName
+        labelNode!.zPosition = 100
     }
 }

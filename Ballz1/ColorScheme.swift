@@ -50,30 +50,68 @@ extension SKTexture {
         
         self.init(cgImage: image!)
     }
-}
-
-protocol ColorScheme {
-    var backgroundTexture: SKTexture { get set }
-    var blockTexture: SKTexture { get set }
+    
+    // Not sure how this works exactly... copied from the internet
+    convenience init(radialGradientWithColors colors: [UIColor], locations: [CGFloat], size: CGSize) {
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let image = renderer.image { (context) in
+            let colorSpace = context.cgContext.colorSpace ?? CGColorSpaceCreateDeviceRGB()
+            let cgColors = colors.map({ $0.cgColor }) as CFArray
+            guard let gradient = CGGradient(colorsSpace: colorSpace, colors: cgColors, locations: UnsafePointer<CGFloat>(locations)) else {
+                fatalError("Failed creating gradient.")
+            }
+            
+            let radius = max(size.width, size.height) / 2.0
+            let midPoint = CGPoint(x: size.width / 2.0, y: size.height / 2.0)
+            context.cgContext.drawRadialGradient(gradient, startCenter: midPoint, startRadius: 0, endCenter: midPoint, endRadius: radius, options: [])
+        }
+        
+        self.init(image: image)
+    }
 }
 
 // MARK: Light theme struct
-class LightTheme: ColorScheme {
-    // MARK: Protocol properties
+class GameMenuColorScheme {
+    // MARK: Properties
+    var backgroundColor: SKColor
+    var textColor: SKColor
+    var fontName: String = "Menlo-Regular"
+    
+    required init() {
+        backgroundColor = SKColor(red: 24/255, green: 26/255, blue: 25/255, alpha: 1)
+        textColor = SKColor(red: 93/255, green: 173/255, blue: 226/255, alpha: 1)
+    }
+}
+
+class GameSceneColorScheme {
+    // MARK: Properties
+    var backgroundColor: SKColor
     var backgroundTexture: SKTexture
+    var blockTextColor: SKColor
+    var textColor: SKColor
+    var hitBallColor: SKColor
+    var stoneTexture: SKTexture
     var blockTexture: SKTexture
-    
-    // MARK: Theme colors
-    // For the background
-    let darkerBlue = SKColor(red: 5/255, green: 15/255, blue: 55/255, alpha: 1)
-    let lighterBlue = SKColor(red: 15/255, green: 25/255, blue: 65/255, alpha: 1)
-    
-    // For the blocks
-    let darkerPink = SKColor(red: 140/255, green: 40/255, blue: 140/255, alpha: 1)
-    let lighterPink = SKColor(red: 210/255, green: 100/255, blue: 210/255, alpha: 1)
+    var dividingLine: SKTexture
+    var fontName: String = "Menlo-Regular"
     
     required init(backgroundSize: CGSize, blockSize: CGSize) {
-        backgroundTexture = SKTexture(size: backgroundSize, startColor: lighterBlue, endColor: darkerBlue, direction: .up)
-        blockTexture = SKTexture(size: blockSize, startColor: lighterPink, endColor: darkerPink, direction: .upRight)
+        var bottomColor = SKColor(red: 187/255, green: 143/255, blue: 206/255, alpha: 1)
+        var topColor = SKColor(red: 165/255, green: 105/255, blue: 189/255, alpha: 1)
+        let coloredTexture = SKTexture(size: blockSize, startColor: topColor, endColor: bottomColor, direction: .up)
+        backgroundColor = SKColor(red: 24/255, green: 26/255, blue: 25/255, alpha: 1)
+        blockTextColor = backgroundColor
+        textColor = SKColor(red: 117/255, green: 206/255, blue: 235/255, alpha: 1)
+        hitBallColor = SKColor(red: 247/255, green: 220/255, blue: 111/255, alpha: 1)
+        blockTexture = coloredTexture
+        dividingLine = SKTexture()
+        
+        bottomColor = SKColor(red: 192/255, green: 192/255, blue: 192/255, alpha: 1)
+        topColor = SKColor(red: 169/255, green: 169/255, blue: 169/255, alpha: 1)
+        stoneTexture = SKTexture(size: blockSize, startColor: topColor, endColor: bottomColor, direction: .up)
+        
+        bottomColor = SKColor(red: 95/255, green: 150/255, blue: 142/255, alpha: 1)
+        topColor = SKColor(red: 191/255, green: 220/255, blue: 207/255, alpha: 1)
+        backgroundTexture = SKTexture(size: backgroundSize, startColor: topColor, endColor: bottomColor, direction: .upLeft)
     }
 }

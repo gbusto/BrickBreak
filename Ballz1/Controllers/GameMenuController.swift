@@ -13,6 +13,7 @@ import SpriteKit
 import GameplayKit
 
 class GameMenuController: UIViewController {
+    @IBOutlet weak var titleLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +23,8 @@ class GameMenuController: UIViewController {
             scene.scaleMode = .aspectFill
             
             view.presentScene(scene)
+            
+            titleLabel.textColor = scene.theme!.textColor
             
             view.ignoresSiblingOrder = true
         }
