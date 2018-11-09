@@ -45,7 +45,53 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var ballProjection = BallProjection()
     
+    /*
+     List of colors:
+     #ffab91
+     #ffcc80
+     #ffe082
+     #fff59d
+     #e6ee9c
+     #c5e1a5
+     #a5d6a7
+     #80cbc4
+     #80deea
+     #81d4fa
+     #90caf9
+     #9fa8da
+     #b39ddb
+     #ce93d8
+     #f48fb1
+     #ef9a9a
+     */
     private var fontName: String = "HelveticaNeue"
+    private var topColor: UIColor = .black
+    private var bottomColor: UIColor = .white
+    // true if we changed colors recently
+    private var changedColor: Bool = false
+    // The column index because to keep track of which blocks are in transition
+    private var itemColumn = Int(0)
+    // The index into the color list array
+    private var colorIndex = Int(3)
+    private var colorIndices: [Int] = [0, 0, 0, 0]
+    private var colorList: [UIColor] = [
+        UIColor(rgb: 0xffab91),
+        UIColor(rgb: 0xffcc80),
+        UIColor(rgb: 0xffe082),
+        UIColor(rgb: 0xfff59d),
+        UIColor(rgb: 0xe6ee9c),
+        UIColor(rgb: 0xc5e1a5),
+        UIColor(rgb: 0xa5d6a7),
+        UIColor(rgb: 0x80cbc4),
+        UIColor(rgb: 0x80deea),
+        UIColor(rgb: 0x81d4fa),
+        UIColor(rgb: 0x90caf9),
+        UIColor(rgb: 0x9fa8da),
+        UIColor(rgb: 0xb39ddb),
+        UIColor(rgb: 0xce93d8),
+        UIColor(rgb: 0xf48fb1),
+        UIColor(rgb: 0xef9a9a),
+    ]
     
     // Ball count label
     private var ballCountLabel: SKLabelNode?
@@ -96,6 +142,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         colorScheme = GameSceneColorScheme(backgroundSize: view.frame.size, blockSize: blockSize!)
         fontName = colorScheme!.fontName
+        topColor = colorList[colorIndex]
         
         initWalls(view: view)
         initGameModel()
@@ -108,12 +155,14 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         downSwipeGesture!.direction = .down
         downSwipeGesture!.numberOfTouchesRequired = 1
         
+        /*
         let backgroundNode = SKSpriteNode(color: .white, size: view.frame.size)
         backgroundNode.position = CGPoint(x: 0, y: 0)
         backgroundNode.anchorPoint = CGPoint(x: 0, y: 0)
         backgroundNode.texture = colorScheme!.backgroundTexture
         self.addChild(backgroundNode)
-        //self.backgroundColor = colorScheme!.backgroundColor
+        */
+        self.backgroundColor = colorScheme!.backgroundColor
         
         physicsWorld.contactDelegate = self
     }
@@ -514,8 +563,89 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    private func colorizeBlocks(itemRow: [Item]) {
+        bottomColor = topColor
+        colorIndex += 1
+        if colorIndex == colorList.count {
+            colorIndex = 0
+        }
+        topColor = colorList[colorIndex]
+        
+        let newTexture = SKTexture(size: blockSize!, startColor: bottomColor, endColor: topColor)
+        for item in itemRow {
+            if item is HitBlockItem {
+                let block = item as! HitBlockItem
+                block.setTexture(blockTexture: newTexture, textColor: colorScheme!.blockTextColor)
+            }
+            if item is StoneHitBlockItem {
+                let block = item as! StoneHitBlockItem
+                block.setTexture(blockTexture: newTexture, textColor: colorScheme!.blockTextColor)
+            }
+        }
+    }
+    
+    private func colorizeBlocks2(itemRow: [Item]) {
+        // Start changing colors now
+        if false == changedColor {
+            // Get the next color and update the index
+            topColor = colorList[colorIndex]
+            colorIndex += 1
+            if colorIndex == colorList.count {
+                colorIndex = 0
+            }
+            
+            changedColor = true
+            itemColumn = 0
+        }
+        
+        for i in 0...(itemRow.count - 1) {
+            print("COLUMN IS \(itemColumn)")
+            let item = itemRow[i]
+            if item is StoneHitBlockItem {
+                let block = item as! StoneHitBlockItem
+                // Handle special case for stone block items; we can't transition smoothly between textures so a stone block item should never be a color transition block
+                if i == itemColumn {
+                    // For now, don't set the texture if we have a stone block item here
+                    block.setColor(blockColor: topColor, textColor: colorScheme!.blockTextColor)
+                }
+                else if i > itemColumn {
+                    block.setColor(blockColor: bottomColor, textColor: colorScheme!.blockTextColor)
+                }
+                else if i < itemColumn {
+                    block.setColor(blockColor: topColor, textColor: colorScheme!.blockTextColor)
+                }
+            }
+            else if item is HitBlockItem {
+                let block = item as! HitBlockItem
+                if i == itemColumn {
+                    // This is the block that we need to set as the transition color block
+                    let texture = SKTexture(size: blockSize!, startColor: bottomColor, endColor: topColor, direction: .upLeft)
+                    block.setTexture(blockTexture: texture, textColor: colorScheme!.blockTextColor)
+                }
+                else if i > itemColumn {
+                    // Otherwise, use bottomColor as the block color
+                    block.setColor(blockColor: bottomColor, textColor: colorScheme!.blockTextColor)
+                }
+                else if i < itemColumn {
+                    block.setColor(blockColor: topColor, textColor: colorScheme!.blockTextColor)
+                }
+            }
+        }
+        
+        itemColumn += 1
+        
+        // If we've fully transitioned block colors, then reset things
+        if itemColumn == itemRow.count {
+            itemColumn = 0
+            changedColor = false
+            bottomColor = topColor
+        }
+    }
+    
     private func addRowToView(rowNum: Int, items: [Item]) {
-        let color = blockColor.changeColor()
+        //let color = blockColor.changeColor()
+        
+        colorizeBlocks(itemRow: items)
         
         if items.count > 0 {
             for i in 0...(items.count - 1) {
@@ -529,17 +659,17 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     let posX = CGFloat(i) * rowHeight!
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
-                    let block = item as! HitBlockItem
-                    block.setColor(texture: colorScheme!.blockTexture, textColor: colorScheme!.blockTextColor)
+                    //let block = item as! HitBlockItem
+                    //block.setColor(texture: colorScheme!.blockTexture, textColor: colorScheme!.blockTextColor)
                 }
                 else if item is StoneHitBlockItem {
                     let posX = CGFloat(i) * rowHeight!
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                     let block = item as! StoneHitBlockItem
-                    block.setColor(coloredTexture: colorScheme!.blockTexture,
-                                   grayTexture: colorScheme!.stoneTexture,
-                                   textColor: colorScheme!.blockTextColor)
+                    //block.setColor(coloredTexture: colorScheme!.blockTexture,
+                    //               grayTexture: colorScheme!.stoneTexture,
+                    //               textColor: colorScheme!.blockTextColor)
                 }
                 else if item is BombItem {
                     let posX = CGFloat(i) * rowHeight!
@@ -622,7 +752,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private func initGround(view: SKView, margin: CGFloat) {
         let size = CGSize(width: view.frame.width, height: margin)
-        groundNode = SKSpriteNode(color: marginColor, size: size)
+        groundNode = SKSpriteNode(color: colorScheme!.marginColor, size: size)
         groundNode?.anchorPoint = CGPoint(x: 0, y: 0)
         groundNode?.position = CGPoint(x: 0, y: 0)
         groundNode?.name = "ground"
@@ -654,7 +784,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode?.zPosition = 101
         ceilingNode!.path = ceilingLine
         ceilingNode!.name = "ceiling"
-        ceilingNode!.strokeColor = marginColor
+        ceilingNode!.strokeColor = colorScheme!.marginColor
         ceilingNode!.lineWidth = 1
         ceilingNode!.physicsBody = physBody
         ceilingNode!.position = CGPoint(x: 0, y: view.frame.height - view.safeAreaInsets.top - margin)
