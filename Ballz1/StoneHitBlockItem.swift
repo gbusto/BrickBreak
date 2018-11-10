@@ -65,6 +65,22 @@ class StoneHitBlockItem: Item {
     func hitItem() {
         // If the block isn't stone, it can be hit
         if false == isStone {
+            if let hn = node!.childNode(withName: "hitNode") {
+                self.node!.removeChildren(in: [hn])
+            }
+            
+            let hitNode = SKSpriteNode(color: .white, size: size!)
+            hitNode.name = "hitNode"
+            hitNode.alpha = 0
+            hitNode.zPosition = 103
+            hitNode.position = CGPoint(x: size!.width / 2, y: size!.height / 2)
+            node!.addChild(hitNode)
+            let action1 = SKAction.fadeAlpha(to: 0.5, duration: 0.05)
+            let action2 = SKAction.fadeOut(withDuration: 0.05)
+            hitNode.run(SKAction.sequence([action1, action2])) {
+                hitNode.removeFromParent()
+            }
+            
             hitCount! -= 1
             // Don't update the label to zero; it should just disappear
             if hitCount! > 0 {
