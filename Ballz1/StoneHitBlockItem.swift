@@ -17,13 +17,15 @@ class StoneHitBlockItem: Item {
     private var size : CGSize?
     private var position : CGPoint?
     
-    private var fontName = "KohinoorBangla-Regular"
+    private var fontName = "Verdana"
     private var labelNode : SKLabelNode?
     
     // true if the item is currently stone
     private var isStone = true
     
     private var originalColor: UIColor = .white
+    private var originalTexture: SKTexture?
+    private var stoneTexture: SKTexture?
     
     // Setting up properties for collisions
     private var categoryBitMask = UInt32(0b0001)
@@ -37,6 +39,8 @@ class StoneHitBlockItem: Item {
         node!.anchorPoint = CGPoint(x: 0, y: 0)
         node!.zPosition = 100
         node!.name = "block\(num)"
+        
+        stoneTexture = SKTexture(imageNamed: "stone_texture")
         
         let centerPoint = CGPoint(x: size.width / 2, y: size.height / 2)
         let physBody = SKPhysicsBody(rectangleOf: size, center: centerPoint)
@@ -86,11 +90,44 @@ class StoneHitBlockItem: Item {
     }
     
     // MARK: Public functions
-    public func setColor(color: UIColor) {
-        node!.color = color
-        originalColor = color
+    public func setColor(blockColor: UIColor, textColor: UIColor) {
+        node!.color = blockColor
+        originalColor = blockColor
+        labelNode!.fontColor = textColor
     }
     
+    public func setAttributes(blockTexture: SKTexture, textColor: UIColor, fontName: String) {
+        node!.texture = blockTexture
+        originalTexture = blockTexture
+        labelNode!.fontColor = textColor
+        labelNode!.fontName = fontName
+    }
+    
+    public func changeState(duration: TimeInterval) {
+        // When it changes to stone, it should also be animated to change to a grey color
+        // When it changes back to normal, it should go back to its normal color
+        isStone = !isStone
+        
+        let action1 = SKAction.fadeAlpha(to: 0.3, duration: duration / 2)
+        let action2 = SKAction.fadeIn(withDuration: duration / 2)
+        
+        if isStone {
+            // Change back to normal
+            node!.run(action1) {
+                self.node!.texture = self.stoneTexture!
+                self.node!.run(action2)
+            }
+        }
+        else {
+            // Change to stone
+            node!.run(action1) {
+                self.node!.texture = self.originalTexture!
+                self.node!.run(action2)
+            }
+        }
+    }
+    
+    /*
     public func changeState(duration: TimeInterval) {
         // When it changes to stone, it should also be animated to change to a grey color
         // When it changes back to normal, it should go back to its normal color
@@ -105,6 +142,7 @@ class StoneHitBlockItem: Item {
             node!.run(action)
         }
     }
+    */
     
     public func setHitCount(count: Int) {
         hitCount = count
@@ -123,7 +161,8 @@ class StoneHitBlockItem: Item {
         labelNode = SKLabelNode(text: "\(hitCount!)")
         labelNode!.fontColor = .black
         labelNode!.position = centerPoint
-        labelNode!.fontSize = size!.width / 2
+        labelNode!.fontSize = size!.width / 2.4
         labelNode!.fontName = fontName
+        labelNode!.zPosition = 100
     }
 }

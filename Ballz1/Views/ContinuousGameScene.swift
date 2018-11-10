@@ -20,6 +20,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     public var gameModel: ContinuousGameModel?
     
     // MARK: Private properties
+    private var colorScheme: GameSceneColorScheme?
+    
     // The margin aka the ceiling height and ground height
     private var margin: CGFloat?
     
@@ -43,7 +45,53 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var ballProjection = BallProjection()
     
-    private var fontName = "KohinoorBangla-Regular"
+    /*
+     List of colors:
+     #ffab91
+     #ffcc80
+     #ffe082
+     #fff59d
+     #e6ee9c
+     #c5e1a5
+     #a5d6a7
+     #80cbc4
+     #80deea
+     #81d4fa
+     #90caf9
+     #9fa8da
+     #b39ddb
+     #ce93d8
+     #f48fb1
+     #ef9a9a
+     */
+    private var fontName: String = "HelveticaNeue"
+    private var topColor: UIColor = .black
+    private var bottomColor: UIColor = .white
+    // true if we changed colors recently
+    private var changedColor: Bool = false
+    // The column index because to keep track of which blocks are in transition
+    private var itemColumn = Int(0)
+    // The index into the color list array
+    private var colorIndex = Int(3)
+    private var colorIndices: [Int] = [0, 0, 0, 0]
+    private var colorList: [UIColor] = [
+        UIColor(rgb: 0xffab91),
+        UIColor(rgb: 0xffcc80),
+        UIColor(rgb: 0xffe082),
+        UIColor(rgb: 0xfff59d),
+        UIColor(rgb: 0xe6ee9c),
+        UIColor(rgb: 0xc5e1a5),
+        UIColor(rgb: 0xa5d6a7),
+        UIColor(rgb: 0x80cbc4),
+        UIColor(rgb: 0x80deea),
+        UIColor(rgb: 0x81d4fa),
+        UIColor(rgb: 0x90caf9),
+        UIColor(rgb: 0x9fa8da),
+        UIColor(rgb: 0xb39ddb),
+        UIColor(rgb: 0xce93d8),
+        UIColor(rgb: 0xf48fb1),
+        UIColor(rgb: 0xef9a9a),
+    ]
     
     // Ball count label
     private var ballCountLabel: SKLabelNode?
@@ -85,12 +133,19 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var contactTestBitMask = UInt32(0b0001)
     private var groundCategoryBitmask = UInt32(0b0101)
     
+    // Stuff for lighting
+    private var lightingBitMask = UInt32(0b0001)
+    
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
         rowHeight = view.frame.width / CGFloat(numItemsPerRow)
         ballRadius = view.frame.width * 0.018
         blockSize = CGSize(width: rowHeight! * 0.95, height: rowHeight! * 0.95)
+        
+        colorScheme = GameSceneColorScheme(backgroundSize: view.frame.size, blockSize: blockSize!)
+        fontName = colorScheme!.fontName
+        topColor = colorList[colorIndex]
         
         initWalls(view: view)
         initGameModel()
@@ -103,7 +158,15 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         downSwipeGesture!.direction = .down
         downSwipeGesture!.numberOfTouchesRequired = 1
         
-        self.backgroundColor = sceneColor
+        /*
+        let backgroundNode = SKSpriteNode(color: .white, size: view.frame.size)
+        backgroundNode.position = CGPoint(x: 0, y: 0)
+        backgroundNode.anchorPoint = CGPoint(x: 0, y: 0)
+        backgroundNode.texture = colorScheme!.backgroundTexture
+        self.addChild(backgroundNode)
+        */
+        self.backgroundColor = colorScheme!.backgroundColor
+        
         physicsWorld.contactDelegate = self
     }
     
@@ -503,8 +566,35 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    private func colorizeBlocks(itemRow: [Item]) {
+        bottomColor = topColor
+        colorIndex += 1
+        if colorIndex == colorList.count {
+            colorIndex = 0
+        }
+        topColor = colorList[colorIndex]
+        
+        let newTexture = SKTexture(size: blockSize!, startColor: bottomColor, endColor: topColor)
+        for item in itemRow {
+            if item is HitBlockItem {
+                let block = item as! HitBlockItem
+                block.setAttributes(blockTexture: newTexture,
+                                    textColor: colorScheme!.blockTextColor,
+                                    fontName: colorScheme!.fontName)
+            }
+            if item is StoneHitBlockItem {
+                let block = item as! StoneHitBlockItem
+                block.setAttributes(blockTexture: newTexture,
+                                    textColor: colorScheme!.blockTextColor,
+                                    fontName: colorScheme!.fontName)
+            }
+        }
+    }
+    
     private func addRowToView(rowNum: Int, items: [Item]) {
-        let color = blockColor.changeColor()
+        //let color = blockColor.changeColor()
+        
+        colorizeBlocks(itemRow: items)
         
         if items.count > 0 {
             for i in 0...(items.count - 1) {
@@ -518,15 +608,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     let posX = CGFloat(i) * rowHeight!
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
-                    let block = item as! HitBlockItem
-                    block.setColor(color: color)
                 }
                 else if item is StoneHitBlockItem {
                     let posX = CGFloat(i) * rowHeight!
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
-                    let block = item as! StoneHitBlockItem
-                    block.setColor(color: color)
                 }
                 else if item is BombItem {
                     let posX = CGFloat(i) * rowHeight!
@@ -537,6 +623,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2)
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum))) + (rowHeight! / 2)
                     pos = CGPoint(x: posX, y: posY)
+                    let ball = item as! BallItem
+                    ball.setColor(color: colorScheme!.hitBallColor)
                 }
                 
                 // The item will fade in
@@ -607,10 +695,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private func initGround(view: SKView, margin: CGFloat) {
         let size = CGSize(width: view.frame.width, height: margin)
-        groundNode = SKSpriteNode(color: marginColor, size: size)
+        groundNode = SKSpriteNode(color: colorScheme!.marginColor, size: size)
         groundNode?.anchorPoint = CGPoint(x: 0, y: 0)
         groundNode?.position = CGPoint(x: 0, y: 0)
         groundNode?.name = "ground"
+        groundNode?.zPosition = 100
         
         let startPoint = CGPoint(x: 0, y: margin)
         let endPoint = CGPoint(x: view.frame.width, y: margin)
@@ -635,9 +724,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingLine.move(to: startPoint)
         ceilingLine.addLine(to: endPoint)
         ceilingNode = SKShapeNode()
+        ceilingNode?.zPosition = 101
         ceilingNode!.path = ceilingLine
         ceilingNode!.name = "ceiling"
-        ceilingNode!.strokeColor = marginColor
+        ceilingNode!.strokeColor = colorScheme!.marginColor
         ceilingNode!.lineWidth = 1
         ceilingNode!.physicsBody = physBody
         ceilingNode!.position = CGPoint(x: 0, y: view.frame.height - view.safeAreaInsets.top - margin)
@@ -853,7 +943,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         ballCountLabel!.position = newPoint
-        ballCountLabel!.fontSize = ballRadius! * 3
+        ballCountLabel!.fontSize = ballRadius! * 2.5
         ballCountLabel!.color = .white
         
         updateBallCountLabel()
@@ -953,7 +1043,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let frontNode = SKSpriteNode(color: darkRed, size: view!.frame.size)
         frontNode.anchorPoint = CGPoint(x: 0, y: 0)
         frontNode.position = CGPoint(x: 0, y: 0)
-        frontNode.zPosition = 100
+        frontNode.zPosition = 101
         frontNode.alpha = 0
         frontNode.name = "warningNode"
         
