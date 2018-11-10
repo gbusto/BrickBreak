@@ -133,6 +133,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var contactTestBitMask = UInt32(0b0001)
     private var groundCategoryBitmask = UInt32(0b0101)
     
+    // Stuff for lighting
+    private var lightingBitMask = UInt32(0b0001)
+    
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -605,17 +608,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     let posX = CGFloat(i) * rowHeight!
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
-                    //let block = item as! HitBlockItem
-                    //block.setColor(texture: colorScheme!.blockTexture, textColor: colorScheme!.blockTextColor)
                 }
                 else if item is StoneHitBlockItem {
                     let posX = CGFloat(i) * rowHeight!
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
-                    let block = item as! StoneHitBlockItem
-                    //block.setColor(coloredTexture: colorScheme!.blockTexture,
-                    //               grayTexture: colorScheme!.stoneTexture,
-                    //               textColor: colorScheme!.blockTextColor)
                 }
                 else if item is BombItem {
                     let posX = CGFloat(i) * rowHeight!

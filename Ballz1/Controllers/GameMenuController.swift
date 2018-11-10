@@ -14,6 +14,7 @@ import GameplayKit
 
 class GameMenuController: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var playButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +25,10 @@ class GameMenuController: UIViewController {
             
             view.presentScene(scene)
             
-            titleLabel.textColor = scene.theme!.textColor
+            titleLabel.textColor = scene.theme!.titleColor
+            //playButton.backgroundColor = scene.theme!.buttonColor
+            playButton.setTitleColor(scene.theme!.buttonTextColor, for: .normal)
+            playButton.layer.cornerRadius = 20
             
             view.ignoresSiblingOrder = true
         }

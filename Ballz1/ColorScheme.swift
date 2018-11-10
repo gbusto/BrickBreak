@@ -92,12 +92,16 @@ extension UIColor {
 class GameMenuColorScheme {
     // MARK: Properties
     var backgroundColor: SKColor
-    var textColor: SKColor
+    var titleColor: SKColor
+    var buttonColor: SKColor
+    var buttonTextColor: SKColor
     var fontName: String = "Avenir-Medium"
     
     required init() {
         backgroundColor = SKColor(red: 48/255, green: 52/255, blue: 50/255, alpha: 1)
-        textColor = SKColor(red: 93/255, green: 173/255, blue: 226/255, alpha: 1)
+        titleColor = SKColor(rgb: 0x80cbc4)
+        buttonColor = UIColor(rgb: 0xf070a1)
+        buttonTextColor = backgroundColor
     }
 }
 
