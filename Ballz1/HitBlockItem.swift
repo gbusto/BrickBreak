@@ -18,7 +18,7 @@ class HitBlockItem: Item {
     private var size : CGSize?
     private var position : CGPoint?
     
-    private var fontName = "Courier"
+    private var fontName = "Verdana"
     private var labelNode : SKLabelNode?
     
     // Setting up properties for collisions
@@ -84,9 +84,10 @@ class HitBlockItem: Item {
         labelNode!.fontColor = textColor
     }
     
-    public func setTexture(blockTexture: SKTexture, textColor: UIColor) {
+    public func setAttributes(blockTexture: SKTexture, textColor: UIColor, fontName: String) {
         node!.texture = blockTexture
         labelNode!.fontColor = textColor
+        labelNode!.fontName = fontName
     }
     
     public func setHitCount(count: Int) {

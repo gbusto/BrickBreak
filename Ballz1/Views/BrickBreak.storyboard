@@ -22,16 +22,16 @@
                                 <rect key="frame" x="20" y="44" width="374" height="618"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Brick Break" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.20000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="xH8-wW-N8G">
-                                        <rect key="frame" x="7" y="0.0" width="360.33333333333331" height="358"/>
-                                        <fontDescription key="fontDescription" name="Courier" family="Courier" pointSize="150"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="374" height="403.33333333333331"/>
+                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="150"/>
                                         <color key="textColor" red="0.51961673628406557" green="0.89238672865529955" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="jcc-nl-bVB">
-                                        <rect key="frame" x="50" y="408" width="274" height="210"/>
+                                        <rect key="frame" x="50" y="453.33333333333331" width="274" height="164.66666666666669"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0b5-Nx-3KM">
-                                                <rect key="frame" x="0.0" y="75.333333333333371" width="274" height="59"/>
+                                                <rect key="frame" x="0.0" y="53.000000000000057" width="274" height="59"/>
                                                 <color key="backgroundColor" red="0.47948489742189621" green="0.54436011520170158" blue="0.7249929969792539" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" title="Play">
@@ -86,13 +86,13 @@
                                             <constraint firstAttribute="width" constant="50" id="HqO-NV-9Af"/>
                                             <constraint firstAttribute="height" constant="50" id="jQz-7q-Inv"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" name="Courier" family="Courier" pointSize="20"/>
+                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="20"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PPQ-wv-sQa">
-                                        <rect key="frame" x="186.33333333333334" y="0.0" width="21.666666666666657" height="50"/>
-                                        <fontDescription key="fontDescription" name="Courier" family="Courier" pointSize="36"/>
+                                        <rect key="frame" x="187" y="0.0" width="20.333333333333343" height="50"/>
+                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="36"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>

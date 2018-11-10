@@ -575,70 +575,16 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         for item in itemRow {
             if item is HitBlockItem {
                 let block = item as! HitBlockItem
-                block.setTexture(blockTexture: newTexture, textColor: colorScheme!.blockTextColor)
+                block.setAttributes(blockTexture: newTexture,
+                                    textColor: colorScheme!.blockTextColor,
+                                    fontName: colorScheme!.fontName)
             }
             if item is StoneHitBlockItem {
                 let block = item as! StoneHitBlockItem
-                block.setTexture(blockTexture: newTexture, textColor: colorScheme!.blockTextColor)
+                block.setAttributes(blockTexture: newTexture,
+                                    textColor: colorScheme!.blockTextColor,
+                                    fontName: colorScheme!.fontName)
             }
-        }
-    }
-    
-    private func colorizeBlocks2(itemRow: [Item]) {
-        // Start changing colors now
-        if false == changedColor {
-            // Get the next color and update the index
-            topColor = colorList[colorIndex]
-            colorIndex += 1
-            if colorIndex == colorList.count {
-                colorIndex = 0
-            }
-            
-            changedColor = true
-            itemColumn = 0
-        }
-        
-        for i in 0...(itemRow.count - 1) {
-            print("COLUMN IS \(itemColumn)")
-            let item = itemRow[i]
-            if item is StoneHitBlockItem {
-                let block = item as! StoneHitBlockItem
-                // Handle special case for stone block items; we can't transition smoothly between textures so a stone block item should never be a color transition block
-                if i == itemColumn {
-                    // For now, don't set the texture if we have a stone block item here
-                    block.setColor(blockColor: topColor, textColor: colorScheme!.blockTextColor)
-                }
-                else if i > itemColumn {
-                    block.setColor(blockColor: bottomColor, textColor: colorScheme!.blockTextColor)
-                }
-                else if i < itemColumn {
-                    block.setColor(blockColor: topColor, textColor: colorScheme!.blockTextColor)
-                }
-            }
-            else if item is HitBlockItem {
-                let block = item as! HitBlockItem
-                if i == itemColumn {
-                    // This is the block that we need to set as the transition color block
-                    let texture = SKTexture(size: blockSize!, startColor: bottomColor, endColor: topColor, direction: .upLeft)
-                    block.setTexture(blockTexture: texture, textColor: colorScheme!.blockTextColor)
-                }
-                else if i > itemColumn {
-                    // Otherwise, use bottomColor as the block color
-                    block.setColor(blockColor: bottomColor, textColor: colorScheme!.blockTextColor)
-                }
-                else if i < itemColumn {
-                    block.setColor(blockColor: topColor, textColor: colorScheme!.blockTextColor)
-                }
-            }
-        }
-        
-        itemColumn += 1
-        
-        // If we've fully transitioned block colors, then reset things
-        if itemColumn == itemRow.count {
-            itemColumn = 0
-            changedColor = false
-            bottomColor = topColor
         }
     }
     
