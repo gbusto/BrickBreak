@@ -14,6 +14,9 @@ class HitBlockItem: Item {
     public var node : SKSpriteNode?
     public var hitCount : Int?
     
+    public var bottomColor: SKColor?
+    public var topColor: SKColor?
+    
     // MARK: Private properties
     private var size : CGSize?
     private var position : CGPoint?
@@ -95,13 +98,11 @@ class HitBlockItem: Item {
     }
     
     // MARK: Public functions
-    public func setColor(blockColor: UIColor, textColor: UIColor) {
-        node!.color = blockColor
-        labelNode!.fontColor = textColor
-    }
-    
-    public func setAttributes(blockTexture: SKTexture, textColor: UIColor, fontName: String) {
-        node!.texture = blockTexture
+    public func setAttributes(bottomColor: SKColor, topColor: SKColor, textColor: UIColor, fontName: String) {
+        let newTexture = SKTexture(size: size!, startColor: bottomColor, endColor: topColor)
+        self.bottomColor = bottomColor
+        self.topColor = topColor
+        node!.texture = newTexture
         labelNode!.fontColor = textColor
         labelNode!.fontName = fontName
     }

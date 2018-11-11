@@ -346,10 +346,21 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 if item is HitBlockItem {
                     // We want to remove block items from the scene completely
                     self.removeChildren(in: [item.getNode()])
+                    // Show block break animation
+                    let block = item as! HitBlockItem
+                    var centerPoint = block.getNode().position
+                    centerPoint.x += blockSize!.width / 2
+                    centerPoint.y += blockSize!.height / 2
+                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
                     brokenHitBlockCount += 1
                 }
                 else if item is StoneHitBlockItem {
                     self.removeChildren(in: [item.getNode()])
+                    let block = item as! StoneHitBlockItem
+                    var centerPoint = block.getNode().position
+                    centerPoint.x += blockSize!.width / 2
+                    centerPoint.y += blockSize!.height / 2
+                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
                     brokenHitBlockCount += 1
                 }
                 else if item is BombItem {
@@ -574,17 +585,18 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         topColor = colorList[colorIndex]
         
-        let newTexture = SKTexture(size: blockSize!, startColor: bottomColor, endColor: topColor)
         for item in itemRow {
             if item is HitBlockItem {
                 let block = item as! HitBlockItem
-                block.setAttributes(blockTexture: newTexture,
+                block.setAttributes(bottomColor: bottomColor,
+                                    topColor: topColor,
                                     textColor: colorScheme!.blockTextColor,
                                     fontName: colorScheme!.fontName)
             }
             if item is StoneHitBlockItem {
                 let block = item as! StoneHitBlockItem
-                block.setAttributes(blockTexture: newTexture,
+                block.setAttributes(bottomColor: bottomColor,
+                                    topColor: topColor,
                                     textColor: colorScheme!.blockTextColor,
                                     fontName: colorScheme!.fontName)
             }
@@ -1059,6 +1071,38 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             node.run(SKAction.fadeOut(withDuration: 1)) {
                 self.removeChildren(in: [node])
                 self.displayEncouragement(emoji: "😅", text: "Phew! Close one")
+            }
+        }
+    }
+    
+    private func breakBlock(color1: SKColor, color2: SKColor, position: CGPoint) {
+        let colors: [UIColor] = [color1, color2]
+        let alphas: [CGFloat] = [0.1, 0.2, 0.3, 0.4, 0.5]
+        let numBlocks = 16 // Arbitrary; just a number for now
+        let newSize = CGSize(width: blockSize!.width / 4, height: blockSize!.height / 4)
+        var blocks: [SKSpriteNode] = []
+        for _ in 0...(numBlocks - 1) {
+            let newPosition = CGPoint(x: position.x + CGFloat(Int.random(in: -20...20)),
+                                      y: position.y + CGFloat(Int.random(in: -20...20)))
+            let block = SKSpriteNode(color: colors.randomElement()!, size: newSize)
+            block.position = newPosition
+            block.alpha = alphas.randomElement()!
+            
+            let physBody = SKPhysicsBody()
+            physBody.affectedByGravity = true
+            physBody.isDynamic = true
+            block.physicsBody = physBody
+            
+            blocks.append(block)
+            self.addChild(block)
+        }
+        
+        for block in blocks {
+            let vector = CGVector(dx: CGFloat(Int.random(in: -150...150)), dy: CGFloat(Int.random(in: 200...400)))
+            let action1 = SKAction.applyImpulse(vector, duration: 0.1)
+            let action2 = SKAction.fadeOut(withDuration: 1)
+            block.run(SKAction.sequence([action1, action2])) {
+                self.removeChildren(in: [block])
             }
         }
     }
