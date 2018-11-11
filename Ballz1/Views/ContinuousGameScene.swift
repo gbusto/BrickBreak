@@ -40,8 +40,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // Nodes that will be shown in the view
     private var groundNode: SKSpriteNode?
     private var ceilingNode: SKShapeNode?
-    private var leftWallNode: SKNode?
-    private var rightWallNode: SKNode?
+    private var leftWallNode: SKSpriteNode?
+    private var rightWallNode: SKSpriteNode?
+    
+    private var leftWallWidth = CGFloat(0)
+    private var rightWallWidth = CGFloat(0)
     
     private var ballProjection = BallProjection()
     
@@ -139,9 +142,43 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
-        rowHeight = view.frame.width / CGFloat(numItemsPerRow)
-        ballRadius = view.frame.width * 0.018
-        blockSize = CGSize(width: rowHeight! * 0.95, height: rowHeight! * 0.95)
+        margin = view.frame.height * 0.10
+        
+        /*
+            if (blockHeight * 8 > view.width)
+                use view.width / 8 as block size
+                move ceiling/ground to allow for 12 rows stacked vertically
+            else
+                use (ceilingY - groundY) / 12 as block size
+                move left/right walls to allow for 8 columns horizontally
+        */
+        
+        // 1. Get ceiling starting y position
+        let ceilingY = view.frame.height - view.safeAreaInsets.top - margin!
+        // 2. Get floor ending y position
+        let groundY = margin!
+        let blockSize1 = (ceilingY - groundY) / 12
+        let blockSize2 = view.frame.width / 8
+        // Need to determine whether or not we use screen height or width to determine block size
+        if (blockSize1 * 8) > view.frame.width {
+            // We use block width as block size and move ceiling/ground in towards the middle
+            blockSize = CGSize(width: blockSize2 * 0.90, height: blockSize2 * 0.90)
+            rowHeight = blockSize2
+            // Update margin for ceiling/ground here
+            let heightDifference = (view.frame.height - (margin! * 2)) - (blockSize2 * 12)
+            margin! += (heightDifference / 2)
+        }
+        else {
+            // We use block height as the block size and move left/right walls in towards the middle
+            blockSize = CGSize(width: blockSize1 * 0.90, height: blockSize1 * 0.90)
+            rowHeight = blockSize1
+            // Update left/right wall width here
+            let widthDifference = view.frame.width - (blockSize1 * 8)
+            leftWallWidth = widthDifference / 2
+            rightWallWidth = widthDifference / 2
+        }
+        
+        ballRadius = (blockSize!.height / 2) / 3.5
         
         colorScheme = GameSceneColorScheme(backgroundSize: view.frame.size, blockSize: blockSize!)
         fontName = colorScheme!.fontName
@@ -622,22 +659,22 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 
                 var pos = CGPoint(x: 0, y: 0)
                 if item is HitBlockItem {
-                    let posX = CGFloat(i) * rowHeight!
+                    let posX = CGFloat(i) * rowHeight! + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                 }
                 else if item is StoneHitBlockItem {
-                    let posX = CGFloat(i) * rowHeight!
+                    let posX = CGFloat(i) * rowHeight! + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                 }
                 else if item is BombItem {
-                    let posX = CGFloat(i) * rowHeight!
+                    let posX = CGFloat(i) * rowHeight! + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                 }
                 else if item is BallItem {
-                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2)
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2) + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum))) + (rowHeight! / 2)
                     pos = CGPoint(x: posX, y: posY)
                     let ball = item as! BallItem
@@ -703,8 +740,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // Initialize the different walls and physics edges
     private func initWalls(view: SKView) {
-        margin = view.frame.height * 0.10
-        
         initGround(view: view, margin: margin!)
         initCeiling(view: view, margin: margin!)
         initSideWalls(view: view, margin: margin!)
@@ -753,19 +788,25 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func initSideWalls(view: SKView, margin: CGFloat) {
-        let lwStartPoint = CGPoint(x: 1, y: margin)
-        let lwEndPoint = CGPoint(x: 1, y: view.frame.height - margin)
+        let leftWallSize = CGSize(width: leftWallWidth, height: view.frame.height - (margin * 2))
+        let lwStartPoint = CGPoint(x: leftWallWidth + 1, y: 0)
+        let lwEndPoint = CGPoint(x: leftWallWidth + 1, y: leftWallSize.height)
         let leftWallEdge = createPhysicsEdge(startPoint: lwStartPoint, endPoint: lwEndPoint)
-        leftWallNode = SKNode()
-        leftWallNode?.physicsBody = leftWallEdge
-        leftWallNode?.name = "wall"
+        leftWallNode = SKSpriteNode(color: colorScheme!.marginColor, size: leftWallSize)
+        leftWallNode!.anchorPoint = CGPoint(x: 0, y: 0)
+        leftWallNode!.position = CGPoint(x: 0, y: margin)
+        leftWallNode!.physicsBody = leftWallEdge
+        leftWallNode!.name = "wall"
         
-        let rwStartPoint = CGPoint(x: view.frame.width, y: margin)
-        let rwEndPoint = CGPoint(x: view.frame.width, y: view.frame.height - margin)
+        let rightWallSize = CGSize(width: rightWallWidth, height: view.frame.height - (margin * 2))
+        let rwStartPoint = CGPoint(x: 0, y: 0)
+        let rwEndPoint = CGPoint(x: 0, y: rightWallSize.height)
         let rightWallEdge = createPhysicsEdge(startPoint: rwStartPoint, endPoint: rwEndPoint)
-        rightWallNode = SKNode()
-        rightWallNode?.physicsBody = rightWallEdge
-        rightWallNode?.name = "wall"
+        rightWallNode = SKSpriteNode(color: colorScheme!.marginColor, size: rightWallSize)
+        rightWallNode!.anchorPoint = CGPoint(x: 0, y: 0)
+        rightWallNode!.position = CGPoint(x: view.frame.width - rightWallWidth, y: margin)
+        rightWallNode!.physicsBody = rightWallEdge
+        rightWallNode!.name = "wall"
         
         self.addChild(leftWallNode!)
         self.addChild(rightWallNode!)
