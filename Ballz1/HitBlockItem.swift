@@ -34,7 +34,6 @@ class HitBlockItem: Item {
         
         node = SKSpriteNode(color: .gray, size: size)
         node!.anchorPoint = CGPoint(x: 0, y: 0)
-        node!.zPosition = 100
         node!.name = "block\(num)"
         
         let centerPoint = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -122,10 +121,9 @@ class HitBlockItem: Item {
     private func initHitLabel() {
         let centerPoint = CGPoint(x: size!.width / 2, y: size!.height / 3)
         labelNode = SKLabelNode(text: "\(hitCount!)")
-        labelNode!.fontColor = .white
         labelNode!.position = centerPoint
         labelNode!.fontSize = size!.width / 2.4
         labelNode!.fontName = fontName
-        labelNode!.zPosition = 100
+        labelNode!.zPosition = 99
     }
 }
