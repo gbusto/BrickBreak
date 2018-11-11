@@ -368,8 +368,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 else if item is BallItem {
                     // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
-                    let newPoint = CGPoint(x: item.getNode().position.x, y: groundNode!.size.height + ballRadius!)
-                    item.getNode().run(SKAction.move(to: newPoint, duration: 0.5))
+                    //let newPoint = CGPoint(x: item.getNode().position.x, y: groundNode!.size.height + ballRadius!)
+                    let vector = CGVector(dx: 0, dy: 4)
+                    let ball = item.getNode()
+                    ball.physicsBody!.affectedByGravity = true
+                    ball.run(SKAction.applyImpulse(vector, duration: 0.05))
+                    ballHitAnimation(color: colorScheme!.hitBallColor, position: ball.position)
                 }
             }
             
@@ -1103,6 +1107,37 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             let action2 = SKAction.fadeOut(withDuration: 1)
             block.run(SKAction.sequence([action1, action2])) {
                 self.removeChildren(in: [block])
+            }
+        }
+    }
+    
+    private func ballHitAnimation(color: SKColor, position: CGPoint) {
+        let alphas: [CGFloat] = [0.3, 0.4, 0.5, 0.6, 0.7]
+        let numDroplets = 8
+        var balls: [SKShapeNode] = []
+        for _ in 0...(numDroplets - 1) {
+            let newPosition = CGPoint(x: position.x + CGFloat(Int.random(in: -10...10)),
+                                      y: position.y + CGFloat(Int.random(in: -10...10)))
+            let ball = SKShapeNode(circleOfRadius: ballRadius! / 2)
+            ball.position = newPosition
+            ball.alpha = alphas.randomElement()!
+            ball.fillColor = color
+            
+            let physBody = SKPhysicsBody()
+            physBody.affectedByGravity = true
+            physBody.isDynamic = true
+            ball.physicsBody = physBody
+            
+            balls.append(ball)
+            self.addChild(ball)
+        }
+        
+        for ball in balls {
+            let vector = CGVector(dx: CGFloat(Int.random(in: -150...150)), dy: CGFloat(Int.random(in: 200...400)))
+            let action1 = SKAction.applyImpulse(vector, duration: 0.1)
+            let action2 = SKAction.fadeOut(withDuration: 1)
+            ball.run(SKAction.sequence([action1, action2])) {
+                self.removeChildren(in: [ball])
             }
         }
     }

@@ -117,6 +117,7 @@ class BallItem: Item {
         node!.physicsBody!.categoryBitMask = categoryBitMask
         node!.physicsBody!.contactTestBitMask = contactTestBitMask
         node!.fillColor = .white
+        node!.physicsBody!.affectedByGravity = false
     }
     
     public func fire(point: CGPoint) {
