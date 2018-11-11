@@ -293,6 +293,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                         // Show an ad
                     }
                     else {
+                        view!.isPaused = true
                         // Otherwise show the gameover overlay
                         showGameOverNode()
                     }
@@ -908,7 +909,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         gameOverNode.anchorPoint = CGPoint(x: 0, y: 0)
         self.addChild(gameOverNode)
         
-        let fontSize = view!.frame.width * 0.4
+        let fontSize = view!.frame.width * 0.3
         let label = SKLabelNode()
         label.zPosition = 106
         label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY + (fontSize / 2))
