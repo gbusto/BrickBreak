@@ -13,6 +13,9 @@ class StoneHitBlockItem: Item {
     public var node : SKSpriteNode?
     public var hitCount : Int?
     
+    public var bottomColor: SKColor?
+    public var topColor: SKColor?
+    
     // MARK: Private properties
     private var size : CGSize?
     private var position : CGPoint?
@@ -23,7 +26,6 @@ class StoneHitBlockItem: Item {
     // true if the item is currently stone
     private var isStone = true
     
-    private var originalColor: UIColor = .white
     private var originalTexture: SKTexture?
     private var stoneTexture: SKTexture?
     
@@ -106,15 +108,12 @@ class StoneHitBlockItem: Item {
     }
     
     // MARK: Public functions
-    public func setColor(blockColor: UIColor, textColor: UIColor) {
-        node!.color = blockColor
-        originalColor = blockColor
-        labelNode!.fontColor = textColor
-    }
-    
-    public func setAttributes(blockTexture: SKTexture, textColor: UIColor, fontName: String) {
-        node!.texture = blockTexture
-        originalTexture = blockTexture
+    public func setAttributes(bottomColor: SKColor, topColor: SKColor, textColor: UIColor, fontName: String) {
+        let newTexture = SKTexture(size: size!, startColor: bottomColor, endColor: topColor)
+        self.bottomColor = bottomColor
+        self.topColor = topColor
+        node!.texture = newTexture
+        originalTexture = newTexture
         labelNode!.fontColor = textColor
         labelNode!.fontName = fontName
     }
@@ -142,23 +141,6 @@ class StoneHitBlockItem: Item {
             }
         }
     }
-    
-    /*
-    public func changeState(duration: TimeInterval) {
-        // When it changes to stone, it should also be animated to change to a grey color
-        // When it changes back to normal, it should go back to its normal color
-        isStone = !isStone
-        
-        if isStone {
-            let action = SKAction.colorize(with: .gray, colorBlendFactor: 1.0, duration: duration)
-            node!.run(action)
-        }
-        else {
-            let action = SKAction.colorize(with: originalColor, colorBlendFactor: 1.0, duration: duration)
-            node!.run(action)
-        }
-    }
-    */
     
     public func setHitCount(count: Int) {
         hitCount = count
