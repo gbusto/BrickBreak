@@ -1016,16 +1016,16 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private func displayEncouragement(emoji: String, text: String) {
         let label = SKLabelNode()
         label.text = emoji
-        label.fontSize = view!.frame.width * 0.5
+        label.fontSize = view!.frame.width * 0.3
         label.alpha = 0
         label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
         label.zPosition = 105
         
         let text = SKLabelNode(text: text)
-        text.fontSize = label.fontSize / 5
+        text.fontSize = label.fontSize / 2
         text.fontName = fontName
         text.alpha = 0
-        text.position = CGPoint(x: view!.frame.midX, y: label.position.y - (text.fontSize * 2))
+        text.position = CGPoint(x: view!.frame.midX, y: label.position.y - (text.fontSize * 1.5))
         text.zPosition = 105
         text.fontColor = .white
         
