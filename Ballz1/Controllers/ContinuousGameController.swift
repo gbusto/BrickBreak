@@ -53,7 +53,7 @@ class ContinuousGameController: UIViewController {
             
             view.ignoresSiblingOrder = true
             
-            view.showsPhysics = true
+            //view.showsPhysics = true
         }
     }
     

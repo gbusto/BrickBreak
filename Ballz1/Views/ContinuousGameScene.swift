@@ -40,8 +40,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // Nodes that will be shown in the view
     private var groundNode: SKSpriteNode?
     private var ceilingNode: SKShapeNode?
-    private var leftWallNode: SKSpriteNode?
-    private var rightWallNode: SKSpriteNode?
+    private var leftWallNode: SKShapeNode?
+    private var rightWallNode: SKShapeNode?
     
     private var leftWallWidth = CGFloat(1)
     private var rightWallWidth = CGFloat(0)
@@ -170,7 +170,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         else {
             // We use block height as the block size and move left/right walls in towards the middle
-            blockSize = CGSize(width: blockSize1 * 0.90, height: blockSize1 * 0.90)
+            blockSize = CGSize(width: blockSize1 * 0.95, height: blockSize1 * 0.95)
             rowHeight = blockSize1
             // Update left/right wall width here
             let widthDifference = view.frame.width - (blockSize1 * 8)
@@ -769,8 +769,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func initCeiling(view: SKView, margin: CGFloat) {
-        let startPoint = CGPoint(x: 0, y: 0)
-        let endPoint = CGPoint(x: view.frame.width, y: 0)
+        let startPoint = CGPoint(x: leftWallWidth, y: 0)
+        let endPoint = CGPoint(x: view.frame.width - rightWallWidth, y: 0)
         let physBody = createPhysicsEdge(startPoint: startPoint, endPoint: endPoint)
         
         let ceilingLine = CGMutablePath()
@@ -793,21 +793,35 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let lwStartPoint = CGPoint(x: leftWallWidth, y: 0)
         let lwEndPoint = CGPoint(x: leftWallWidth, y: leftWallSize.height)
         let leftWallEdge = createPhysicsEdge(startPoint: lwStartPoint, endPoint: lwEndPoint)
-        leftWallNode = SKSpriteNode(color: colorScheme!.marginColor, size: leftWallSize)
-        leftWallNode!.anchorPoint = CGPoint(x: 0, y: 0)
-        leftWallNode!.position = CGPoint(x: 0, y: margin)
-        leftWallNode!.physicsBody = leftWallEdge
+        
+        let leftWallLine = CGMutablePath()
+        leftWallLine.move(to: lwStartPoint)
+        leftWallLine.addLine(to: lwEndPoint)
+        leftWallNode = SKShapeNode()
+        leftWallNode!.zPosition = 101
+        leftWallNode!.path = leftWallLine
         leftWallNode!.name = "wall"
+        leftWallNode!.strokeColor = colorScheme!.marginColor
+        leftWallNode!.lineWidth = 1
+        leftWallNode!.physicsBody = leftWallEdge
+        leftWallNode!.position = CGPoint(x: 0, y: margin)
         
         let rightWallSize = CGSize(width: rightWallWidth, height: view.frame.height - (margin * 2))
         let rwStartPoint = CGPoint(x: 0, y: 0)
         let rwEndPoint = CGPoint(x: 0, y: rightWallSize.height)
         let rightWallEdge = createPhysicsEdge(startPoint: rwStartPoint, endPoint: rwEndPoint)
-        rightWallNode = SKSpriteNode(color: colorScheme!.marginColor, size: rightWallSize)
-        rightWallNode!.anchorPoint = CGPoint(x: 0, y: 0)
-        rightWallNode!.position = CGPoint(x: view.frame.width - rightWallWidth, y: margin)
-        rightWallNode!.physicsBody = rightWallEdge
+        
+        let rightWallLine = CGMutablePath()
+        rightWallLine.move(to: rwStartPoint)
+        rightWallLine.addLine(to: rwEndPoint)
+        rightWallNode = SKShapeNode()
+        rightWallNode!.zPosition = 101
+        rightWallNode!.path = rightWallLine
         rightWallNode!.name = "wall"
+        rightWallNode!.strokeColor = colorScheme!.marginColor
+        rightWallNode!.lineWidth = 1
+        rightWallNode!.physicsBody = rightWallEdge
+        rightWallNode!.position = CGPoint(x: view.frame.width - rightWallWidth, y: margin)
         
         self.addChild(leftWallNode!)
         self.addChild(rightWallNode!)
