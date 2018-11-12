@@ -43,7 +43,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var leftWallNode: SKSpriteNode?
     private var rightWallNode: SKSpriteNode?
     
-    private var leftWallWidth = CGFloat(0)
+    private var leftWallWidth = CGFloat(1)
     private var rightWallWidth = CGFloat(0)
     
     private var ballProjection = BallProjection()
@@ -162,7 +162,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         // Need to determine whether or not we use screen height or width to determine block size
         if (blockSize1 * 8) > view.frame.width {
             // We use block width as block size and move ceiling/ground in towards the middle
-            blockSize = CGSize(width: blockSize2 * 0.90, height: blockSize2 * 0.90)
+            blockSize = CGSize(width: blockSize2 * 0.95, height: blockSize2 * 0.95)
             rowHeight = blockSize2
             // Update margin for ceiling/ground here
             let heightDifference = (view.frame.height - (margin! * 2)) - (blockSize2 * 12)
@@ -174,7 +174,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             rowHeight = blockSize1
             // Update left/right wall width here
             let widthDifference = view.frame.width - (blockSize1 * 8)
-            leftWallWidth = widthDifference / 2
+            // leftWallWidth is set to 1 by default, so add this number to it
+            leftWallWidth += widthDifference / 2
             rightWallWidth = widthDifference / 2
         }
         
@@ -659,17 +660,17 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 
                 var pos = CGPoint(x: 0, y: 0)
                 if item is HitBlockItem {
-                    let posX = CGFloat(i) * rowHeight! + leftWallWidth
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.05) + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                 }
                 else if item is StoneHitBlockItem {
-                    let posX = CGFloat(i) * rowHeight! + leftWallWidth
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.05) + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                 }
                 else if item is BombItem {
-                    let posX = CGFloat(i) * rowHeight! + leftWallWidth
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.05) + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                 }
@@ -789,8 +790,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private func initSideWalls(view: SKView, margin: CGFloat) {
         let leftWallSize = CGSize(width: leftWallWidth, height: view.frame.height - (margin * 2))
-        let lwStartPoint = CGPoint(x: leftWallWidth + 1, y: 0)
-        let lwEndPoint = CGPoint(x: leftWallWidth + 1, y: leftWallSize.height)
+        let lwStartPoint = CGPoint(x: leftWallWidth, y: 0)
+        let lwEndPoint = CGPoint(x: leftWallWidth, y: leftWallSize.height)
         let leftWallEdge = createPhysicsEdge(startPoint: lwStartPoint, endPoint: lwEndPoint)
         leftWallNode = SKSpriteNode(color: colorScheme!.marginColor, size: leftWallSize)
         leftWallNode!.anchorPoint = CGPoint(x: 0, y: 0)
