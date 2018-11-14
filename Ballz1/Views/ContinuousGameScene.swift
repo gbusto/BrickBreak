@@ -518,10 +518,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         // Update the score labels
         updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
         
-        if let _ = self.childNode(withName: "warningNode") {
-            // If we're currently flashing red to warn the user, remove that node from the screen
-            self.stopFlashingRed()
-        }
+        // Game model resets its state to WAITING so that the game checks loss risk or game over
     }
     
     public func showPauseScreen() {
@@ -701,14 +698,23 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         // Add the balls to the scene
         var ballPosition = CGPoint(x: view!.frame.midX, y: groundNode!.size.height + ballRadius!)
-        if gameModel!.isReady() {
+        if gameModel!.isWaiting() {
             // This means we loaded a saved game state so get the origin point
+            // The reason we load the game model in a WAITING state after loading a game is because during the WAITING state we:
+            // 1. Check if we're about to lose
+            // 2. Check if the game is over
+            // And we want to re-warn the user that they're about to lose if they are one row away from a game over
             ballPosition = gameModel!.ballManager!.getOriginPoint()
             addBallCountLabel()
         }
-        else {
+        else if gameModel!.isTurnOver() {
             // We're starting a new game
+            // The reason we start the game model in a TURN_OVER state for a new game is because in this state
+            // the game scene code will add a new row to the scene and animate all items down a row
             displayEncouragement(emoji: "🎬", text: "Action!")
+        }
+        else {
+            print("Game model loaded in an unusual state")
         }
         
         updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
