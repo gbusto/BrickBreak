@@ -196,12 +196,15 @@ class ContinuousGameModel {
     
     // MARK: Initialization functions
     required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat) {
-        // State should always be initialized to READY
+        state = WAITING
+        
+        // Try to load persistent data
         if false == loadPersistentState() {
             // Defaults to load highScore of 0
             persistentData = PersistentData(highScore: highScore)
         }
         
+        // Try to load game state
         if false == loadGameState() {
             // Defaults to loading gameScore of 0
             gameState = GameState(gameScore: gameScore, userWasSaved: userWasSaved)
@@ -247,6 +250,9 @@ class ContinuousGameModel {
             
             // We need to set this to false to avoid loading old turn state
             prevTurnSaved = false
+            
+            // Set state to waiting so the game checks to see whether or not to warn the user or end the game
+            state = WAITING
             
             return true
         }
