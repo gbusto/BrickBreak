@@ -75,7 +75,7 @@ class BallProjection {
     // Shows the ball path projection
     public func showArrow(scene: SKScene) {
         if false == arrowShowing {
-            arrowNode.zPosition = 100
+            arrowNode.zPosition = 0
             scene.addChild(arrowNode)
             arrowShowing = true
         }
