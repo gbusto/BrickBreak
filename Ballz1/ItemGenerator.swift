@@ -33,8 +33,8 @@ class ItemGenerator {
     
     // Number of items to fit on each row
     private var numItemsPerRow = Int(0)
-    // The minimum number of items per row
-    private var minItemsPerRow = Int(2)
+    
+    private var numberOfRows = Int(0)
     
     // Number of items that this generator has generated
     private var numItemsGenerated = Int(0)
@@ -60,9 +60,6 @@ class ItemGenerator {
     private static let BALL = Int(2)
     private static let STONE_BLOCK = Int(3)
     private static let BOMB = Int(4)
-    
-    // An Int to let holder of this object know when the ItemGenerator is ready
-    private var actionsStarted = Int(0)
     
     
     // The distribution for these patterns should be 65, 25, 10 (easy, intermediate, hard)
@@ -218,6 +215,22 @@ class ItemGenerator {
         }
     }
     
+    // Gets the item count (doesn't include spacer items)
+    public func getItemCount() -> Int {
+        var count = Int(0)
+        for row in itemArray {
+            for item in row {
+                if item is SpacerItem {
+                    continue
+                }
+                
+                count += 1
+            }
+        }
+        
+        return count
+    }
+    
     // Load items into an array and return that array
     private func loadItems(items: [[Int]], itemHitCounts: [[Int]], numberOfBalls: Int) -> [[Item]] {
         // The final array we'll return
@@ -278,9 +291,10 @@ class ItemGenerator {
     }
     
     // MARK: Public functions
-    required init(blockSize: CGSize, ballRadius: CGFloat, numberOfBalls: Int, numItems: Int, restorationURL: URL) {
+    required init(blockSize: CGSize, ballRadius: CGFloat, numberOfBalls: Int, numberOfRows: Int, numItems: Int, restorationURL: URL) {
         self.blockSize = blockSize
         self.ballRadius = ballRadius
+        self.numberOfRows = numberOfRows
         numItemsPerRow = numItems
         
         let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
@@ -397,44 +411,6 @@ class ItemGenerator {
         return newRow
     }
     
-    public func animateItems(_ action: SKAction) {
-        // This count will not include spacer items, so they should be skipped in the animation loop below
-        actionsStarted = getItemCount()
-        
-        for row in itemArray {
-            for item in row {
-                if item is SpacerItem {
-                    // SpacerItems aren't included in the actionsStarted count so skip their animation here
-                    continue
-                }
-                
-                if item is StoneHitBlockItem {
-                    let block = item as! StoneHitBlockItem
-                    block.changeState(duration: action.duration)
-                }
-                
-                // If the item is invisible, have it fade in
-                if 0 == item.getNode().alpha {
-                    // If this is the newest row
-                    let fadeIn = SKAction.fadeIn(withDuration: 1)
-                    item.getNode().run(SKAction.group([fadeIn, action])) {
-                        self.actionsStarted -= 1
-                    }
-                }
-                else {
-                    item.getNode().run(action) {
-                        self.actionsStarted -= 1
-                    }
-                }
-            }
-        }
-    }
-    
-    public func isReady() -> Bool {
-        // This is used to prevent the user from shooting while the block manager isn't ready yet
-        return (0 == actionsStarted)
-    }
-    
     public func hit(name: String) {
         for row in itemArray {
             for item in row {
@@ -507,26 +483,6 @@ class ItemGenerator {
         
         // Return all items that were removed
         return removedItems
-    }
-    
-    // Iterate over all items to see if any are within (rowHeight * numRows) of the floor
-    // Returns true if it can items, false otherwise
-    public func canAddItems(_ floor: CGFloat, _ rowHeight: CGFloat, _ numRows: Int) -> Bool {
-        for row in itemArray {
-            for item in row {
-                // We don't care about spacer items
-                if item is SpacerItem {
-                    continue
-                }
-                
-                if (item.getNode().position.y - (rowHeight * CGFloat(numRows))) < floor {
-                    return false
-                }
-            }
-        }
-        print("New number of rows \(itemArray.count)")
-        
-        return true
     }
     
     public func removeFirstRow() -> [Item] {
@@ -658,22 +614,6 @@ class ItemGenerator {
         }
         
         return adjacentItems
-    }
-    
-    // Gets the item count (doesn't include spacer items)
-    private func getItemCount() -> Int {
-        var count = Int(0)
-        for row in itemArray {
-            for item in row {
-                if item is SpacerItem {
-                    continue
-                }
-                
-                count += 1
-            }
-        }
-        
-        return count
     }
     
     /*

@@ -30,6 +30,7 @@ class ContinuousGameModel {
     
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
+    private var numberOfRows = Int(0)
     
     private var state = Int(0)
     // READY means the game model is ready to go
@@ -195,7 +196,7 @@ class ContinuousGameModel {
     }
     
     // MARK: Initialization functions
-    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat) {
+    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int) {
         state = WAITING
         
         // Try to load persistent data
@@ -214,12 +215,17 @@ class ContinuousGameModel {
         highScore = persistentData!.highScore
         gameScore = gameState!.gameScore
         userWasSaved = gameState!.userWasSaved
+        self.numberOfRows = numberOfRows
         
         // This function will either load ball manager with a saved state or the default ball manager state
         ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: ContinuousGameModel.ContinuousDirURL)
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
-        itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius, numberOfBalls: ballManager!.numberOfBalls, numItems: numberOfItems, restorationURL: ContinuousGameModel.ContinuousDirURL)
+        itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
+                                      numberOfBalls: ballManager!.numberOfBalls,
+                                      numberOfRows: numberOfRows,
+                                      numItems: numberOfItems,
+                                      restorationURL: ContinuousGameModel.ContinuousDirURL)
         if 0 == itemGenerator!.itemArray.count {
             state = TURN_OVER
         }
@@ -331,6 +337,12 @@ class ContinuousGameModel {
             highScore = gameScore
         }
         
+        // Remove the first row in the array (essentially the last row of items)
+        if itemGenerator!.itemArray.count == (numberOfRows - 1) {
+            print("Removing first row of items from array; numberOfRows - 1")
+            let _ = itemGenerator!.itemArray.remove(at: 0)
+        }
+        
         // Go from TURN_OVER state to WAITING state
         incrementState()
     }
@@ -379,26 +391,13 @@ class ContinuousGameModel {
         return itemGenerator!.generateRow()
     }
     
-    public func animateItems(action: SKAction) {
-        itemGenerator!.animateItems(action)
-    }
-    
-    public func animationsDone() -> Bool {
-        if itemGenerator!.isReady() {
-            // Change state from WAITING to READY
-            incrementState()
-            return true
-        }
-        return false
-    }
-    
-    public func lossRisk(floor: CGFloat, rowHeight: CGFloat) -> Bool {
-        return !itemGenerator!.canAddItems(floor, rowHeight, 2)
+    public func lossRisk() -> Bool {
+        return (itemGenerator!.itemArray.count == numberOfRows - 2)
     }
     
     // The floor of the game scene; if another row doesn't fit
-    public func gameOver(floor: CGFloat, rowHeight: CGFloat) -> Bool {
-        if false == itemGenerator!.canAddItems(floor, rowHeight, 1) {
+    public func gameOver() -> Bool {
+        if (itemGenerator!.itemArray.count == numberOfRows - 1) {
             state = GAME_OVER
             return true
         }
@@ -410,6 +409,10 @@ class ContinuousGameModel {
             state = READY
             // Save state after each turn
             saveState()
+            return
+        }
+        else if GAME_OVER == state {
+            // Don't change state after the game is over
             return
         }
         
