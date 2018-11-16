@@ -118,6 +118,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var pausedLabel: UILabel?
     private var pausedLabel2: UILabel?
     
+    private var actionsStarted = Int(0)
+    
     // Colors for the scene
     private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
     private var marginColor = UIColor.init(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
@@ -139,6 +141,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // Stuff for lighting
     private var lightingBitMask = UInt32(0b0001)
     
+    private static var NUM_ROWS = CGFloat(12)
+    private static var NUM_COLUMNS = CGFloat(8)
+    
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -157,15 +162,15 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let ceilingY = view.frame.height - view.safeAreaInsets.top - margin!
         // 2. Get floor ending y position
         let groundY = margin!
-        let blockSize1 = (ceilingY - groundY) / 12
-        let blockSize2 = view.frame.width / 8
+        let blockSize1 = (ceilingY - groundY) / ContinousGameScene.NUM_ROWS
+        let blockSize2 = view.frame.width / ContinousGameScene.NUM_COLUMNS
         // Need to determine whether or not we use screen height or width to determine block size
-        if (blockSize1 * 8) > view.frame.width {
+        if (blockSize1 * ContinousGameScene.NUM_COLUMNS) > view.frame.width {
             // We use block width as block size and move ceiling/ground in towards the middle
             blockSize = CGSize(width: blockSize2 * 0.95, height: blockSize2 * 0.95)
             rowHeight = blockSize2
             // Update margin for ceiling/ground here
-            let heightDifference = (view.frame.height - (margin! * 2)) - (blockSize2 * 12)
+            let heightDifference = (view.frame.height - (margin! * 2)) - (blockSize2 * ContinousGameScene.NUM_ROWS)
             margin! += (heightDifference / 2)
         }
         else {
@@ -296,8 +301,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             addRowToView(rowNum: 1, items: items)
             
             // Move the items down in the view
-            let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
-            gameModel!.animateItems(action: action)
+            animateItems()
             
             // Display the label showing how many balls the user has (this needs to be done after we have collected any new balls the user acquired)
             currentBallCount = gameModel!.getBalls().count
@@ -319,11 +323,16 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             displayedOnFire = false
         }
         
-        // Wait for animations to finish and then check for game over
+        // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
         if gameModel!.isWaiting() {
-            if gameModel!.animationsDone() {
+            if 0 == actionsStarted {
+                // Increment game model state from WAITING to READY
+                gameModel!.incrementState()
+                
                 // Check to see if the game ended after all animations are complete
-                if gameModel!.gameOver(floor: groundNode!.size.height, rowHeight: rowHeight!) {
+                if gameModel!.gameOver() {
+                    // If the game is over, the game model will change its state to GAME_OVER
+                    
                     // If the user hasn't been saved yet, allow them to be saved
                     if false == gameModel!.userWasSaved {
                         // Display Continue? graphic
@@ -337,7 +346,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     }
                 }
                 // Check to see if we are at risk of losing the game
-                else if gameModel!.lossRisk(floor: groundNode!.size.height, rowHeight: rowHeight!) {
+                else if gameModel!.lossRisk() {
                     // Flash notification to user
                     startFlashingRed()
                 }
@@ -449,8 +458,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        displayEncouragement(emoji: "🤞", text: "Last chance!")
+        
         // If the user isn't at risk of losing right now then stop flashing red
-        if false == gameModel!.lossRisk(floor: groundNode!.size.height, rowHeight: rowHeight!) {
+        if false == gameModel!.lossRisk() {
             stopFlashingRed()
         }
     }
@@ -499,8 +510,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // Move the items down in the view
-        let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
-        gameModel!.animateItems(action: action)
+        animateItems()
         
         // At this point the ball manager's state should be updated; update the view to reflect that
         let balls = gameModel!.getBalls()
@@ -617,6 +627,71 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    private func animateItems() {
+        actionsStarted = gameModel!.itemGenerator!.getItemCount()
+        
+        let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
+        let array = gameModel!.itemGenerator!.itemArray
+        
+        if 0 == array.count {
+            // No items to animate
+            return
+        }
+        
+        for i in 0...(array.count - 1) {
+            let row = array[i]
+            for item in row {
+                if item is SpacerItem {
+                    // SpacerItems aren't included in the actionsStarted count so skip their animation here
+                    continue
+                }
+                
+                if item is StoneHitBlockItem {
+                    let block = item as! StoneHitBlockItem
+                    block.changeState(duration: 1)
+                }
+                
+                // If the item is invisible, have it fade in
+                if 0 == item.getNode().alpha {
+                    // If this is the newest row
+                    let fadeIn = SKAction.fadeIn(withDuration: 1)
+                    item.getNode().run(SKAction.group([fadeIn, action])) {
+                        self.actionsStarted -= 1
+                    }
+                }
+                else if (i == 0) && (array.count == Int(ContinousGameScene.NUM_ROWS - 1)) {
+                    // Move these items down on the screen
+                    if (item is BallItem) || (item is BombItem) {
+                        // If this is a ball item or bomb item, these items should just fade out and be removed from the scene and the item generator
+                        let fadeOut = SKAction.fadeOut(withDuration: 1)
+                        item.getNode().run(SKAction.group([action, fadeOut])) {
+                            self.removeChildren(in: [item.getNode()])
+                            self.actionsStarted -= 1
+                        }
+                    }
+                    else {
+                        // Otherwise if this item is just a block then move it down; it will be removed later if the user decides to save themselves
+                        item.getNode().run(action) {
+                            self.actionsStarted -= 1
+                        }
+                    }
+                    
+                    // Reset the physics body on this node so it doesn't push the ball through the ground
+                    item.getNode().physicsBody = nil
+                    
+                    // Don't remove the row from the itemArray; the model will handle that
+                }
+                else {
+                    item.getNode().run(action) {
+                        self.actionsStarted -= 1
+                    }
+                }
+            }
+        }
+        
+        gameModel!.itemGenerator!.pruneFirstRow()
+    }
+    
     private func colorizeBlocks(itemRow: [Item]) {
         bottomColor = topColor
         colorIndex += 1
@@ -690,7 +765,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // Initialize the game model (this is where the code for loading a saved game model will go)
     private func initGameModel() {
         // The controller also needs a copy of this game model object
-        gameModel = ContinuousGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!)
+        gameModel = ContinuousGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, numberOfRows: Int(ContinousGameScene.NUM_ROWS))
         
         // Initialize the ball count label
         ballCountLabel = SKLabelNode(fontNamed: fontName)
@@ -736,8 +811,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // Move the items down in the view
-        let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
-        gameModel!.animateItems(action: action)
+        animateItems()
     }
     
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
