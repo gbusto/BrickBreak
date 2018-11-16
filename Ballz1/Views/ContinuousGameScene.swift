@@ -661,10 +661,21 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 else if (i == 0) && (array.count == Int(ContinousGameScene.NUM_ROWS - 1)) {
                     // Move these items down on the screen
-                    let node = item.getNode()
-                    node.run(action) {
-                        self.actionsStarted -= 1
+                    if (item is BallItem) || (item is BombItem) {
+                        // If this is a ball item or bomb item, these items should just fade out and be removed from the scene and the item generator
+                        let fadeOut = SKAction.fadeOut(withDuration: 1)
+                        item.getNode().run(SKAction.group([action, fadeOut])) {
+                            self.removeChildren(in: [item.getNode()])
+                            self.actionsStarted -= 1
+                        }
                     }
+                    else {
+                        // Otherwise if this item is just a block then move it down; it will be removed later if the user decides to save themselves
+                        item.getNode().run(action) {
+                            self.actionsStarted -= 1
+                        }
+                    }
+                    
                     // Reset the physics body on this node so it doesn't push the ball through the ground
                     item.getNode().physicsBody = nil
                     
@@ -677,6 +688,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
+        
+        gameModel!.itemGenerator!.pruneFirstRow()
     }
     
     private func colorizeBlocks(itemRow: [Item]) {

@@ -442,6 +442,21 @@ class ItemGenerator {
         }
     }
     
+    // This function is responsible for pruning any items in the first row; once the item generator has numberOfRows - 1 rows in its array, any non-block items are removed from the game scene and will need to be removed from here as well
+    public func pruneFirstRow() {
+        if itemArray.count == (numberOfRows - 1) {
+            let row = itemArray[0]
+            let newRow = row.filter {
+                if ($0 is BallItem) || ($0 is BombItem) {
+                    print("Pruning a bomb/ball item")
+                    return false
+                }
+                return true
+            }
+            itemArray[0] = newRow
+        }
+    }
+    
     // Looks for items that should be removed; each Item keeps track of its state and whether or not it's time for it to be removed.
     // If item.removeItem() returns true, it's time to remove the item; it will be added to an array of items that have been removed and returned to the model
     public func removeItems() -> [Item] {

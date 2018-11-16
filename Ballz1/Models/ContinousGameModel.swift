@@ -337,12 +337,6 @@ class ContinuousGameModel {
             highScore = gameScore
         }
         
-        // Remove the first row in the array (essentially the last row of items)
-        if itemGenerator!.itemArray.count == (numberOfRows - 1) {
-            print("Removing first row of items from array; numberOfRows - 1")
-            let _ = itemGenerator!.itemArray.remove(at: 0)
-        }
-        
         // Go from TURN_OVER state to WAITING state
         incrementState()
     }
