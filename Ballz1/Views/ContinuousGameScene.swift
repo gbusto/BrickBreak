@@ -446,7 +446,17 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // Save the user from losing a game by clearing out the row that's about to end the game
     public func saveUser() {
-        let _ = gameModel!.saveUser()
+        let fadeOut = SKAction.fadeOut(withDuration: 1)
+        let items = gameModel!.saveUser()
+        for item in items {
+            if item is SpacerItem {
+                continue
+            }
+            
+            item.getNode().run(fadeOut) {
+                self.removeChildren(in: [item.getNode()])
+            }
+        }
         
         displayEncouragement(emoji: "🤞", text: "Last chance!")
         
@@ -649,13 +659,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                         self.actionsStarted -= 1
                     }
                 }
-                else if i == Int(ContinousGameScene.NUM_ROWS - 2) {
-                    // Fade these items out and remove them
-                    let fadeOut = SKAction.fadeOut(withDuration: 1)
+                else if (i == 0) && (array.count == Int(ContinousGameScene.NUM_ROWS - 1)) {
+                    // Move these items down on the screen
                     let node = item.getNode()
-                    node.run(fadeOut) {
+                    node.run(action) {
                         self.actionsStarted -= 1
-                        self.removeChildren(in: [node])
                     }
                     // Reset the physics body on this node so it doesn't push the ball through the ground
                     item.getNode().physicsBody = nil

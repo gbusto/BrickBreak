@@ -485,14 +485,6 @@ class ItemGenerator {
         return removedItems
     }
     
-    public func removeFirstRow() -> [Item] {
-        if itemArray.count > 1 {
-            return itemArray.remove(at: 0)
-        }
-        
-        return []
-    }
-    
     // MARK: Private functions
     // Actually generate the item to be placed in the array
     private func generateItem(itemType: Int) -> Item? {
