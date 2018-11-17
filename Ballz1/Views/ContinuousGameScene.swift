@@ -45,6 +45,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var leftWallNode: SKShapeNode?
     private var rightWallNode: SKShapeNode?
     
+    // This is essentially the minimum X value for the game play area; if it is zero, it looks like it goes off the left side of the screen; when set to 1 it looks better
     private var leftWallWidth = CGFloat(1)
     private var rightWallWidth = CGFloat(0)
     
@@ -162,8 +163,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             rowHeight = blockSize1
             // Update left/right wall width here
             let widthDifference = view.frame.width - (blockSize1 * 8)
-            // leftWallWidth is set to 1 by default, so add this number to it
-            leftWallWidth += widthDifference / 2
+            leftWallWidth  = widthDifference / 2
             rightWallWidth = widthDifference / 2
         }
         
@@ -724,17 +724,17 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 
                 var pos = CGPoint(x: 0, y: 0)
                 if item is HitBlockItem {
-                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.05) + leftWallWidth
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.025) + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                 }
                 else if item is StoneHitBlockItem {
-                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.05) + leftWallWidth
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.025) + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                 }
                 else if item is BombItem {
-                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.05) + leftWallWidth
+                    let posX = (CGFloat(i) * rowHeight!) + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
                 }
