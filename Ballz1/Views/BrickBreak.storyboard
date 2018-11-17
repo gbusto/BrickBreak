@@ -22,7 +22,7 @@
                                 <rect key="frame" x="20" y="44" width="374" height="618"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Brick Break" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.20000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="xH8-wW-N8G">
-                                        <rect key="frame" x="0.0" y="0.0" width="374" height="405.66666666666669"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="374" height="489"/>
                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="150"/>
                                         <color key="textColor" red="0.70008618342942719" green="0.93547368049621582" blue="0.76215052610718903" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
@@ -30,10 +30,10 @@
                                         <size key="shadowOffset" width="3" height="3"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="jcc-nl-bVB">
-                                        <rect key="frame" x="50" y="455.66666666666669" width="274" height="162.33333333333331"/>
+                                        <rect key="frame" x="50" y="539" width="274" height="79"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0b5-Nx-3KM">
-                                                <rect key="frame" x="0.0" y="51.666666666666686" width="274" height="59"/>
+                                                <rect key="frame" x="0.0" y="10" width="274" height="59"/>
                                                 <color key="backgroundColor" red="0.72499299699999997" green="0.36600169228488211" blue="0.45179014316306348" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" title="Play">
@@ -130,6 +130,7 @@
                     <connections>
                         <outlet property="gameScoreLabel" destination="PPQ-wv-sQa" id="w3M-ML-4dt"/>
                         <outlet property="highScoreLabel" destination="7yN-Nr-Ust" id="LD3-gu-exg"/>
+                        <outlet property="undoButton" destination="QBR-JF-eVE" id="cRo-kp-zQ2"/>
                         <segue destination="BdV-NT-BI6" kind="unwind" identifier="unwindToGameMenu" unwindAction="prepareForUnwindWithSegue:" id="NLm-Il-qcR"/>
                     </connections>
                 </viewController>
