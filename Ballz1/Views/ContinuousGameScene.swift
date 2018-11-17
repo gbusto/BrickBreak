@@ -19,6 +19,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // The game model
     public var gameModel: ContinuousGameModel?
     
+    public var gameController: ContinuousGameController?
+    
     // MARK: Private properties
     private var colorScheme: GameSceneColorScheme?
     
@@ -48,25 +50,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var ballProjection = BallProjection()
     
-    /*
-     List of colors:
-     #ffab91
-     #ffcc80
-     #ffe082
-     #fff59d
-     #e6ee9c
-     #c5e1a5
-     #a5d6a7
-     #80cbc4
-     #80deea
-     #81d4fa
-     #90caf9
-     #9fa8da
-     #b39ddb
-     #ce93d8
-     #f48fb1
-     #ef9a9a
-     */
     private var fontName: String = "HelveticaNeue"
     private var topColor: UIColor = .black
     private var bottomColor: UIColor = .white
@@ -237,7 +220,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             
             if gameModel!.isGameOver() {
                 gameModel!.saveState()
-                sendGameOverNotification()
+                handleGameOver()
             }
         }
     }
@@ -441,7 +424,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     public func endGame() {
         gameModel!.saveState()
-        sendGameOverNotification()
+        handleGameOver()
     }
     
     // Save the user from losing a game by clearing out the row that's about to end the game
@@ -921,8 +904,13 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func updateScore(highScore: Int, gameScore: Int) {
-        let notification = Notification(name: .init("updateScore"))
-        NotificationCenter.default.post(name: notification.name, object: nil, userInfo: ["score": gameScore, "highScore": highScore])
+        if let controller = gameController {
+            controller.updateScore(gameScore: gameScore, highScore: highScore)
+        }
+        else {
+            print("gameController variable not set; can't update score")
+            return
+        }
         
         /*
          'Cheers! 🍻' - 1000
@@ -1138,16 +1126,22 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    private func sendGameOverNotification() {
-        // Send a notification to this scene's view controller to unwind to the game menu
-        let notification = Notification(name: .init("gameOver"))
-        NotificationCenter.default.post(notification)
+    private func handleGameOver() {
+        if let controller = gameController {
+            controller.handleGameOver()
+        }
+        else {
+            print("gameController variable not set; can't handle game over tap")
+        }
     }
     
     private func showContinueButton() {
-        // Send a notification to this scene's view controller to display the continue alert
-        let notification = Notification(name: .init("continueGame"))
-        NotificationCenter.default.post(notification)
+        if let controller = gameController {
+            controller.showContinueButton()
+        }
+        else {
+            print("gameController variable not set; can't show continue button")
+        }
     }
     
     private func displayEncouragement(emoji: String, text: String) {
