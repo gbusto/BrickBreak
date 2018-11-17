@@ -15,6 +15,7 @@ class ContinuousGameController: UIViewController {
     
     private var scene: SKScene?
     
+    @IBOutlet var undoButton: UIButton!
     @IBOutlet weak var gameScoreLabel: UILabel!
     @IBOutlet weak var highScoreLabel: UILabel!
     
@@ -37,6 +38,8 @@ class ContinuousGameController: UIViewController {
             
             scene.scaleMode = .aspectFill
             scene.gameController = self
+            
+            undoButton.isEnabled = false
             
             view.presentScene(scene)
             
@@ -67,6 +70,18 @@ class ContinuousGameController: UIViewController {
             alert.addAction(noAction)
             
             present(alert, animated: false, completion: nil)
+        }
+    }
+    
+    public func enableUndoButton() {
+        if false == undoButton.isEnabled {
+            undoButton.isEnabled = true
+        }
+    }
+    
+    public func disableUndoButton() {
+        if undoButton.isEnabled {
+            undoButton.isEnabled = false
         }
     }
     

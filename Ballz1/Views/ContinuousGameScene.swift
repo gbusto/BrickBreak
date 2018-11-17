@@ -337,6 +337,15 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     stopFlashingRed()
                 }
             }
+            
+            // Depending on whether or not a new turn has been saved, enable the undo button
+            // We check for this in the WAITING state because this is the state we come back to after undoing a turn
+            if gameModel!.prevTurnSaved {
+                enableUndoButton()
+            }
+            else {
+                disableUndoButton()
+            }
         }
         
         // Actions to perform while in the middle of a turn
@@ -1141,6 +1150,24 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         else {
             print("gameController variable not set; can't show continue button")
+        }
+    }
+    
+    private func enableUndoButton() {
+        if let controller = gameController {
+            controller.enableUndoButton()
+        }
+        else {
+            print("gameController variable not set; can't enable undo button")
+        }
+    }
+    
+    private func disableUndoButton() {
+        if let controller = gameController {
+            controller.disableUndoButton()
+        }
+        else {
+            print("gameController variable not set; can't disable undo button")
         }
     }
     
