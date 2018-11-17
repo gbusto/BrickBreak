@@ -27,37 +27,24 @@ class ContinuousGameController: UIViewController {
         let backgroundNotification = Notification(name: .NSExtensionHostWillResignActive)
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingBackground), name: backgroundNotification.name, object: nil)
         
-        // Notification to continue the game after the user was about to lose
-        let continueNotification = Notification(name: .init("continueGame"))
-        NotificationCenter.default.addObserver(self, selector: #selector(showContinueButton), name: continueNotification.name, object: nil)
-        
         // Notification that the app will terminate
         let notification = Notification(name: .init("appTerminate"))
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
-        
-        // Notification to end the game and unwind to the game menu
-        let gameOverNotification = Notification(name: .init("gameOver"))
-        NotificationCenter.default.addObserver(self, selector: #selector(handleGameOver), name: gameOverNotification.name, object: nil)
-        
-        // Notification to update the score labels
-        let updateScoreNotification = Notification(name: .init("updateScore"))
-        NotificationCenter.default.addObserver(self, selector: #selector(updateScore(_:)), name: updateScoreNotification.name, object: nil)
         
         if let view = self.view as! SKView? {
             let scene = ContinousGameScene(size: view.bounds.size)
             self.scene = scene
             
             scene.scaleMode = .aspectFill
+            scene.gameController = self
             
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
-            
-            //view.showsPhysics = true
         }
     }
     
-    @objc func showContinueButton() {
+    public func showContinueButton() {
         if let view = self.view as! SKView? {
             view.isPaused = true
             
@@ -114,8 +101,8 @@ class ContinuousGameController: UIViewController {
         let contScene = scene as! ContinousGameScene
         contScene.saveState()
     }
-    
-    @objc func handleGameOver() {
+
+    public func handleGameOver() {
         self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
     }
     
@@ -128,21 +115,16 @@ class ContinuousGameController: UIViewController {
     
     // Prepare for a segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
+        // Necessary for loading views
     }
 
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
         // Necessary for unwinding views
     }
     
-    @objc func updateScore(_ notification: Notification) {
-        if let userInfo = notification.userInfo {
-            let score = userInfo["score"]!
-            let highScore = userInfo["highScore"]!
-            
-            self.gameScoreLabel.text = "\(score)"
-            self.highScoreLabel.text = "\(highScore)"
-        }
+    public func updateScore(gameScore: Int, highScore: Int) {
+        self.gameScoreLabel.text = "\(gameScore)"
+        self.highScoreLabel.text = "\(highScore)"
     }
     
     override var shouldAutorotate: Bool {
