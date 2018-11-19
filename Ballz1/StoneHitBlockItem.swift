@@ -122,21 +122,33 @@ class StoneHitBlockItem: Item {
         // When it changes back to normal, it should go back to its normal color
         isStone = !isStone
         
-        let action1 = SKAction.fadeAlpha(to: 0.3, duration: duration / 2)
-        let action2 = SKAction.fadeIn(withDuration: duration / 2)
-        
         if isStone {
             // Change back to normal
-            node!.run(action1) {
-                self.node!.texture = self.stoneTexture!
-                self.node!.run(action2)
+            if let _ = self.stoneTexture {
+                // Create a node to place "over" the original block
+                let stoneNode = SKSpriteNode(texture: self.stoneTexture!, size: size!)
+                stoneNode.name = "stoneNode"
+                stoneNode.alpha = 0
+                stoneNode.zPosition = node!.zPosition + 1
+                stoneNode.position = CGPoint(x: size!.width / 2, y: size!.height / 2)
+                node!.addChild(stoneNode)
+                
+                // Fade the node in "over" the block
+                let action = SKAction.fadeIn(withDuration: 1)
+                stoneNode.run(action)
+                print("Fading in")
             }
         }
         else {
             // Change to stone
-            node!.run(action1) {
-                self.node!.texture = self.originalTexture!
-                self.node!.run(action2)
+            if let stoneNode = node!.childNode(withName: "stoneNode") {
+                // Check if there's a stone node hovering over the block
+                let action = SKAction.fadeOut(withDuration: 1)
+                stoneNode.run(action) {
+                    // After fading out, remove the node from its parent
+                    stoneNode.removeFromParent()
+                }
+                print("Fading out")
             }
         }
     }
