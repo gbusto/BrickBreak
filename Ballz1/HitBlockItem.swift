@@ -23,6 +23,7 @@ class HitBlockItem: Item {
     
     private var fontName = "Verdana"
     private var labelNode : SKLabelNode?
+    private var shadowLabel: SKLabelNode?
     
     // Setting up properties for collisions
     private var categoryBitMask = UInt32(0b0001)
@@ -77,6 +78,7 @@ class HitBlockItem: Item {
         // Don't update the label to zero; it should just disappear
         if hitCount! > 0 {
             labelNode!.text = "\(hitCount!)"
+            shadowLabel!.text = labelNode!.text
         }
     }
     
@@ -104,17 +106,21 @@ class HitBlockItem: Item {
         node!.texture = newTexture
         labelNode!.fontColor = textColor
         labelNode!.fontName = fontName
+        shadowLabel!.fontName = fontName
     }
     
     public func setHitCount(count: Int) {
         hitCount = count
         initHitLabel()
+        initShadowLabel()
         node!.addChild(labelNode!)
+        node!.addChild(shadowLabel!)
     }
     
     public func updateHitCount(count: Int) {
         hitCount = count
         labelNode!.text = "\(hitCount!)"
+        shadowLabel!.text = labelNode!.text
     }
     
     // MARK: Private functions
@@ -125,5 +131,16 @@ class HitBlockItem: Item {
         labelNode!.fontSize = size!.width / 2.4
         labelNode!.fontName = fontName
         labelNode!.zPosition = 99
+    }
+    
+    private func initShadowLabel() {
+        let centerPoint = CGPoint(x: labelNode!.position.x + 1, y: labelNode!.position.y - 1)
+        shadowLabel = SKLabelNode(text: labelNode!.text)
+        shadowLabel!.position = centerPoint
+        shadowLabel!.fontSize = labelNode!.fontSize
+        shadowLabel!.fontName = fontName
+        shadowLabel!.fontColor = UIColor.gray
+        shadowLabel!.zPosition = labelNode!.zPosition - 1
+        shadowLabel!.alpha = 0.4
     }
 }

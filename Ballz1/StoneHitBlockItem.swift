@@ -22,6 +22,7 @@ class StoneHitBlockItem: Item {
     
     private var fontName = "Verdana"
     private var labelNode : SKLabelNode?
+    private var shadowLabel: SKLabelNode?
     
     // true if the item is currently stone
     private var isStone = true
@@ -86,6 +87,7 @@ class StoneHitBlockItem: Item {
             // Don't update the label to zero; it should just disappear
             if hitCount! > 0 {
                 labelNode!.text = "\(hitCount!)"
+                shadowLabel!.text = labelNode!.text
             }
         }
     }
@@ -115,6 +117,7 @@ class StoneHitBlockItem: Item {
         originalTexture = newTexture
         labelNode!.fontColor = textColor
         labelNode!.fontName = fontName
+        shadowLabel!.fontName = fontName
     }
     
     public func changeState(duration: TimeInterval) {
@@ -156,12 +159,15 @@ class StoneHitBlockItem: Item {
     public func setHitCount(count: Int) {
         hitCount = count
         initHitLabel()
+        initShadowLabel()
         node!.addChild(labelNode!)
+        node!.addChild(shadowLabel!)
     }
     
     public func updateHitCount(count: Int) {
         hitCount = count
         labelNode!.text = "\(hitCount!)"
+        shadowLabel!.text = labelNode!.text
     }
     
     // MARK: Private functions
@@ -172,5 +178,16 @@ class StoneHitBlockItem: Item {
         labelNode!.fontSize = size!.width / 2.4
         labelNode!.fontName = fontName
         labelNode!.zPosition = 99
+    }
+    
+    private func initShadowLabel() {
+        let centerPoint = CGPoint(x: labelNode!.position.x + 1, y: labelNode!.position.y - 1)
+        shadowLabel = SKLabelNode(text: labelNode!.text)
+        shadowLabel!.position = centerPoint
+        shadowLabel!.fontSize = labelNode!.fontSize
+        shadowLabel!.fontName = fontName
+        shadowLabel!.fontColor = UIColor.gray
+        shadowLabel!.zPosition = labelNode!.zPosition - 1
+        shadowLabel!.alpha = 0.4
     }
 }
