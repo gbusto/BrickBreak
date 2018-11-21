@@ -1,7 +1,8 @@
 {
   "images" : [
     {
-      "idiom" : "universal"
+      "idiom" : "universal",
+      "filename" : "bomb_simple_white.pdf"
     }
   ],
   "info" : {
