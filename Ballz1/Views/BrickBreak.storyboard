@@ -107,7 +107,8 @@
                                             <constraint firstAttribute="height" constant="50" id="nLv-Xt-olG"/>
                                             <constraint firstAttribute="width" constant="50" id="xB1-fN-oCU"/>
                                         </constraints>
-                                        <state key="normal" image="undo"/>
+                                        <inset key="imageEdgeInsets" minX="20" minY="10" maxX="0.0" maxY="10"/>
+                                        <state key="normal" image="undo_button"/>
                                         <connections>
                                             <action selector="undoTurn:" destination="SQo-9G-tie" eventType="touchUpInside" id="obj-cy-n4o"/>
                                         </connections>
@@ -146,6 +147,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="undo" width="2000" height="1990"/>
+        <image name="undo_button" width="300" height="300"/>
     </resources>
 </document>
