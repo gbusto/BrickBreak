@@ -44,6 +44,7 @@ class ContinuousGameController: UIViewController {
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
+            view.showsNodeCount = true
         }
     }
     
