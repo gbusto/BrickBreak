@@ -59,9 +59,30 @@ class BallItem: Item {
         node = ball
     }
     
+    public func startAnimation() {
+        let circleNode = SKShapeNode(circleOfRadius: radius! * 0.5)
+        circleNode.lineWidth = CGFloat(1)
+        circleNode.strokeColor = .white
+        circleNode.fillColor = .clear
+        circleNode.position = CGPoint(x: 0, y: 0)
+        circleNode.zPosition = node!.zPosition - 1
+        
+        let action1 = SKAction.scale(to: radius!, duration: 2)
+        let action2 = SKAction.fadeOut(withDuration: 2)
+        let action = SKAction.group([action1, action2])
+        circleNode.run(action) {
+            circleNode.removeFromParent()
+            self.startAnimation()
+        }
+        
+        node!.addChild(circleNode)
+    }
+    
     public func loadItem(position: CGPoint) -> Bool {
         origin = position
         node!.position = position
+        
+        startAnimation()
         
         // May need to change this for the BallManager
         node!.physicsBody!.contactTestBitMask = categoryBitMask
@@ -73,6 +94,9 @@ class BallItem: Item {
         let lightImpactFeedback = UIImpactFeedbackGenerator(style: .light)
         lightImpactFeedback.prepare()
         lightImpactFeedback.impactOccurred()
+        
+        node!.removeAllActions()
+        node!.removeAllChildren()
         
         // This will be used by the ItemGenerator, not the BallManager
         // This will be called when a ball that was shot hits a ball that is in an item row
@@ -118,6 +142,9 @@ class BallItem: Item {
         node!.physicsBody!.contactTestBitMask = contactTestBitMask
         node!.fillColor = .white
         node!.physicsBody!.affectedByGravity = false
+        
+        node!.removeAllActions()
+        node!.removeAllChildren()
     }
     
     public func fire(point: CGPoint) {
