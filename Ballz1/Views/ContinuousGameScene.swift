@@ -977,7 +977,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private func flashSpeedupImage() {
         let pos = CGPoint(x: self.view!.frame.midX, y: self.view!.frame.midY)
         let size = CGSize(width: self.view!.frame.width * 0.8, height: self.view!.frame.width * 0.8)
-        let imageNode = SKSpriteNode(imageNamed: "fast_forward.png")
+        let imageNode = SKSpriteNode(imageNamed: "fast_forward_icon")
         imageNode.alpha = 0
         imageNode.zPosition = 101
         imageNode.position = pos
@@ -985,7 +985,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         self.addChild(imageNode)
         
-        let action1 = SKAction.fadeAlpha(to: 0.5, duration: 0.2)
+        let action1 = SKAction.fadeAlpha(to: 0.3, duration: 0.2)
         let action2 = SKAction.fadeAlpha(to: 0, duration: 0.2)
         
         imageNode.run(SKAction.sequence([action1, action2, action1, action2, action1, action2])) {
