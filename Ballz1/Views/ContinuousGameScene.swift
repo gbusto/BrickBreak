@@ -409,7 +409,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 else if item is BallItem {
                     // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
                     //let newPoint = CGPoint(x: item.getNode().position.x, y: groundNode!.size.height + ballRadius!)
-                    let vector = CGVector(dx: 0, dy: 4)
+                    let vector = CGVector(dx: 0, dy: ballRadius! * 0.5)
                     let ball = item.getNode()
                     ball.physicsBody!.affectedByGravity = true
                     ball.run(SKAction.applyImpulse(vector, duration: 0.05))
