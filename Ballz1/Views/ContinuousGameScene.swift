@@ -156,6 +156,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             blockSize = CGSize(width: blockSize2 * 0.95, height: blockSize2 * 0.95)
             rowHeight = blockSize2
             // Update margin for ceiling/ground here
+            // (margin * 2) because there's the ceiling margin and ground margin
             let heightDifference = (view.frame.height - (margin! * 2)) - (blockSize2 * ContinousGameScene.NUM_ROWS)
             margin! += (heightDifference / 2)
         }
@@ -216,7 +217,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 if inGame(point) && (false == self.isPaused) {
                     let originPoint = gameModel!.ballManager!.getOriginPoint()
                     ballProjection.showArrow(scene: self)
-                    ballProjection.updateArrow(startPoint: originPoint, touchPoint: point, ceilingHeight: ceilingNode!.position.y)
+                    let _ = ballProjection.updateArrow(startPoint: originPoint,
+                                                       touchPoint: point,
+                                                       ceilingHeight: ceilingNode!.position.y,
+                                                       groundHeight: groundNode!.size.height)
                 }
             }
             
@@ -239,7 +243,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             else if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Update the arrow location
                 let originPoint = gameModel!.ballManager!.getOriginPoint()
-                ballProjection.updateArrow(startPoint: originPoint, touchPoint: point, ceilingHeight: ceilingNode!.position.y)
+                let _ = ballProjection.updateArrow(startPoint: originPoint,
+                                                   touchPoint: point,
+                                                   ceilingHeight: ceilingNode!.position.y,
+                                                   groundHeight: groundNode!.size.height)
             }
         }
     }
@@ -251,7 +258,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             
             if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Set the direction for the balls to shoot
-                gameModel!.prepareTurn(point: point)
+                let originPoint = gameModel!.ballManager!.getOriginPoint()
+                let firePoint = ballProjection.updateArrow(startPoint: originPoint,
+                                                           touchPoint: point,
+                                                           ceilingHeight: ceilingNode!.position.y,
+                                                           groundHeight: groundNode!.size.height)
+                gameModel!.prepareTurn(point: firePoint)
                 print("Prepped game model to start a turn")
             }
         }

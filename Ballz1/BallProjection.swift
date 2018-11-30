@@ -31,10 +31,11 @@ class BallProjection {
     }
     
     // Updates where the ball path projection is pointing
-    public func updateArrow(startPoint: CGPoint, touchPoint: CGPoint, ceilingHeight: CGFloat) {
+    public func updateArrow(startPoint: CGPoint, touchPoint: CGPoint, ceilingHeight: CGFloat, groundHeight: CGFloat) -> CGPoint {
         let maxOffset = CGFloat(200)
+        var newTouchPoint = touchPoint
         
-        let slope = calcSlope(originPoint: startPoint, touchPoint: touchPoint)
+        var slope = calcSlope(originPoint: startPoint, touchPoint: touchPoint)
         let intercept = calcYIntercept(point: touchPoint, slope: slope)
         
         var newX = CGFloat(0)
@@ -57,6 +58,11 @@ class BallProjection {
         if newY > ceilingHeight {
             newY = ceilingHeight
         }
+        else if newY < groundHeight + 50 {
+            newY = groundHeight + 50
+            newTouchPoint = CGPoint(x: newX, y: newY)
+            slope = calcSlope(originPoint: startPoint, touchPoint: newTouchPoint)
+        }
         
         let endPoint = CGPoint(x: newX, y: newY)
         
@@ -70,6 +76,8 @@ class BallProjection {
         arrowNode.path = dashedPath
         arrowNode.strokeColor = color
         arrowNode.lineWidth = 4
+        
+        return newTouchPoint
     }
     
     // Shows the ball path projection
