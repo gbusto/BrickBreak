@@ -127,11 +127,60 @@
                     <connections>
                         <outlet property="gameScoreLabel" destination="PPQ-wv-sQa" id="w3M-ML-4dt"/>
                         <outlet property="highScoreLabel" destination="7yN-Nr-Ust" id="LD3-gu-exg"/>
+                        <outlet property="pauseMenuView" destination="fb1-Dl-c5Y" id="1hQ-t0-RBb"/>
                         <outlet property="undoButton" destination="QBR-JF-eVE" id="cRo-kp-zQ2"/>
                         <segue destination="BdV-NT-BI6" kind="unwind" identifier="unwindToGameMenu" unwindAction="prepareForUnwindWithSegue:" id="NLm-Il-qcR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bKq-uJ-cqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <view hidden="YES" contentMode="scaleToFill" id="fb1-Dl-c5Y">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="D47-sN-cOu">
+                            <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paused" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1ah-SP-HdK">
+                                    <rect key="frame" x="0.0" y="0.0" width="240" height="96"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="40"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Double tap to unpause" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OHu-OU-cYQ">
+                                    <rect key="frame" x="0.0" y="96" width="240" height="48"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="20"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="57G-UR-fuN">
+                                    <rect key="frame" x="0.0" y="144" width="240" height="35.666666666666657"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cTn-UL-M1d">
+                                    <rect key="frame" x="0.0" y="179.66666666666666" width="240" height="70.333333333333343"/>
+                                    <color key="backgroundColor" red="0.72499299699999997" green="0.36600169230000001" blue="0.45179014319999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="20"/>
+                                    <state key="normal" title="Game Menu">
+                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="returnToGameMenu:" destination="SQo-9G-tie" eventType="touchUpInside" id="tNz-gG-we2"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="D47-sN-cOu" firstAttribute="top" secondItem="Yeb-nJ-hu9" secondAttribute="top" id="AZg-du-Edy"/>
+                        <constraint firstItem="Yeb-nJ-hu9" firstAttribute="bottom" secondItem="D47-sN-cOu" secondAttribute="bottom" id="Ank-WE-gtr"/>
+                        <constraint firstItem="D47-sN-cOu" firstAttribute="leading" secondItem="Yeb-nJ-hu9" secondAttribute="leading" id="iu2-rn-EEB"/>
+                        <constraint firstItem="Yeb-nJ-hu9" firstAttribute="trailing" secondItem="D47-sN-cOu" secondAttribute="trailing" id="wSf-iS-nwi"/>
+                    </constraints>
+                    <viewLayoutGuide key="safeArea" id="Yeb-nJ-hu9"/>
+                </view>
                 <exit id="BdV-NT-BI6" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="bNb-UM-NRp">
                     <connections>
