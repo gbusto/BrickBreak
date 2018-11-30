@@ -303,8 +303,8 @@ class ItemGenerator {
             // Initialize the allowed item types with only one type for now
             addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 95)
             addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 5)
-            addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 88)
-            addNonBlockItemType(type: ItemGenerator.BALL, percentage: 10)
+            addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 90)
+            addNonBlockItemType(type: ItemGenerator.BALL, percentage: 8)
             addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
             
             igState = ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
@@ -511,14 +511,14 @@ class ItemGenerator {
             let item = HitBlockItem()
             item.initItem(num: numItemsGenerated, size: blockSize!)
             let block = item as HitBlockItem
-            let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2]
+            let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2, numberOfBalls * 2]
             block.setHitCount(count: choices.randomElement()!)
             return item
         case ItemGenerator.STONE_BLOCK:
             let item = StoneHitBlockItem()
             item.initItem(num: numItemsGenerated, size: blockSize!)
             let block = item as StoneHitBlockItem
-            let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2]
+            let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2, numberOfBalls * 2]
             block.setHitCount(count: choices.randomElement()!)
             return item
         case ItemGenerator.BOMB:

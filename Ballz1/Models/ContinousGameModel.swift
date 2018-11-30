@@ -367,13 +367,13 @@ class ContinuousGameModel {
     public func generateRow() -> [Item] {
         let count = itemGenerator!.getBlockCount()
         // If the user is doing well and there are no items on the screen, generate a harder pattern
-        if count <= 4 {
+        if count <= 6 {
             itemGenerator!.easyPatternPercent = 10
             itemGenerator!.intermediatePatternPercent = 30
             itemGenerator!.hardPatternPercent = 60
         }
         // If they have <= 6 items on the screen, increase the difficult of getting a harder pattern
-        else if (count > 4) && (count <= 8) {
+        else if (count > 6) && (count <= 12) {
             itemGenerator!.easyPatternPercent = 20
             itemGenerator!.intermediatePatternPercent = 40
             itemGenerator!.hardPatternPercent = 40
