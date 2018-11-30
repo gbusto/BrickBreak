@@ -23,12 +23,9 @@ class GameMenuController: UIViewController {
             let scene = GameMenuScene(size: view.bounds.size)
             scene.scaleMode = .aspectFill
             
-            view.presentScene(scene)
+            playButton.imageView?.contentMode = .scaleAspectFit
             
-            titleLabel.textColor = scene.theme!.titleColor
-            //playButton.backgroundColor = scene.theme!.buttonColor
-            playButton.setTitleColor(scene.theme!.buttonTextColor, for: .normal)
-            playButton.layer.cornerRadius = 20
+            view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
         }
