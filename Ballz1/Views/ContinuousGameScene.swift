@@ -128,6 +128,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private static var NUM_ROWS = CGFloat(12)
     private static var NUM_COLUMNS = CGFloat(8)
     
+    private var activeViews: [UIView] = []
+    
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -529,66 +531,23 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         blurView!.frame = view!.frame
         view!.addSubview(blurView!)
         
-        let fontSize = CGFloat(40)
-        let point = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
-        let size = CGSize(width: view!.frame.width * 0.7, height: view!.frame.height * 0.3)
-        let rect = CGRect(origin: point, size: size)
-        pausedLabel = UILabel(frame: rect)
-        pausedLabel!.center = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
-        pausedLabel!.textAlignment = .center
-        pausedLabel!.font = UIFont(name: fontName, size: fontSize)
-        pausedLabel!.text = "Paused"
-        pausedLabel!.textColor = .white
-        pausedLabel!.adjustsFontSizeToFitWidth = true
-        view!.addSubview(pausedLabel!)
+        let pauseView = gameController!.getPauseMenu()
+        pauseView.isHidden = false
+        view!.addSubview(pauseView)
         
-        let point2 = CGPoint(x: view!.frame.midX, y: view!.frame.midY + 40)
-        let size2 = CGSize(width: view!.frame.width * 0.7, height: view!.frame.height * 0.3)
-        let rect2 = CGRect(origin: point2, size: size2)
-        pausedLabel2 = UILabel(frame: rect2)
-        pausedLabel2!.center = CGPoint(x: view!.frame.midX, y: view!.frame.midY + 40)
-        pausedLabel2!.textAlignment = .center
-        pausedLabel2!.font = UIFont(name: fontName, size: fontSize / 2)
-        pausedLabel2!.text = "Double tap to unpause"
-        pausedLabel2!.textColor = .white
-        pausedLabel2!.adjustsFontSizeToFitWidth = true
-        view!.addSubview(pausedLabel2!)
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(unpause))
-        tapGesture.numberOfTapsRequired = 2
-        tapGesture.name = "tapGesture"
-        
-        if let _ = view!.gestureRecognizers {
-            // If paused in the middle of the turn, we want to append this recognizer to the current list of recognizers
-            view!.gestureRecognizers!.append(tapGesture)
-        }
-        else {
-            // If we're not in the middle of a turn, we can just set the recognizer array to this single element
-            view!.gestureRecognizers = [tapGesture]
-        }
+        activeViews = [blurView!, pauseView]
     }
     
-    @objc private func unpause() {
+    public func resumeGame() {
         self.isPaused = false
         self.view!.isPaused = false
         
-        blurView!.removeFromSuperview()
-        pausedLabel!.removeFromSuperview()
-        pausedLabel2!.removeFromSuperview()
-        
-        // In the event that we're still in the middle of a turn where we want to recognizer fast forward and ball return gestures, we only want to remove the tap gesture recognizer
-        if let recognizers = view!.gestureRecognizers {
-            let newArray = recognizers.filter {
-                if let name = $0.name {
-                    if name == "tapGesture" {
-                        return false
-                    }
-                }
-                return true
-            }
-            
-            view!.gestureRecognizers = newArray
+        let views = activeViews.filter {
+            $0.removeFromSuperview()
+            return false
         }
+        
+        activeViews = views
     }
     
     // MARK: Public functions

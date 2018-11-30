@@ -127,11 +127,53 @@
                     <connections>
                         <outlet property="gameScoreLabel" destination="PPQ-wv-sQa" id="w3M-ML-4dt"/>
                         <outlet property="highScoreLabel" destination="7yN-Nr-Ust" id="LD3-gu-exg"/>
+                        <outlet property="pauseMenuView" destination="fb1-Dl-c5Y" id="1hQ-t0-RBb"/>
+                        <outlet property="resumeButton" destination="e51-Wl-Jyp" id="82M-z9-qCt"/>
+                        <outlet property="returnGameMenuButton" destination="fDJ-ex-okL" id="nRv-Dt-yEk"/>
                         <outlet property="undoButton" destination="QBR-JF-eVE" id="cRo-kp-zQ2"/>
                         <segue destination="BdV-NT-BI6" kind="unwind" identifier="unwindToGameMenu" unwindAction="prepareForUnwindWithSegue:" id="NLm-Il-qcR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bKq-uJ-cqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <view hidden="YES" contentMode="scaleToFill" id="fb1-Dl-c5Y">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleAspectFill" axis="vertical" distribution="fillEqually" spacing="1" translatesAutoresizingMaskIntoConstraints="NO" id="D47-sN-cOu">
+                            <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paused" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1ah-SP-HdK">
+                                    <rect key="frame" x="0.0" y="0.0" width="240" height="82.666666666666671"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="60"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e51-Wl-Jyp">
+                                    <rect key="frame" x="0.0" y="83.666666666666657" width="240" height="82.666666666666657"/>
+                                    <state key="normal" image="resume_button_curved"/>
+                                    <connections>
+                                        <action selector="resumeGame:" destination="SQo-9G-tie" eventType="touchUpInside" id="vCj-fi-bV7"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fDJ-ex-okL">
+                                    <rect key="frame" x="0.0" y="167.33333333333334" width="240" height="82.666666666666657"/>
+                                    <state key="normal" image="game_menu_button_curved"/>
+                                    <connections>
+                                        <action selector="returnToGameMenu:" destination="SQo-9G-tie" eventType="touchUpInside" id="xUg-2O-vR3"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="D47-sN-cOu" firstAttribute="top" secondItem="Yeb-nJ-hu9" secondAttribute="top" id="AZg-du-Edy"/>
+                        <constraint firstItem="Yeb-nJ-hu9" firstAttribute="bottom" secondItem="D47-sN-cOu" secondAttribute="bottom" id="Ank-WE-gtr"/>
+                        <constraint firstItem="D47-sN-cOu" firstAttribute="leading" secondItem="Yeb-nJ-hu9" secondAttribute="leading" id="iu2-rn-EEB"/>
+                        <constraint firstItem="Yeb-nJ-hu9" firstAttribute="trailing" secondItem="D47-sN-cOu" secondAttribute="trailing" id="wSf-iS-nwi"/>
+                    </constraints>
+                    <viewLayoutGuide key="safeArea" id="Yeb-nJ-hu9"/>
+                </view>
                 <exit id="BdV-NT-BI6" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="bNb-UM-NRp">
                     <connections>
@@ -143,7 +185,9 @@
         </scene>
     </scenes>
     <resources>
+        <image name="game_menu_button_curved" width="480" height="120"/>
         <image name="play_button_normal" width="848" height="150"/>
+        <image name="resume_button_curved" width="480" height="120"/>
         <image name="undo_button" width="300" height="300"/>
     </resources>
 </document>

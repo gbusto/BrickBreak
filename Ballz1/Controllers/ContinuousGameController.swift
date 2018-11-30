@@ -18,6 +18,9 @@ class ContinuousGameController: UIViewController {
     @IBOutlet var undoButton: UIButton!
     @IBOutlet weak var gameScoreLabel: UILabel!
     @IBOutlet weak var highScoreLabel: UILabel!
+    @IBOutlet var pauseMenuView: UIView!
+    @IBOutlet var resumeButton: UIButton!
+    @IBOutlet var returnGameMenuButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,10 +44,18 @@ class ContinuousGameController: UIViewController {
             
             undoButton.isEnabled = false
             
+            pauseMenuView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
+            resumeButton.imageView?.contentMode = .scaleAspectFit
+            returnGameMenuButton.imageView?.contentMode = .scaleAspectFit
+            
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
         }
+    }
+    
+    public func getPauseMenu() -> UIView {
+        return pauseMenuView
     }
     
     public func showContinueButton() {
@@ -83,6 +94,18 @@ class ContinuousGameController: UIViewController {
         if undoButton.isEnabled {
             undoButton.isEnabled = false
         }
+    }
+    
+    @IBAction func returnToGameMenu(_ sender: Any) {
+        let contScene = scene as! ContinousGameScene
+        contScene.saveState()
+        
+        handleGameOver()
+    }
+    
+    @IBAction func resumeGame(_ sender: Any) {
+        let contScene = scene as! ContinousGameScene
+        contScene.resumeGame()
     }
     
     @IBAction func statusBarTapped(_ sender: Any) {
