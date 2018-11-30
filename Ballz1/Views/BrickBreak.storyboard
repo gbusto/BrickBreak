@@ -128,6 +128,8 @@
                         <outlet property="gameScoreLabel" destination="PPQ-wv-sQa" id="w3M-ML-4dt"/>
                         <outlet property="highScoreLabel" destination="7yN-Nr-Ust" id="LD3-gu-exg"/>
                         <outlet property="pauseMenuView" destination="fb1-Dl-c5Y" id="1hQ-t0-RBb"/>
+                        <outlet property="resumeButton" destination="e51-Wl-Jyp" id="82M-z9-qCt"/>
+                        <outlet property="returnGameMenuButton" destination="fDJ-ex-okL" id="nRv-Dt-yEk"/>
                         <outlet property="undoButton" destination="QBR-JF-eVE" id="cRo-kp-zQ2"/>
                         <segue destination="BdV-NT-BI6" kind="unwind" identifier="unwindToGameMenu" unwindAction="prepareForUnwindWithSegue:" id="NLm-Il-qcR"/>
                     </connections>
@@ -137,36 +139,27 @@
                     <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="D47-sN-cOu">
+                        <stackView opaque="NO" contentMode="scaleAspectFill" axis="vertical" distribution="fillEqually" spacing="1" translatesAutoresizingMaskIntoConstraints="NO" id="D47-sN-cOu">
                             <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paused" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1ah-SP-HdK">
-                                    <rect key="frame" x="0.0" y="0.0" width="240" height="96"/>
-                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="40"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="240" height="82.666666666666671"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="60"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Double tap to unpause" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OHu-OU-cYQ">
-                                    <rect key="frame" x="0.0" y="96" width="240" height="48"/>
-                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="20"/>
-                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="57G-UR-fuN">
-                                    <rect key="frame" x="0.0" y="144" width="240" height="35.666666666666657"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                    <color key="textColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cTn-UL-M1d">
-                                    <rect key="frame" x="0.0" y="179.66666666666666" width="240" height="70.333333333333343"/>
-                                    <color key="backgroundColor" red="0.72499299699999997" green="0.36600169230000001" blue="0.45179014319999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="20"/>
-                                    <state key="normal" title="Game Menu">
-                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </state>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e51-Wl-Jyp">
+                                    <rect key="frame" x="0.0" y="83.666666666666657" width="240" height="82.666666666666657"/>
+                                    <state key="normal" image="resume_button_curved"/>
                                     <connections>
-                                        <action selector="returnToGameMenu:" destination="SQo-9G-tie" eventType="touchUpInside" id="tNz-gG-we2"/>
+                                        <action selector="resumeGame:" destination="SQo-9G-tie" eventType="touchUpInside" id="vCj-fi-bV7"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fDJ-ex-okL">
+                                    <rect key="frame" x="0.0" y="167.33333333333334" width="240" height="82.666666666666657"/>
+                                    <state key="normal" image="game_menu_button_curved"/>
+                                    <connections>
+                                        <action selector="returnToGameMenu:" destination="SQo-9G-tie" eventType="touchUpInside" id="xUg-2O-vR3"/>
                                     </connections>
                                 </button>
                             </subviews>
@@ -192,7 +185,9 @@
         </scene>
     </scenes>
     <resources>
+        <image name="game_menu_button_curved" width="480" height="120"/>
         <image name="play_button_normal" width="848" height="150"/>
+        <image name="resume_button_curved" width="480" height="120"/>
         <image name="undo_button" width="300" height="300"/>
     </resources>
 </document>
