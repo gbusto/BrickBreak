@@ -25,7 +25,7 @@ class StoneHitBlockItem: Item {
     private var shadowLabel: SKLabelNode?
     
     // true if the item is currently stone
-    private var isStone = true
+    private var isStone = false
     
     private var originalTexture: SKTexture?
     private var stoneTexture: SKTexture?
