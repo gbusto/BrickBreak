@@ -837,6 +837,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         leftWallNode!.physicsBody = leftWallEdge
         leftWallNode!.position = CGPoint(x: 0, y: margin)
         
+        let leftBlock = SKSpriteNode(color: colorScheme!.backgroundColor, size: leftWallSize)
+        leftBlock.zPosition = 101
+        leftBlock.position = CGPoint(x: 0, y: 0)
+        leftBlock.anchorPoint = CGPoint(x: 0, y: 0)
+        leftWallNode!.addChild(leftBlock)
+        
         let rightWallSize = CGSize(width: rightWallWidth, height: view.frame.height - (margin * 2))
         let rwStartPoint = CGPoint(x: 0, y: 0)
         let rwEndPoint = CGPoint(x: 0, y: rightWallSize.height)
@@ -853,6 +859,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         rightWallNode!.lineWidth = 1
         rightWallNode!.physicsBody = rightWallEdge
         rightWallNode!.position = CGPoint(x: view.frame.width - rightWallWidth, y: margin)
+        
+        let rightBlock = SKSpriteNode(color: colorScheme!.backgroundColor, size: rightWallSize)
+        rightBlock.zPosition = 101
+        rightBlock.position = CGPoint(x: 0, y: 0)
+        rightBlock.anchorPoint = CGPoint(x: 0, y: 0)
+        rightWallNode!.addChild(rightBlock)
         
         self.addChild(leftWallNode!)
         self.addChild(rightWallNode!)
