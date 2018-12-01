@@ -99,8 +99,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var arrowIsShowing = false
     
     private var blurView: UIView?
-    private var pausedLabel: UILabel?
-    private var pausedLabel2: UILabel?
     
     private var actionsStarted = Int(0)
     
@@ -547,7 +545,33 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         pauseView.isHidden = false
         view!.addSubview(pauseView)
         
-        activeViews = [blurView!, pauseView]
+        let rect1 = CGRect(x: leftWallWidth, y: margin! / 2, width: 100, height: 50)
+        let highScoreHelper = UILabel(frame: rect1)
+        highScoreHelper.text = "Best"
+        highScoreHelper.textAlignment = .left
+        highScoreHelper.textColor = .white
+        highScoreHelper.font = UIFont(name: "Avenir-Medium", size: 20)
+        view!.addSubview(highScoreHelper)
+        
+        let rect2 = CGRect(x: view!.frame.midX - 50, y: margin! / 2, width: 100, height: 50)
+        let gameScoreHelper = UILabel(frame: rect2)
+        //gameScoreHelper.center = CGPoint(x: rect2.minX, y: rect2.minY)
+        gameScoreHelper.text = "Score"
+        gameScoreHelper.textAlignment = .center
+        gameScoreHelper.baselineAdjustment = .alignCenters
+        gameScoreHelper.textColor = .white
+        gameScoreHelper.font = UIFont(name: "Avenir-Medium", size: 20)
+        view!.addSubview(gameScoreHelper)
+        
+        let rect3 = CGRect(x: view!.frame.width - rightWallWidth - 100, y: margin! / 2, width: 100, height: 50)
+        let undoHelper = UILabel(frame: rect3)
+        undoHelper.text = "Undo"
+        undoHelper.textAlignment = .right
+        undoHelper.textColor = .white
+        undoHelper.font = UIFont(name: "Avenir-Medium", size: 20)
+        view!.addSubview(undoHelper)
+        
+        activeViews = [blurView!, pauseView, highScoreHelper, gameScoreHelper, undoHelper]
     }
     
     public func resumeGame() {
