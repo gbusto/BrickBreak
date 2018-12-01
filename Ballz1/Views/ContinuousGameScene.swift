@@ -98,7 +98,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var arrowIsShowing = false
     
-    private var blurView: UIView?
+    private var tutorialIsShowing = false
+    private var tutorialNodes: [SKNode] = []
     
     private var actionsStarted = Int(0)
     
@@ -185,13 +186,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         downSwipeGesture!.direction = .down
         downSwipeGesture!.numberOfTouchesRequired = 1
         
-        /*
-        let backgroundNode = SKSpriteNode(color: .white, size: view.frame.size)
-        backgroundNode.position = CGPoint(x: 0, y: 0)
-        backgroundNode.anchorPoint = CGPoint(x: 0, y: 0)
-        backgroundNode.texture = colorScheme!.backgroundTexture
-        self.addChild(backgroundNode)
-        */
+        showGameplayTutorial()
+        
         self.backgroundColor = colorScheme!.backgroundColor
         
         physicsWorld.contactDelegate = self
@@ -262,7 +258,15 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                                                            ceilingHeight: ceilingNode!.position.y,
                                                            groundHeight: groundNode!.size.height)
                 gameModel!.prepareTurn(point: firePoint)
-                print("Prepped game model to start a turn")
+                
+                if tutorialIsShowing {
+                    tutorialIsShowing = false
+                    let nodeList = tutorialNodes.filter {
+                        $0.removeFromParent()
+                        return false
+                    }
+                    tutorialNodes = nodeList
+                }
             }
         }
         
@@ -537,9 +541,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     public func showPauseScreen() {
         let blur = UIBlurEffect(style: .dark)
-        blurView = UIVisualEffectView(effect: blur)
-        blurView!.frame = view!.frame
-        view!.addSubview(blurView!)
+        let blurView = UIVisualEffectView(effect: blur)
+        blurView.frame = view!.frame
+        view!.addSubview(blurView)
         
         let pauseView = gameController!.getPauseMenu()
         pauseView.isHidden = false
@@ -555,7 +559,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         let rect2 = CGRect(x: view!.frame.midX - 50, y: margin! / 2, width: 100, height: 50)
         let gameScoreHelper = UILabel(frame: rect2)
-        //gameScoreHelper.center = CGPoint(x: rect2.minX, y: rect2.minY)
         gameScoreHelper.text = "Score"
         gameScoreHelper.textAlignment = .center
         gameScoreHelper.baselineAdjustment = .alignCenters
@@ -571,7 +574,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         undoHelper.font = UIFont(name: "Avenir-Medium", size: 20)
         view!.addSubview(undoHelper)
         
-        activeViews = [blurView!, pauseView, highScoreHelper, gameScoreHelper, undoHelper]
+        activeViews = [blurView, pauseView, highScoreHelper, gameScoreHelper, undoHelper]
     }
     
     public func resumeGame() {
@@ -1000,13 +1003,47 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // Shows the user how to play the game
+    private func showGameplayTutorial() {
+        let offsetFromCenter = view!.frame.width * 0.2
+        let centerPoint = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
+        let startPoint = CGPoint(x: view!.frame.midX - offsetFromCenter, y: view!.frame.midY)
+        let endPoint = CGPoint(x: view!.frame.midX + offsetFromCenter, y: view!.frame.midY)
+        
+        let pointerNode = SKSpriteNode(imageNamed: "hand_pointing")
+        pointerNode.size = CGSize(width: 40, height: 50)
+        pointerNode.position = startPoint
+
+        let labelNode = SKLabelNode(fontNamed: colorScheme!.fontName)
+        labelNode.fontColor = .white
+        labelNode.fontSize = 20
+        labelNode.position = CGPoint(x: centerPoint.x, y: centerPoint.y - 50)
+        labelNode.text = "Tap, Move, Release"
+        labelNode.numberOfLines = 2
+        labelNode.horizontalAlignmentMode = .center
+        labelNode.verticalAlignmentMode = .center
+        
+        let action1 = SKAction.move(to: endPoint, duration: 1)
+        let action2 = SKAction.move(to: startPoint, duration: 1)
+        let moveAction = SKAction.repeatForever(SKAction.sequence([action1, action2]))
+        pointerNode.run(moveAction)
+
+        self.addChild(pointerNode)
+        self.addChild(labelNode)
+        
+        tutorialNodes.append(pointerNode)
+        tutorialNodes.append(labelNode)
+        
+        tutorialIsShowing = true
+    }
+    
     // Shows the user how to fast forward the simulation (not currently being used)
     private func showFFTutorial() {
         let size = CGSize(width: view!.frame.width * 0.15, height: view!.frame.width * 0.15)
         let startPoint = CGPoint(x: view!.frame.width * 0.35, y: view!.frame.midY)
         let endPoint = CGPoint(x: view!.frame.width * 0.65, y: view!.frame.midY)
         
-        let ffNode = SKSpriteNode(imageNamed: "touch_image.png")
+        let ffNode = SKSpriteNode(imageNamed: "hand_pointing")
         ffNode.position = startPoint
         ffNode.size = size
         ffNode.alpha = 1
