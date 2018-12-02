@@ -98,9 +98,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var arrowIsShowing = false
     
-    private var tutorialIsShowing = false
-    private var tutorialNodes: [SKNode] = []
-    
     private var actionsStarted = Int(0)
     
     // Colors for the scene
@@ -127,15 +124,21 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private static var NUM_ROWS = CGFloat(12)
     private static var NUM_COLUMNS = CGFloat(8)
     
+    private var startTime = TimeInterval(0)
+    
     private var activeViews: [UIView] = []
     
     enum Tutorials {
+        case noTutorial
         case gameplayTutorial
         case topBarTutorial
         case fastForwardTutorial
         case ballReturnTutorial
     }
     
+    private var tutorialIsShowing = false
+    private var tutorialNodes: [SKNode] = []
+    private var tutorialType: Tutorials?
     private var tutorialsList: [Tutorials] = [.gameplayTutorial,
                                               .topBarTutorial,
                                               .fastForwardTutorial,
@@ -198,14 +201,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         downSwipeGesture!.direction = .down
         downSwipeGesture!.numberOfTouchesRequired = 1
         
-        let remainingTutorials = tutorialsList.filter {
-            if $0 == .gameplayTutorial {
-                showGameplayTutorial()
-                return false
-            }
-            return true
-        }
-        tutorialsList = remainingTutorials
+        showTutorial(tutorial: .gameplayTutorial)
         
         self.backgroundColor = colorScheme!.backgroundColor
         
@@ -278,7 +274,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                                                            groundHeight: groundNode!.size.height)
                 gameModel!.prepareTurn(point: firePoint)
                 
-                removeTutorial()
+                if tutorialIsShowing && tutorialType == .gameplayTutorial {
+                    removeTutorial()
+                }
             }
         }
         
@@ -332,6 +330,15 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             // Reset the number of hit blocks and the encouragements shown to the user
             brokenHitBlockCount = 0
             displayedOnFire = false
+            
+            // Reset start time to 0
+            startTime = 0
+            
+            // If the user didn't fast forward and the tutorial is still showing, remove it and add it back to the list until the user actually performs the action
+            if tutorialIsShowing && tutorialType == .fastForwardTutorial {
+                removeTutorial()
+                tutorialsList.append(.fastForwardTutorial)
+            }
         }
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
@@ -378,19 +385,24 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         if gameModel!.isReady() {
             if false == tutorialIsShowing && tutorialsList.count > 0 {
-                let remainingTutorials = tutorialsList.filter {
-                    if $0 == .topBarTutorial {
-                        showTopBarTutorial()
-                        return false
-                    }
-                    return true
-                }
-                tutorialsList = remainingTutorials
+                showTutorial(tutorial: .topBarTutorial)
             }
         }
         
         // Actions to perform while in the middle of a turn
         if gameModel!.isMidTurn() {
+            if startTime == 0 {
+                startTime = currentTime
+            }
+            
+            // If the user's turn has gone on longer than 5 seconds and there are still tutorials to show, we want to show them how to fast forward
+            if (Int(currentTime) - Int(startTime)) > 5 && tutorialsList.count > 0 {
+                // Only show it if the user hasn't fast forwarded yet
+                if false == tutorialIsShowing && physicsWorld.speed == 1.0 {
+                    showTutorial(tutorial: .fastForwardTutorial)
+                }
+            }
+            
             if false == addedGesture {
                 // Ask the model if we showed the fast forward tutorial
                 view!.gestureRecognizers = [rightSwipeGesture!, downSwipeGesture!]
@@ -566,7 +578,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     public func showPauseScreen() {
         // Remove the top bar tutorial if it is showing
-        removeTutorial()
+        if tutorialType == .topBarTutorial {
+            removeTutorial()
+        }
         
         let blur = UIBlurEffect(style: .dark)
         let blurView = UIVisualEffectView(effect: blur)
@@ -599,6 +613,23 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         if inGame(point) {
             if gameModel!.isMidTurn() {
+                // Check if the fast forward tutorial is showing; if it is then remove it
+                if tutorialIsShowing && tutorialType == .fastForwardTutorial {
+                    removeTutorial()
+                }
+                
+                // Otherwise if the user swiped right to fast forward, they know how to do it so we don't need to show them the tutorial; remove it from the list
+                else if tutorialsList.count > 0 {
+                    let remainingTutorials = tutorialsList.filter {
+                        if $0 == .fastForwardTutorial {
+                            return false
+                        }
+                        return true
+                    }
+                    tutorialsList = remainingTutorials
+                }
+                
+                // Speed up the physics simulation
                 if physicsWorld.speed < 3.0 {
                     physicsWorld.speed = 3.0
                     ticksDelay = 1
@@ -1016,15 +1047,17 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let pointerNode = SKSpriteNode(imageNamed: "hand_pointing")
         pointerNode.size = CGSize(width: 40, height: 50)
         pointerNode.position = startPoint
+        pointerNode.zPosition = 105
 
         let labelNode = SKLabelNode(fontNamed: colorScheme!.fontName)
         labelNode.fontColor = .white
         labelNode.fontSize = 20
         labelNode.position = CGPoint(x: centerPoint.x, y: centerPoint.y - 50)
-        labelNode.text = "Tap, Move, Release"
+        labelNode.text = "Press, Aim, Release"
         labelNode.numberOfLines = 2
         labelNode.horizontalAlignmentMode = .center
         labelNode.verticalAlignmentMode = .center
+        labelNode.zPosition = 105
         
         let action1 = SKAction.move(to: endPoint, duration: 1)
         let action2 = SKAction.move(to: startPoint, duration: 1)
@@ -1038,6 +1071,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         tutorialNodes.append(labelNode)
         
         tutorialIsShowing = true
+        
+        tutorialType = .gameplayTutorial
     }
     
     // Show the user the top bar tutorial
@@ -1103,35 +1138,70 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         tutorialIsShowing = true
+        
+        tutorialType = .topBarTutorial
     }
     
-    // Shows the user how to fast forward the simulation (not currently being used)
     private func showFFTutorial() {
-        let size = CGSize(width: view!.frame.width * 0.15, height: view!.frame.width * 0.15)
-        let startPoint = CGPoint(x: view!.frame.width * 0.35, y: view!.frame.midY)
-        let endPoint = CGPoint(x: view!.frame.width * 0.65, y: view!.frame.midY)
+        let offsetFromCenter = view!.frame.width * 0.2
+        let centerPoint = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
+        let startPoint = CGPoint(x: view!.frame.midX - offsetFromCenter, y: view!.frame.midY)
+        let endPoint = CGPoint(x: view!.frame.midX + offsetFromCenter, y: view!.frame.midY)
         
-        let ffNode = SKSpriteNode(imageNamed: "hand_pointing")
-        ffNode.position = startPoint
-        ffNode.size = size
-        ffNode.alpha = 1
-        ffNode.name = "ffTutorial"
-        self.addChild(ffNode)
+        let pointerNode = SKSpriteNode(imageNamed: "hand_pointing")
+        pointerNode.size = CGSize(width: 40, height: 50)
+        pointerNode.position = startPoint
+        pointerNode.zPosition = 105
         
-        let action1 = SKAction.move(to: endPoint, duration: 0.8)
-        let action2 = SKAction.move(to: startPoint, duration: 0.1)
+        let labelNode = SKLabelNode(fontNamed: colorScheme!.fontName)
+        labelNode.fontColor = .white
+        labelNode.fontSize = 20
+        labelNode.position = CGPoint(x: centerPoint.x, y: centerPoint.y - 50)
+        labelNode.text = "Swipe Right to Fast Forward"
+        labelNode.numberOfLines = 2
+        labelNode.horizontalAlignmentMode = .center
+        labelNode.verticalAlignmentMode = .center
+        labelNode.zPosition = 105
         
-        let label = SKLabelNode(fontNamed: fontName)
-        label.fontColor = .white
-        label.fontSize = 20
-        label.text = "Fast forward"
-        label.name = "ffLabel"
-        label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY * 0.80)
-        self.addChild(label)
+        let action1 = SKAction.move(to: endPoint, duration: 1)
+        let action2 = SKAction.fadeOut(withDuration: 0.1)
+        let action3 = SKAction.move(to: startPoint, duration: 0.1)
+        let action4 = SKAction.fadeIn(withDuration: 0.05)
+        let moveAction = SKAction.repeatForever(SKAction.sequence([action1, action2, action3, action4]))
+        pointerNode.run(moveAction)
         
-        ffNode.run(SKAction.sequence([action1, action2, action1, action2, action1])) {
-            self.removeChildren(in: [ffNode, label])
+        self.addChild(pointerNode)
+        self.addChild(labelNode)
+        
+        tutorialNodes.append(pointerNode)
+        tutorialNodes.append(labelNode)
+        
+        tutorialIsShowing = true
+        
+        tutorialType = .fastForwardTutorial
+    }
+    
+    private func showTutorial(tutorial: Tutorials) {
+        let remainingTutorials = tutorialsList.filter {
+            // If the current item matches the tutorial type, handle it
+            if $0 == tutorial {
+                if tutorial == .gameplayTutorial {
+                    showGameplayTutorial()
+                    return false
+                }
+                else if tutorial == .topBarTutorial {
+                    showTopBarTutorial()
+                    return false
+                }
+                else if tutorial == .fastForwardTutorial {
+                    showFFTutorial()
+                    return false
+                }
+                return false
+            }
+            return true
         }
+        tutorialsList = remainingTutorials
     }
     
     private func removeTutorial() {
@@ -1142,6 +1212,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 return false
             }
             tutorialNodes = nodeList
+            tutorialType = .noTutorial
         }
     }
     
