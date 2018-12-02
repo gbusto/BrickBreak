@@ -139,10 +139,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var tutorialIsShowing = false
     private var tutorialNodes: [SKNode] = []
     private var tutorialType: Tutorials?
-    private var tutorialsList: [Tutorials] = [.gameplayTutorial,
-                                              .topBarTutorial,
-                                              .fastForwardTutorial,
-                                              .ballReturnTutorial]
+    private var tutorialsList: [Tutorials] = []
     
     
     // MARK: Override functions
@@ -201,7 +198,14 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         downSwipeGesture!.direction = .down
         downSwipeGesture!.numberOfTouchesRequired = 1
         
-        showTutorial(tutorial: .gameplayTutorial)
+        // If we haven't showed the user the tutorials then show them
+        if false == gameModel!.showedTutorials {
+            tutorialsList = [.gameplayTutorial,
+                             .topBarTutorial,
+                             .fastForwardTutorial,
+                             .ballReturnTutorial]
+            showTutorial(tutorial: .gameplayTutorial)
+        }
         
         self.backgroundColor = colorScheme!.backgroundColor
         
@@ -1102,6 +1106,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // Show the user the top bar tutorial
+    // NOTE: Ceiling height on the iPhone 5s is < 60px (or 60 units) and so the text and pointer image need to be scaled down to accommodate for that (which is why I compare margin! to <60)
     private func showTopBarTutorial() {
         let pointerNode = SKSpriteNode(imageNamed: "hand_pointing")
         if margin! < 60 {
@@ -1300,6 +1305,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             return true
         }
         tutorialsList = remainingTutorials
+        
+        // If we've shown all the tutorials, let the game model know so we don't show them again
+        if tutorialsList.count == 0 {
+            gameModel!.showedTutorials = true
+        }
     }
     
     private func removeTutorial() {

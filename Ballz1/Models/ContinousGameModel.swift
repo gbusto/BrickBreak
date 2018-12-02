@@ -24,6 +24,8 @@ class ContinuousGameModel {
     // False when there is no previous turn data saved; true otherwise
     public var prevTurnSaved = false
     
+    public var showedTutorials = false
+    
     // MARK: Private properties
     private var persistentData: PersistentData?
     private var gameState: GameState?
@@ -60,11 +62,13 @@ class ContinuousGameModel {
     // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
     struct PersistentData: Codable {
         var highScore: Int
+        var showedTutorials: Bool
         
         // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
         // Read Apple's documentation on CodingKey protocol and Codable
         enum CodingKeys: String, CodingKey {
             case highScore
+            case showedTutorials
         }
     }
     
@@ -99,6 +103,9 @@ class ContinuousGameModel {
             if persistentData!.highScore != highScore {
                 persistentData!.highScore = highScore
             }
+            
+            // Save state to know if user was shown tutorial
+            persistentData!.showedTutorials = showedTutorials
             
             // Save the persistent data
             let pData = try PropertyListEncoder().encode(self.persistentData!)
@@ -202,7 +209,7 @@ class ContinuousGameModel {
         // Try to load persistent data
         if false == loadPersistentState() {
             // Defaults to load highScore of 0
-            persistentData = PersistentData(highScore: highScore)
+            persistentData = PersistentData(highScore: highScore, showedTutorials: showedTutorials)
         }
         
         // Try to load game state
@@ -213,6 +220,7 @@ class ContinuousGameModel {
         
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
         highScore = persistentData!.highScore
+        showedTutorials = persistentData!.showedTutorials
         gameScore = gameState!.gameScore
         userWasSaved = gameState!.userWasSaved
         self.numberOfRows = numberOfRows
