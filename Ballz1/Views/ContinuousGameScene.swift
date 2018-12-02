@@ -1104,15 +1104,26 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // Show the user the top bar tutorial
     private func showTopBarTutorial() {
         let pointerNode = SKSpriteNode(imageNamed: "hand_pointing")
-        pointerNode.size = CGSize(width: 40, height: 50)
+        if margin! < 60 {
+            pointerNode.size = CGSize(width: 30, height: 38)
+        }
+        else {
+            pointerNode.size = CGSize(width: 40, height: 50)
+        }
         pointerNode.zPosition = 105
         pointerNode.position = CGPoint(x: view!.frame.midX + 80, y: ceilingNode!.position.y + 10)
         
         let labelNode = SKLabelNode(fontNamed: colorScheme!.fontName)
         labelNode.zPosition = 105
         labelNode.fontColor = .white
-        labelNode.fontSize = 20
-        labelNode.position = CGPoint(x: pointerNode.position.x, y: pointerNode.position.y - 50)
+        if margin! < 60 {
+            labelNode.fontSize = 12
+            labelNode.position = CGPoint(x: pointerNode.position.x, y: pointerNode.position.y - 30)
+        }
+        else {
+            labelNode.fontSize = 20
+            labelNode.position = CGPoint(x: pointerNode.position.x, y: pointerNode.position.y - 50)
+        }
         labelNode.text = "Tap Here to Pause"
         labelNode.numberOfLines = 2
         labelNode.horizontalAlignmentMode = .center
@@ -1122,33 +1133,51 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let highScoreHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
         highScoreHelper.zPosition = 105
         highScoreHelper.text = "Best"
-        highScoreHelper.position = CGPoint(x: leftWallWidth, y: ceilingNode!.position.y + 10)
         highScoreHelper.fontColor = .white
         highScoreHelper.verticalAlignmentMode = .center
         highScoreHelper.horizontalAlignmentMode = .left
-        highScoreHelper.fontSize = 20
+        if margin! < 60 {
+            highScoreHelper.fontSize = 12
+            highScoreHelper.position = CGPoint(x: leftWallWidth, y: ceilingNode!.position.y + 4)
+        }
+        else {
+            highScoreHelper.fontSize = 20
+            highScoreHelper.position = CGPoint(x: leftWallWidth, y: ceilingNode!.position.y + 10)
+        }
         highScoreHelper.numberOfLines = 1
         
         //let rect2 = CGRect(x: view!.frame.midX - 50, y: margin! / 2, width: 100, height: 50)
         let gameScoreHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
         gameScoreHelper.zPosition = 105
         gameScoreHelper.text = "Score"
-        gameScoreHelper.position = CGPoint(x: view!.frame.midX, y: ceilingNode!.position.y + 10)
         gameScoreHelper.fontColor = .white
         gameScoreHelper.verticalAlignmentMode = .center
         gameScoreHelper.horizontalAlignmentMode = .center
-        gameScoreHelper.fontSize = 20
+        if margin! < 60 {
+            gameScoreHelper.fontSize = 12
+            gameScoreHelper.position = CGPoint(x: view!.frame.midX, y: ceilingNode!.position.y + 4)
+        }
+        else {
+            gameScoreHelper.fontSize = 20
+            gameScoreHelper.position = CGPoint(x: view!.frame.midX, y: ceilingNode!.position.y + 10)
+        }
         gameScoreHelper.numberOfLines = 1
         
         //let rect3 = CGRect(x: view!.frame.width - rightWallWidth - 100, y: margin! / 2, width: 100, height: 50)
         let undoHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
         undoHelper.zPosition = 105
         undoHelper.text = "Undo"
-        undoHelper.position = CGPoint(x: view!.frame.width - rightWallWidth, y: ceilingNode!.position.y + 10)
         undoHelper.fontColor = .white
         undoHelper.verticalAlignmentMode = .center
         undoHelper.horizontalAlignmentMode = .right
-        undoHelper.fontSize = 20
+        if margin! < 60 {
+            undoHelper.fontSize = 12
+            undoHelper.position = CGPoint(x: view!.frame.width - rightWallWidth, y: ceilingNode!.position.y + 4)
+        }
+        else {
+            undoHelper.fontSize = 20
+            undoHelper.position = CGPoint(x: view!.frame.width - rightWallWidth, y: ceilingNode!.position.y + 10)
+        }
         undoHelper.numberOfLines = 1
         
         let nodes = [pointerNode, labelNode, highScoreHelper, gameScoreHelper, undoHelper]
