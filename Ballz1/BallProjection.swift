@@ -35,22 +35,28 @@ class BallProjection {
         let maxOffset = CGFloat(200)
         var newTouchPoint = touchPoint
         
-        var slope = calcSlope(originPoint: startPoint, touchPoint: touchPoint)
-        let intercept = calcYIntercept(point: touchPoint, slope: slope)
+        // This correction is here to fix a bug:
+        // When the touch point's Y value goes below the start point's Y value, the slope changes sign (- to + or + to -) which causes it to "jump" around a bit as the user's finger gets closer to the ground. The reason is because - assuming your finger is to the left of the origin point - the slope is negative. When it gets closer to the ground, the touch point Y value drops below that of the origin point's Y value and so even though the finger is on the left side and the slope should be negative, it switches to positive and draws a projection path to the RIGHT of the ball instead of the left. It seems like it's jumping around and might cause the user to fire in the wrong direction by accident.
+        if newTouchPoint.y <= startPoint.y {
+            newTouchPoint.y = startPoint.y + 0.1
+        }
+        
+        var slope = calcSlope(originPoint: startPoint, touchPoint: newTouchPoint)
+        let intercept = calcYIntercept(point: newTouchPoint, slope: slope)
         
         var newX = CGFloat(0)
         var newY = CGFloat(0)
         
         if (slope >= 1) || (slope <= -1) {
-            newY = touchPoint.y + maxOffset
+            newY = newTouchPoint.y + maxOffset
             newX = (newY - intercept) / slope
         }
         else if (slope < 1) && (slope > -1) {
             if (slope < 0) {
-                newX = touchPoint.x - maxOffset
+                newX = newTouchPoint.x - maxOffset
             }
             else if (slope > 0) {
-                newX = touchPoint.x + maxOffset
+                newX = newTouchPoint.x + maxOffset
             }
             newY = (slope * newX) + intercept
         }
