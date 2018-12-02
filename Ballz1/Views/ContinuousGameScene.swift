@@ -932,7 +932,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         leftWallLine.move(to: lwStartPoint)
         leftWallLine.addLine(to: lwEndPoint)
         leftWallNode = SKShapeNode()
-        //leftWallNode!.zPosition = 101
         leftWallNode!.path = leftWallLine
         leftWallNode!.name = "wall"
         leftWallNode!.strokeColor = colorScheme!.marginColor
@@ -955,7 +954,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         rightWallLine.move(to: rwStartPoint)
         rightWallLine.addLine(to: rwEndPoint)
         rightWallNode = SKShapeNode()
-        //rightWallNode!.zPosition = 101
         rightWallNode!.path = rightWallLine
         rightWallNode!.name = "wall"
         rightWallNode!.strokeColor = colorScheme!.marginColor
