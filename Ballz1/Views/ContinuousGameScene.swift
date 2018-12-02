@@ -834,6 +834,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             // 2. Check if the game is over
             // And we want to re-warn the user that they're about to lose if they are one row away from a game over
             ballPosition = gameModel!.ballManager!.getOriginPoint()
+            // Correct ball position's Y value (in case ground size changed for whatever reason) to prevent it from floating above the ground or being below the ground
+            ballPosition.y = groundNode!.size.height + ballRadius!
+            gameModel!.ballManager!.setOriginPoint(point: ballPosition)
             addBallCountLabel()
         }
         else if gameModel!.isTurnOver() {
