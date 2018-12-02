@@ -174,6 +174,10 @@ class BallManager {
         numberOfBalls = ballArray.count
     }
     
+    public func setOriginPoint(point: CGPoint) {
+        originPoint = point
+    }
+    
     public func getOriginPoint() -> CGPoint {
         if let op = originPoint {
             return op
