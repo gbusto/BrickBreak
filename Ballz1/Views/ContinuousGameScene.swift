@@ -129,6 +129,18 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var activeViews: [UIView] = []
     
+    enum Tutorials {
+        case gameplayTutorial
+        case topBarTutorial
+        case fastForwardTutorial
+        case ballReturnTutorial
+    }
+    
+    private var tutorialsList: [Tutorials] = [.gameplayTutorial,
+                                              .topBarTutorial,
+                                              .fastForwardTutorial,
+                                              .ballReturnTutorial]
+    
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -186,7 +198,14 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         downSwipeGesture!.direction = .down
         downSwipeGesture!.numberOfTouchesRequired = 1
         
-        showGameplayTutorial()
+        let remainingTutorials = tutorialsList.filter {
+            if $0 == .gameplayTutorial {
+                showGameplayTutorial()
+                return false
+            }
+            return true
+        }
+        tutorialsList = remainingTutorials
         
         self.backgroundColor = colorScheme!.backgroundColor
         
@@ -259,14 +278,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                                                            groundHeight: groundNode!.size.height)
                 gameModel!.prepareTurn(point: firePoint)
                 
-                if tutorialIsShowing {
-                    tutorialIsShowing = false
-                    let nodeList = tutorialNodes.filter {
-                        $0.removeFromParent()
-                        return false
-                    }
-                    tutorialNodes = nodeList
-                }
+                removeTutorial()
             }
         }
         
@@ -361,6 +373,19 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             }
             else {
                 disableUndoButton()
+            }
+        }
+        
+        if gameModel!.isReady() {
+            if false == tutorialIsShowing && tutorialsList.count > 0 {
+                let remainingTutorials = tutorialsList.filter {
+                    if $0 == .topBarTutorial {
+                        showTopBarTutorial()
+                        return false
+                    }
+                    return true
+                }
+                tutorialsList = remainingTutorials
             }
         }
         
@@ -540,6 +565,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func showPauseScreen() {
+        // Remove the top bar tutorial if it is showing
+        removeTutorial()
+        
         let blur = UIBlurEffect(style: .dark)
         let blurView = UIVisualEffectView(effect: blur)
         blurView.frame = view!.frame
@@ -549,32 +577,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         pauseView.isHidden = false
         view!.addSubview(pauseView)
         
-        let rect1 = CGRect(x: leftWallWidth, y: margin! / 2, width: 100, height: 50)
-        let highScoreHelper = UILabel(frame: rect1)
-        highScoreHelper.text = "Best"
-        highScoreHelper.textAlignment = .left
-        highScoreHelper.textColor = .white
-        highScoreHelper.font = UIFont(name: "Avenir-Medium", size: 20)
-        view!.addSubview(highScoreHelper)
-        
-        let rect2 = CGRect(x: view!.frame.midX - 50, y: margin! / 2, width: 100, height: 50)
-        let gameScoreHelper = UILabel(frame: rect2)
-        gameScoreHelper.text = "Score"
-        gameScoreHelper.textAlignment = .center
-        gameScoreHelper.baselineAdjustment = .alignCenters
-        gameScoreHelper.textColor = .white
-        gameScoreHelper.font = UIFont(name: "Avenir-Medium", size: 20)
-        view!.addSubview(gameScoreHelper)
-        
-        let rect3 = CGRect(x: view!.frame.width - rightWallWidth - 100, y: margin! / 2, width: 100, height: 50)
-        let undoHelper = UILabel(frame: rect3)
-        undoHelper.text = "Undo"
-        undoHelper.textAlignment = .right
-        undoHelper.textColor = .white
-        undoHelper.font = UIFont(name: "Avenir-Medium", size: 20)
-        view!.addSubview(undoHelper)
-        
-        activeViews = [blurView, pauseView, highScoreHelper, gameScoreHelper, undoHelper]
+        activeViews = [blurView, pauseView]
     }
     
     public func resumeGame() {
@@ -1037,6 +1040,71 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         tutorialIsShowing = true
     }
     
+    // Show the user the top bar tutorial
+    private func showTopBarTutorial() {
+        let pointerNode = SKSpriteNode(imageNamed: "hand_pointing")
+        pointerNode.size = CGSize(width: 40, height: 50)
+        pointerNode.zPosition = 105
+        pointerNode.position = CGPoint(x: view!.frame.midX + 80, y: ceilingNode!.position.y + 10)
+        
+        let labelNode = SKLabelNode(fontNamed: colorScheme!.fontName)
+        labelNode.zPosition = 105
+        labelNode.fontColor = .white
+        labelNode.fontSize = 20
+        labelNode.position = CGPoint(x: pointerNode.position.x, y: pointerNode.position.y - 50)
+        labelNode.text = "Tap to Pause"
+        labelNode.numberOfLines = 2
+        labelNode.horizontalAlignmentMode = .center
+        labelNode.verticalAlignmentMode = .center
+        
+        //let rect1 = CGRect(x: leftWallWidth, y: margin! / 2, width: 100, height: 50)
+        let highScoreHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
+        highScoreHelper.zPosition = 105
+        highScoreHelper.text = "Best"
+        highScoreHelper.position = CGPoint(x: leftWallWidth, y: ceilingNode!.position.y)
+        highScoreHelper.fontColor = .white
+        highScoreHelper.verticalAlignmentMode = .center
+        highScoreHelper.horizontalAlignmentMode = .left
+        highScoreHelper.fontSize = 20
+        highScoreHelper.numberOfLines = 1
+        
+        //let rect2 = CGRect(x: view!.frame.midX - 50, y: margin! / 2, width: 100, height: 50)
+        let gameScoreHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
+        gameScoreHelper.zPosition = 105
+        gameScoreHelper.text = "Score"
+        gameScoreHelper.position = CGPoint(x: view!.frame.midX, y: ceilingNode!.position.y)
+        gameScoreHelper.fontColor = .white
+        gameScoreHelper.verticalAlignmentMode = .center
+        gameScoreHelper.horizontalAlignmentMode = .center
+        gameScoreHelper.fontSize = 20
+        gameScoreHelper.numberOfLines = 1
+        
+        //let rect3 = CGRect(x: view!.frame.width - rightWallWidth - 100, y: margin! / 2, width: 100, height: 50)
+        let undoHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
+        undoHelper.zPosition = 105
+        undoHelper.text = "Undo"
+        undoHelper.position = CGPoint(x: view!.frame.width - rightWallWidth, y: ceilingNode!.position.y)
+        undoHelper.fontColor = .white
+        undoHelper.verticalAlignmentMode = .center
+        undoHelper.horizontalAlignmentMode = .right
+        undoHelper.fontSize = 20
+        undoHelper.numberOfLines = 1
+        
+        let nodes = [pointerNode, labelNode, highScoreHelper, gameScoreHelper, undoHelper]
+        
+        let action1 = SKAction.fadeOut(withDuration: 1)
+        let action2 = SKAction.fadeIn(withDuration: 1)
+        let blinkAction = SKAction.repeatForever(SKAction.sequence([action1, action2]))
+        
+        for node in nodes {
+            node.run(blinkAction)
+            tutorialNodes.append(node)
+            self.addChild(node)
+        }
+        
+        tutorialIsShowing = true
+    }
+    
     // Shows the user how to fast forward the simulation (not currently being used)
     private func showFFTutorial() {
         let size = CGSize(width: view!.frame.width * 0.15, height: view!.frame.width * 0.15)
@@ -1063,6 +1131,17 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         ffNode.run(SKAction.sequence([action1, action2, action1, action2, action1])) {
             self.removeChildren(in: [ffNode, label])
+        }
+    }
+    
+    private func removeTutorial() {
+        if tutorialIsShowing {
+            tutorialIsShowing = false
+            let nodeList = tutorialNodes.filter {
+                $0.removeFromParent()
+                return false
+            }
+            tutorialNodes = nodeList
         }
     }
     
