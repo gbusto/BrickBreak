@@ -1113,7 +1113,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         labelNode.fontColor = .white
         labelNode.fontSize = 20
         labelNode.position = CGPoint(x: pointerNode.position.x, y: pointerNode.position.y - 50)
-        labelNode.text = "Tap to Pause"
+        labelNode.text = "Tap Here to Pause"
         labelNode.numberOfLines = 2
         labelNode.horizontalAlignmentMode = .center
         labelNode.verticalAlignmentMode = .center
@@ -1122,7 +1122,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let highScoreHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
         highScoreHelper.zPosition = 105
         highScoreHelper.text = "Best"
-        highScoreHelper.position = CGPoint(x: leftWallWidth, y: ceilingNode!.position.y)
+        highScoreHelper.position = CGPoint(x: leftWallWidth, y: ceilingNode!.position.y + 10)
         highScoreHelper.fontColor = .white
         highScoreHelper.verticalAlignmentMode = .center
         highScoreHelper.horizontalAlignmentMode = .left
@@ -1133,7 +1133,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let gameScoreHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
         gameScoreHelper.zPosition = 105
         gameScoreHelper.text = "Score"
-        gameScoreHelper.position = CGPoint(x: view!.frame.midX, y: ceilingNode!.position.y)
+        gameScoreHelper.position = CGPoint(x: view!.frame.midX, y: ceilingNode!.position.y + 10)
         gameScoreHelper.fontColor = .white
         gameScoreHelper.verticalAlignmentMode = .center
         gameScoreHelper.horizontalAlignmentMode = .center
@@ -1144,7 +1144,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let undoHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
         undoHelper.zPosition = 105
         undoHelper.text = "Undo"
-        undoHelper.position = CGPoint(x: view!.frame.width - rightWallWidth, y: ceilingNode!.position.y)
+        undoHelper.position = CGPoint(x: view!.frame.width - rightWallWidth, y: ceilingNode!.position.y + 10)
         undoHelper.fontColor = .white
         undoHelper.verticalAlignmentMode = .center
         undoHelper.horizontalAlignmentMode = .right
