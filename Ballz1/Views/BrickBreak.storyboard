@@ -19,21 +19,21 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="9Jl-GQ-Wvn">
-                                <rect key="frame" x="20" y="20" width="374" height="516"/>
+                                <rect key="frame" x="20" y="20" width="374" height="616"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Brick Break" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="40" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xH8-wW-N8G">
-                                        <rect key="frame" x="13.333333333333343" y="0.0" width="347.66666666666663" height="402.66666666666669"/>
+                                        <rect key="frame" x="13.333333333333343" y="0.0" width="347.66666666666663" height="306"/>
                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="200"/>
                                         <color key="textColor" red="0.70008618342942719" green="0.93547368049621582" blue="0.76215052610718903" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
                                         <color key="shadowColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <size key="shadowOffset" width="3" height="3"/>
                                     </label>
-                                    <stackView opaque="NO" contentMode="scaleAspectFit" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="jcc-nl-bVB">
-                                        <rect key="frame" x="0.0" y="452.66666666666669" width="374" height="63.333333333333314"/>
+                                    <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" distribution="fillEqually" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="jcc-nl-bVB">
+                                        <rect key="frame" x="0.0" y="356" width="374" height="260"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0b5-Nx-3KM">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="63.333333333333336"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="120"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" image="play_button_curved">
@@ -45,6 +45,18 @@
                                                     <segue destination="SQo-9G-tie" kind="showDetail" animates="NO" id="M5j-b5-wJH"/>
                                                 </connections>
                                             </button>
+                                            <stackView opaque="NO" contentMode="scaleAspectFit" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="nqw-bE-Rpn">
+                                                <rect key="frame" x="152" y="140" width="70" height="120"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kUv-85-qmg">
+                                                        <rect key="frame" x="0.0" y="0.0" width="70" height="120"/>
+                                                        <state key="normal" image="game_center_button"/>
+                                                        <connections>
+                                                            <action selector="showGameCenter:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="0nK-I9-ow9"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                            </stackView>
                                         </subviews>
                                     </stackView>
                                 </subviews>
@@ -54,13 +66,14 @@
                         <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="9Jl-GQ-Wvn" firstAttribute="leading" secondItem="rqZ-GN-noK" secondAttribute="leading" constant="20" id="D3L-6f-dxm"/>
-                            <constraint firstItem="rqZ-GN-noK" firstAttribute="bottom" secondItem="9Jl-GQ-Wvn" secondAttribute="bottom" constant="200" id="KVi-Oy-7tf"/>
+                            <constraint firstItem="rqZ-GN-noK" firstAttribute="bottom" secondItem="9Jl-GQ-Wvn" secondAttribute="bottom" constant="100" id="KVi-Oy-7tf"/>
                             <constraint firstAttribute="trailing" secondItem="9Jl-GQ-Wvn" secondAttribute="trailing" constant="20" id="acu-R9-U67"/>
                             <constraint firstItem="9Jl-GQ-Wvn" firstAttribute="top" secondItem="rqZ-GN-noK" secondAttribute="top" id="eWc-k0-HK5"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="rqZ-GN-noK"/>
                     </view>
                     <connections>
+                        <outlet property="gameCenterButton" destination="kUv-85-qmg" id="QLM-pC-i0Q"/>
                         <outlet property="playButton" destination="0b5-Nx-3KM" id="kBG-Pu-y3Q"/>
                         <outlet property="titleLabel" destination="xH8-wW-N8G" id="YR6-AT-Ph7"/>
                     </connections>
@@ -185,6 +198,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="game_center_button" width="70" height="70"/>
         <image name="game_menu_button_curved" width="480" height="120"/>
         <image name="play_button_curved" width="450" height="105"/>
         <image name="resume_button_curved" width="480" height="120"/>
