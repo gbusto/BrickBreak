@@ -53,7 +53,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     
     // MARK: Gamecenter delegate protocol
     func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
-        // Not being used at this time
+        gameCenterViewController.dismiss(animated: true, completion: nil)
     }
     
     func authenticatePlayer() {
