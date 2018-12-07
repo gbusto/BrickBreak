@@ -31,6 +31,7 @@
 		03F9A4242151C3D600206A84 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4232151C3D600206A84 /* Item.swift */; };
 		03F9A4262151D34800206A84 /* BallItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4252151D34800206A84 /* BallItem.swift */; };
 		03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4272151D56700206A84 /* HitBlockItem.swift */; };
+		441CA79C3B45F00A354A3C3B /* libPods-Ballz1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9773A95A49476DDAAFED4DF /* libPods-Ballz1.a */; };
 		F2677A7E216C3FFF00CE3FC0 /* BallProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */; };
 /* End PBXBuildFile section */
 
@@ -82,6 +83,9 @@
 		03F9A4232151C3D600206A84 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		03F9A4252151D34800206A84 /* BallItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItem.swift; sourceTree = "<group>"; };
 		03F9A4272151D56700206A84 /* HitBlockItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitBlockItem.swift; sourceTree = "<group>"; };
+		5224C89D7322FB64CBF5D166 /* Pods-Ballz1.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballz1.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1.debug.xcconfig"; sourceTree = "<group>"; };
+		D9773A95A49476DDAAFED4DF /* libPods-Ballz1.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Ballz1.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECEC017C6EB71AEF0022F501 /* Pods-Ballz1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballz1.release.xcconfig"; path = "Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1.release.xcconfig"; sourceTree = "<group>"; };
 		F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallProjection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -91,6 +95,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				037536B221B74F4800B62589 /* GameKit.framework in Frameworks */,
+				441CA79C3B45F00A354A3C3B /* libPods-Ballz1.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +124,7 @@
 				0317DEC2214B5FA500E976E2 /* Ballz1UITests */,
 				0317DE9B214B5FA300E976E2 /* Products */,
 				03451B0521849AFD003033E2 /* Frameworks */,
+				C4910B81F77A58A2AD371723 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -180,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				037536B121B74F4800B62589 /* GameKit.framework */,
+				D9773A95A49476DDAAFED4DF /* libPods-Ballz1.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -212,6 +219,15 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
+		C4910B81F77A58A2AD371723 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				5224C89D7322FB64CBF5D166 /* Pods-Ballz1.debug.xcconfig */,
+				ECEC017C6EB71AEF0022F501 /* Pods-Ballz1.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -219,6 +235,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0317DEC8214B5FA500E976E2 /* Build configuration list for PBXNativeTarget "Ballz1" */;
 			buildPhases = (
+				14C65A083A77E866E38ECE8B /* [CP] Check Pods Manifest.lock */,
 				0317DE96214B5FA300E976E2 /* Sources */,
 				0317DE97214B5FA300E976E2 /* Frameworks */,
 				0317DE98214B5FA300E976E2 /* Resources */,
@@ -343,6 +360,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		14C65A083A77E866E38ECE8B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Ballz1-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0317DE96214B5FA300E976E2 /* Sources */ = {
@@ -539,6 +581,7 @@
 		};
 		0317DEC9214B5FA500E976E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5224C89D7322FB64CBF5D166 /* Pods-Ballz1.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -558,6 +601,7 @@
 		};
 		0317DECA214B5FA500E976E2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = ECEC017C6EB71AEF0022F501 /* Pods-Ballz1.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
