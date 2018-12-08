@@ -10,11 +10,13 @@
 
 import UIKit
 import SpriteKit
+import GoogleMobileAds
 
-class ContinuousGameController: UIViewController {
+class ContinuousGameController: UIViewController, GADBannerViewDelegate {
     
     private var scene: SKScene?
     
+    @IBOutlet var bannerView: GADBannerView!
     @IBOutlet var undoButton: UIButton!
     @IBOutlet weak var gameScoreLabel: UILabel!
     @IBOutlet weak var highScoreLabel: UILabel!
@@ -48,10 +50,27 @@ class ContinuousGameController: UIViewController {
             resumeButton.imageView?.contentMode = .scaleAspectFit
             returnGameMenuButton.imageView?.contentMode = .scaleAspectFit
             
+            bannerView.adUnitID = AdHandler.getBannerAdID()
+            bannerView.rootViewController = self
+            bannerView.delegate = self
+            
+            let adRequest = GADRequest()
+            adRequest.testDevices = AdHandler.getTestDevices()
+            bannerView.load(adRequest)
+            
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
         }
+    }
+    
+    public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
+        bannerView.isHidden = true
+        print("Error loading ad: \(error.localizedDescription)")
+    }
+    
+    public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+        bannerView.isHidden = false
     }
     
     public func getPauseMenu() -> UIView {
@@ -180,5 +199,4 @@ class ContinuousGameController: UIViewController {
     override var prefersStatusBarHidden: Bool {
         return true
     }
-    
 }

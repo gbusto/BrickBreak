@@ -22,7 +22,7 @@
                                 <rect key="frame" x="20" y="20" width="374" height="616"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Brick Break" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="40" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xH8-wW-N8G">
-                                        <rect key="frame" x="13.333333333333343" y="0.0" width="347.66666666666663" height="306"/>
+                                        <rect key="frame" x="13.333333333333343" y="0.0" width="347.66666666666663" height="408"/>
                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="200"/>
                                         <color key="textColor" red="0.70008618342942719" green="0.93547368049621582" blue="0.76215052610718903" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
@@ -30,10 +30,10 @@
                                         <size key="shadowOffset" width="3" height="3"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" distribution="fillEqually" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="jcc-nl-bVB">
-                                        <rect key="frame" x="0.0" y="356" width="374" height="260"/>
+                                        <rect key="frame" x="0.0" y="458" width="374" height="158"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0b5-Nx-3KM">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="120"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="69"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" image="play_button_curved">
@@ -46,10 +46,10 @@
                                                 </connections>
                                             </button>
                                             <stackView opaque="NO" contentMode="scaleAspectFit" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="nqw-bE-Rpn">
-                                                <rect key="frame" x="152" y="140" width="70" height="120"/>
+                                                <rect key="frame" x="152" y="89" width="70" height="69"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kUv-85-qmg">
-                                                        <rect key="frame" x="0.0" y="0.0" width="70" height="120"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="70" height="69"/>
                                                         <state key="normal" image="game_center_button"/>
                                                         <connections>
                                                             <action selector="showGameCenter:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="0nK-I9-ow9"/>
@@ -128,16 +128,27 @@
                                     <outletCollection property="gestureRecognizers" destination="bNb-UM-NRp" appends="YES" id="C4a-a9-A7X"/>
                                 </connections>
                             </stackView>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jLh-xN-cgX" customClass="GADBannerView">
+                                <rect key="frame" x="47" y="686" width="320" height="50"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="320" id="dTg-OW-6by"/>
+                                    <constraint firstAttribute="height" constant="50" id="vrS-nl-sKN"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
                             <constraint firstItem="fvE-kJ-god" firstAttribute="leading" secondItem="onz-3b-lSx" secondAttribute="leading" constant="10" id="GR5-om-h0v"/>
+                            <constraint firstItem="jLh-xN-cgX" firstAttribute="bottom" secondItem="onz-3b-lSx" secondAttribute="bottom" id="YoJ-VA-xGS"/>
                             <constraint firstItem="fvE-kJ-god" firstAttribute="top" secondItem="onz-3b-lSx" secondAttribute="top" constant="10" id="bkG-nC-cJB"/>
+                            <constraint firstItem="jLh-xN-cgX" firstAttribute="centerX" secondItem="fvE-kJ-god" secondAttribute="centerX" id="rYM-AQ-ClA"/>
                             <constraint firstItem="onz-3b-lSx" firstAttribute="trailing" secondItem="fvE-kJ-god" secondAttribute="trailing" constant="10" id="wqH-ev-wET"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="onz-3b-lSx"/>
                     </view>
                     <connections>
+                        <outlet property="bannerView" destination="jLh-xN-cgX" id="bNo-6a-B8q"/>
                         <outlet property="gameScoreLabel" destination="PPQ-wv-sQa" id="w3M-ML-4dt"/>
                         <outlet property="highScoreLabel" destination="7yN-Nr-Ust" id="LD3-gu-exg"/>
                         <outlet property="pauseMenuView" destination="fb1-Dl-c5Y" id="1hQ-t0-RBb"/>

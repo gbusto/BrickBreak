@@ -17,6 +17,7 @@
 		0342D217216CEC8700FE5760 /* SpacerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0342D216216CEC8700FE5760 /* SpacerItem.swift */; };
 		0342D21B216FEA3B00FE5760 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0342D21A216FEA3B00FE5760 /* Assets.xcassets */; };
 		037536B221B74F4800B62589 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 037536B121B74F4800B62589 /* GameKit.framework */; };
+		037536B421BB04CF00B62589 /* AdHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037536B321BB04CF00B62589 /* AdHandler.swift */; };
 		03AE1FC82156E5F0002CEB3F /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AE1FC72156E5F0002CEB3F /* Color.swift */; };
 		03B8B4F0216919DD00FFD589 /* GameMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4EF216919DD00FFD589 /* GameMenuScene.swift */; };
 		03B8B4F221691A0100FFD589 /* ContinuousGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4F121691A0100FFD589 /* ContinuousGameScene.swift */; };
@@ -31,7 +32,7 @@
 		03F9A4242151C3D600206A84 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4232151C3D600206A84 /* Item.swift */; };
 		03F9A4262151D34800206A84 /* BallItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4252151D34800206A84 /* BallItem.swift */; };
 		03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4272151D56700206A84 /* HitBlockItem.swift */; };
-		441CA79C3B45F00A354A3C3B /* libPods-Ballz1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9773A95A49476DDAAFED4DF /* libPods-Ballz1.a */; };
+		CDC5CFC1717920861940918B /* Pods_Ballz1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1A8F69CD9292C0D9344297C /* Pods_Ballz1.framework */; };
 		F2677A7E216C3FFF00CE3FC0 /* BallProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +70,7 @@
 		0342D216216CEC8700FE5760 /* SpacerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacerItem.swift; sourceTree = "<group>"; };
 		0342D21A216FEA3B00FE5760 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		037536B121B74F4800B62589 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		037536B321BB04CF00B62589 /* AdHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdHandler.swift; sourceTree = "<group>"; };
 		03AE1FC72156E5F0002CEB3F /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		03B8B4EF216919DD00FFD589 /* GameMenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuScene.swift; sourceTree = "<group>"; };
 		03B8B4F121691A0100FFD589 /* ContinuousGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuousGameScene.swift; sourceTree = "<group>"; };
@@ -84,7 +86,7 @@
 		03F9A4252151D34800206A84 /* BallItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItem.swift; sourceTree = "<group>"; };
 		03F9A4272151D56700206A84 /* HitBlockItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitBlockItem.swift; sourceTree = "<group>"; };
 		5224C89D7322FB64CBF5D166 /* Pods-Ballz1.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballz1.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1.debug.xcconfig"; sourceTree = "<group>"; };
-		D9773A95A49476DDAAFED4DF /* libPods-Ballz1.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Ballz1.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1A8F69CD9292C0D9344297C /* Pods_Ballz1.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ballz1.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECEC017C6EB71AEF0022F501 /* Pods-Ballz1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballz1.release.xcconfig"; path = "Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1.release.xcconfig"; sourceTree = "<group>"; };
 		F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallProjection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -95,7 +97,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				037536B221B74F4800B62589 /* GameKit.framework in Frameworks */,
-				441CA79C3B45F00A354A3C3B /* libPods-Ballz1.a in Frameworks */,
+				CDC5CFC1717920861940918B /* Pods_Ballz1.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,6 +143,7 @@
 		0317DE9C214B5FA300E976E2 /* Ballz1 */ = {
 			isa = PBXGroup;
 			children = (
+				037536B321BB04CF00B62589 /* AdHandler.swift */,
 				0317DE9D214B5FA300E976E2 /* AppDelegate.swift */,
 				0317DED3214B6B7900E976E2 /* BallManager.swift */,
 				03F9A4272151D56700206A84 /* HitBlockItem.swift */,
@@ -151,8 +154,8 @@
 				03F9A4232151C3D600206A84 /* Item.swift */,
 				03F9A4212151C37800206A84 /* ItemGenerator.swift */,
 				F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */,
-				03AE1FC72156E5F0002CEB3F /* Color.swift */,
 				03053570218DFEAF0038D1D8 /* ColorScheme.swift */,
+				03AE1FC72156E5F0002CEB3F /* Color.swift */,
 				0317DEA7214B5FA300E976E2 /* Main.storyboard */,
 				0317DEAC214B5FA500E976E2 /* LaunchScreen.storyboard */,
 				0317DEAF214B5FA500E976E2 /* Info.plist */,
@@ -186,7 +189,7 @@
 			isa = PBXGroup;
 			children = (
 				037536B121B74F4800B62589 /* GameKit.framework */,
-				D9773A95A49476DDAAFED4DF /* libPods-Ballz1.a */,
+				A1A8F69CD9292C0D9344297C /* Pods_Ballz1.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -405,6 +408,7 @@
 				0317DED4214B6B7900E976E2 /* BallManager.swift in Sources */,
 				03B8B4FC21691A6000FFD589 /* GameMenuModel.swift in Sources */,
 				0317DE9E214B5FA300E976E2 /* AppDelegate.swift in Sources */,
+				037536B421BB04CF00B62589 /* AdHandler.swift in Sources */,
 				0342D217216CEC8700FE5760 /* SpacerItem.swift in Sources */,
 				03B8B4F621691A2100FFD589 /* GameMenuController.swift in Sources */,
 				03B8B4FE21691A7600FFD589 /* ContinousGameModel.swift in Sources */,
