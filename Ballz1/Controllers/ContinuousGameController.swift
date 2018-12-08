@@ -10,11 +10,18 @@
 
 import UIKit
 import SpriteKit
+import GoogleMobileAds
 
-class ContinuousGameController: UIViewController {
+class ContinuousGameController: UIViewController,
+                                GADBannerViewDelegate,
+                                GADRewardBasedVideoAdDelegate,
+                                GADInterstitialDelegate {
     
     private var scene: SKScene?
     
+    private var interstitialAd: GADInterstitial!
+    
+    @IBOutlet var bannerView: GADBannerView!
     @IBOutlet var undoButton: UIButton!
     @IBOutlet weak var gameScoreLabel: UILabel!
     @IBOutlet weak var highScoreLabel: UILabel!
@@ -22,10 +29,47 @@ class ContinuousGameController: UIViewController {
     @IBOutlet var resumeButton: UIButton!
     @IBOutlet var returnGameMenuButton: UIButton!
     
+    private var rewardAdViewController: RewardAdViewController!
+    
+    private var rewardType = ContinuousGameController.NO_REWARD
+    static private var NO_REWARD = Int(0)
+    static private var UNDO_REWARD = Int(1)
+    static private var RESCUE_REWARD = Int(2)
+    
+    override func viewDidAppear(_ animated: Bool) {
+        // Set up the banner ad
+        bannerView.adUnitID = AdHandler.getBannerAdID()
+        bannerView.rootViewController = self
+        bannerView.delegate = self
+        
+        // Load the banner ad
+        let bannerAdRequest = GADRequest()
+        bannerAdRequest.testDevices = AdHandler.getTestDevices()
+        bannerView.load(bannerAdRequest)
+        
+        // Prepare to load interstitial ads
+        GADRewardBasedVideoAd.sharedInstance().delegate = self
+        
+        // Attempt to load the reward ad
+        let rewardAdRequest = GADRequest()
+        rewardAdRequest.testDevices = AdHandler.getTestDevices()
+        GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
+        
+        // Prepare to load interstitial ads
+        interstitialAd = GADInterstitial(adUnitID: AdHandler.getInterstitialAdID())
+        interstitialAd.delegate = self
+        
+        // Attempt to load the interstitial ad
+        let intAdRequest = GADRequest()
+        intAdRequest.testDevices = AdHandler.getTestDevices()
+        interstitialAd.load(intAdRequest)
+        
+        // This is a view controller to fix buggy behavior with the reward ads
+        rewardAdViewController = RewardAdViewController()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        print("Loaded continuous game view")
         
         // Notification that says the app is going into the background
         let backgroundNotification = Notification(name: .NSExtensionHostWillResignActive)
@@ -54,20 +98,135 @@ class ContinuousGameController: UIViewController {
         }
     }
     
+    // MARK: Banner ad functions
+    public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
+        // Error loading the ad; hide the banner
+        bannerView.isHidden = true
+        print("Error loading ad: \(error.localizedDescription)")
+    }
+    
+    public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+        print("Received banner ad")
+        
+        // Received an ad; show the banner now
+        bannerView.isHidden = false
+    }
+    
+    
+    // MARK: Reward ad functions
+    public func rewardBasedVideoAdDidReceive(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // Received a reward based video ad; may not end up using this
+        print("Received reward ad!")
+        
+        let contScene = scene as! ContinousGameScene
+        if contScene.gameModel!.prevTurnSaved {
+            // If the game model saved off a previous turn state, ensure the undo button is enabled
+            enableUndoButton()
+        }
+    }
+    
+    public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
+        // User was rewarded; let the game model know to save the user or undo the turn (depending on what the reward is supposed to be)
+        print("User gets rewarded!")
+        if rewardType == ContinuousGameController.NO_REWARD {
+            print("No reward type specified... oops?")
+        }
+        else if rewardType == ContinuousGameController.UNDO_REWARD {
+            // Undo the last turn
+            let contScene = scene as! ContinousGameScene
+            contScene.loadPreviousTurnState()
+        }
+        else if rewardType == ContinuousGameController.RESCUE_REWARD {
+            // Save the user!
+            let contScene = scene as! ContinousGameScene
+            contScene.saveUser()
+        }
+        
+        // Reset the reward type since we just rewarded the user
+        rewardType = ContinuousGameController.NO_REWARD
+    }
+    
+    public func rewardBasedVideoAdDidCompletePlaying(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // The video ad completed; might not need to use this either since the function above this handles rewards
+        print("The reward video completed")
+    }
+    
+    public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // Get ready to load up a new reward ad right away
+        print("Reward ad closed out")
+        
+        // Dismiss the reward ad view controller
+        rewardAdViewController.dismiss(animated: true, completion: nil)
+        
+        // Ensure the undo button is disabled after showing a reward ad
+        disableUndoButton()
+        
+        // Load a new reward ad
+        let rewardAdRequest = GADRequest()
+        rewardAdRequest.testDevices = AdHandler.getTestDevices()
+        GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
+    }
+    
+    public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didFailToLoadWithError error: Error) {
+        // Failed to load a reward ad; need to handle this case when the user isn't on the network
+        print("Failed to load reward ad")
+        
+        // Disable the undo button if it's loaded because we don't have an ad loaded
+        disableUndoButton()
+    }
+    
+    // MARK: Interstitial ad functions
+    public func interstitialDidReceiveAd(_ ad: GADInterstitial) {
+        // Received an interstitial ad
+        print("Received interstitial ad")
+    }
+    
+    public func interstitial(_ ad: GADInterstitial, didFailToReceiveAdWithError error: GADRequestError) {
+        // Failed to receive an interstitial ad
+        print("Failed to receive interstitial ad")
+    }
+    
+    public func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        // Interstitial ad closed out; return to game menu now
+        print("Interstitial ad removed from screen")
+        self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+    }
+    
+    public func showRewardAd() {
+        // Show the reward ad if we can
+        if GADRewardBasedVideoAd.sharedInstance().isReady {
+            // MARK: Bug - to avoid a weird bug, I need to load a new view with its own View Controller
+            self.present(rewardAdViewController, animated: true, completion: nil)
+        }
+        else {
+            // If we didn't load an ad just give the user a reward (maybe they're offline?)
+            print("Failed to show reward ad")
+        }
+    }
+    
+    // MARK: Public view controller functions
     public func getPauseMenu() -> UIView {
         return pauseMenuView
     }
     
     public func showContinueButton() {
+        if false == GADRewardBasedVideoAd.sharedInstance().isReady {
+            // If we failed to load a reward ad, don't allow the user to save themselves
+            let scene = self.scene as! ContinousGameScene
+            scene.endGame()
+            return
+        }
+        
         if let view = self.view as! SKView? {
             view.isPaused = true
             
             let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
             let yesAction = UIAlertAction(title: "Yes", style: .default) { (handler: UIAlertAction) in
                 print("Pressed yes button")
-                let scene = self.scene as! ContinousGameScene
-                // Save the user!
-                scene.saveUser()
+                // Show a reward ad
+                // Set this variable so we know what type of reward to give the user
+                self.rewardType = ContinuousGameController.RESCUE_REWARD
+                self.showRewardAd()
                 view.isPaused = false
             }
             let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
@@ -85,7 +244,8 @@ class ContinuousGameController: UIViewController {
     }
     
     public func enableUndoButton() {
-        if false == undoButton.isEnabled {
+        if GADRewardBasedVideoAd.sharedInstance().isReady && false == undoButton.isEnabled {
+            // If we've loaded a reward ad, enable the button
             undoButton.isEnabled = true
         }
     }
@@ -141,23 +301,30 @@ class ContinuousGameController: UIViewController {
     }
 
     public func handleGameOver() {
-        self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+        // Show interstitial ad here if we have one loaded
+        if interstitialAd.isReady {
+            interstitialAd.present(fromRootViewController: self)
+        }
+        else {
+            self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+        }
     }
     
     @IBAction func undoTurn(_ sender: Any) {
-        // MARK: TODO - Add code here to show an ad
-
-        let contScene = scene as! ContinousGameScene
-        contScene.loadPreviousTurnState()
+        // Set this variable so we know what type of reward to give the user
+        rewardType = ContinuousGameController.UNDO_REWARD
+        showRewardAd()
     }
     
     // Prepare for a segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Necessary for loading views
+        print("Preparing for segue")
     }
 
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
         // Necessary for unwinding views
+        print("Preparing for unwind")
     }
     
     public func updateScore(gameScore: Int, highScore: Int) {
@@ -180,5 +347,4 @@ class ContinuousGameController: UIViewController {
     override var prefersStatusBarHidden: Bool {
         return true
     }
-    
 }

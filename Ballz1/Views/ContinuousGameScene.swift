@@ -236,11 +236,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                                                        groundHeight: groundNode!.size.height)
                 }
             }
-            
-            if gameModel!.isGameOver() {
-                gameModel!.saveState()
-                handleGameOver()
-            }
         }
     }
     
@@ -369,7 +364,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     else {
                         view!.isPaused = true
                         // Otherwise show the gameover overlay
-                        showGameOverNode()
+                        self.endGame()
                     }
                 }
                 // Check to see if we are at risk of losing the game
