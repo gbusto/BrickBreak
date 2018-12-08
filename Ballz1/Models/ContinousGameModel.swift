@@ -307,7 +307,7 @@ class ContinuousGameModel {
     public func saveUser() -> [Item] {
         state = READY
         userWasSaved = true
-        return itemGenerator!.itemArray.remove(at: 0)
+        return itemGenerator!.saveUser()
     }
 
     public func handleTurn() -> [Item] {
