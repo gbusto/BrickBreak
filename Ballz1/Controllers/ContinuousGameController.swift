@@ -12,7 +12,7 @@ import UIKit
 import SpriteKit
 import GoogleMobileAds
 
-class ContinuousGameController: UIViewController, GADBannerViewDelegate {
+class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewardBasedVideoAdDelegate {
     
     private var scene: SKScene?
     
@@ -23,6 +23,8 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate {
     @IBOutlet var pauseMenuView: UIView!
     @IBOutlet var resumeButton: UIButton!
     @IBOutlet var returnGameMenuButton: UIButton!
+    
+    private var loadedRewardAd = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,13 +52,23 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate {
             resumeButton.imageView?.contentMode = .scaleAspectFit
             returnGameMenuButton.imageView?.contentMode = .scaleAspectFit
             
+            // Set up the banner ad
             bannerView.adUnitID = AdHandler.getBannerAdID()
             bannerView.rootViewController = self
             bannerView.delegate = self
             
-            let adRequest = GADRequest()
-            adRequest.testDevices = AdHandler.getTestDevices()
-            bannerView.load(adRequest)
+            // Load the banner ad request
+            let bannerAdRequest = GADRequest()
+            bannerAdRequest.testDevices = AdHandler.getTestDevices()
+            bannerView.load(bannerAdRequest)
+            
+            // Set up reward ads
+            GADRewardBasedVideoAd.sharedInstance().delegate = self
+            
+            // Load the undo reward ad request
+            let undoRewardAd = GADRequest()
+            undoRewardAd.testDevices = AdHandler.getTestDevices()
+            GADRewardBasedVideoAd.sharedInstance().load(undoRewardAd, withAdUnitID: AdHandler.getRewardAdID())
             
             view.presentScene(scene)
             
@@ -64,15 +76,65 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate {
         }
     }
     
+    // MARK: Banner ad functions
     public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
+        // Error loading the ad; hide the banner
         bannerView.isHidden = true
         print("Error loading ad: \(error.localizedDescription)")
     }
     
     public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+        // Received an ad; show the banner now
         bannerView.isHidden = false
     }
     
+    // MARK: Reward ad functions
+    public func rewardBasedVideoAdDidReceive(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // Received a reward based video ad; may not end up using this
+        print("Received reward ad!")
+        loadedRewardAd = true
+    }
+    
+    public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
+        // User was rewarded; let the game model know to save the user or undo the turn (depending on what the reward is supposed to be)
+        print("User gets rewarded!")
+    }
+    
+    public func rewardBasedVideoAdDidCompletePlaying(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // The video ad completed; might not need to use this either since the function above this handles rewards
+        print("The reward video completed")
+    }
+    
+    public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // Get ready to load up a new reward ad right away
+        print("Reward ad closed out")
+        loadedRewardAd = false
+        let undoRewardAd = GADRequest()
+        undoRewardAd.testDevices = AdHandler.getTestDevices()
+        GADRewardBasedVideoAd.sharedInstance().load(undoRewardAd, withAdUnitID: AdHandler.getRewardAdID())
+    }
+    
+    public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didFailToLoadWithError error: Error) {
+        // Failed to load a reward ad; need to handle this case when the user isn't on the network
+        print("Failed to load reward ad")
+        loadedRewardAd = false
+    }
+    
+    public func showRewardAd() {
+        if loadedRewardAd {
+            // Show the reward ad if we can
+            if GADRewardBasedVideoAd.sharedInstance().isReady {
+                // MARK: Bug - to avoid a weird bug, I need to load a new view with its own View Controller
+                GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+            }
+        }
+        else {
+            // If we didn't load an ad just give the user a reward (maybe they're offline?)
+            print("Failed to show reward ad")
+        }
+    }
+    
+    // MARK: Public view controller functions
     public func getPauseMenu() -> UIView {
         return pauseMenuView
     }
@@ -165,18 +227,20 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate {
     
     @IBAction func undoTurn(_ sender: Any) {
         // MARK: TODO - Add code here to show an ad
-
-        let contScene = scene as! ContinousGameScene
-        contScene.loadPreviousTurnState()
+        showRewardAd()
+        //let contScene = scene as! ContinousGameScene
+        //contScene.loadPreviousTurnState()
     }
     
     // Prepare for a segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Necessary for loading views
+        print("Preparing for segue")
     }
 
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
         // Necessary for unwinding views
+        print("Preparing for unwind")
     }
     
     public func updateScore(gameScore: Int, highScore: Int) {

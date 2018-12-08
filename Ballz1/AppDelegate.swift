@@ -45,7 +45,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let notification = Notification(name: .init("appTerminate"))
         NotificationCenter.default.post(notification)
     }
-
-
 }
-

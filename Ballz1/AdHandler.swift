@@ -15,6 +15,7 @@ class AdHandler {
     static private var BANNER_AD_TEST_ID = "ca-app-pub-3940256099942544/2934735716"
     static private var INTERSTITIAL_AD_TEST_ID = "ca-app-pub-3940256099942544/5135589807"
     static private var REWARD_AD_TEST_ID = "ca-app-pub-3940256099942544/1712485313"
+    static private var REWARD_AD_ID = "ca-app-pub-4215818305477568/6867110770"
     
     static public func getAdModID() -> String {
         return AdHandler.ADMOB_ID
@@ -36,7 +37,7 @@ class AdHandler {
     
     static public func getRewardAdID() -> String {
         if AdHandler.production {
-            return ""
+            return AdHandler.REWARD_AD_ID
         }
         return AdHandler.REWARD_AD_TEST_ID
     }
