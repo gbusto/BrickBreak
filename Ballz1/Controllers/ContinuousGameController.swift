@@ -25,11 +25,10 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
     @IBOutlet var returnGameMenuButton: UIButton!
     
     private var loadedRewardAd = false
+    private var rewardAdViewController: RewardAdViewController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        print("Loaded continuous game view")
         
         // Notification that says the app is going into the background
         let backgroundNotification = Notification(name: .NSExtensionHostWillResignActive)
@@ -70,6 +69,8 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
             undoRewardAd.testDevices = AdHandler.getTestDevices()
             GADRewardBasedVideoAd.sharedInstance().load(undoRewardAd, withAdUnitID: AdHandler.getRewardAdID())
             
+            rewardAdViewController = RewardAdViewController()
+            
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
@@ -108,7 +109,14 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
     public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
         // Get ready to load up a new reward ad right away
         print("Reward ad closed out")
+        
+        // Dismiss the reward ad view controller
+        rewardAdViewController.dismiss(animated: true, completion: nil)
+        
+        // Set this to false since we just watched a loaded ad and don't know if we'll get another one
         loadedRewardAd = false
+        
+        // Start trying to load a new ad
         let undoRewardAd = GADRequest()
         undoRewardAd.testDevices = AdHandler.getTestDevices()
         GADRewardBasedVideoAd.sharedInstance().load(undoRewardAd, withAdUnitID: AdHandler.getRewardAdID())
@@ -125,7 +133,8 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
             // Show the reward ad if we can
             if GADRewardBasedVideoAd.sharedInstance().isReady {
                 // MARK: Bug - to avoid a weird bug, I need to load a new view with its own View Controller
-                GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+                //GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+                self.present(rewardAdViewController, animated: true, completion: nil)
             }
         }
         else {
