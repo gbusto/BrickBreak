@@ -76,6 +76,21 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                         // I'm assuming the app uses the default leaderboard until one is created for the game
                         // When the first score is reported to a leaderboard, that board is now the default one
                         self.gcDefaultLeaderBoard = leaderboardIdentifier!
+                        
+                        // Try to get the player's high score from storage
+                        let highScore = self.loadHighScore()
+                        
+                        // Report the game score to the game center
+                        let gkscore = GKScore(leaderboardIdentifier: self.LEADERBOARD_ID, player: localPlayer)
+                        gkscore.value = Int64(highScore)
+                        GKScore.report([gkscore]) { (error) in
+                            if error != nil {
+                                print("Error reporting score: \(error!)")
+                            }
+                            else {
+                                print("Successfully reported game score \(gkscore.value)")
+                            }
+                        }
                     }
                 })
             }
@@ -86,6 +101,11 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                 print("Error: \(error!)")
             }
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        // Authenticate the player and submit their high score
+        authenticatePlayer()
     }
     
     override func viewDidLoad() {
@@ -101,24 +121,6 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
-            
-            // Perform game center authentication
-            authenticatePlayer()
-            
-            // Try to get the player's high score from storage
-            let highScore = loadHighScore()
-            
-            // Report the game score to the game center
-            let gkscore = GKScore(leaderboardIdentifier: LEADERBOARD_ID)
-            gkscore.value = Int64(highScore)
-            GKScore.report([gkscore]) { (error) in
-                if error != nil {
-                    print("Error reporting score: \(error!)")
-                }
-                else {
-                    print("Successfully reported game score \(gkscore.value)")
-                }
-            }
         }
     }
     
