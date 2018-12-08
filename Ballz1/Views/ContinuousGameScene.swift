@@ -236,11 +236,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                                                        groundHeight: groundNode!.size.height)
                 }
             }
-            
-            if gameModel!.isGameOver() {
-                gameModel!.saveState()
-                handleGameOver()
-            }
         }
     }
     
@@ -296,10 +291,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if gameModel!.isTurnOver() {
-            // Try to load a reward ad the for user in case they've been offline and are now online
-            // Start trying to load a new ad
-            gameController!.tryLoadingRewardAd()
-            
             // Return physics simulation to normal speed
             physicsWorld.speed = 1.0
             
@@ -373,7 +364,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     else {
                         view!.isPaused = true
                         // Otherwise show the gameover overlay
-                        showGameOverNode()
+                        self.endGame()
                     }
                 }
                 // Check to see if we are at risk of losing the game

@@ -12,10 +12,17 @@ import UIKit
 import SpriteKit
 import GoogleMobileAds
 
-class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewardBasedVideoAdDelegate {
+class ContinuousGameController: UIViewController,
+                                GADBannerViewDelegate,
+                                GADRewardBasedVideoAdDelegate,
+                                GADInterstitialDelegate {
     
     private var scene: SKScene?
     
+    private var loadedInterstitialAd = false
+    private var interstitialAd: GADInterstitial!
+    
+    private var loadedBannerAd = false
     @IBOutlet var bannerView: GADBannerView!
     @IBOutlet var undoButton: UIButton!
     @IBOutlet weak var gameScoreLabel: UILabel!
@@ -31,6 +38,38 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
     static private var NO_REWARD = Int(0)
     static private var UNDO_REWARD = Int(1)
     static private var RESCUE_REWARD = Int(2)
+    
+    override func viewDidAppear(_ animated: Bool) {
+        // Set up the banner ad
+        bannerView.adUnitID = AdHandler.getBannerAdID()
+        bannerView.rootViewController = self
+        bannerView.delegate = self
+        
+        // Load the banner ad
+        let bannerAdRequest = GADRequest()
+        bannerAdRequest.testDevices = AdHandler.getTestDevices()
+        bannerView.load(bannerAdRequest)
+        
+        // Prepare to load interstitial ads
+        GADRewardBasedVideoAd.sharedInstance().delegate = self
+        
+        // Attempt to load the reward ad
+        let rewardAdRequest = GADRequest()
+        rewardAdRequest.testDevices = AdHandler.getTestDevices()
+        GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
+        
+        // Prepare to load interstitial ads
+        interstitialAd = GADInterstitial(adUnitID: AdHandler.getInterstitialAdID())
+        interstitialAd.delegate = self
+        
+        // Attempt to load the interstitial ad
+        let intAdRequest = GADRequest()
+        intAdRequest.testDevices = AdHandler.getTestDevices()
+        interstitialAd.load(intAdRequest)
+        
+        // This is a view controller to fix buggy behavior with the reward ads
+        rewardAdViewController = RewardAdViewController()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,26 +95,6 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
             resumeButton.imageView?.contentMode = .scaleAspectFit
             returnGameMenuButton.imageView?.contentMode = .scaleAspectFit
             
-            // Set up the banner ad
-            bannerView.adUnitID = AdHandler.getBannerAdID()
-            bannerView.rootViewController = self
-            bannerView.delegate = self
-            
-            // Load the banner ad request
-            let bannerAdRequest = GADRequest()
-            bannerAdRequest.testDevices = AdHandler.getTestDevices()
-            bannerView.load(bannerAdRequest)
-            
-            // Set up reward ads
-            GADRewardBasedVideoAd.sharedInstance().delegate = self
-            
-            // Load the undo reward ad request
-            let undoRewardAd = GADRequest()
-            undoRewardAd.testDevices = AdHandler.getTestDevices()
-            GADRewardBasedVideoAd.sharedInstance().load(undoRewardAd, withAdUnitID: AdHandler.getRewardAdID())
-            
-            rewardAdViewController = RewardAdViewController()
-            
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
@@ -87,23 +106,23 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
         // Error loading the ad; hide the banner
         bannerView.isHidden = true
         print("Error loading ad: \(error.localizedDescription)")
+        
+        // Set this to false so we can try loading new banner ads
+        loadedBannerAd = false
     }
     
     public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+        print("Received banner ad")
+        
         // Received an ad; show the banner now
         bannerView.isHidden = false
+        
+        // Set this so we don't try to keep loading banner ads
+        loadedBannerAd = true
     }
+    
     
     // MARK: Reward ad functions
-    public func tryLoadingRewardAd() {
-        // Start trying to load a new ad
-        if false == loadedRewardAd {
-            let undoRewardAd = GADRequest()
-            undoRewardAd.testDevices = AdHandler.getTestDevices()
-            GADRewardBasedVideoAd.sharedInstance().load(undoRewardAd, withAdUnitID: AdHandler.getRewardAdID())
-        }
-    }
-    
     public func rewardBasedVideoAdDidReceive(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
         // Received a reward based video ad; may not end up using this
         print("Received reward ad!")
@@ -155,8 +174,10 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
         // Ensure the undo button is disabled after showing a reward ad
         disableUndoButton()
         
-        // Try to load a new reward ad so we're prepared to present one next time
-        tryLoadingRewardAd()
+        // Load a new reward ad
+        let rewardAdRequest = GADRequest()
+        rewardAdRequest.testDevices = AdHandler.getTestDevices()
+        GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
     }
     
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didFailToLoadWithError error: Error) {
@@ -168,12 +189,30 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
         disableUndoButton()
     }
     
+    // MARK: Interstitial ad functions
+    public func interstitialDidReceiveAd(_ ad: GADInterstitial) {
+        // Received an interstitial ad
+        print("Received interstitial ad")
+        loadedInterstitialAd = true
+    }
+    
+    public func interstitial(_ ad: GADInterstitial, didFailToReceiveAdWithError error: GADRequestError) {
+        // Failed to receive an interstitial ad
+        print("Failed to receive interstitial ad")
+        loadedInterstitialAd = false
+    }
+    
+    public func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        // Interstitial ad closed out; return to game menu now
+        print("Interstitial ad removed from screen")
+        self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+    }
+    
     public func showRewardAd() {
         if loadedRewardAd {
             // Show the reward ad if we can
             if GADRewardBasedVideoAd.sharedInstance().isReady {
                 // MARK: Bug - to avoid a weird bug, I need to load a new view with its own View Controller
-                //GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
                 self.present(rewardAdViewController, animated: true, completion: nil)
             }
         }
@@ -280,7 +319,13 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
     }
 
     public func handleGameOver() {
-        self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+        // Show interstitial ad here if we have one loaded
+        if interstitialAd.isReady {
+            interstitialAd.present(fromRootViewController: self)
+        }
+        else {
+            self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+        }
     }
     
     @IBAction func undoTurn(_ sender: Any) {

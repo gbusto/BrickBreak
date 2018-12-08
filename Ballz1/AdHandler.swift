@@ -12,10 +12,14 @@ class AdHandler {
     static private var production = false
     static private var ADMOB_ID = "ca-app-pub-4215818305477568~5618851558"
     static private var BANNER_AD_ID = "ca-app-pub-4215818305477568/4449116409"
+    static private var INTERSTITIAL_AD_ID = "ca-app-pub-4215818305477568/6603865820"
+    static private var REWARD_AD_ID = "ca-app-pub-4215818305477568/6867110770"
+    
     static private var BANNER_AD_TEST_ID = "ca-app-pub-3940256099942544/2934735716"
     static private var INTERSTITIAL_AD_TEST_ID = "ca-app-pub-3940256099942544/5135589807"
+    // This test ad code is for static interstitial ads; the one above is for videos
+    //static private var INTERSTITIAL_AD_TEST_ID = "ca-app-pub-3940256099942544/4411468910"
     static private var REWARD_AD_TEST_ID = "ca-app-pub-3940256099942544/1712485313"
-    static private var REWARD_AD_ID = "ca-app-pub-4215818305477568/6867110770"
     
     static public func getAdModID() -> String {
         return AdHandler.ADMOB_ID
@@ -29,8 +33,8 @@ class AdHandler {
     }
     
     static public func getInterstitialAdID() -> String {
-        if false == AdHandler.production {
-            return ""
+        if AdHandler.production {
+            return AdHandler.INTERSTITIAL_AD_ID
         }
         return AdHandler.INTERSTITIAL_AD_TEST_ID
     }
