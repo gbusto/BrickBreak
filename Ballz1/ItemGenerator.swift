@@ -493,10 +493,16 @@ class ItemGenerator {
         }
         
         // After removing all necessary items, check to see if there any empty rows that can be removed
-        //removeEmptyRows()
         removeEmptyRows()
         
         // Return all items that were removed
+        return removedItems
+    }
+    
+    public func saveUser() -> [Item] {
+        let removedItems = itemArray.remove(at: 0)
+        removeEmptyRows()
+        
         return removedItems
     }
     
