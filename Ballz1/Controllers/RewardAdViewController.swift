@@ -15,7 +15,11 @@ class RewardAdViewController: UIViewController {
         // Can only present after the view has appeared and it is in the window view's heirarchy
         // Overriding viewDidLoad() doesn't work because the view hasn't appeared yet and so we can't display an ad before then
         print("Loaded reward ad view controller")
-        
+                
         GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
     }
 }

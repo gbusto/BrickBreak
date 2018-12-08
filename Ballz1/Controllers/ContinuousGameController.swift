@@ -27,6 +27,11 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
     private var loadedRewardAd = false
     private var rewardAdViewController: RewardAdViewController!
     
+    private var rewardType = ContinuousGameController.NO_REWARD
+    static private var NO_REWARD = Int(0)
+    static private var UNDO_REWARD = Int(1)
+    static private var RESCUE_REWARD = Int(2)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -99,6 +104,22 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
         // User was rewarded; let the game model know to save the user or undo the turn (depending on what the reward is supposed to be)
         print("User gets rewarded!")
+        if rewardType == ContinuousGameController.NO_REWARD {
+            print("No reward type specified... oops?")
+        }
+        else if rewardType == ContinuousGameController.UNDO_REWARD {
+            // Undo the last turn
+            let contScene = scene as! ContinousGameScene
+            contScene.loadPreviousTurnState()
+        }
+        else if rewardType == ContinuousGameController.RESCUE_REWARD {
+            // Save the user!
+            let contScene = scene as! ContinousGameScene
+            contScene.saveUser()
+        }
+        
+        // Reset the reward type since we just rewarded the user
+        rewardType = ContinuousGameController.NO_REWARD
     }
     
     public func rewardBasedVideoAdDidCompletePlaying(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
@@ -155,9 +176,10 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
             let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
             let yesAction = UIAlertAction(title: "Yes", style: .default) { (handler: UIAlertAction) in
                 print("Pressed yes button")
-                let scene = self.scene as! ContinousGameScene
-                // Save the user!
-                scene.saveUser()
+                // Show a reward ad
+                // Set this variable so we know what type of reward to give the user
+                self.rewardType = ContinuousGameController.RESCUE_REWARD
+                self.showRewardAd()
                 view.isPaused = false
             }
             let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
@@ -235,10 +257,9 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
     }
     
     @IBAction func undoTurn(_ sender: Any) {
-        // MARK: TODO - Add code here to show an ad
+        // Set this variable so we know what type of reward to give the user
+        rewardType = ContinuousGameController.UNDO_REWARD
         showRewardAd()
-        //let contScene = scene as! ContinousGameScene
-        //contScene.loadPreviousTurnState()
     }
     
     // Prepare for a segue
