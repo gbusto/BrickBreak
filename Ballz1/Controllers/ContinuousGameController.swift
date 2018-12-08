@@ -95,10 +95,25 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
     }
     
     // MARK: Reward ad functions
+    public func tryLoadingRewardAd() {
+        // Start trying to load a new ad
+        if false == loadedRewardAd {
+            let undoRewardAd = GADRequest()
+            undoRewardAd.testDevices = AdHandler.getTestDevices()
+            GADRewardBasedVideoAd.sharedInstance().load(undoRewardAd, withAdUnitID: AdHandler.getRewardAdID())
+        }
+    }
+    
     public func rewardBasedVideoAdDidReceive(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
         // Received a reward based video ad; may not end up using this
         print("Received reward ad!")
         loadedRewardAd = true
+        
+        let contScene = scene as! ContinousGameScene
+        if contScene.gameModel!.prevTurnSaved {
+            // If the game model saved off a previous turn state, ensure the undo button is enabled
+            enableUndoButton()
+        }
     }
     
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
@@ -137,16 +152,20 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
         // Set this to false since we just watched a loaded ad and don't know if we'll get another one
         loadedRewardAd = false
         
-        // Start trying to load a new ad
-        let undoRewardAd = GADRequest()
-        undoRewardAd.testDevices = AdHandler.getTestDevices()
-        GADRewardBasedVideoAd.sharedInstance().load(undoRewardAd, withAdUnitID: AdHandler.getRewardAdID())
+        // Ensure the undo button is disabled after showing a reward ad
+        disableUndoButton()
+        
+        // Try to load a new reward ad so we're prepared to present one next time
+        tryLoadingRewardAd()
     }
     
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didFailToLoadWithError error: Error) {
         // Failed to load a reward ad; need to handle this case when the user isn't on the network
         print("Failed to load reward ad")
         loadedRewardAd = false
+        
+        // Disable the undo button if it's loaded because we don't have an ad loaded
+        disableUndoButton()
     }
     
     public func showRewardAd() {
@@ -170,6 +189,13 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
     }
     
     public func showContinueButton() {
+        if false == loadedRewardAd {
+            // If we failed to load a reward ad, don't allow the user to save themselves
+            let scene = self.scene as! ContinousGameScene
+            scene.endGame()
+            return
+        }
+        
         if let view = self.view as! SKView? {
             view.isPaused = true
             
@@ -197,7 +223,8 @@ class ContinuousGameController: UIViewController, GADBannerViewDelegate, GADRewa
     }
     
     public func enableUndoButton() {
-        if false == undoButton.isEnabled {
+        if loadedRewardAd && false == undoButton.isEnabled {
+            // If we've loaded a reward ad, enable the button
             undoButton.isEnabled = true
         }
     }

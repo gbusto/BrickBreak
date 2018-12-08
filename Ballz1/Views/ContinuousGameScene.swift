@@ -296,6 +296,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if gameModel!.isTurnOver() {
+            // Try to load a reward ad the for user in case they've been offline and are now online
+            // Start trying to load a new ad
+            gameController!.tryLoadingRewardAd()
+            
             // Return physics simulation to normal speed
             physicsWorld.speed = 1.0
             
