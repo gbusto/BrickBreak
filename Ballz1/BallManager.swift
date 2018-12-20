@@ -20,6 +20,9 @@ class BallManager {
     // Balls that have just been added from the ItemGenerator
     private var newBallArray: [BallItem] = []
     
+    // This isn't ideal because it shouldn't be aware of any view attributes
+    private var groundHeight = CGFloat(0)
+    
     private var firstBallReturned = false
     
     private var numBallsActive = 0
@@ -121,10 +124,6 @@ class BallManager {
         }
     }
     
-    public func didSetNewOriginPoint() -> Bool {
-        return firstBallReturned
-    }
-    
     
     // MARK: Public functions
     required init(numBalls: Int, radius: CGFloat, restorationURL: URL) {
@@ -151,6 +150,10 @@ class BallManager {
     
     required init() {
         // Empty constructor
+    }
+    
+    public func setGroundHeight(height: CGFloat) {
+        groundHeight = height
     }
     
     public func incrementState() {
@@ -268,7 +271,13 @@ class BallManager {
             }
             if false == ball.isActive {
                 if false == firstBallReturned {
+                    // Set the new origin point once a ball has returned
                     firstBallReturned = true
+                    var ballPosition = ball.node!.position
+                    if ballPosition.y > groundHeight {
+                        // Ensure the ball is on the ground and not above it
+                        ballPosition.y = groundHeight
+                    }
                     originPoint = ball.node!.position
                 }
                 ball.stop(point: originPoint!)
