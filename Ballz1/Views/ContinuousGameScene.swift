@@ -1401,14 +1401,15 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         currentBallCount = gameModel!.getBalls().count
         let originPoint = gameModel!.ballManager!.getOriginPoint()
         var newPoint = CGPoint(x: originPoint.x, y: (originPoint.y + (ballRadius! * 1.5)))
+        let viewWidth = view!.frame.width - (leftWallWidth * 2)
         // This is to prevent the ball count label from going off the screen
-        if newPoint.x < view!.frame.width * ballCountLabelMargin {
+        if newPoint.x < (leftWallWidth + (viewWidth * ballCountLabelMargin)) {
             // If we're close to the far left side, add a small amount to the x value
-            newPoint.x += view!.frame.width * 0.03
+            newPoint.x += viewWidth * 0.03
         }
-        else if newPoint.x > view!.frame.width * (1.0 - ballCountLabelMargin) {
+        else if newPoint.x > ((view!.frame.width - rightWallWidth) - (viewWidth * ballCountLabelMargin)) {
             // Opposite of the above comment
-            newPoint.x -= view!.frame.width * 0.03
+            newPoint.x -= viewWidth * 0.03
         }
         
         ballCountLabel!.position = newPoint
