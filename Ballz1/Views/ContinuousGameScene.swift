@@ -288,6 +288,27 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    override func didSimulatePhysics() {
+        if gameModel!.isMidTurn() {
+            // Check to see if the ball manager set a new origin point
+            if gameModel!.ballManager!.didSetNewOriginPoint() {
+                let groundHeight = groundNode!.size.height + ballRadius!
+                let newOriginPoint = gameModel!.ballManager!.getOriginPoint()
+                if newOriginPoint.y > groundHeight {
+                    print("New origin point y: \(newOriginPoint.y), groundHeight: \(groundHeight)")
+                    var correctedOriginPoint = newOriginPoint
+                    correctedOriginPoint.y = groundHeight
+                    gameModel!.ballManager!.setOriginPoint(point: correctedOriginPoint)
+                    for ball in gameModel!.ballManager!.ballArray {
+                        if ball.getNode().position == newOriginPoint {
+                            ball.getNode().position = correctedOriginPoint
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if gameModel!.isTurnOver() {
