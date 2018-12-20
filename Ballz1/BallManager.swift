@@ -121,6 +121,10 @@ class BallManager {
         }
     }
     
+    public func didSetNewOriginPoint() -> Bool {
+        return firstBallReturned
+    }
+    
     
     // MARK: Public functions
     required init(numBalls: Int, radius: CGFloat, restorationURL: URL) {
