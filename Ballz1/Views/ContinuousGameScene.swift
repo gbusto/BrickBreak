@@ -290,6 +290,15 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    // MARK: After physics simulation step
+    override func didSimulatePhysics() {
+        for ball in gameModel!.ballManager!.ballArray {
+            if false == ball.isResting {
+                print("Ball velocity is \(ball.getNode().physicsBody!.velocity)")
+            }
+        }
+    }
+    
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if gameModel!.isTurnOver() {
