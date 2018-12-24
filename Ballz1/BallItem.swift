@@ -186,7 +186,7 @@ class BallItem: Item {
         let impulseX = (newX - originPoint.x) / 5
         let impulseY = (newY - originPoint.y) / 5
         
-        node!.run(SKAction.applyImpulse(CGVector(dx: impulseX, dy: impulseY), duration: 0.01))
+        node!.physicsBody!.applyImpulse(CGVector(dx: impulseX, dy: impulseY))
         isActive = true
         isResting = false
     }
