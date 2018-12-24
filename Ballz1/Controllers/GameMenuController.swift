@@ -91,6 +91,9 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                                 print("Successfully reported game score \(gkscore.value)")
                             }
                         }
+                        
+                        // Enable the game center button
+                        self.gameCenterButton.isEnabled = true
                     }
                 })
             }
