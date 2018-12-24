@@ -523,6 +523,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         if false == gameModel!.lossRisk() {
             stopFlashingRed()
         }
+        
+        // Remove saved turn state after saving the user so they can't undo this
+        gameModel!.prevTurnSaved = false
     }
     
     public func loadPreviousTurnState() {
