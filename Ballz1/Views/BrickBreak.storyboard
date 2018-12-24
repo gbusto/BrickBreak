@@ -48,7 +48,7 @@
                                             <stackView opaque="NO" contentMode="scaleAspectFit" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="nqw-bE-Rpn">
                                                 <rect key="frame" x="152" y="89" width="70" height="69"/>
                                                 <subviews>
-                                                    <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kUv-85-qmg">
+                                                    <button opaque="NO" contentMode="scaleAspectFit" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kUv-85-qmg">
                                                         <rect key="frame" x="0.0" y="0.0" width="70" height="69"/>
                                                         <state key="normal" image="game_center_button"/>
                                                         <connections>
