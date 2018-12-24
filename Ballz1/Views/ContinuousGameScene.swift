@@ -275,6 +275,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                                                            groundHeight: groundNode!.size.height)
                 gameModel!.prepareTurn(point: firePoint)
                 
+                // Disable the undo button when the user is in the middle of a turn
+                disableUndoButton()
+                
                 if tutorialIsShowing && tutorialType == .gameplayTutorial {
                     removeTutorial()
                 }
