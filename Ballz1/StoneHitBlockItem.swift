@@ -42,7 +42,7 @@ class StoneHitBlockItem: Item {
         node!.anchorPoint = CGPoint(x: 0, y: 0)
         node!.name = "block\(num)"
         
-        stoneTexture = SKTexture(imageNamed: "stone_texture")
+        stoneTexture = SKTexture(imageNamed: "stone_texture3")
         
         let centerPoint = CGPoint(x: size.width / 2, y: size.height / 2)
         let physBody = SKPhysicsBody(rectangleOf: size, center: centerPoint)
