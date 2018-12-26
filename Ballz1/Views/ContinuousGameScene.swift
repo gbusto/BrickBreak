@@ -305,19 +305,19 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 if (dx < positiveDelta && dx > negativeDelta) {
                     // Correct the velocity's X delta to a minimum value
                     if dx < 0 {
-                        ball.getNode().physicsBody!.velocity.dx = negativeDelta
+                        ball.getNode().physicsBody!.applyImpulse(CGVector(dx: -0.5, dy: 0))
                     }
                     else {
-                        ball.getNode().physicsBody!.velocity.dx = positiveDelta
+                        ball.getNode().physicsBody!.applyImpulse(CGVector(dx: 0.5, dy: 0))
                     }
                 }
                 if (dy < positiveDelta && dy > negativeDelta) {
                     // Correct the velocity's Y delta to a minimum value
                     if dy < 0 {
-                        ball.getNode().physicsBody!.velocity.dy = negativeDelta
+                        ball.getNode().physicsBody!.applyImpulse(CGVector(dx: 0, dy: -0.5))
                     }
                     else {
-                        ball.getNode().physicsBody!.velocity.dy = positiveDelta
+                        ball.getNode().physicsBody!.applyImpulse(CGVector(dx: 0, dy: 0.5))
                     }
                 }
             }
