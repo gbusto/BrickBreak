@@ -280,6 +280,8 @@ class ContinuousGameController: UIViewController,
     @objc func handleAppGoingBackground() {
         let scene = self.scene as! ContinousGameScene
         
+        scene.saveState()
+        
         // Don't pause the game when it goes to the background if the gameover overlay is showing
         if scene.isGameOverShowing() {
             return

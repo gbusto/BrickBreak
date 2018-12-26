@@ -155,10 +155,6 @@ class ContinuousGameModel {
     
     public func loadPersistentState() -> Bool {
         do {
-            // COMMENT ME OUT
-            //try FileManager.default.removeItem(atPath: ContinuousGameModel.PersistentDataURL.path)
-            //return false
-            
             // Load the persistent data
             let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
             persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
@@ -174,11 +170,6 @@ class ContinuousGameModel {
     
     public func loadGameState() -> Bool {
         do {
-            // COMMENT ME OUT
-            //try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
-            //try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
-            //return false
-            
             // Load game state for this game mode
             let gameData = try Data(contentsOf: ContinuousGameModel.GameStateURL)
             gameState = try PropertyListDecoder().decode(GameState.self, from: gameData)
@@ -409,8 +400,7 @@ class ContinuousGameModel {
     public func incrementState() {
         if WAITING == state {
             state = READY
-            // Save state after each turn
-            saveState()
+            // Don't need to save state after each turn
             return
         }
         else if GAME_OVER == state {
