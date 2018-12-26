@@ -133,7 +133,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         case gameplayTutorial
         case topBarTutorial
         case fastForwardTutorial
-        case ballReturnTutorial
     }
     
     private var tutorialIsShowing = false
@@ -204,8 +203,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         if false == gameModel!.showedTutorials {
             tutorialsList = [.gameplayTutorial,
                              .topBarTutorial,
-                             .fastForwardTutorial,
-                             .ballReturnTutorial]
+                             .fastForwardTutorial]
             showTutorial(tutorial: .gameplayTutorial)
         }
         
@@ -374,11 +372,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 removeTutorial()
                 tutorialsList.append(.fastForwardTutorial)
             }
-                // Same applies for the ball return tutorial
-            else if tutorialIsShowing && tutorialType == .ballReturnTutorial {
-                removeTutorial()
-                tutorialsList.append(.ballReturnTutorial)
-            }
         }
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
@@ -441,11 +434,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 if false == tutorialIsShowing && physicsWorld.speed == 1.0 {
                     showTutorial(tutorial: .fastForwardTutorial)
                 }
-            }
-            
-            // If the user is beyond turn 5 and there are tutorials to show, show them the ball return tutorial
-            if gameModel!.gameScore > 5 && tutorialsList.count > 0 && false == tutorialIsShowing {
-                showTutorial(tutorial: .ballReturnTutorial)
             }
             
             if false == addedGesture {
@@ -693,22 +681,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let point = sender.location(in: view!)
         
         if inGame(point) {
-            // CHeck if the ball return tutorial is showing
-            if tutorialIsShowing && tutorialType == .ballReturnTutorial {
-                removeTutorial()
-            }
-            
-            // Otherwise, if the user swiped down then they probably know how to do it so we don't need to show them the tutorial; remove it from the list
-            else if tutorialsList.count > 0 {
-                let remainingTutorials = tutorialsList.filter {
-                    if $0 == .ballReturnTutorial {
-                        return false
-                    }
-                    return true
-                }
-                tutorialsList = remainingTutorials
-            }
-            
             if gameModel!.isMidTurn() {
                 swipedDown = true
             }
@@ -1306,13 +1278,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         self.addChild(pointerNode)
         self.addChild(labelNode)
-        
-        tutorialNodes.append(pointerNode)
-        tutorialNodes.append(labelNode)
-        
-        tutorialIsShowing = true
-        
-        tutorialType = .ballReturnTutorial
     }
     
     private func showTutorial(tutorial: Tutorials) {
@@ -1329,10 +1294,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 else if tutorial == .fastForwardTutorial {
                     showFastForwardTutorial()
-                    return false
-                }
-                else if tutorial == .ballReturnTutorial {
-                    showBallReturnTutorial()
                     return false
                 }
                 return false
