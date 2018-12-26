@@ -9,7 +9,7 @@
 import Foundation
 
 class AdHandler {
-    static private var production = false
+    static private var production = true
     static private var ADMOB_ID = "ca-app-pub-4215818305477568~5618851558"
     static private var BANNER_AD_ID = "ca-app-pub-4215818305477568/4449116409"
     static private var INTERSTITIAL_AD_ID = "ca-app-pub-4215818305477568/6603865820"
