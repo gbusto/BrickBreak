@@ -103,9 +103,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // Colors for the scene
     private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
     private var marginColor = UIColor.init(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
-    
-    private var blockColor = Color()
-    
+        
     // This is to keep track of the number of broken hit blocks in a given turn
     private var brokenHitBlockCount: Int = 0
     // A boolean because we only want to show the "on fire" encouragement once per turn
@@ -494,7 +492,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 else if item is BallItem {
                     // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
-                    //let newPoint = CGPoint(x: item.getNode().position.x, y: groundNode!.size.height + ballRadius!)
                     let vector = CGVector(dx: 0, dy: ballRadius! * 0.5)
                     let ball = item.getNode()
                     ball.physicsBody!.affectedByGravity = true
@@ -777,8 +774,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func addRowToView(rowNum: Int, items: [Item]) {
-        //let color = blockColor.changeColor()
-        
         colorizeBlocks(itemRow: items)
         
         if items.count > 0 {
@@ -1139,7 +1134,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         labelNode.horizontalAlignmentMode = .center
         labelNode.verticalAlignmentMode = .center
         
-        //let rect1 = CGRect(x: leftWallWidth, y: margin! / 2, width: 100, height: 50)
         let highScoreHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
         highScoreHelper.zPosition = 105
         highScoreHelper.text = "Best"
@@ -1156,7 +1150,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         highScoreHelper.numberOfLines = 1
         
-        //let rect2 = CGRect(x: view!.frame.midX - 50, y: margin! / 2, width: 100, height: 50)
         let gameScoreHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
         gameScoreHelper.zPosition = 105
         gameScoreHelper.text = "Score"
@@ -1173,7 +1166,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         gameScoreHelper.numberOfLines = 1
         
-        //let rect3 = CGRect(x: view!.frame.width - rightWallWidth - 100, y: margin! / 2, width: 100, height: 50)
         let undoHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
         undoHelper.zPosition = 105
         undoHelper.text = "Undo"
