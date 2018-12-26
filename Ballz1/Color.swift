@@ -36,30 +36,23 @@ class Color {
         
         switch state {
         case GREEN_INC:
-            print("GREEN_INC")
             green += diff
             break
         case RED_DEC:
-            print("RED_DEC")
             red -= diff
             break
         case BLUE_INC:
-            print("BLUE_INC")
             blue += diff
             break
         case GREEN_DEC:
-            print("GREEN_DEC")
             green -= diff
             break
         case RED_INC:
-            print("RED_INC")
             red += diff
             break
         case BLUE_DEC:
-            print("BLUE_DEC")
             blue -= diff
         default:
-            print("Bad color state")
             break
         }
         

@@ -96,7 +96,6 @@ class ContinuousGameModel {
             // Create the App directory Documents/BB
             if false == FileManager.default.fileExists(atPath: ContinuousGameModel.AppDirURL.path) {
                 try FileManager.default.createDirectory(at: ContinuousGameModel.AppDirURL, withIntermediateDirectories: true, attributes: nil)
-                print("Created app directory in Documents")
             }
             
             // Check if the user beat their high score; if they did then save it
@@ -110,7 +109,6 @@ class ContinuousGameModel {
             // Save the persistent data
             let pData = try PropertyListEncoder().encode(self.persistentData!)
             try pData.write(to: ContinuousGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
-            print("Wrote persistent data to file")
         }
         catch {
             print("Error saving persistent state: \(error)")
@@ -130,7 +128,6 @@ class ContinuousGameModel {
             // Create the directory for this game mode (Documents/BB/ContinuousDir)
             if false == FileManager.default.fileExists(atPath: ContinuousGameModel.ContinuousDirURL.path) {
                 try FileManager.default.createDirectory(at: ContinuousGameModel.ContinuousDirURL, withIntermediateDirectories: true, attributes: nil)
-                print("Created directory for continuous game state")
             }
             
             // Save game state stuff (right now it's just the current game score)
@@ -140,7 +137,6 @@ class ContinuousGameModel {
             // Save the game state
             let gameData = try PropertyListEncoder().encode(self.gameState!)
             try gameData.write(to: ContinuousGameModel.GameStateURL, options: .completeFileProtectionUnlessOpen)
-            print("Wrote game state data to file")
             
             // Save the ball manager's state
             ballManager!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
@@ -158,7 +154,6 @@ class ContinuousGameModel {
             // Load the persistent data
             let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
             persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
-            print("Loaded persistent data")
             
             return true
         }
@@ -173,7 +168,6 @@ class ContinuousGameModel {
             // Load game state for this game mode
             let gameData = try Data(contentsOf: ContinuousGameModel.GameStateURL)
             gameState = try PropertyListDecoder().decode(GameState.self, from: gameData)
-            print("Loaded game state")
             
             return true
         }
@@ -239,11 +233,9 @@ class ContinuousGameModel {
     public func loadPreviousTurnState() -> Bool {
         if prevTurnSaved {
             if false == itemGenerator!.loadTurnState() {
-                print("Failed to load item generator previous turn")
                 return false
             }
             if false == ballManager!.loadTurnState() {
-                print("Failed to load ball manager previous turn")
                 return false
             }
             

@@ -25,7 +25,6 @@ class GameMenuScene: SKScene {
     public var theme: GameMenuColorScheme?
     // MARK: Override functions
     override func didMove(to view: SKView) {
-        print("Loaded GameMenuScene")
         
         theme = GameMenuColorScheme()
         self.backgroundColor = theme!.backgroundColor

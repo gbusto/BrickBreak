@@ -174,7 +174,6 @@ class ItemGenerator {
             
             let data = try PropertyListEncoder().encode(igState!)
             try data.write(to: url)
-            print("Saved item generator state")
         }
         catch {
             print("Failed to save item generator state: \(error)")
@@ -206,7 +205,6 @@ class ItemGenerator {
         do {
             let data = try Data(contentsOf: restorationURL)
             igState = try PropertyListDecoder().decode(ItemGeneratorState.self, from: data)
-            print("Loaded item generator state")
             return true
         }
         catch {
@@ -282,7 +280,6 @@ class ItemGenerator {
                     }
                     numItemsGenerated += 1
                 }
-                print("Added new row to the item array")
                 array.append(newRow)
             }
         }
@@ -448,7 +445,6 @@ class ItemGenerator {
             let row = itemArray[0]
             let newRow = row.filter {
                 if ($0 is BallItem) || ($0 is BombItem) {
-                    print("Pruning a bomb/ball item")
                     return false
                 }
                 return true

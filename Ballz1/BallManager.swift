@@ -74,7 +74,6 @@ class BallManager {
             
             let data = try PropertyListEncoder().encode(self.bmState!)
             try data.write(to: url)
-            print("Saved ball manager state")
         }
         catch {
             print("Error saving ball manager state: \(error)")
@@ -115,7 +114,6 @@ class BallManager {
         do {
             let data = try Data(contentsOf: restorationURL)
             bmState = try PropertyListDecoder().decode(BallManagerState.self, from: data)
-            print("Loaded ball manager state")
             return true
         }
         catch {

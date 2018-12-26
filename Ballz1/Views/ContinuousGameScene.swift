@@ -513,7 +513,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func saveState() {
-        print("Saving game state")
         gameModel!.saveState()
     }
     
@@ -562,7 +561,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let success = gameModel!.loadPreviousTurnState()
         
         if false == success {
-            print("Can't load previous turn")
             return
         }
         
@@ -998,7 +996,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             controller.updateScore(gameScore: gameScore, highScore: highScore)
         }
         else {
-            print("gameController variable not set; can't update score")
+            // GameController variable not set; can't update score
             return
         }
         
@@ -1439,7 +1437,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             controller.handleGameOver()
         }
         else {
-            print("gameController variable not set; can't handle game over tap")
+            // GameController variable not set; can't handle game over tap
         }
     }
     
@@ -1448,7 +1446,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             controller.showContinueButton()
         }
         else {
-            print("gameController variable not set; can't show continue button")
+            // GameController variable not set; can't show continue button
         }
     }
     
@@ -1457,7 +1455,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             controller.enableUndoButton()
         }
         else {
-            print("gameController variable not set; can't enable undo button")
+            // GameController variable not set; can't enable undo button
         }
     }
     
@@ -1466,7 +1464,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             controller.disableUndoButton()
         }
         else {
-            print("gameController variable not set; can't disable undo button")
+            // GameController variable not set; can't disable undo button
         }
     }
     

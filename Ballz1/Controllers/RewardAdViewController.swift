@@ -14,7 +14,6 @@ class RewardAdViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         // Can only present after the view has appeared and it is in the window view's heirarchy
         // Overriding viewDidLoad() doesn't work because the view hasn't appeared yet and so we can't display an ad before then
-        print("Loaded reward ad view controller")
         
         if GADRewardBasedVideoAd.sharedInstance().isReady {
             GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)

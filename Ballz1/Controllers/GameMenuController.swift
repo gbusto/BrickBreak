@@ -42,7 +42,6 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
             let persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
         
-            print("Loaded persistent data")
             return persistentData.highScore
         }
         catch {
@@ -70,7 +69,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                 // Get the default leaderboard ID
                 localPlayer.loadDefaultLeaderboardIdentifier(completionHandler: { (leaderboardIdentifier, error) in
                     if error != nil {
-                        print("ERROR: \(error!)")
+                        print("Error getting leaderboard: \(error!)")
                     }
                     else {
                         // I'm assuming the app uses the default leaderboard until one is created for the game
@@ -87,9 +86,6 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                             if error != nil {
                                 print("Error reporting score: \(error!)")
                             }
-                            else {
-                                print("Successfully reported game score \(gkscore.value)")
-                            }
                         }
                         
                         // Enable the game center button
@@ -100,8 +96,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             else {
                 // 3. Game center is not enabled on the users device
                 self.gcEnabled = false
-                print("Local player could not be authenticated!")
-                print("Error: \(error!)")
+                print("Local player could not be authenticated! \(error!)")
             }
         }
     }
@@ -138,7 +133,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     @IBAction func playGame(_ sender: Any) {
-        print("Pressed button... loading continuous game scene")
+        // Launch game
     }
     
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {

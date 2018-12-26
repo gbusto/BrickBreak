@@ -139,7 +139,6 @@ class StoneHitBlockItem: Item {
                 // Fade the node in "over" the block
                 let action = SKAction.fadeIn(withDuration: 1)
                 stoneNode.run(action)
-                print("Fading in")
             }
         }
         else {
@@ -151,7 +150,6 @@ class StoneHitBlockItem: Item {
                     // After fading out, remove the node from its parent
                     stoneNode.removeFromParent()
                 }
-                print("Fading out")
             }
         }
     }
