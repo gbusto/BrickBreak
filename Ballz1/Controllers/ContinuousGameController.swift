@@ -31,6 +31,7 @@ class ContinuousGameController: UIViewController,
     
     private var rewardAdViewController: RewardAdViewController!
     
+    private var showedReward = false
     private var rewardType = ContinuousGameController.NO_REWARD
     static private var NO_REWARD = Int(0)
     static private var UNDO_REWARD = Int(1)
@@ -134,6 +135,8 @@ class ContinuousGameController: UIViewController,
         
         // Reset the reward type since we just rewarded the user
         rewardType = ContinuousGameController.NO_REWARD
+        
+        showedReward = true
     }
     
     public func rewardBasedVideoAdDidCompletePlaying(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
@@ -152,6 +155,24 @@ class ContinuousGameController: UIViewController,
         let rewardAdRequest = GADRequest()
         rewardAdRequest.testDevices = AdHandler.getTestDevices()
         GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
+        
+        if false == showedReward {
+            if rewardType == ContinuousGameController.NO_REWARD {
+                print("Skipped reward ad and no reward type specified... oops?")
+            }
+            else if rewardType == ContinuousGameController.UNDO_REWARD {
+                // Don't do anything since they didn't watch the ad
+            }
+            else if rewardType == ContinuousGameController.RESCUE_REWARD {
+                // Don't save the user since they didn't watch the ad
+                let scene = self.scene as! ContinousGameScene
+                scene.endGame()
+            }
+        }
+        else {
+            // Set showedReward to false
+            showedReward = false
+        }
     }
     
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didFailToLoadWithError error: Error) {
