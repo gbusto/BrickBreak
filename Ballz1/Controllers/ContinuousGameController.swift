@@ -114,11 +114,6 @@ class ContinuousGameController: UIViewController,
     // MARK: Reward ad functions
     public func rewardBasedVideoAdDidReceive(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
         // Received a reward based video ad; may not end up using this
-        let contScene = scene as! ContinousGameScene
-        if contScene.gameModel!.prevTurnSaved {
-            // If the game model saved off a previous turn state, ensure the undo button is enabled
-            enableUndoButton()
-        }
     }
     
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
