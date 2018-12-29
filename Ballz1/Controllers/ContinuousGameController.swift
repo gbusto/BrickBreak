@@ -37,6 +37,9 @@ class ContinuousGameController: UIViewController,
     static private var UNDO_REWARD = Int(1)
     static private var RESCUE_REWARD = Int(2)
     
+    static private var DISABLED_ALPHA = CGFloat(0.1)
+    static private var ENABLED_ALPHA = CGFloat(1.0)
+    
     override func viewDidAppear(_ animated: Bool) {
         // Set up the banner ad
         bannerView.adUnitID = AdHandler.getBannerAdID()
@@ -87,7 +90,7 @@ class ContinuousGameController: UIViewController,
             scene.scaleMode = .aspectFill
             scene.gameController = self
             
-            undoButton.isEnabled = false
+            disableUndoButton()
             
             pauseMenuView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             resumeButton.imageView?.contentMode = .scaleAspectFit
@@ -247,13 +250,13 @@ class ContinuousGameController: UIViewController,
     public func enableUndoButton() {
         if GADRewardBasedVideoAd.sharedInstance().isReady && false == undoButton.isEnabled {
             // If we've loaded a reward ad, enable the button
-            undoButton.isEnabled = true
+            undoButton.alpha = ContinuousGameController.ENABLED_ALPHA
         }
     }
     
     public func disableUndoButton() {
         if undoButton.isEnabled {
-            undoButton.isEnabled = false
+            undoButton.alpha = ContinuousGameController.DISABLED_ALPHA
         }
     }
     
@@ -314,9 +317,17 @@ class ContinuousGameController: UIViewController,
     }
     
     @IBAction func undoTurn(_ sender: Any) {
-        // Set this variable so we know what type of reward to give the user
-        rewardType = ContinuousGameController.UNDO_REWARD
-        showRewardAd()
+        print("Undo button alpha is \(undoButton.alpha)")
+        if undoButton.alpha < ContinuousGameController.ENABLED_ALPHA {
+            // If it's disabled, inform the user that they can't undo at this time
+            let contScene = scene as! ContinousGameScene
+            contScene.notifyCantUndo()
+        }
+        else {
+            // Set this variable so we know what type of reward to give the user
+            rewardType = ContinuousGameController.UNDO_REWARD
+            showRewardAd()
+        }
     }
     
     // Prepare for a segue
