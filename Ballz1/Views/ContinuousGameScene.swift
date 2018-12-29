@@ -543,6 +543,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         gameModel!.prevTurnSaved = false
     }
     
+    public func notifyCantUndo() {
+        displayEncouragement(emoji: "😕", text: "Can't undo yet")
+    }
+    
     public func loadPreviousTurnState() {
         // Prevent the user from undoing a turn in the middle of a turn
         if false == gameModel!.isReady() {
@@ -1469,7 +1473,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         label.zPosition = 105
         
         let text = SKLabelNode(text: text)
-        text.fontSize = label.fontSize / 2
+        text.fontSize = label.fontSize / 2.5
         text.fontName = fontName
         text.alpha = 0
         text.position = CGPoint(x: view!.frame.midX, y: label.position.y - (text.fontSize * 1.5))
