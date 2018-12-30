@@ -247,17 +247,25 @@ class ContinuousGameController: UIViewController,
         }
     }
     
-    public func enableUndoButton() {
-        if GADRewardBasedVideoAd.sharedInstance().isReady && false == undoButton.isEnabled {
+    public func enableUndoButton(force: Bool = false) {
+        // Enable the undo button IF AND ONLY IF: 1) force is true, or 2) if a reward ad is loaded
+        if GADRewardBasedVideoAd.sharedInstance().isReady && false == undoButtonIsEnabled() {
             // If we've loaded a reward ad, enable the button
+            undoButton.alpha = ContinuousGameController.ENABLED_ALPHA
+        }
+        else if force {
             undoButton.alpha = ContinuousGameController.ENABLED_ALPHA
         }
     }
     
     public func disableUndoButton() {
-        if undoButton.isEnabled {
+        if undoButtonIsEnabled() {
             undoButton.alpha = ContinuousGameController.DISABLED_ALPHA
         }
+    }
+    
+    public func undoButtonIsEnabled() -> Bool {
+        return undoButton.alpha >= ContinuousGameController.ENABLED_ALPHA
     }
     
     @IBAction func returnToGameMenu(_ sender: Any) {
@@ -317,16 +325,25 @@ class ContinuousGameController: UIViewController,
     }
     
     @IBAction func undoTurn(_ sender: Any) {
-        print("Undo button alpha is \(undoButton.alpha)")
-        if undoButton.alpha < ContinuousGameController.ENABLED_ALPHA {
+        // If the button isn't enabled, notify the user
+        if false == undoButtonIsEnabled() {
             // If it's disabled, inform the user that they can't undo at this time
             let contScene = scene as! ContinousGameScene
             contScene.notifyCantUndo()
         }
+        // If the button is enabled, either show an ad if it's loaded or undo the turn if the ad isn't loaded
         else {
-            // Set this variable so we know what type of reward to give the user
-            rewardType = ContinuousGameController.UNDO_REWARD
-            showRewardAd()
+            // Check if a reward ad is loaded
+            if GADRewardBasedVideoAd.sharedInstance().isReady {
+                // Set this variable so we know what type of reward to give the user
+                rewardType = ContinuousGameController.UNDO_REWARD
+                showRewardAd()
+            }
+            else {
+                // If no reward ad is loaded, just undo the turn
+                let contScene = scene as! ContinousGameScene
+                contScene.loadPreviousTurnState()
+            }
         }
     }
     
