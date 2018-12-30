@@ -39,6 +39,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var ballCountLabelMargin = CGFloat(0.05)
     
+    private var lastUndoTurnScore = 0
+    static private var MAX_TURNS_FORCE_UNDO = Int(5)
+    
     // Nodes that will be shown in the view
     private var groundNode: SKSpriteNode?
     private var ceilingNode: SKShapeNode?
@@ -553,6 +556,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
         
+        // Save the score of the last turn that the user chose to undo (we wait 5 turns before forcing it to re-enable it)
+        lastUndoTurnScore = gameModel!.gameScore
+        
         // Get the old item array so we can remove all of those items
         let oldItemArray = gameModel!.itemGenerator!.itemArray
         // Get the old ball array so we can remove all of them
@@ -872,6 +878,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         // Move the items down in the view
         animateItems()
+        
+        // Set the last turn undone as the current game score
+        lastUndoTurnScore = gameModel!.gameScore
     }
     
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
@@ -1448,7 +1457,14 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private func enableUndoButton() {
         if let controller = gameController {
-            controller.enableUndoButton()
+            if gameModel!.gameScore - lastUndoTurnScore >= ContinousGameScene.MAX_TURNS_FORCE_UNDO {
+                // Force the controller to enable the undo button if 5 turns have passed
+                controller.enableUndoButton(force: true)
+            }
+            else {
+                // Enable the undo button if an ad is loaded
+                controller.enableUndoButton()
+            }
         }
         else {
             // GameController variable not set; can't enable undo button
