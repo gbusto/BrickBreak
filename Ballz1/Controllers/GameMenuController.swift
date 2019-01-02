@@ -17,6 +17,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet var gameCenterButton: UIButton!
+    @IBOutlet var rateButton: UIButton!
     
     /* Variables */
     var gcEnabled = Bool() // Check if the user has Game Center enabled
@@ -115,6 +116,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             
             playButton.imageView?.contentMode = .scaleAspectFit
             gameCenterButton.imageView?.contentMode = .scaleAspectFit
+            rateButton.imageView?.contentMode = .scaleAspectFit
             
             view.presentScene(scene)
             
@@ -130,6 +132,12 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             gameCenterController.leaderboardIdentifier = LEADERBOARD_ID
             self.present(gameCenterController, animated: true, completion: nil)
         }
+    }
+    
+    @IBAction func goToAppStore(_ sender: Any) {
+        let appleID = "1445634396"
+        let appStoreLink = "https://itunes.apple.com/app/id\(appleID)?action=write-review"
+        UIApplication.shared.open(URL(string: appStoreLink)!, options: [:], completionHandler: nil)
     }
     
     @IBAction func playGame(_ sender: Any) {
