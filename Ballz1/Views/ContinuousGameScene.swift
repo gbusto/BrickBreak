@@ -103,6 +103,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var actionsStarted = Int(0)
     
+    // A boolean that says whether or not we're showing encouragement (emoji + text) on the screen
+    private var showingEncouragement = false
+    
     // Colors for the scene
     private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
     private var marginColor = UIColor.init(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
@@ -1481,6 +1484,11 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func displayEncouragement(emoji: String, text: String) {
+        if showingEncouragement {
+            // If we're showing encouragement on the screen, don't display something else
+            return
+        }
+        
         let label = SKLabelNode()
         label.text = emoji
         label.fontSize = view!.frame.width * 0.3
@@ -1496,6 +1504,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         text.zPosition = 105
         text.fontColor = .white
         
+        showingEncouragement = true
+        
         let action1 = SKAction.fadeIn(withDuration: 1)
         let action2 = SKAction.wait(forDuration: 1)
         let action3 = SKAction.fadeOut(withDuration: 1)
@@ -1504,6 +1514,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         text.run(SKAction.sequence([action1, action2, action3])) {
             self.removeChildren(in: [text])
+            self.showingEncouragement = false
         }
         
         self.addChild(label)
