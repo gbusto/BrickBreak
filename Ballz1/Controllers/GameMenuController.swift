@@ -135,9 +135,11 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     @IBAction func goToAppStore(_ sender: Any) {
-        let appleID = "1445634396"
-        let appStoreLink = "https://itunes.apple.com/app/id\(appleID)?action=write-review"
-        UIApplication.shared.open(URL(string: appStoreLink)!, options: [:], completionHandler: nil)
+        //let appleID = "1445634396"
+        //let appStoreLink = "https://itunes.apple.com/app/id\(appleID)?action=write-review"
+        //UIApplication.shared.open(URL(string: appStoreLink)!, options: [:], completionHandler: nil)
+        let onboarding = OnboardingController.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
+        self.present(onboarding, animated: true, completion: nil)
     }
     
     @IBAction func playGame(_ sender: Any) {
