@@ -32,7 +32,7 @@ class BallProjection {
     
     // Updates where the ball path projection is pointing
     public func updateArrow(startPoint: CGPoint, touchPoint: CGPoint, ceilingHeight: CGFloat, groundHeight: CGFloat) -> CGPoint {
-        let maxOffset = CGFloat(200)
+        let maxOffset = CGFloat(400)
         var newTouchPoint = touchPoint
         
         // This correction is here to fix a bug:
