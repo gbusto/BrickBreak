@@ -176,6 +176,14 @@ class ContinuousGameController: UIViewController,
             // Set showedReward to false
             showedReward = false
         }
+        
+        // Unpause the game
+        let scene = self.scene as! ContinousGameScene
+        scene.isPaused = false
+        if let view = self.view as! SKView? {
+            view.isPaused = false
+        }
+        print("Unpaused game")
     }
     
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didFailToLoadWithError error: Error) {
@@ -202,6 +210,13 @@ class ContinuousGameController: UIViewController,
     public func showRewardAd() {
         // Show the reward ad if we can
         if GADRewardBasedVideoAd.sharedInstance().isReady {
+            // Pause the game
+            let scene = self.scene as! ContinousGameScene
+            scene.isPaused = true
+            if let view = self.view as! SKView? {
+                view.isPaused = true
+            }
+            print("Pausing game")
             // MARK: Bug - to avoid a weird bug, I need to load a new view with its own View Controller
             self.present(rewardAdViewController, animated: true, completion: nil)
         }
