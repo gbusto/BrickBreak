@@ -35,4 +35,21 @@ class LevelsGameController: UIViewController,
             view.ignoresSiblingOrder = true
         }
     }
+    
+    // MARK: View override functions
+    override var shouldAutorotate: Bool {
+        return true
+    }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            return .portrait
+        } else {
+            return .portrait
+        }
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
 }
