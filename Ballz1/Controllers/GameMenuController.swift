@@ -16,6 +16,7 @@ import GameplayKit
 class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var playButton: UIButton!
+    @IBOutlet weak var levelsButton: UIButton!
     @IBOutlet var gameCenterButton: UIButton!
     @IBOutlet var rateButton: UIButton!
     
@@ -115,6 +116,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             scene.scaleMode = .aspectFill
             
             playButton.imageView?.contentMode = .scaleAspectFit
+            levelsButton.imageView?.contentMode = .scaleAspectFit
             gameCenterButton.imageView?.contentMode = .scaleAspectFit
             rateButton.imageView?.contentMode = .scaleAspectFit
             
@@ -142,6 +144,10 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     
     @IBAction func playGame(_ sender: Any) {
         // Launch game
+    }
+    
+    @IBAction func playLevels(_ sender: Any) {
+        // Launch level gameplay
     }
     
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
