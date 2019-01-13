@@ -56,6 +56,7 @@
                                                 <connections>
                                                     <action selector="playGame:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="agn-1Z-S9v"/>
                                                     <action selector="playLevels:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="l7G-1Q-vXi"/>
+                                                    <segue destination="lds-87-3TS" kind="show" id="ojb-qc-kca"/>
                                                 </connections>
                                             </button>
                                             <stackView opaque="NO" contentMode="scaleAspectFit" alignment="center" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="nqw-bE-Rpn">
@@ -112,7 +113,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" translatesAutoresizingMaskIntoConstraints="NO" id="fvE-kJ-god">
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" translatesAutoresizingMaskIntoConstraints="NO" id="fvE-kJ-god" userLabel="Top Bar">
                                 <rect key="frame" x="10" y="30" width="394" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="50" placeholderIntrinsicHeight="50" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7yN-Nr-Ust">
@@ -228,6 +229,72 @@
                 </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1028" y="-9.4452773613193415"/>
+        </scene>
+        <!--Levels Game Controller-->
+        <scene sceneID="dTW-PD-uqr">
+            <objects>
+                <viewController id="lds-87-3TS" customClass="LevelsGameController" customModule="Ballz1" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ivn-sj-TCn" customClass="SKView">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" translatesAutoresizingMaskIntoConstraints="NO" id="ett-vT-KzD" userLabel="Top Bar">
+                                <rect key="frame" x="10" y="30" width="394" height="50"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="50" placeholderIntrinsicHeight="50" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="djQ-6i-xDb" userLabel="Level Count">
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="CKR-P7-WZh"/>
+                                            <constraint firstAttribute="width" constant="50" id="ryN-tI-ZJG"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="20"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wRS-np-rfH" userLabel="Level Score">
+                                        <rect key="frame" x="187" y="0.0" width="20.333333333333343" height="50"/>
+                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="36"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" alpha="0.0" contentMode="scaleAspectFit" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bMB-cU-x78">
+                                        <rect key="frame" x="344" y="0.0" width="50" height="50"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="bP1-5f-NDu"/>
+                                            <constraint firstAttribute="width" constant="50" id="jcf-Qs-45e"/>
+                                        </constraints>
+                                        <inset key="imageEdgeInsets" minX="20" minY="10" maxX="0.0" maxY="10"/>
+                                        <state key="normal" image="undo_button"/>
+                                        <connections>
+                                            <action selector="undoTurn:" destination="SQo-9G-tie" eventType="touchUpInside" id="Hpd-vj-Za7"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <gestureRecognizers/>
+                            </stackView>
+                            <view hidden="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nxt-hu-S3v" userLabel="Banner View">
+                                <rect key="frame" x="47" y="686" width="320" height="50"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="wGV-XH-DE5"/>
+                                    <constraint firstAttribute="width" constant="320" id="zNh-DS-M5E"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" red="0.57414853570000002" green="0.57416242360000003" blue="0.57415497299999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="ett-vT-KzD" firstAttribute="top" secondItem="CgB-AU-xiN" secondAttribute="top" constant="10" id="2u6-MX-P8q"/>
+                            <constraint firstItem="CgB-AU-xiN" firstAttribute="trailing" secondItem="ett-vT-KzD" secondAttribute="trailing" constant="10" id="RRS-z6-Dxg"/>
+                            <constraint firstItem="nxt-hu-S3v" firstAttribute="bottom" secondItem="ivn-sj-TCn" secondAttribute="bottom" id="cfb-br-VUb"/>
+                            <constraint firstItem="ett-vT-KzD" firstAttribute="leading" secondItem="CgB-AU-xiN" secondAttribute="leading" constant="10" id="dIv-IY-TFy"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="CgB-AU-xiN"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1KH-mO-FvK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1027" y="658"/>
         </scene>
         <!--Reward Ad View Controller-->
         <scene sceneID="s90-HF-whl">
