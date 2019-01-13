@@ -57,6 +57,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var fontName: String = "HelveticaNeue"
     private var topColor: UIColor = .black
     private var bottomColor: UIColor = .white
+    
+    // XXX Maybe remove
     // true if we changed colors recently
     private var changedColor: Bool = false
     // The column index because to keep track of which blocks are in transition
@@ -107,6 +109,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var showingEncouragement = false
     
     // Colors for the scene
+    // XXX Maybe remove
     private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
     private var marginColor = UIColor.init(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
         
@@ -122,6 +125,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var contactTestBitMask = UInt32(0b0001)
     private var groundCategoryBitmask = UInt32(0b0101)
     
+    // XXX Maybe remove
     // Stuff for lighting
     private var lightingBitMask = UInt32(0b0001)
     

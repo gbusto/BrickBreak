@@ -376,6 +376,7 @@ class ContinuousGameController: UIViewController,
         self.highScoreLabel.text = "\(highScore)"
     }
     
+    // MARK: View override functions
     override var shouldAutorotate: Bool {
         return true
     }

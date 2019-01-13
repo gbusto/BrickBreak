@@ -35,6 +35,7 @@
 		CDC5CFC1717920861940918B /* Pods_Ballz1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1A8F69CD9292C0D9344297C /* Pods_Ballz1.framework */; };
 		F200B2E921EBA3DE00FE0FB6 /* LevelsGameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */; };
 		F200B2EB21EBA4C100FE0FB6 /* LevelsGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2EA21EBA4C100FE0FB6 /* LevelsGameScene.swift */; };
+		F200B2ED21EBCA3900FE0FB6 /* LevelsGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2EC21EBCA3900FE0FB6 /* LevelsGameModel.swift */; };
 		F2677A7E216C3FFF00CE3FC0 /* BallProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */; };
 /* End PBXBuildFile section */
 
@@ -92,6 +93,7 @@
 		ECEC017C6EB71AEF0022F501 /* Pods-Ballz1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballz1.release.xcconfig"; path = "Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1.release.xcconfig"; sourceTree = "<group>"; };
 		F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameController.swift; sourceTree = "<group>"; };
 		F200B2EA21EBA4C100FE0FB6 /* LevelsGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameScene.swift; sourceTree = "<group>"; };
+		F200B2EC21EBCA3900FE0FB6 /* LevelsGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameModel.swift; sourceTree = "<group>"; };
 		F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallProjection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -213,6 +215,7 @@
 			children = (
 				03B8B4FB21691A6000FFD589 /* GameMenuModel.swift */,
 				03B8B4FD21691A7600FFD589 /* ContinousGameModel.swift */,
+				F200B2EC21EBCA3900FE0FB6 /* LevelsGameModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -406,6 +409,7 @@
 				03B8B4F0216919DD00FFD589 /* GameMenuScene.swift in Sources */,
 				03F9A4242151C3D600206A84 /* Item.swift in Sources */,
 				03F4C93B217235DA00D38D84 /* StoneHitBlockItem.swift in Sources */,
+				F200B2ED21EBCA3900FE0FB6 /* LevelsGameModel.swift in Sources */,
 				F2677A7E216C3FFF00CE3FC0 /* BallProjection.swift in Sources */,
 				F200B2EB21EBA4C100FE0FB6 /* LevelsGameScene.swift in Sources */,
 				03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */,
