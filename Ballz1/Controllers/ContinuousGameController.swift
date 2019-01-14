@@ -40,6 +40,10 @@ class ContinuousGameController: UIViewController,
     static private var DISABLED_ALPHA = CGFloat(0.1)
     static private var ENABLED_ALPHA = CGFloat(1.0)
     
+    // These variables enable the undo button after at most 5 turns if no ads have been loaded (to allow the user to undo when offline)
+    private var lastUndoTurnScore = 0
+    static private var MAX_TURNS_FORCE_UNDO = Int(5)
+    
     override func viewDidAppear(_ animated: Bool) {
         // Set up the banner ad
         bannerView.adUnitID = AdHandler.getBannerAdID()
@@ -126,6 +130,9 @@ class ContinuousGameController: UIViewController,
             print("No reward type specified... oops?")
         }
         else if rewardType == ContinuousGameController.UNDO_REWARD {
+            // Reset this to zero so the controller knows that the user just used the undo button
+            lastUndoTurnScore = 0
+            
             // Undo the last turn
             let contScene = scene as! ContinousGameScene
             contScene.loadPreviousTurnState()
@@ -183,7 +190,6 @@ class ContinuousGameController: UIViewController,
         if let view = self.view as! SKView? {
             view.isPaused = false
         }
-        print("Unpaused game")
     }
     
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didFailToLoadWithError error: Error) {
@@ -216,7 +222,6 @@ class ContinuousGameController: UIViewController,
             if let view = self.view as! SKView? {
                 view.isPaused = true
             }
-            print("Pausing game")
             // MARK: Bug - to avoid a weird bug, I need to load a new view with its own View Controller
             self.present(rewardAdViewController, animated: true, completion: nil)
         }
@@ -346,7 +351,7 @@ class ContinuousGameController: UIViewController,
             let contScene = scene as! ContinousGameScene
             contScene.notifyCantUndo()
         }
-        // If the button is enabled, either show an ad if it's loaded or undo the turn if the ad isn't loaded
+        // If the button is enabled, the user is allowed to undo their turn regardless of whether or not a reward ad is loaded
         else {
             // Check if a reward ad is loaded
             if GADRewardBasedVideoAd.sharedInstance().isReady {
@@ -356,6 +361,10 @@ class ContinuousGameController: UIViewController,
             }
             else {
                 // If no reward ad is loaded, just undo the turn
+
+                // Reset this to zero so the controller knows that the user just used the undo button
+                lastUndoTurnScore = 0
+                
                 let contScene = scene as! ContinousGameScene
                 contScene.loadPreviousTurnState()
             }
@@ -374,6 +383,20 @@ class ContinuousGameController: UIViewController,
     public func updateScore(gameScore: Int, highScore: Int) {
         self.gameScoreLabel.text = "\(gameScore)"
         self.highScoreLabel.text = "\(highScore)"
+        
+        // ZZZ This will only be the classic gameplay, not levels
+        // This is to handle the cases where we enable the undo button when the user is offline or ads aren't loading
+        if 0 == lastUndoTurnScore {
+            // If lastUndoTurnScore is 0, that means we're either starting fresh or the user just used the undo button
+            lastUndoTurnScore = gameScore
+        }
+        else {
+            // If the lastUndoTurnScore isn't 0, it's been loaded already and we want to see if it's been 5 turns to allow the undo button to be enabled
+            if gameScore - lastUndoTurnScore >= ContinuousGameController.MAX_TURNS_FORCE_UNDO {
+                // Force the undo button to be enabled even if an ad isn't loaded
+                enableUndoButton(force: true)
+            }
+        }
     }
     
     // MARK: View override functions
