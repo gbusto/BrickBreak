@@ -17,8 +17,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Public properties
     // The game model
+    // ZZZ Based on game play mode
     public var gameModel: ContinuousGameModel?
     
+    // ZZZ Based on the gameplay mode
     public var gameController: ContinuousGameController?
     
     // MARK: Private properties
@@ -39,7 +41,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var ballCountLabelMargin = CGFloat(0.05)
     
+    // ZZZ Logic should go in the controller for continuous gameplay
     private var lastUndoTurnScore = 0
+    // ZZZ Logic should go in the controller for continuous gameplay
     static private var MAX_TURNS_FORCE_UNDO = Int(5)
     
     // Nodes that will be shown in the view
@@ -136,6 +140,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var activeViews: [UIView] = []
     
+    // ZZZ Logic should go in the model for continuous gameplay
     enum Tutorials {
         case noTutorial
         case gameplayTutorial
@@ -143,6 +148,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         case fastForwardTutorial
     }
     
+    // ZZZ Logic should go in the model for continuous gameplay
     private var tutorialIsShowing = false
     private var tutorialNodes: [SKNode] = []
     private var tutorialType: Tutorials?
@@ -195,6 +201,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         topColor = colorList[colorIndex]
         
         initWalls(view: view)
+        // ZZZ This will be based on which button was pressed in the game menu
         initGameModel()
         // This kind of breaks MVC a bit because the ball manager shouldn't know the ground height
         gameModel!.ballManager!.setGroundHeight(height: groundNode!.size.height + ballRadius!)
@@ -207,6 +214,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         downSwipeGesture!.direction = .down
         downSwipeGesture!.numberOfTouchesRequired = 1
         
+        // ZZZ Logic should go in the model for continuous gameplay
         // If we haven't showed the user the tutorials then show them
         if false == gameModel!.showedTutorials {
             tutorialsList = [.gameplayTutorial,
@@ -284,6 +292,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 // Disable the undo button when the user is in the middle of a turn
                 disableUndoButton()
                 
+                // ZZZ Needs to be handled outside of this file
                 if tutorialIsShowing && tutorialType == .gameplayTutorial {
                     removeTutorial()
                 }
@@ -346,6 +355,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             // Tell the game model to update now that the turn has ended
             gameModel!.handleTurnOver()
             
+            // ZZZ This will need to change (generateRow for levels should return next row but it should essentially already be generated)
             // Get the newly generated items and add them to the view
             let items = gameModel!.generateRow()
             addRowToView(rowNum: 1, items: items)
@@ -365,6 +375,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             prevBallCount = currentBallCount
             addBallCountLabel()
             
+            // ZZZ This will be different in the levels controller file (score and level number will be used instead of score and high score)
             // Check the model to update the score label
             updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
             
@@ -375,6 +386,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             // Reset start time to 0
             startTime = 0
             
+            // ZZZ This should be handled in a different file
             // If the user didn't fast forward and the tutorial is still showing, remove it and add it back to the list until the user actually performs the action
             if tutorialIsShowing && tutorialType == .fastForwardTutorial {
                 removeTutorial()
@@ -388,10 +400,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 // Increment game model state from WAITING to READY
                 gameModel!.incrementState()
                 
+                // ZZZ This will be different for levels gameplay vs classic
                 // Check to see if the game ended after all animations are complete
                 if gameModel!.gameOver() {
                     // If the game is over, the game model will change its state to GAME_OVER
                     
+                    // ZZZ User can't be saved in the levels gameplay
                     // If the user hasn't been saved yet, allow them to be saved
                     if false == gameModel!.userWasSaved {
                         // Display Continue? graphic
@@ -400,6 +414,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                     }
                     else {
                         view!.isPaused = true
+                        // ZZZ Handling the end of a game is different in levels vs classic gameplay
                         // Otherwise show the gameover overlay
                         self.endGame()
                     }
@@ -414,6 +429,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
             
+            // ZZZ This is only for classic gameplay; should probably be moved to the controller for classic
             // Depending on whether or not a new turn has been saved, enable the undo button
             // We check for this in the WAITING state because this is the state we come back to after undoing a turn
             if gameModel!.prevTurnSaved {
@@ -425,6 +441,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if gameModel!.isReady() {
+            // ZZZ This should be moved into a separate file
             if false == tutorialIsShowing && tutorialsList.count > 0 {
                 showTutorial(tutorial: .topBarTutorial)
             }
@@ -438,6 +455,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             
             // If the user's turn has gone on longer than 10 seconds and there are still tutorials to show, we want to show them how to fast forward
             if (Int(currentTime) - Int(startTime)) > 10 && tutorialsList.count > 0 {
+                // This should be moved into a separate file
                 // Only show it if the user hasn't fast forwarded yet
                 if false == tutorialIsShowing && physicsWorld.speed == 1.0 {
                     showTutorial(tutorial: .fastForwardTutorial)
@@ -528,6 +546,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         handleGameOver()
     }
     
+    // ZZZ This won't be called for the levels gameplay
     // Save the user from losing a game by clearing out the row that's about to end the game
     public func saveUser() {
         let fadeOut = SKAction.fadeOut(withDuration: 1)
@@ -549,6 +568,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             stopFlashingRed()
         }
         
+        // ZZZ This should probably go into the controller for classic gameplay; won't be the same for levels
         // Remove saved turn state after saving the user so they can't undo this
         gameModel!.prevTurnSaved = false
     }
@@ -557,6 +577,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         displayEncouragement(emoji: "😕", text: "Can't undo yet")
     }
     
+    // ZZZ This function won't be used by the levels gameplay, only the classic gameplay
+    // This function loads the previous turn state after the user presses the undo button
     public func loadPreviousTurnState() {
         // Prevent the user from undoing a turn in the middle of a turn
         if false == gameModel!.isReady() {
@@ -761,6 +783,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        // ZZZ Don't think this needs to be changed, but marking it just in case
         gameModel!.itemGenerator!.pruneFirstRow()
     }
     
@@ -832,6 +855,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // ZZZ Game model should depend on which button was pressed in the game menu
     // Initialize the game model (this is where the code for loading a saved game model will go)
     private func initGameModel() {
         // The controller also needs a copy of this game model object
@@ -1006,6 +1030,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         return physBody
     }
     
+    // ZZZ This function isn't going to be the same for levels and classic gameplay
     private func updateScore(highScore: Int, gameScore: Int) {
         if let controller = gameController {
             controller.updateScore(gameScore: gameScore, highScore: highScore)
@@ -1087,6 +1112,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // ZZZ This should maybe be moved to another file
     // Shows the user how to play the game
     private func showGameplayTutorial() {
         let offsetFromCenter = view!.frame.width * 0.2
@@ -1125,6 +1151,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         tutorialType = .gameplayTutorial
     }
     
+    // ZZZ This should maybe be moved to another file
     // Show the user the top bar tutorial
     // NOTE: Ceiling height on the iPhone 5s is < 60px (or 60 units) and so the text and pointer image need to be scaled down to accommodate for that (which is why I compare margin! to <60)
     private func showTopBarTutorial() {
@@ -1219,6 +1246,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         tutorialType = .topBarTutorial
     }
     
+    // This should maybe be moved to another file
     private func showFastForwardTutorial() {
         let offsetFromCenter = view!.frame.width * 0.2
         let centerPoint = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
@@ -1258,6 +1286,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         tutorialType = .fastForwardTutorial
     }
     
+    // ZZZ This should maybe be moved to another file
     private func showBallReturnTutorial() {
         let offsetFromCenter = view!.frame.height * 0.2
         let centerPoint = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
@@ -1290,6 +1319,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(labelNode)
     }
     
+    // ZZZ This should maybe be moved to another file
     private func showTutorial(tutorial: Tutorials) {
         let remainingTutorials = tutorialsList.filter {
             // If the current item matches the tutorial type, handle it
@@ -1318,6 +1348,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // ZZZ This should maybe be moved to another file
     private func removeTutorial() {
         if tutorialIsShowing {
             tutorialIsShowing = false
@@ -1330,6 +1361,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         tutorialType = .noTutorial
     }
     
+    // XXX Maybe remove
     public func isGameOverShowing() -> Bool {
         // If a child node with name "gameOver" is showing, return true
         if let _ = self.childNode(withName: "gameOver") {
@@ -1340,6 +1372,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         return false
     }
     
+    // XXX Maybe remove
     // Shows the game over overlay
     public func showGameOverNode() {
         let gameOverNode = SKSpriteNode(color: .darkGray, size: scene!.size)
@@ -1462,6 +1495,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // ZZZ This should be moved to another file (undo button is only for classic game mode)
     private func enableUndoButton() {
         if let controller = gameController {
             if gameModel!.gameScore - lastUndoTurnScore >= ContinousGameScene.MAX_TURNS_FORCE_UNDO {
@@ -1478,6 +1512,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // ZZZ This should be moved to another file (undo button is only for classic game mode)
     private func disableUndoButton() {
         if let controller = gameController {
             controller.disableUndoButton()
