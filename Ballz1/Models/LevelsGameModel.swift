@@ -13,6 +13,7 @@ class LevelsGameModel {
     // MARK: Public properties
     public var gameScore = Int(0)
     public var levelCount = Int(0)
+    public var highScore = Int(0)
     
     public var ballManager: BallManager?
     public var itemGenerator: ItemGenerator?
@@ -106,7 +107,7 @@ class LevelsGameModel {
     
     public func clearGameState() {
         do {
-            try FileManager.default.removeItem(atPath: LevelsGame.path)
+            try FileManager.default.removeItem(atPath: LevelsGameModel.LevelsDirURL.path)
         }
         catch {
             print("Error clearing state: \(error)")
@@ -120,20 +121,13 @@ class LevelsGameModel {
         // Try to load persistent data
         if false == loadPersistentState() {
             // Defaults to load highScore of 0
-            persistentData = PersistentData(levelCount: levelCount, showedTutorials: showedTutorials)
-        }
-        
-        // Try to load game state
-        if false == loadGameState() {
-            // Defaults to loading gameScore of 0
-            gameState = GameState(gameScore: gameScore)
+            persistentData = PersistentData(highScore: highScore, levelCount: levelCount, showedTutorials: showedTutorials)
         }
         
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
         highScore = persistentData!.highScore
+        levelCount = persistentData!.levelCount
         showedTutorials = persistentData!.showedTutorials
-        gameScore = gameState!.gameScore
-        userWasSaved = gameState!.userWasSaved
         self.numberOfRows = numberOfRows
         
         // This function will either load ball manager with a saved state or the default ball manager state
@@ -155,43 +149,12 @@ class LevelsGameModel {
         return ballManager!.ballArray
     }
     
-    // Load the previous turn state
-    public func loadPreviousTurnState() -> Bool {
-        if prevTurnSaved {
-            if false == itemGenerator!.loadTurnState() {
-                return false
-            }
-            if false == ballManager!.loadTurnState() {
-                return false
-            }
-            
-            // Undo the scores
-            if highScore == gameScore {
-                highScore -= 1
-            }
-            gameScore -= 1
-            
-            // We need to set this to false to avoid loading old turn state
-            prevTurnSaved = false
-            
-            // Set state to waiting so the game checks to see whether or not to warn the user or end the game
-            state = WAITING
-            
-            return true
-        }
-        
-        return false
-    }
-    
     public func prepareTurn(point: CGPoint) {
         // Save the item generator's turn state as soon as the user starts the next turn
         itemGenerator!.saveTurnState()
         
         // Also save the ball manager's state
         ballManager!.saveTurnState()
-        
-        // Reset this to true since we saved state
-        prevTurnSaved = true
         
         ballManager!.setDirection(point: point)
         // Change the ball manager's state from READY to SHOOTING
@@ -211,12 +174,6 @@ class LevelsGameModel {
     
     public func endTurn() {
         ballManager!.returnAllBalls()
-    }
-    
-    public func saveUser() -> [Item] {
-        state = READY
-        userWasSaved = true
-        return itemGenerator!.saveUser()
     }
     
     public func handleTurn() -> [Item] {
@@ -249,6 +206,8 @@ class LevelsGameModel {
     public func handleTurnOver() {
         ballManager!.checkNewArray()
         
+        // XXX This needs to be different here; update the user's score by more than just one.
+        // Need a formula for this like 1 point per hit, 5 per block break, and double the final score if they hit "on fire" (maybe?)
         gameScore += 1
         if gameScore >= highScore {
             highScore = gameScore
@@ -281,6 +240,7 @@ class LevelsGameModel {
         }
     }
     
+    // XXX This will need to be different for levels; need to generate all rows up front when we initialize the model
     public func generateRow() -> [Item] {
         let count = itemGenerator!.getBlockCount()
         // If the user is doing well and there are no items on the screen, generate a harder pattern
