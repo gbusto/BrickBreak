@@ -27,6 +27,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     // The block size
     private var blockSize: CGSize?
     
+    // Views that are active on the screen and need to be removed
+    private var activeViews: [UIView] = []
+    
     // Nodes that will be shown in the view
     private var groundNode: SKSpriteNode?
     private var ceilingNode: SKShapeNode?
@@ -216,5 +219,29 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         physBody.contactTestBitMask = contactTestBitMask
         
         return physBody
+    }
+    
+    public func showPauseScreen(pauseView: UIView) {
+        let blur = UIBlurEffect(style: .dark)
+        let blurView = UIVisualEffectView(effect: blur)
+        blurView.frame = view!.frame
+        view!.addSubview(blurView)
+        
+        pauseView.isHidden = false
+        view!.addSubview(pauseView)
+        
+        activeViews = [blurView, pauseView]
+    }
+    
+    public func resumeGame() {
+        self.isPaused = false
+        self.view!.isPaused = false
+        
+        let views = activeViews.filter {
+            $0.removeFromSuperview()
+            return false
+        }
+        
+        activeViews = views
     }
 }
