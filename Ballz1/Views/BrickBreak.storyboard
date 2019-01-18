@@ -224,7 +224,7 @@
                 <exit id="BdV-NT-BI6" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="bNb-UM-NRp">
                     <connections>
-                        <action selector="statusBarTapped:" destination="BdV-NT-BI6" id="RBc-W3-Y9l"/>
+                        <action selector="statusBarTapped:" destination="SQo-9G-tie" id="znW-Dc-6Or"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
@@ -301,9 +301,11 @@
                         <outlet property="levelScore" destination="wRS-np-rfH" id="X7e-6K-z8T"/>
                         <outlet property="pauseMenuView" destination="2JP-Ap-ELL" id="SgA-98-7Q1"/>
                         <outlet property="resumeButton" destination="VAa-BZ-zCG" id="bmv-o3-RLI"/>
+                        <segue destination="PUe-Gu-uBq" kind="unwind" identifier="unwindToGameMenu" unwindAction="prepareForUnwindWithSegue:" id="wjh-tu-fvK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1KH-mO-FvK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="PUe-Gu-uBq" userLabel="Exit" sceneMemberID="exit"/>
                 <view hidden="YES" contentMode="scaleToFill" id="2JP-Ap-ELL" userLabel="Pause Menu View">
                     <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -328,7 +330,7 @@
                                     <rect key="frame" x="0.0" y="167.33333333333334" width="240" height="82.666666666666657"/>
                                     <state key="normal" image="game_menu_button_curved"/>
                                     <connections>
-                                        <action selector="gameMenuButtonTapped:" destination="lds-87-3TS" eventType="touchUpInside" id="bhZ-eF-4d6"/>
+                                        <action selector="gameMenuButtonPressed:" destination="lds-87-3TS" eventType="touchUpInside" id="PGS-bO-3ea"/>
                                     </connections>
                                 </button>
                             </subviews>
