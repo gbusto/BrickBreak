@@ -133,14 +133,14 @@ class LevelsGameModel {
         self.numberOfRows = numberOfRows
         
         // This function will either load ball manager with a saved state or the default ball manager state
-        ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: ContinuousGameModel.ContinuousDirURL)
+        ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: LevelsGameModel.LevelsDirURL)
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
         itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
                                       numberOfBalls: ballManager!.numberOfBalls,
                                       numberOfRows: numberOfRows,
                                       numItems: numberOfItems,
-                                      restorationURL: ContinuousGameModel.ContinuousDirURL)
+                                      restorationURL: LevelsGameModel.LevelsDirURL)
         if 0 == itemGenerator!.itemArray.count {
             state = TURN_OVER
         }

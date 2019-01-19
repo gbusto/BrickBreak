@@ -38,6 +38,17 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     // This is to prevent the ball count label from being too far right or too far left
     private var ballCountLabelMargin = CGFloat(0.05)
     
+    // A counter for each time update is called
+    private var numTicks = Int(0)
+    // The number of update ticks to wait before shooting another ball
+    private var ticksDelay = Int(6)
+    
+    // Variables for handling swipe gestures
+    private var rightSwipeGesture: UISwipeGestureRecognizer?
+    private var downSwipeGesture: UISwipeGestureRecognizer?
+    private var addedGesture = false
+    private var swipedDown = false
+    
     // Views that are active on the screen and need to be removed
     private var activeViews: [UIView] = []
     
@@ -50,12 +61,21 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     // Variable to know when actions are complete
     private var actionsStarted = Int(0)
     
+    // This is to keep track of the number of broken hit blocks in a given turn
+    private var brokenHitBlockCount: Int = 0
+    // A boolean because we only want to show the "on fire" encouragement once per turn
+    private var displayedOnFire: Bool = false
+    // This is the number of blocks that need to be broken in a given turn to get the "on fire" encouragement
+    private static var ON_FIRE_COUNT: Int = 8
+    
     // A boolean that says whether or not we're showing encouragement (emoji + text) on the screen
     private var showingEncouragement = false
     
     // This is essentially the minimum X value for the game play area; if it is zero, it looks like it goes off the left side of the screen; when set to 1 it looks better
     private var leftWallWidth = CGFloat(1)
     private var rightWallWidth = CGFloat(0)
+    
+    private var ballProjection = BallProjection()
     
     // Attributes based on how the scene is displayed
     private var fontName: String = "HelveticaNeue"
@@ -88,6 +108,8 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitMask = UInt32(0b0001)
     private var groundCategoryBitmask = UInt32(0b0101)
+    
+    private var numRowsGenerated = Int(0)
     
     private static var NUM_ROWS = CGFloat(12)
     private static var NUM_COLUMNS = CGFloat(8)
@@ -136,6 +158,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
         colorScheme = GameSceneColorScheme(backgroundSize: view.frame.size, blockSize: blockSize!)
         fontName = colorScheme!.fontName
+        topColor = colorList[colorIndex]
         
         // Initialize the walls for the game
         initWalls(view: view)
@@ -143,11 +166,303 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         // Initialize the game model
         initGameModel()
         
+        // This kind of breaks MVC a bit because the ball manager shouldn't know the ground height
+        gameModel!.ballManager!.setGroundHeight(height: groundNode!.size.height + ballRadius!)
+        
+        rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleRightSwipe(_:)))
+        rightSwipeGesture!.direction = .right
+        rightSwipeGesture!.numberOfTouchesRequired = 1
+        
+        downSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleDownSwipe(_:)))
+        downSwipeGesture!.direction = .down
+        downSwipeGesture!.numberOfTouchesRequired = 1
+        
         // Set the background color based on the color scheme value
         self.backgroundColor = colorScheme!.backgroundColor
         
         // Allow ourselves to be the physics contact delegates
         physicsWorld.contactDelegate = self
+    }
+    
+    // MVC: A view function; notifies the controller of contact between two bodies
+    func didBegin(_ contact: SKPhysicsContact) {
+        let nameA = contact.bodyA.node?.name!
+        let nameB = contact.bodyB.node?.name!
+        
+        gameModel!.handleContact(nameA: nameA!, nameB: nameB!)
+    }
+    
+    // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let point = touch.location(in: self)
+            
+            if gameModel!.isReady() {
+                // Show the arrow and update it
+                if inGame(point) && (false == self.isPaused) {
+                    let originPoint = gameModel!.ballManager!.getOriginPoint()
+                    ballProjection.showArrow(scene: self)
+                    let _ = ballProjection.updateArrow(startPoint: originPoint,
+                                                       touchPoint: point,
+                                                       ceilingHeight: ceilingNode!.position.y,
+                                                       groundHeight: groundNode!.size.height)
+                }
+            }
+        }
+    }
+    
+    // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let point = touch.location(in: self)
+            
+            if !inGame(point) {
+                // Hide the arrow
+                ballProjection.hideArrow(scene: self)
+            }
+            else if gameModel!.isReady() && ballProjection.arrowShowing {
+                // Update the arrow location
+                let originPoint = gameModel!.ballManager!.getOriginPoint()
+                let _ = ballProjection.updateArrow(startPoint: originPoint,
+                                                   touchPoint: point,
+                                                   ceilingHeight: ceilingNode!.position.y,
+                                                   groundHeight: groundNode!.size.height)
+            }
+        }
+    }
+    
+    // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let point = touch.location(in: self)
+            
+            if gameModel!.isReady() && ballProjection.arrowShowing {
+                // Set the direction for the balls to shoot
+                let originPoint = gameModel!.ballManager!.getOriginPoint()
+                let firePoint = ballProjection.updateArrow(startPoint: originPoint,
+                                                           touchPoint: point,
+                                                           ceilingHeight: ceilingNode!.position.y,
+                                                           groundHeight: groundNode!.size.height)
+                gameModel!.prepareTurn(point: firePoint)
+            }
+        }
+        
+        // Hide the arrow
+        ballProjection.hideArrow(scene: self)
+    }
+    
+    // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+    }
+    
+    // MARK: Scene update
+    override func update(_ currentTime: TimeInterval) {
+        if gameModel!.isTurnOver() {
+            // Return physics simulation to normal speed
+            physicsWorld.speed = 1.0
+            
+            // Reset the tick delay for firing balls
+            ticksDelay = 6
+            
+            // Clear gesture recognizers in the view
+            view!.gestureRecognizers = []
+            addedGesture = false
+            
+            // Tell the game model to update now that the turn has ended
+            gameModel!.handleTurnOver()
+            
+            // Get the newly generated items and add them to the view
+            let items = gameModel!.generateRow()
+            addRowToView(rowNum: 1, items: items)
+            
+            // Move the items down in the view
+            animateItems()
+            
+            // Display the label showing how many balls the user has (this needs to be done after we have collected any new balls the user acquired)
+            currentBallCount = gameModel!.getBalls().count
+            // See if the user acquired any new balls
+            let diff = currentBallCount - prevBallCount
+            if diff > 0 {
+                // Show a floating label saying how many balls the user acquired that turn
+                showBallsAcquiredLabel(count: diff)
+            }
+            // Update the previous ball count to the current count so that next time around we can see if the user acquired more balls
+            prevBallCount = currentBallCount
+            addBallCountLabel()
+            
+            // Check the model to update the score label
+            // Update the current game score
+            
+            // Reset the number of hit blocks and the encouragements shown to the user
+            brokenHitBlockCount = 0
+            displayedOnFire = false
+        }
+        
+        // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
+        if gameModel!.isWaiting() {
+            if 0 == actionsStarted {
+                // Increment game model state from WAITING to READY
+                gameModel!.incrementState()
+                
+                // XXX Gameover can be good or bad here; gameover loss is when a block hits the ground and gameover win is when the user destroys all blocks and collects all items
+                // Check to see if the game ended after all animations are complete
+                if gameModel!.gameOver() {
+                    // If the game is over, the game model will change its state to GAME_OVER
+                    view!.isPaused = true
+                    // Otherwise show the gameover overlay
+                    self.endGame()
+                }
+                    // Check to see if we are at risk of losing the game
+                else if gameModel!.lossRisk() {
+                    // Flash notification to user
+                    startFlashingRed()
+                }
+                else {
+                    stopFlashingRed()
+                }
+            }
+        }
+        
+        if gameModel!.isReady() {
+            // Don't need to do anything here
+        }
+        
+        // Actions to perform while in the middle of a turn
+        if gameModel!.isMidTurn() {
+            if false == addedGesture {
+                // Ask the model if we showed the fast forward tutorial
+                view!.gestureRecognizers = [rightSwipeGesture!, downSwipeGesture!]
+                addedGesture = true
+            }
+            
+            if swipedDown {
+                // Handle ball return gesture
+                gameModel!.endTurn()
+                swipedDown = false
+            }
+            
+            // Shoot a ball with a delay count of ticksDelay
+            // This code is still pretty ugly and can probably be cleaned up
+            if numTicks >= ticksDelay {
+                if gameModel!.shootBall() {
+                    currentBallCount -= 1
+                    if 0 == currentBallCount {
+                        removeBallCountLabel()
+                    }
+                    else {
+                        updateBallCountLabel()
+                    }
+                }
+                numTicks = 0
+            }
+            else {
+                numTicks += 1
+            }
+            
+            // Allow the model to handle a turn
+            let removedItems = gameModel!.handleTurn()
+            for item in removedItems {
+                if item is HitBlockItem {
+                    // We want to remove block items from the scene completely
+                    self.removeChildren(in: [item.getNode()])
+                    // Show block break animation
+                    let block = item as! HitBlockItem
+                    var centerPoint = block.getNode().position
+                    centerPoint.x += blockSize!.width / 2
+                    centerPoint.y += blockSize!.height / 2
+                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                    brokenHitBlockCount += 1
+                }
+                else if item is StoneHitBlockItem {
+                    self.removeChildren(in: [item.getNode()])
+                    let block = item as! StoneHitBlockItem
+                    var centerPoint = block.getNode().position
+                    centerPoint.x += blockSize!.width / 2
+                    centerPoint.y += blockSize!.height / 2
+                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                    brokenHitBlockCount += 1
+                }
+                else if item is BombItem {
+                    self.removeChildren(in: [item.getNode()])
+                }
+                else if item is BallItem {
+                    // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
+                    let vector = CGVector(dx: 0, dy: ballRadius! * 0.5)
+                    let ball = item.getNode()
+                    ball.physicsBody!.affectedByGravity = true
+                    ball.run(SKAction.applyImpulse(vector, duration: 0.05))
+                    ballHitAnimation(color: colorScheme!.hitBallColor, position: ball.position)
+                }
+            }
+            
+            // If the user has broken greater than X blocks this turn, they get an "on fire" encouragement
+            if brokenHitBlockCount > LevelsGameScene.ON_FIRE_COUNT && (false == displayedOnFire) {
+                // Display the on fire encouragement
+                displayEncouragement(emoji: "🔥", text: "On fire!")
+                displayedOnFire = true
+            }
+        }
+    }
+    
+    // MARK: Public functions
+    // Handle a right swipe to fast forward
+    @objc public func handleRightSwipe(_ sender: UISwipeGestureRecognizer) {
+        let point = sender.location(in: view!)
+        
+        if inGame(point) {
+            if gameModel!.isMidTurn() {
+                // Speed up the physics simulation
+                if physicsWorld.speed < 3.0 {
+                    physicsWorld.speed = 3.0
+                    ticksDelay = 1
+                    
+                    flashSpeedupImage()
+                }
+            }
+        }
+    }
+    
+    // Handle a down swipe to return balls
+    @objc public func handleDownSwipe(_ sender: UISwipeGestureRecognizer) {
+        let point = sender.location(in: view!)
+        
+        if inGame(point) {
+            if gameModel!.isMidTurn() {
+                swipedDown = true
+            }
+        }
+    }
+    
+    public func showPauseScreen(pauseView: UIView) {
+        let blur = UIBlurEffect(style: .dark)
+        let blurView = UIVisualEffectView(effect: blur)
+        blurView.frame = view!.frame
+        view!.addSubview(blurView)
+        
+        pauseView.isHidden = false
+        view!.addSubview(pauseView)
+        
+        activeViews = [blurView, pauseView]
+    }
+    
+    public func resumeGame() {
+        self.isPaused = false
+        self.view!.isPaused = false
+        
+        let views = activeViews.filter {
+            $0.removeFromSuperview()
+            return false
+        }
+        
+        activeViews = views
+    }
+    
+    public func endGame() {
+        gameModel!.saveState()
+        if let controller = gameController {
+            // XXX Return to the game scene
+        }
     }
     
     // MARK: Private functions
@@ -158,19 +473,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         ballCountLabel!.name = "ballCountLabel"
         
         var ballPosition = CGPoint(x: view!.frame.midX, y: groundNode!.size.height + ballRadius!)
-        if gameModel!.isWaiting() {
-            // This means we loaded a saved game state so get the origin point
-            // The reason we load the game model in a WAITING state after loading a game is because during the WAITING state we:
-            // 1. Check if we're about to lose
-            // 2. Check if the game is over
-            // And we want to re-warn the user that they're about to lose if they are one row away from a game over
-            ballPosition = gameModel!.ballManager!.getOriginPoint()
-            // Correct ball position's Y value (in case ground size changed for whatever reason) to prevent it from floating above the ground or being below the ground
-            ballPosition.y = groundNode!.size.height + ballRadius!
-            gameModel!.ballManager!.setOriginPoint(point: ballPosition)
-            addBallCountLabel()
-        }
-        else if gameModel!.isTurnOver() {
+        if gameModel!.isTurnOver() {
             // We're starting a new game
             // The reason we start the game model in a TURN_OVER state for a new game is because in this state
             // the game scene code will add a new row to the scene and animate all items down a row
@@ -318,28 +621,24 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         return physBody
     }
     
-    public func showPauseScreen(pauseView: UIView) {
-        let blur = UIBlurEffect(style: .dark)
-        let blurView = UIVisualEffectView(effect: blur)
-        blurView.frame = view!.frame
-        view!.addSubview(blurView)
+    // Flashes the fast forward image to give the user some feedback about what's happening
+    private func flashSpeedupImage() {
+        let pos = CGPoint(x: self.view!.frame.midX, y: self.view!.frame.midY)
+        let size = CGSize(width: self.view!.frame.width * 0.8, height: self.view!.frame.width * 0.8)
+        let imageNode = SKSpriteNode(imageNamed: "fast_forward_icon")
+        imageNode.alpha = 0
+        imageNode.zPosition = 101
+        imageNode.position = pos
+        imageNode.size = size
         
-        pauseView.isHidden = false
-        view!.addSubview(pauseView)
+        self.addChild(imageNode)
         
-        activeViews = [blurView, pauseView]
-    }
-    
-    public func resumeGame() {
-        self.isPaused = false
-        self.view!.isPaused = false
+        let action1 = SKAction.fadeAlpha(to: 0.3, duration: 0.2)
+        let action2 = SKAction.fadeAlpha(to: 0, duration: 0.2)
         
-        let views = activeViews.filter {
-            $0.removeFromSuperview()
-            return false
+        imageNode.run(SKAction.sequence([action1, action2, action1, action2, action1, action2])) {
+            self.removeChildren(in: [imageNode])
         }
-        
-        activeViews = views
     }
     
     private func animateItems() {

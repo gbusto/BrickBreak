@@ -289,6 +289,7 @@ class ItemGenerator {
     
     // MARK: Public functions
     required init(blockSize: CGSize, ballRadius: CGFloat, numberOfBalls: Int, numberOfRows: Int, numItems: Int, restorationURL: URL) {
+        // XXX Change restoration URL to be optional; if it's nil, don't try to load any data
         self.blockSize = blockSize
         self.ballRadius = ballRadius
         self.numberOfRows = numberOfRows
