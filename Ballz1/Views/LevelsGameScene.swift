@@ -13,8 +13,12 @@ import CoreGraphics
 
 class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
-    // MARK: Private attributes
+    // MARK: Public attributes
+    public var gameModel: LevelsGameModel?
     
+    public var gameController: LevelsGameController?
+    
+    // MARK: Private attributes
     private var colorScheme: GameSceneColorScheme?
     
     // The margin aka the ceiling height and ground height
@@ -27,6 +31,13 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     // The block size
     private var blockSize: CGSize?
     
+    // Ball count label
+    private var ballCountLabel: SKLabelNode?
+    private var prevBallCount = Int(0)
+    private var currentBallCount = Int(0)
+    // This is to prevent the ball count label from being too far right or too far left
+    private var ballCountLabelMargin = CGFloat(0.05)
+    
     // Views that are active on the screen and need to be removed
     private var activeViews: [UIView] = []
     
@@ -36,6 +47,12 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     private var leftWallNode: SKShapeNode?
     private var rightWallNode: SKShapeNode?
     
+    // Variable to know when actions are complete
+    private var actionsStarted = Int(0)
+    
+    // A boolean that says whether or not we're showing encouragement (emoji + text) on the screen
+    private var showingEncouragement = false
+    
     // This is essentially the minimum X value for the game play area; if it is zero, it looks like it goes off the left side of the screen; when set to 1 it looks better
     private var leftWallWidth = CGFloat(1)
     private var rightWallWidth = CGFloat(0)
@@ -44,6 +61,28 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     private var fontName: String = "HelveticaNeue"
     private var topColor: UIColor = .black
     private var bottomColor: UIColor = .white
+    
+    // The index into the color list array
+    private var colorIndex = Int(3)
+    private var colorIndices: [Int] = [0, 0, 0, 0]
+    private var colorList: [UIColor] = [
+        UIColor(rgb: 0xffab91),
+        UIColor(rgb: 0xffcc80),
+        UIColor(rgb: 0xffe082),
+        UIColor(rgb: 0xfff59d),
+        UIColor(rgb: 0xe6ee9c),
+        UIColor(rgb: 0xc5e1a5),
+        UIColor(rgb: 0xa5d6a7),
+        UIColor(rgb: 0x80cbc4),
+        UIColor(rgb: 0x80deea),
+        UIColor(rgb: 0x81d4fa),
+        UIColor(rgb: 0x90caf9),
+        UIColor(rgb: 0x9fa8da),
+        UIColor(rgb: 0xb39ddb),
+        UIColor(rgb: 0xce93d8),
+        UIColor(rgb: 0xf48fb1),
+        UIColor(rgb: 0xef9a9a),
+        ]
     
     // Stuff for collisions
     private var categoryBitMask = UInt32(0b0001)
@@ -101,6 +140,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         // Initialize the walls for the game
         initWalls(view: view)
         
+        // Initialize the game model
+        initGameModel()
+        
         // Set the background color based on the color scheme value
         self.backgroundColor = colorScheme!.backgroundColor
         
@@ -109,6 +151,61 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // MARK: Private functions
+    private func initGameModel() {
+        gameModel = LevelsGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, numberOfRows: Int(LevelsGameScene.NUM_ROWS))
+        
+        ballCountLabel = SKLabelNode(fontNamed: fontName)
+        ballCountLabel!.name = "ballCountLabel"
+        
+        var ballPosition = CGPoint(x: view!.frame.midX, y: groundNode!.size.height + ballRadius!)
+        if gameModel!.isWaiting() {
+            // This means we loaded a saved game state so get the origin point
+            // The reason we load the game model in a WAITING state after loading a game is because during the WAITING state we:
+            // 1. Check if we're about to lose
+            // 2. Check if the game is over
+            // And we want to re-warn the user that they're about to lose if they are one row away from a game over
+            ballPosition = gameModel!.ballManager!.getOriginPoint()
+            // Correct ball position's Y value (in case ground size changed for whatever reason) to prevent it from floating above the ground or being below the ground
+            ballPosition.y = groundNode!.size.height + ballRadius!
+            gameModel!.ballManager!.setOriginPoint(point: ballPosition)
+            addBallCountLabel()
+        }
+        else if gameModel!.isTurnOver() {
+            // We're starting a new game
+            // The reason we start the game model in a TURN_OVER state for a new game is because in this state
+            // the game scene code will add a new row to the scene and animate all items down a row
+            displayEncouragement(emoji: "🎬", text: "Action!")
+        }
+        else {
+            print("Game model loaded in an unusual state")
+        }
+        
+        // Update the level count label
+        
+        let balls = gameModel!.getBalls()
+        currentBallCount = balls.count
+        prevBallCount = balls.count
+        for ball in balls {
+            ball.loadItem(position: ballPosition)
+            ball.resetBall()
+            self.addChild(ball.getNode())
+        }
+        
+        let itemArray = gameModel!.itemGenerator!.itemArray
+        var count = itemArray.count
+        for row in itemArray {
+            addRowToView(rowNum: count, items: row)
+            count -= 1
+        }
+        
+        // Move the items down in the view
+        animateItems()
+    }
+    
+    // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
+    private func inGame(_ point: CGPoint) -> Bool {
+        return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
+    }
     
     // Initialize the different walls and physics edges
     private func initWalls(view: SKView) {
@@ -243,5 +340,332 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         activeViews = views
+    }
+    
+    private func animateItems() {
+        actionsStarted = gameModel!.itemGenerator!.getItemCount()
+        
+        let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
+        let array = gameModel!.itemGenerator!.itemArray
+        
+        if 0 == array.count {
+            // No items to animate
+            return
+        }
+        
+        for i in 0...(array.count - 1) {
+            let row = array[i]
+            for item in row {
+                if item is SpacerItem {
+                    // SpacerItems aren't included in the actionsStarted count so skip their animation here
+                    continue
+                }
+                
+                if item is StoneHitBlockItem {
+                    let block = item as! StoneHitBlockItem
+                    block.changeState(duration: 1)
+                }
+                
+                // If the item is invisible, have it fade in
+                if 0 == item.getNode().alpha {
+                    // If this is the newest row
+                    let fadeIn = SKAction.fadeIn(withDuration: 1)
+                    item.getNode().run(SKAction.group([fadeIn, action])) {
+                        self.actionsStarted -= 1
+                    }
+                }
+                else if (i == 0) && (array.count == Int(LevelsGameScene.NUM_ROWS - 1)) {
+                    // Move these items down on the screen
+                    if (item is BallItem) || (item is BombItem) {
+                        // If this is a ball item or bomb item, these items should just fade out and be removed from the scene and the item generator
+                        let fadeOut = SKAction.fadeOut(withDuration: 1)
+                        item.getNode().run(SKAction.group([action, fadeOut])) {
+                            self.removeChildren(in: [item.getNode()])
+                            self.actionsStarted -= 1
+                        }
+                    }
+                    else {
+                        // Otherwise if this item is just a block then move it down; it will be removed later if the user decides to save themselves
+                        item.getNode().run(action) {
+                            self.actionsStarted -= 1
+                        }
+                    }
+                    
+                    // Reset the physics body on this node so it doesn't push the ball through the ground
+                    item.getNode().physicsBody = nil
+                    
+                    // Don't remove the row from the itemArray; the model will handle that
+                }
+                else {
+                    item.getNode().run(action) {
+                        self.actionsStarted -= 1
+                    }
+                }
+            }
+        }
+        
+        gameModel!.itemGenerator!.pruneFirstRow()
+    }
+    
+    private func colorizeBlocks(itemRow: [Item]) {
+        bottomColor = topColor
+        colorIndex += 1
+        if colorIndex == colorList.count {
+            colorIndex = 0
+        }
+        topColor = colorList[colorIndex]
+        
+        for item in itemRow {
+            if item is HitBlockItem {
+                let block = item as! HitBlockItem
+                block.setAttributes(bottomColor: bottomColor,
+                                    topColor: topColor,
+                                    textColor: colorScheme!.blockTextColor,
+                                    fontName: colorScheme!.fontName)
+            }
+            if item is StoneHitBlockItem {
+                let block = item as! StoneHitBlockItem
+                block.setAttributes(bottomColor: bottomColor,
+                                    topColor: topColor,
+                                    textColor: colorScheme!.blockTextColor,
+                                    fontName: colorScheme!.fontName)
+            }
+        }
+    }
+    private func addRowToView(rowNum: Int, items: [Item]) {
+        colorizeBlocks(itemRow: items)
+        
+        if items.count > 0 {
+            for i in 0...(items.count - 1) {
+                let item = items[i]
+                if item is SpacerItem {
+                    continue
+                }
+                
+                var pos = CGPoint(x: 0, y: 0)
+                if item is HitBlockItem {
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.025) + leftWallWidth
+                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
+                    pos = CGPoint(x: posX, y: posY)
+                }
+                else if item is StoneHitBlockItem {
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.025) + leftWallWidth
+                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
+                    pos = CGPoint(x: posX, y: posY)
+                }
+                else if item is BombItem {
+                    let posX = (CGFloat(i) * rowHeight!) + leftWallWidth
+                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
+                    pos = CGPoint(x: posX, y: posY)
+                }
+                else if item is BallItem {
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2) + leftWallWidth
+                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum))) + (rowHeight! / 2)
+                    pos = CGPoint(x: posX, y: posY)
+                    let ball = item as! BallItem
+                    ball.setColor(color: colorScheme!.hitBallColor)
+                }
+                
+                // The item will fade in
+                item.getNode().alpha = 0
+                item.loadItem(position: pos)
+                self.addChild(item.getNode())
+            }
+        }
+    }
+    
+    private func addBallCountLabel() {
+        currentBallCount = gameModel!.getBalls().count
+        let originPoint = gameModel!.ballManager!.getOriginPoint()
+        var newPoint = CGPoint(x: originPoint.x, y: (originPoint.y + (ballRadius! * 1.5)))
+        let viewWidth = view!.frame.width - (leftWallWidth * 2)
+        // This is to prevent the ball count label from going off the screen
+        if newPoint.x < (leftWallWidth + (viewWidth * ballCountLabelMargin)) {
+            // If we're close to the far left side, add a small amount to the x value
+            newPoint.x += viewWidth * 0.03
+        }
+        else if newPoint.x > ((view!.frame.width - rightWallWidth) - (viewWidth * ballCountLabelMargin)) {
+            // Opposite of the above comment
+            newPoint.x -= viewWidth * 0.03
+        }
+        
+        ballCountLabel!.position = newPoint
+        ballCountLabel!.fontSize = ballRadius! * 2.5
+        ballCountLabel!.color = .white
+        
+        updateBallCountLabel()
+        if let _ = self.childNode(withName: "ballCountLabel") {
+            // If this label is already displayed, don't display it again
+        }
+        else {
+            self.addChild(ballCountLabel!)
+        }
+    }
+    
+    private func updateBallCountLabel() {
+        ballCountLabel!.text = "x\(currentBallCount)"
+    }
+    
+    private func removeBallCountLabel() {
+        self.removeChildren(in: [ballCountLabel!])
+    }
+    
+    private func showBallsAcquiredLabel(count: Int) {
+        let fontSize = ballRadius! * 2
+        let originPoint = gameModel!.ballManager!.getOriginPoint()
+        let pos = CGPoint(x: originPoint.x, y: originPoint.y + fontSize)
+        let label = SKLabelNode()
+        label.text = "+\(count)"
+        label.fontSize = fontSize
+        label.fontName = fontName
+        label.position = pos
+        label.alpha = 0
+        
+        let vect = CGVector(dx: 0, dy: fontSize * 3)
+        let action1 = SKAction.fadeIn(withDuration: 0.5)
+        let action2 = SKAction.move(by: vect, duration: 1)
+        let action3 = SKAction.fadeOut(withDuration: 0.5)
+        self.addChild(label)
+        label.run(action2)
+        label.run(SKAction.sequence([action1, action3])) {
+            self.scene!.removeChildren(in: [label])
+        }
+    }
+    
+    private func displayEncouragement(emoji: String, text: String) {
+        if showingEncouragement {
+            // If we're showing encouragement on the screen, don't display something else
+            return
+        }
+        
+        let label = SKLabelNode()
+        label.text = emoji
+        label.fontSize = view!.frame.width * 0.3
+        label.alpha = 0
+        label.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
+        label.zPosition = 105
+        
+        let text = SKLabelNode(text: text)
+        text.fontSize = label.fontSize / 2.5
+        text.fontName = fontName
+        text.alpha = 0
+        text.position = CGPoint(x: view!.frame.midX, y: label.position.y - (text.fontSize * 1.5))
+        text.zPosition = 105
+        text.fontColor = .white
+        
+        showingEncouragement = true
+        
+        let action1 = SKAction.fadeIn(withDuration: 1)
+        let action2 = SKAction.wait(forDuration: 1)
+        let action3 = SKAction.fadeOut(withDuration: 1)
+        label.run(SKAction.sequence([action1, action2, action3])) {
+            self.removeChildren(in: [label])
+        }
+        text.run(SKAction.sequence([action1, action2, action3])) {
+            self.removeChildren(in: [text])
+            self.showingEncouragement = false
+        }
+        
+        self.addChild(label)
+        self.addChild(text)
+    }
+    
+    private func startFlashingRed() {
+        // If the screen is already flashing red then don't do anything
+        if let node = self.childNode(withName: "warningNode") {
+            return
+        }
+        
+        // Display this warning to the user
+        displayEncouragement(emoji: "😬", text: "Careful!")
+        
+        let darkRed = UIColor(red: 153/255, green: 0, blue: 0, alpha: 1)
+        let action1 = SKAction.fadeAlpha(by: 0.5, duration: 1)
+        let action2 = SKAction.fadeOut(withDuration: 1)
+        
+        let frontNode = SKSpriteNode(color: darkRed, size: view!.frame.size)
+        frontNode.anchorPoint = CGPoint(x: 0, y: 0)
+        frontNode.position = CGPoint(x: 0, y: 0)
+        frontNode.zPosition = 101
+        frontNode.alpha = 0
+        frontNode.name = "warningNode"
+        
+        let sequence = SKAction.sequence([action1, action2])
+        
+        frontNode.run(SKAction.repeatForever(sequence))
+        
+        self.addChild(frontNode)
+    }
+    
+    private func stopFlashingRed() {
+        if let node = self.childNode(withName: "warningNode") {
+            node.run(SKAction.fadeOut(withDuration: 1)) {
+                self.removeChildren(in: [node])
+                self.displayEncouragement(emoji: "😅", text: "Phew!")
+            }
+        }
+    }
+    
+    private func breakBlock(color1: SKColor, color2: SKColor, position: CGPoint) {
+        let colors: [UIColor] = [color1, color2]
+        let alphas: [CGFloat] = [0.1, 0.2, 0.3, 0.4, 0.5]
+        let numBlocks = 16 // Arbitrary; just a number for now
+        let newSize = CGSize(width: blockSize!.width / 4, height: blockSize!.height / 4)
+        var blocks: [SKSpriteNode] = []
+        for _ in 0...(numBlocks - 1) {
+            let newPosition = CGPoint(x: position.x + CGFloat(Int.random(in: -20...20)),
+                                      y: position.y + CGFloat(Int.random(in: -20...20)))
+            let block = SKSpriteNode(color: colors.randomElement()!, size: newSize)
+            block.position = newPosition
+            block.alpha = alphas.randomElement()!
+            
+            let physBody = SKPhysicsBody()
+            physBody.affectedByGravity = true
+            physBody.isDynamic = true
+            block.physicsBody = physBody
+            
+            blocks.append(block)
+            self.addChild(block)
+        }
+        
+        for block in blocks {
+            let vector = CGVector(dx: CGFloat(Int.random(in: -150...150)), dy: CGFloat(Int.random(in: 200...400)))
+            let action1 = SKAction.applyImpulse(vector, duration: 0.1)
+            let action2 = SKAction.fadeOut(withDuration: 1)
+            block.run(SKAction.sequence([action1, action2])) {
+                self.removeChildren(in: [block])
+            }
+        }
+    }
+    
+    private func ballHitAnimation(color: SKColor, position: CGPoint) {
+        let alphas: [CGFloat] = [0.3, 0.4, 0.5, 0.6, 0.7]
+        let numDroplets = 8
+        var balls: [SKShapeNode] = []
+        for _ in 0...(numDroplets - 1) {
+            let newPosition = CGPoint(x: position.x + CGFloat(Int.random(in: -10...10)),
+                                      y: position.y + CGFloat(Int.random(in: -10...10)))
+            let ball = SKShapeNode(circleOfRadius: ballRadius! / 2)
+            ball.position = newPosition
+            ball.alpha = alphas.randomElement()!
+            ball.fillColor = color
+            
+            let physBody = SKPhysicsBody()
+            physBody.affectedByGravity = true
+            physBody.isDynamic = true
+            ball.physicsBody = physBody
+            
+            balls.append(ball)
+            self.addChild(ball)
+        }
+        
+        for ball in balls {
+            let vector = CGVector(dx: CGFloat(Int.random(in: -150...150)), dy: CGFloat(Int.random(in: 200...400)))
+            let action1 = SKAction.applyImpulse(vector, duration: 0.1)
+            let action2 = SKAction.fadeOut(withDuration: 1)
+            ball.run(SKAction.sequence([action1, action2])) {
+                self.removeChildren(in: [ball])
+            }
+        }
     }
 }

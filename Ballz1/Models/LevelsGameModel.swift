@@ -13,7 +13,6 @@ class LevelsGameModel {
     // MARK: Public properties
     public var gameScore = Int(0)
     public var levelCount = Int(0)
-    public var highScore = Int(0)
     
     public var ballManager: BallManager?
     public var itemGenerator: ItemGenerator?
@@ -53,14 +52,12 @@ class LevelsGameModel {
     // MARK: State handling code
     // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
     struct PersistentData: Codable {
-        var highScore: Int
         var levelCount: Int
         var showedTutorials: Bool
         
         // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
         // Read Apple's documentation on CodingKey protocol and Codable
         enum CodingKeys: String, CodingKey {
-            case highScore
             case levelCount
             case showedTutorials
         }
@@ -120,12 +117,17 @@ class LevelsGameModel {
         
         // Try to load persistent data
         if false == loadPersistentState() {
-            // Defaults to load highScore of 0
-            persistentData = PersistentData(highScore: highScore, levelCount: levelCount, showedTutorials: showedTutorials)
+            persistentData = PersistentData(levelCount: levelCount, showedTutorials: showedTutorials)
         }
         
+        /*
+         For the game model, the only information we need to save is the level count.
+         Start everything off at zero and display X number of rows of blocks for the level.
+         Continue to add rows to the game until there are no more.
+         Game ends whenever there are no items left in the item generator.
+         */
+        
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
-        highScore = persistentData!.highScore
         levelCount = persistentData!.levelCount
         showedTutorials = persistentData!.showedTutorials
         self.numberOfRows = numberOfRows
@@ -209,9 +211,8 @@ class LevelsGameModel {
         // XXX This needs to be different here; update the user's score by more than just one.
         // Need a formula for this like 1 point per hit, 5 per block break, and double the final score if they hit "on fire" (maybe?)
         gameScore += 1
-        if gameScore >= highScore {
-            highScore = gameScore
-        }
+        
+        // Submit this score to game center after finishing a level
         
         // Go from TURN_OVER state to WAITING state
         incrementState()
