@@ -26,6 +26,10 @@ class LevelsGameModel {
     private var numberOfBalls = Int(10)
     private var numberOfRows = Int(0)
     
+    private var scoreThisTurn = Int(0)
+    private var blockBonus = Int(2)
+    private var onFireBonus = Double(1.0)
+    
     private var state = Int(0)
     // READY means the game model is ready to go
     private var READY = Int(0)
@@ -155,6 +159,10 @@ class LevelsGameModel {
     }
     
     public func prepareTurn(point: CGPoint) {
+        // Reset the score for this turn to 0
+        scoreThisTurn = 0
+        resetAdditives()
+        
         // Save the item generator's turn state as soon as the user starts the next turn
         itemGenerator!.saveTurnState()
         
@@ -188,23 +196,21 @@ class LevelsGameModel {
         let removedItems = itemGenerator!.removeItems()
         for item in removedItems {
             if item is BallItem {
-                print("Removed item is ball")
-                addToScore += 2
+                addToScore += Int(2 * onFireBonus)
                 // Transfer ownership of the from the item generator to the ball manager
                 let ball = item as! BallItem
                 ballManager!.addBall(ball: ball)
             }
             else if item is HitBlockItem {
-                print("Removed item is hit block")
-                addToScore += 10
+                addToScore += Int(Double(blockBonus) * onFireBonus)
+                blockBonus += Int(2 * onFireBonus)
             }
             else if item is StoneHitBlockItem {
-                print("Removed item is stone block")
-                addToScore += 20
+                addToScore += Int(Double(blockBonus) * onFireBonus)
+                blockBonus += Int(4 * onFireBonus)
             }
             else if item is BombItem {
-                print("Removed item is bomb")
-                addToScore += 10
+                addToScore += Int(10 * onFireBonus)
             }
         }
         
@@ -221,17 +227,22 @@ class LevelsGameModel {
         }
         
         gameScore += addToScore
+        scoreThisTurn += addToScore
         
         return removedItems
+    }
+    
+    public func addOnFireBonus() {
+        onFireBonus = Double(1.5)
+        let newScore = Int(Double(scoreThisTurn) * onFireBonus)
+        let diff = newScore - scoreThisTurn
+        gameScore += diff
+        scoreThisTurn = newScore
     }
     
     // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
     public func handleTurnOver() {
         ballManager!.checkNewArray()
-        
-        // XXX This needs to be different here; update the user's score by more than just one.
-        // Need a formula for this like 1 point per hit, 5 per block break, and double the final score if they hit "on fire" (maybe?)
-        //gameScore += 1
         
         // Submit this score to game center after finishing a level
         
@@ -241,6 +252,10 @@ class LevelsGameModel {
     
     // MARK: Physics contact functions
     public func handleContact(nameA: String, nameB: String) {
+        var additive = Int(1)
+        if onFireBonus > 1.0 {
+            additive = Int(2)
+        }
         // Items that start with the name bm are ball manager balls. They are named differently from the other items so we can quickly check if a ball manager ball is interacting with an item from the item generator
         // Add any extra cases in here if they need special attention
         if nameA.starts(with: "bm") {
@@ -249,7 +264,8 @@ class LevelsGameModel {
             }
             else {
                 if "wall" != nameB && "ceiling" != nameB {
-                    gameScore += 1
+                    scoreThisTurn += additive
+                    gameScore += additive
                 }
                 itemGenerator!.hit(name: nameB)
             }
@@ -261,7 +277,8 @@ class LevelsGameModel {
             }
             else {
                 if "wall" != nameA && "ceiling" != nameA {
-                    gameScore += 1
+                    scoreThisTurn += additive
+                    gameScore += additive
                 }
                 itemGenerator!.hit(name: nameA)
             }
@@ -337,5 +354,10 @@ class LevelsGameModel {
     
     public func isGameOver() -> Bool {
         return (GAME_OVER == state)
+    }
+    
+    private func resetAdditives() {
+        blockBonus = Int(2)
+        onFireBonus = Double(1.0)
     }
 }

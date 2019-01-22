@@ -406,6 +406,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                 // Display the on fire encouragement
                 displayEncouragement(emoji: "🔥", text: "On fire!")
                 displayedOnFire = true
+                gameModel!.addOnFireBonus()
             }
         }
     }
