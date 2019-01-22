@@ -258,6 +258,11 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
+        let gameScore = gameModel!.gameScore
+        if let controller = gameController {
+            controller.updateScore(score: gameScore)
+        }
+        
         if gameModel!.isTurnOver() {
             // Return physics simulation to normal speed
             physicsWorld.speed = 1.0

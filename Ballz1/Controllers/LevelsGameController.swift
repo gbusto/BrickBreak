@@ -45,6 +45,7 @@ class LevelsGameController: UIViewController,
             self.scene = scene
             
             scene.scaleMode = .aspectFill
+            scene.gameController = self
             
             pauseMenuView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             resumeButton.imageView?.contentMode = .scaleAspectFit
@@ -117,5 +118,12 @@ class LevelsGameController: UIViewController,
     
     @objc func handleAppTerminate() {
         // App is about to terminate
+    }
+    
+    public func updateScore(score: Int) {
+        let currentScore = Int(levelScore.text!)!
+        if currentScore < score {
+            levelScore.text = "\(currentScore + 1)"
+        }
     }
 }

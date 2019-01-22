@@ -182,13 +182,29 @@ class LevelsGameModel {
     }
     
     public func handleTurn() -> [Item] {
+        var addToScore = Int(0)
+        
         // Check to see if the user collected any ball items so far
         let removedItems = itemGenerator!.removeItems()
         for item in removedItems {
             if item is BallItem {
+                print("Removed item is ball")
+                addToScore += 2
                 // Transfer ownership of the from the item generator to the ball manager
                 let ball = item as! BallItem
                 ballManager!.addBall(ball: ball)
+            }
+            else if item is HitBlockItem {
+                print("Removed item is hit block")
+                addToScore += 10
+            }
+            else if item is StoneHitBlockItem {
+                print("Removed item is stone block")
+                addToScore += 20
+            }
+            else if item is BombItem {
+                print("Removed item is bomb")
+                addToScore += 10
             }
         }
         
@@ -204,6 +220,8 @@ class LevelsGameModel {
             ballManager!.incrementState()
         }
         
+        gameScore += addToScore
+        
         return removedItems
     }
     
@@ -213,7 +231,7 @@ class LevelsGameModel {
         
         // XXX This needs to be different here; update the user's score by more than just one.
         // Need a formula for this like 1 point per hit, 5 per block break, and double the final score if they hit "on fire" (maybe?)
-        gameScore += 1
+        //gameScore += 1
         
         // Submit this score to game center after finishing a level
         
@@ -230,6 +248,9 @@ class LevelsGameModel {
                 ballManager!.markBallInactive(name: nameA)
             }
             else {
+                if "wall" != nameB && "ceiling" != nameB {
+                    gameScore += 1
+                }
                 itemGenerator!.hit(name: nameB)
             }
         }
@@ -239,6 +260,9 @@ class LevelsGameModel {
                 ballManager!.markBallInactive(name: nameB)
             }
             else {
+                if "wall" != nameA && "ceiling" != nameA {
+                    gameScore += 1
+                }
                 itemGenerator!.hit(name: nameA)
             }
         }
