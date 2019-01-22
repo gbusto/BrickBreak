@@ -140,7 +140,10 @@ class LevelsGameModel {
                                       numberOfBalls: ballManager!.numberOfBalls,
                                       numberOfRows: numberOfRows,
                                       numItems: numberOfItems,
-                                      restorationURL: LevelsGameModel.LevelsDirURL)
+                                      restorationURL: LevelsGameModel.LevelsDirURL,
+                                      useDrand: true,
+                                      // XXX This value should be based on the level number
+                                      seed: 0)
         if 0 == itemGenerator!.itemArray.count {
             state = TURN_OVER
         }
