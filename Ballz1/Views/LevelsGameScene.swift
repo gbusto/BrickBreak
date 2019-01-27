@@ -75,6 +75,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     private var leftWallWidth = CGFloat(1)
     private var rightWallWidth = CGFloat(0)
     
+    // Specifies whether or not the game just started
+    private var gameStart = true
+    
     private var ballProjection = BallProjection()
     
     // Attributes based on how the scene is displayed
@@ -277,9 +280,22 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             // Tell the game model to update now that the turn has ended
             gameModel!.handleTurnOver()
             
-            // Get the newly generated items and add them to the view
-            let items = gameModel!.generateRow()
-            addRowToView(rowNum: 1, items: items)
+            // XXX This state (TURN_OVER) is screwing things up:
+            /*
+             1. It's adding an extra row to the start of the game that messes up logic when checking for loss risk and game over
+             2. When the game is over, all that's left is rows of spacer items and the item generator cleans those out but this then adds an extra row that breaks the model checking for whether or not the user won the game
+            */
+            if gameStart {
+                // If the game just started, don't execute the block of code below
+                gameStart = false
+            }
+            else {
+                let items = gameModel!.generateRow()
+                if items.count == 0 {
+                    // Get the newly generated items and add them to the view
+                    addRowToView(rowNum: 1, items: items)
+                }
+            }
             
             // Move the items down in the view
             animateItems()
@@ -465,9 +481,13 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func endGame() {
-        gameModel!.saveState()
+        // XXX Need to save the level count here
+        //gameModel!.saveState()
         if let controller = gameController {
             // XXX Return to the game scene
+            if let controller = gameController {
+                controller.levelEnded(modelCount: gameModel!.levelCount)
+            }
         }
     }
     
@@ -500,15 +520,30 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             self.addChild(ball.getNode())
         }
         
-        let itemArray = gameModel!.itemGenerator!.itemArray
+        //let itemArray = gameModel!.itemGenerator!.itemArray
+        // XXX Change this so that we only show 5 rows to start with
+        /*
         var count = itemArray.count
         for row in itemArray {
             addRowToView(rowNum: count, items: row)
             count -= 1
         }
+        var count = 4
+        for i in 0...count {
+            let row = itemArray[i]
+            addRowToView(rowNum: count, items: row)
+            count -= 1
+        }
+        */
+        for i in 1...5 {
+            let row = gameModel!.generateRow()
+            addRowToView(rowNum: 6 - i, items: row)
+        }
         
+        // XXX May need to uncomment this line
+        // actionsStarted or animteItems() should only be allowed to be called once and ignored while items are in motion
         // Move the items down in the view
-        animateItems()
+        //animateItems()
     }
     
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins

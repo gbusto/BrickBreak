@@ -26,6 +26,8 @@ class LevelsGameModel {
     private var numberOfBalls = Int(10)
     private var numberOfRows = Int(0)
     
+    private var rowNumber = Int(0)
+    
     private var scoreThisTurn = Int(0)
     private var blockBonus = Int(2)
     private var onFireBonus = Double(1.0)
@@ -148,9 +150,19 @@ class LevelsGameModel {
                                       useDrand: true,
                                       // XXX This value should be based on the level number
                                       seed: 0)
+        
+        // XXX This should be based on the level number (the higher the level, the more difficult it should be)
+        itemGenerator!.easyPatternPercent = 50
+        itemGenerator!.intermediatePatternPercent = 30
+        itemGenerator!.hardPatternPercent = 20
+        
+        // XXX Force this to be in the TURN_OVER state; getting stuck in WAITING state
+        /*
         if 0 == itemGenerator!.itemArray.count {
             state = TURN_OVER
         }
+        */
+        state = TURN_OVER
     }
     
     // MARK: Public functions
@@ -287,23 +299,24 @@ class LevelsGameModel {
     
     // XXX This will need to be different for levels; need to generate all rows up front when we initialize the model
     public func generateRow() -> [Item] {
-        let count = itemGenerator!.getBlockCount()
-        // If the user is doing well and there are no items on the screen, generate a harder pattern
-        if count <= 6 {
-            itemGenerator!.easyPatternPercent = 10
-            itemGenerator!.intermediatePatternPercent = 30
-            itemGenerator!.hardPatternPercent = 60
+        /*
+        if rowNumber > (itemGenerator!.itemArray.count - 1) {
+            return []
         }
-            // If they have <= 6 items on the screen, increase the difficult of getting a harder pattern
-        else if (count > 6) && (count <= 12) {
-            itemGenerator!.easyPatternPercent = 20
-            itemGenerator!.intermediatePatternPercent = 40
-            itemGenerator!.hardPatternPercent = 40
+        let returnItems = itemGenerator!.itemArray[rowNumber]
+        rowNumber += 1
+        */
+        // XXX Stop returning rows after 5 because that's when the game should end
+        if rowNumber >= 5 {
+            // XXX This is just a hack for now that needs to be fixed
+            if itemGenerator!.itemArray.count == 0 {
+                return []
+            }
+            
+            // Return an empty row of items
+            return itemGenerator!.generateRow(emptyRow: true)
         }
-            // Otherwise reset the pattern difficulty distribution back to defaults
-        else {
-            itemGenerator!.resetDifficulty()
-        }
+        rowNumber += 1
         return itemGenerator!.generateRow()
     }
     
@@ -313,7 +326,14 @@ class LevelsGameModel {
     
     // The floor of the game scene; if another row doesn't fit
     public func gameOver() -> Bool {
+        // XXX This needs to be updated to capture if the user lost
+        // Also, the lossRisk function will need to be updated too
         if (itemGenerator!.itemArray.count == numberOfRows - 1) {
+            state = GAME_OVER
+            return true
+        }
+        else if itemGenerator!.itemArray.count == 0 {
+            // Let game know and show an ad
             state = GAME_OVER
             return true
         }

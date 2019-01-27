@@ -330,6 +330,31 @@ class ItemGenerator {
         itemArray = loadItems(items: igState!.itemArray, itemHitCounts: igState!.itemHitCountArray, numberOfBalls: numberOfBalls)
     }
     
+    public func debugPrint() {
+        var output = ""
+        for row in itemArray {
+            for item in row {
+                if item is BallItem {
+                    output += "[B]"
+                }
+                else if item is HitBlockItem {
+                    output += "[H]"
+                }
+                else if item is StoneHitBlockItem {
+                    output += "[T]"
+                }
+                else if item is BombItem {
+                    output += "[B]"
+                }
+                else if item is SpacerItem {
+                    output += "[S]"
+                }
+            }
+            output += "\n"
+        }
+        print(output)
+    }
+    
     public func addBlockItemType(type: Int, percentage: Int) {
         for _ in 1...percentage {
             blockTypeArray.append(type)
@@ -362,30 +387,34 @@ class ItemGenerator {
         hardPatternPercent = 10
     }
     
-    public func generateRow() -> [Item] {
+    public func generateRow(emptyRow: Bool = false) -> [Item] {
         var newRow: [Item] = []
+        
+        if emptyRow {
+            for _ in 1...numItemsPerRow {
+                newRow.append(SpacerItem())
+            }
+            itemArray.append(newRow)
+            return newRow
+        }
         
         // Pick from one of the pattern difficulties
         var pattern: [Int] = []
         var num = 0
         if USE_DRAND {
-            print("Using drand")
             num = randomNumber(upper: 100, lower: 1)
         }
         else {
-            print("Using swift random")
             num = Int.random(in: 1...100)
         }
         
         if num < getEasyPatternPercent() {
             // Easy pattern
             if USE_DRAND {
-                print("Using drand")
                 let choice = randomNumber(upper: ItemGenerator.EASY_PATTERNS.count - 1, lower: 0)
                 pattern = ItemGenerator.EASY_PATTERNS[choice]
             }
             else {
-                print("Using swift random")
                 pattern = ItemGenerator.EASY_PATTERNS.randomElement()!
 
             }
@@ -393,24 +422,20 @@ class ItemGenerator {
         else if (num >= getEasyPatternPercent()) && (num < getIntermediatePatternPercent()) {
             // Medium pattern
             if USE_DRAND {
-                print("Using drand")
                 let choice = randomNumber(upper: ItemGenerator.INTERMEDIATE_PATTERNS.count - 1, lower: 0)
                 pattern = ItemGenerator.INTERMEDIATE_PATTERNS[choice]
             }
             else {
-                print("Using swift random")
                 pattern = ItemGenerator.INTERMEDIATE_PATTERNS.randomElement()!
             }
         }
         else { // num is >= intermediatePatternPercent so pick a hard pattern
             // Hard pattern
             if USE_DRAND {
-                print("Using drand")
                 let choice = randomNumber(upper: ItemGenerator.HARD_PATTERNS.count - 1, lower: 0)
                 pattern = ItemGenerator.HARD_PATTERNS[choice]
             }
             else {
-                print("Using swift random")
                 pattern = ItemGenerator.HARD_PATTERNS.randomElement()!
             }
         }
@@ -425,13 +450,11 @@ class ItemGenerator {
                 if 1 == pattern[j] {
                     // If it's a 1, generate a block type
                     if USE_DRAND {
-                        print("Using drand")
                         let choice = randomNumber(upper: blockTypeArray.count - 1, lower: 0)
                         let itemType = blockTypeArray[choice]
                         item = generateItem(itemType: itemType)!
                     }
                     else {
-                        print("Using swift random")
                         let itemType = blockTypeArray.randomElement()!
                         item = generateItem(itemType: itemType)!
                     }
@@ -439,13 +462,11 @@ class ItemGenerator {
                 else {
                     // Generate a non-block type
                     if USE_DRAND {
-                        print("Using drand")
                         let choice = randomNumber(upper: nonBlockTypeArray.count - 1, lower: 0)
                         let itemType = nonBlockTypeArray[choice]
                         item = generateItem(itemType: itemType)!
                     }
                     else {
-                        print("Using swift random")
                         let itemType = nonBlockTypeArray.randomElement()!
                         item = generateItem(itemType: itemType)!
                     }
@@ -580,12 +601,10 @@ class ItemGenerator {
             let block = item as HitBlockItem
             let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2, numberOfBalls * 2]
             if USE_DRAND {
-                print("Using drand")
                 let choice = randomNumber(upper: choices.count - 1, lower: 0)
                 block.setHitCount(count: choices[choice])
             }
             else {
-                print("Using swift random")
                 block.setHitCount(count: choices.randomElement()!)
             }
             return item
@@ -595,12 +614,10 @@ class ItemGenerator {
             let block = item as StoneHitBlockItem
             let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2, numberOfBalls * 2]
             if USE_DRAND {
-                print("Using drand")
                 let choice = randomNumber(upper: choices.count - 1, lower: 0)
                 block.setHitCount(count: choices[choice])
             }
             else {
-                print("Using swift random")
                 block.setHitCount(count: choices.randomElement()!)
             }
             return item

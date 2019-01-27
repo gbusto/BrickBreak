@@ -126,4 +126,18 @@ class LevelsGameController: UIViewController,
             levelScore.text = "\(currentScore + 1)"
         }
     }
+    
+    public func levelEnded(modelCount: Int) {
+        let currentCount = Int(levelCount.text!)!
+        
+        // Try to show an ad
+        
+        if currentCount < modelCount {
+            // The user completed the level and advanced to the next level
+        }
+        else if currentCount == modelCount {
+            // The user failed to complete the level (they lost)
+            self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+        }
+    }
 }
