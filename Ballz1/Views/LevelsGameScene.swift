@@ -18,9 +18,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
     public var gameController: LevelsGameController?
     
-    // XXX This is a workaround while saving state doesn't work
-    public var levelCount = Int(0)
-    
     // MARK: Private attributes
     private var colorScheme: GameSceneColorScheme?
     
@@ -511,17 +508,14 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         //gameModel!.saveState()
         
         if let controller = gameController {
-            // XXX Workaround while saving state doesn't work
-            let lc = gameModel!.levelCount
-            controller.gameOverWin(levelCount: lc)
+            controller.gameOverWin()
         }
     }
     
     // MARK: Private functions
     private func initGameModel() {
         gameModel = LevelsGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, numberOfRows:
-                                    // XXX Workaround while saving state doesn't work
-                                    Int(LevelsGameScene.NUM_ROWS), levelNumber: levelCount)
+                                    Int(LevelsGameScene.NUM_ROWS))
         
         ballCountLabel = SKLabelNode(fontNamed: fontName)
         ballCountLabel!.name = "ballCountLabel"
