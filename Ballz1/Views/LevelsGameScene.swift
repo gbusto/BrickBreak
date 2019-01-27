@@ -332,19 +332,28 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                 
                 // XXX Gameover can be good or bad here; gameover loss is when a block hits the ground and gameover win is when the user destroys all blocks and collects all items
                 // Check to see if the game ended after all animations are complete
-                if gameModel!.gameOver() {
+                let gameOverType = gameModel!.gameOver()
+                if gameOverType == LevelsGameModel.GAMEOVER_LOSS {
                     // If the game is over, the game model will change its state to GAME_OVER
                     view!.isPaused = true
                     // Otherwise show the gameover overlay
-                    self.endGame()
+                    self.gameOverLoss()
                 }
+                else if gameOverType == LevelsGameModel.GAMEOVER_WIN {
+                    // If the game is over, the game model will change its state to GAME_OVER
+                    view!.isPaused = true
+                    // Otherwise show the gameover overlay
+                    self.gameOverWin()
+                }
+                else if gameOverType == LevelsGameModel.GAMEOVER_NONE {
                     // Check to see if we are at risk of losing the game
-                else if gameModel!.lossRisk() {
-                    // Flash notification to user
-                    startFlashingRed()
-                }
-                else {
-                    stopFlashingRed()
+                    if gameModel!.lossRisk() {
+                        // Flash notification to user
+                        startFlashingRed()
+                    }
+                    else {
+                        stopFlashingRed()
+                    }
                 }
             }
         }
@@ -484,20 +493,29 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         activeViews = views
     }
     
-    public func endGame() {
+    public func gameOverLoss() {
+        // Notify the controller that the user lost
+        if let controller = gameController {
+            controller.gameOverLoss()
+        }
+    }
+    
+    public func gameOverWin() {
+        // Notify the controller that the user won
+        
         // XXX Need to save the level count here
         // Addressed in issue #431
         //gameModel!.saveState()
+        
         if let controller = gameController {
-            if let controller = gameController {
-                controller.levelEnded(modelCount: gameModel!.levelCount)
-            }
+            controller.gameOverWin()
         }
     }
     
     // MARK: Private functions
     private func initGameModel() {
-        gameModel = LevelsGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, numberOfRows: Int(LevelsGameScene.NUM_ROWS))
+        gameModel = LevelsGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, numberOfRows:
+                                    Int(LevelsGameScene.NUM_ROWS))
         
         ballCountLabel = SKLabelNode(fontNamed: fontName)
         ballCountLabel!.name = "ballCountLabel"

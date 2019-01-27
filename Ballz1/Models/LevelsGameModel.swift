@@ -12,7 +12,7 @@ class LevelsGameModel {
     
     // MARK: Public properties
     public var gameScore = Int(0)
-    public var levelCount = Int(0)
+    public var levelCount = Int(1)
     
     public var ballManager: BallManager?
     public var itemGenerator: ItemGenerator?
@@ -44,6 +44,10 @@ class LevelsGameModel {
     private var WAITING = Int(3)
     
     private var GAME_OVER = Int(255)
+    
+    static public var GAMEOVER_NONE = Int(0)
+    static public var GAMEOVER_LOSS = Int(1)
+    static public var GAMEOVER_WIN = Int(2)
     
     // For storing data
     static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -167,7 +171,7 @@ class LevelsGameModel {
         
         // Generate a dynamic number of rows based on the level count
         // Essentially, add 5 rows to the base for every 10 levels the user passes
-        numRowsToGenerate = 30 + (5 * (levelCount / 10))
+        numRowsToGenerate = 10 + (5 * (levelCount / 10))
         
         state = TURN_OVER
     }
@@ -326,19 +330,24 @@ class LevelsGameModel {
     }
     
     // The floor of the game scene; if another row doesn't fit
-    public func gameOver() -> Bool {
+    public func gameOver() -> Int {
         // XXX This needs to be updated to capture if the user lost
         // Also, the lossRisk function will need to be updated too
         if (itemGenerator!.itemArray.count == numberOfRows - 1) {
             state = GAME_OVER
-            return true
+            return LevelsGameModel.GAMEOVER_LOSS
         }
         else if itemGenerator!.itemArray.count == 0 {
-            // Let game know and show an ad
+            // The user beat the level!
+            levelCount += 1
+            
+            // Show an ad
+            
             state = GAME_OVER
-            return true
+            return LevelsGameModel.GAMEOVER_WIN
         }
-        return false
+        
+        return LevelsGameModel.GAMEOVER_NONE
     }
     
     public func incrementState() {
