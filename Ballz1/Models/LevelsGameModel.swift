@@ -27,6 +27,7 @@ class LevelsGameModel {
     private var numberOfRows = Int(0)
     
     private var rowNumber = Int(0)
+    private var numRowsToGenerate = Int(0)
     
     private var scoreThisTurn = Int(0)
     private var blockBonus = Int(2)
@@ -149,19 +150,27 @@ class LevelsGameModel {
                                       restorationURL: LevelsGameModel.LevelsDirURL,
                                       useDrand: true,
                                       // XXX This value should be based on the level number
+                                      // Addressed in issue #430
                                       seed: 0)
         
         // XXX This should be based on the level number (the higher the level, the more difficult it should be)
-        itemGenerator!.easyPatternPercent = 50
-        itemGenerator!.intermediatePatternPercent = 30
-        itemGenerator!.hardPatternPercent = 20
+        // Addressed in issue #429
+        itemGenerator!.easyPatternPercent = 40
+        itemGenerator!.intermediatePatternPercent = 35
+        itemGenerator!.hardPatternPercent = 25
         
         // XXX Force this to be in the TURN_OVER state; getting stuck in WAITING state
+        // Addresses in issue #431
         /*
         if 0 == itemGenerator!.itemArray.count {
             state = TURN_OVER
         }
         */
+        
+        // Generate a dynamic number of rows based on the level count
+        // Essentially, add 5 rows to the base for every 10 levels the user passes
+        numRowsToGenerate = 30 + (5 * (levelCount / 10))
+        
         state = TURN_OVER
     }
     
@@ -298,17 +307,11 @@ class LevelsGameModel {
     }
     
     // XXX This will need to be different for levels; need to generate all rows up front when we initialize the model
+    // Addressed in issue #431
     public func generateRow() -> [Item] {
-        /*
-        if rowNumber > (itemGenerator!.itemArray.count - 1) {
-            return []
-        }
-        let returnItems = itemGenerator!.itemArray[rowNumber]
-        rowNumber += 1
-        */
-        // XXX Stop returning rows after 5 because that's when the game should end
-        if rowNumber >= 5 {
+        if rowNumber >= numRowsToGenerate {
             // XXX This is just a hack for now that needs to be fixed
+            // Addressed in issue #431 (I think, the one to fix game states for levels gameplay)
             if itemGenerator!.itemArray.count == 0 {
                 return []
             }

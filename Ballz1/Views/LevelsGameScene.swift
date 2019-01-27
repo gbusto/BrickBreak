@@ -78,6 +78,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     // Specifies whether or not the game just started
     private var gameStart = true
     
+    // The number of rows to display at the start of the game
+    private var numRowsToStart = Int(5)
+    
     private var ballProjection = BallProjection()
     
     // Attributes based on how the scene is displayed
@@ -280,6 +283,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             // Tell the game model to update now that the turn has ended
             gameModel!.handleTurnOver()
             
+            // Addressed in issue #431
             // XXX This state (TURN_OVER) is screwing things up:
             /*
              1. It's adding an extra row to the start of the game that messes up logic when checking for loss risk and game over
@@ -291,7 +295,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             }
             else {
                 let items = gameModel!.generateRow()
-                if items.count == 0 {
+                if items.count > 0 {
                     // Get the newly generated items and add them to the view
                     addRowToView(rowNum: 1, items: items)
                 }
@@ -482,9 +486,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
     public func endGame() {
         // XXX Need to save the level count here
+        // Addressed in issue #431
         //gameModel!.saveState()
         if let controller = gameController {
-            // XXX Return to the game scene
             if let controller = gameController {
                 controller.levelEnded(modelCount: gameModel!.levelCount)
             }
@@ -520,27 +524,14 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             self.addChild(ball.getNode())
         }
         
-        //let itemArray = gameModel!.itemGenerator!.itemArray
-        // XXX Change this so that we only show 5 rows to start with
-        /*
-        var count = itemArray.count
-        for row in itemArray {
-            addRowToView(rowNum: count, items: row)
-            count -= 1
-        }
-        var count = 4
-        for i in 0...count {
-            let row = itemArray[i]
-            addRowToView(rowNum: count, items: row)
-            count -= 1
-        }
-        */
-        for i in 1...5 {
+        //
+        for i in 1...numRowsToStart {
             let row = gameModel!.generateRow()
-            addRowToView(rowNum: 6 - i, items: row)
+            addRowToView(rowNum: (numRowsToStart + 1) - i, items: row)
         }
         
         // XXX May need to uncomment this line
+        // Addressed in issue #431
         // actionsStarted or animteItems() should only be allowed to be called once and ignored while items are in motion
         // Move the items down in the view
         //animateItems()
