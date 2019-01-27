@@ -57,12 +57,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private var fontName: String = "HelveticaNeue"
     private var topColor: UIColor = .black
     private var bottomColor: UIColor = .white
-    
-    // XXX Maybe remove
-    // true if we changed colors recently
-    private var changedColor: Bool = false
-    // The column index because to keep track of which blocks are in transition
-    private var itemColumn = Int(0)
+
     // The index into the color list array
     private var colorIndex = Int(3)
     private var colorIndices: [Int] = [0, 0, 0, 0]

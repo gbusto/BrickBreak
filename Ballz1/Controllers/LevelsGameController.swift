@@ -45,6 +45,7 @@ class LevelsGameController: UIViewController,
             self.scene = scene
             
             scene.scaleMode = .aspectFill
+            scene.gameController = self
             
             pauseMenuView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             resumeButton.imageView?.contentMode = .scaleAspectFit
@@ -117,5 +118,26 @@ class LevelsGameController: UIViewController,
     
     @objc func handleAppTerminate() {
         // App is about to terminate
+    }
+    
+    public func updateScore(score: Int) {
+        let currentScore = Int(levelScore.text!)!
+        if currentScore < score {
+            levelScore.text = "\(currentScore + 1)"
+        }
+    }
+    
+    public func levelEnded(modelCount: Int) {
+        let currentCount = Int(levelCount.text!)!
+        
+        // Try to show an ad
+        
+        if currentCount < modelCount {
+            // The user completed the level and advanced to the next level
+        }
+        else if currentCount == modelCount {
+            // The user failed to complete the level (they lost)
+            self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+        }
     }
 }

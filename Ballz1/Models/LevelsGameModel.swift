@@ -13,7 +13,6 @@ class LevelsGameModel {
     // MARK: Public properties
     public var gameScore = Int(0)
     public var levelCount = Int(0)
-    public var highScore = Int(0)
     
     public var ballManager: BallManager?
     public var itemGenerator: ItemGenerator?
@@ -26,6 +25,12 @@ class LevelsGameModel {
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
     private var numberOfRows = Int(0)
+    
+    private var rowNumber = Int(0)
+    
+    private var scoreThisTurn = Int(0)
+    private var blockBonus = Int(2)
+    private var onFireBonus = Double(1.0)
     
     private var state = Int(0)
     // READY means the game model is ready to go
@@ -53,14 +58,12 @@ class LevelsGameModel {
     // MARK: State handling code
     // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
     struct PersistentData: Codable {
-        var highScore: Int
         var levelCount: Int
         var showedTutorials: Bool
         
         // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
         // Read Apple's documentation on CodingKey protocol and Codable
         enum CodingKeys: String, CodingKey {
-            case highScore
             case levelCount
             case showedTutorials
         }
@@ -120,28 +123,46 @@ class LevelsGameModel {
         
         // Try to load persistent data
         if false == loadPersistentState() {
-            // Defaults to load highScore of 0
-            persistentData = PersistentData(highScore: highScore, levelCount: levelCount, showedTutorials: showedTutorials)
+            persistentData = PersistentData(levelCount: levelCount, showedTutorials: showedTutorials)
         }
         
+        /*
+         For the game model, the only information we need to save is the level count.
+         Start everything off at zero and display X number of rows of blocks for the level.
+         Continue to add rows to the game until there are no more.
+         Game ends whenever there are no items left in the item generator.
+         */
+        
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
-        highScore = persistentData!.highScore
         levelCount = persistentData!.levelCount
         showedTutorials = persistentData!.showedTutorials
         self.numberOfRows = numberOfRows
         
         // This function will either load ball manager with a saved state or the default ball manager state
-        ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: ContinuousGameModel.ContinuousDirURL)
+        ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: LevelsGameModel.LevelsDirURL)
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
         itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
                                       numberOfBalls: ballManager!.numberOfBalls,
                                       numberOfRows: numberOfRows,
                                       numItems: numberOfItems,
-                                      restorationURL: ContinuousGameModel.ContinuousDirURL)
+                                      restorationURL: LevelsGameModel.LevelsDirURL,
+                                      useDrand: true,
+                                      // XXX This value should be based on the level number
+                                      seed: 0)
+        
+        // XXX This should be based on the level number (the higher the level, the more difficult it should be)
+        itemGenerator!.easyPatternPercent = 50
+        itemGenerator!.intermediatePatternPercent = 30
+        itemGenerator!.hardPatternPercent = 20
+        
+        // XXX Force this to be in the TURN_OVER state; getting stuck in WAITING state
+        /*
         if 0 == itemGenerator!.itemArray.count {
             state = TURN_OVER
         }
+        */
+        state = TURN_OVER
     }
     
     // MARK: Public functions
@@ -150,6 +171,10 @@ class LevelsGameModel {
     }
     
     public func prepareTurn(point: CGPoint) {
+        // Reset the score for this turn to 0
+        scoreThisTurn = 0
+        resetAdditives()
+        
         // Save the item generator's turn state as soon as the user starts the next turn
         itemGenerator!.saveTurnState()
         
@@ -177,13 +202,27 @@ class LevelsGameModel {
     }
     
     public func handleTurn() -> [Item] {
+        var addToScore = Int(0)
+        
         // Check to see if the user collected any ball items so far
         let removedItems = itemGenerator!.removeItems()
         for item in removedItems {
             if item is BallItem {
+                addToScore += Int(2 * onFireBonus)
                 // Transfer ownership of the from the item generator to the ball manager
                 let ball = item as! BallItem
                 ballManager!.addBall(ball: ball)
+            }
+            else if item is HitBlockItem {
+                addToScore += Int(Double(blockBonus) * onFireBonus)
+                blockBonus += Int(2 * onFireBonus)
+            }
+            else if item is StoneHitBlockItem {
+                addToScore += Int(Double(blockBonus) * onFireBonus)
+                blockBonus += Int(4 * onFireBonus)
+            }
+            else if item is BombItem {
+                addToScore += Int(10 * onFireBonus)
             }
         }
         
@@ -199,19 +238,25 @@ class LevelsGameModel {
             ballManager!.incrementState()
         }
         
+        gameScore += addToScore
+        scoreThisTurn += addToScore
+        
         return removedItems
+    }
+    
+    public func addOnFireBonus() {
+        onFireBonus = Double(1.5)
+        let newScore = Int(Double(scoreThisTurn) * onFireBonus)
+        let diff = newScore - scoreThisTurn
+        gameScore += diff
+        scoreThisTurn = newScore
     }
     
     // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
     public func handleTurnOver() {
         ballManager!.checkNewArray()
         
-        // XXX This needs to be different here; update the user's score by more than just one.
-        // Need a formula for this like 1 point per hit, 5 per block break, and double the final score if they hit "on fire" (maybe?)
-        gameScore += 1
-        if gameScore >= highScore {
-            highScore = gameScore
-        }
+        // Submit this score to game center after finishing a level
         
         // Go from TURN_OVER state to WAITING state
         incrementState()
@@ -219,6 +264,10 @@ class LevelsGameModel {
     
     // MARK: Physics contact functions
     public func handleContact(nameA: String, nameB: String) {
+        var additive = Int(1)
+        if onFireBonus > 1.0 {
+            additive = Int(2)
+        }
         // Items that start with the name bm are ball manager balls. They are named differently from the other items so we can quickly check if a ball manager ball is interacting with an item from the item generator
         // Add any extra cases in here if they need special attention
         if nameA.starts(with: "bm") {
@@ -226,6 +275,10 @@ class LevelsGameModel {
                 ballManager!.markBallInactive(name: nameA)
             }
             else {
+                if "wall" != nameB && "ceiling" != nameB {
+                    scoreThisTurn += additive
+                    gameScore += additive
+                }
                 itemGenerator!.hit(name: nameB)
             }
         }
@@ -235,6 +288,10 @@ class LevelsGameModel {
                 ballManager!.markBallInactive(name: nameB)
             }
             else {
+                if "wall" != nameA && "ceiling" != nameA {
+                    scoreThisTurn += additive
+                    gameScore += additive
+                }
                 itemGenerator!.hit(name: nameA)
             }
         }
@@ -242,23 +299,24 @@ class LevelsGameModel {
     
     // XXX This will need to be different for levels; need to generate all rows up front when we initialize the model
     public func generateRow() -> [Item] {
-        let count = itemGenerator!.getBlockCount()
-        // If the user is doing well and there are no items on the screen, generate a harder pattern
-        if count <= 6 {
-            itemGenerator!.easyPatternPercent = 10
-            itemGenerator!.intermediatePatternPercent = 30
-            itemGenerator!.hardPatternPercent = 60
+        /*
+        if rowNumber > (itemGenerator!.itemArray.count - 1) {
+            return []
         }
-            // If they have <= 6 items on the screen, increase the difficult of getting a harder pattern
-        else if (count > 6) && (count <= 12) {
-            itemGenerator!.easyPatternPercent = 20
-            itemGenerator!.intermediatePatternPercent = 40
-            itemGenerator!.hardPatternPercent = 40
+        let returnItems = itemGenerator!.itemArray[rowNumber]
+        rowNumber += 1
+        */
+        // XXX Stop returning rows after 5 because that's when the game should end
+        if rowNumber >= 5 {
+            // XXX This is just a hack for now that needs to be fixed
+            if itemGenerator!.itemArray.count == 0 {
+                return []
+            }
+            
+            // Return an empty row of items
+            return itemGenerator!.generateRow(emptyRow: true)
         }
-            // Otherwise reset the pattern difficulty distribution back to defaults
-        else {
-            itemGenerator!.resetDifficulty()
-        }
+        rowNumber += 1
         return itemGenerator!.generateRow()
     }
     
@@ -268,7 +326,14 @@ class LevelsGameModel {
     
     // The floor of the game scene; if another row doesn't fit
     public func gameOver() -> Bool {
+        // XXX This needs to be updated to capture if the user lost
+        // Also, the lossRisk function will need to be updated too
         if (itemGenerator!.itemArray.count == numberOfRows - 1) {
+            state = GAME_OVER
+            return true
+        }
+        else if itemGenerator!.itemArray.count == 0 {
+            // Let game know and show an ad
             state = GAME_OVER
             return true
         }
@@ -309,5 +374,10 @@ class LevelsGameModel {
     
     public func isGameOver() -> Bool {
         return (GAME_OVER == state)
+    }
+    
+    private func resetAdditives() {
+        blockBonus = Int(2)
+        onFireBonus = Double(1.0)
     }
 }
