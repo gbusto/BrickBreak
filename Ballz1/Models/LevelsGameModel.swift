@@ -149,9 +149,7 @@ class LevelsGameModel {
                                       numItems: numberOfItems,
                                       restorationURL: LevelsGameModel.LevelsDirURL,
                                       useDrand: true,
-                                      // XXX This value should be based on the level number
-                                      // Addressed in issue #430
-                                      seed: 0)
+                                      seed: levelCount)
         
         // XXX This should be based on the level number (the higher the level, the more difficult it should be)
         // Addressed in issue #429
