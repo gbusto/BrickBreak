@@ -12,7 +12,7 @@ class LevelsGameModel {
     
     // MARK: Public properties
     public var gameScore = Int(0)
-    public var levelCount = Int(0)
+    public var levelCount = Int(1)
     
     public var ballManager: BallManager?
     public var itemGenerator: ItemGenerator?
@@ -44,6 +44,10 @@ class LevelsGameModel {
     private var WAITING = Int(3)
     
     private var GAME_OVER = Int(255)
+    
+    static public var GAMEOVER_NONE = Int(0)
+    static public var GAMEOVER_LOSS = Int(1)
+    static public var GAMEOVER_WIN = Int(2)
     
     // For storing data
     static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -119,7 +123,9 @@ class LevelsGameModel {
     }
     
     // MARK: Initialization functions
-    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int) {
+    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int,
+                  // XXX This is a temporary workaround while saving state doesn't work
+                  levelNumber: Int) {
         state = WAITING
         
         // Try to load persistent data
@@ -135,7 +141,9 @@ class LevelsGameModel {
          */
         
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
-        levelCount = persistentData!.levelCount
+        // XXX Temporary workaround while saving state doesn't work
+        //levelCount = persistentData!.levelCount
+        levelCount = levelNumber
         showedTutorials = persistentData!.showedTutorials
         self.numberOfRows = numberOfRows
         
@@ -326,19 +334,24 @@ class LevelsGameModel {
     }
     
     // The floor of the game scene; if another row doesn't fit
-    public func gameOver() -> Bool {
+    public func gameOver() -> Int {
         // XXX This needs to be updated to capture if the user lost
         // Also, the lossRisk function will need to be updated too
         if (itemGenerator!.itemArray.count == numberOfRows - 1) {
             state = GAME_OVER
-            return true
+            return LevelsGameModel.GAMEOVER_LOSS
         }
         else if itemGenerator!.itemArray.count == 0 {
-            // Let game know and show an ad
+            // The user beat the level!
+            levelCount += 1
+            
+            // Show an ad
+            
             state = GAME_OVER
-            return true
+            return LevelsGameModel.GAMEOVER_WIN
         }
-        return false
+        
+        return LevelsGameModel.GAMEOVER_NONE
     }
     
     public func incrementState() {

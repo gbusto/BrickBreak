@@ -40,9 +40,19 @@ class LevelsGameController: UIViewController,
         let notification = Notification(name: .init("appTerminate"))
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
         
+        // XXX Workaround while saving state doesn't work
+        let levelCount = 1
+        self.levelCount.text = "\(levelCount)"
+        goToGameScene(levelCount: levelCount)
+    }
+    
+    public func goToGameScene(levelCount: Int) {
         if let view = self.view as! SKView? {
             let scene = LevelsGameScene(size: view.bounds.size)
             self.scene = scene
+            
+            // XXX Workaround while saving state doesn't work
+            scene.levelCount = levelCount
             
             scene.scaleMode = .aspectFill
             scene.gameController = self
@@ -127,17 +137,18 @@ class LevelsGameController: UIViewController,
         }
     }
     
-    public func levelEnded(modelCount: Int) {
-        let currentCount = Int(levelCount.text!)!
+    public func gameOverLoss() {
+        // Show an interstitial ad
         
-        // Try to show an ad
+        self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+    }
+    
+    public func gameOverWin(levelCount: Int) {
+        // Show an interstitial ad
         
-        if currentCount < modelCount {
-            // The user completed the level and advanced to the next level
-        }
-        else if currentCount == modelCount {
-            // The user failed to complete the level (they lost)
-            self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
-        }
+        // XXX Workaround while saving state doesn't work
+        // Replay the game scene; state should have already been saved
+        self.levelCount.text = "\(levelCount)"
+        goToGameScene(levelCount: levelCount)
     }
 }
