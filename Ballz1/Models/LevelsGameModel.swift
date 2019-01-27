@@ -167,8 +167,9 @@ class LevelsGameModel {
         }
         */
         
-        // XXX This will need to be dynamic based on level
-        numRowsToGenerate = 30
+        // Generate a dynamic number of rows based on the level count
+        // Essentially, add 5 rows to the base for every 10 levels the user passes
+        numRowsToGenerate = 30 + (5 * (levelCount / 10))
         
         state = TURN_OVER
     }
