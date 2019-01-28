@@ -367,6 +367,13 @@ class ItemGenerator {
         }
     }
     
+    // Removes balls from the item generator's generation list
+    public func removeBallTypeGeneration() {
+        nonBlockTypeArray = []
+        addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 98)
+        addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
+    }
+    
     public func getBlockCount() -> Int {
         var count = 0
         for row in itemArray {

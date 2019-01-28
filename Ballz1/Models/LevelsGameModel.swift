@@ -167,6 +167,9 @@ class LevelsGameModel {
                                       useDrand: true,
                                       seed: levelCount)
         
+        // We don't want to have ball items in levels
+        itemGenerator!.removeBallTypeGeneration()
+        
         // XXX This should be based on the level number (the higher the level, the more difficult it should be)
         // Addressed in issue #429
         itemGenerator!.easyPatternPercent = 40
