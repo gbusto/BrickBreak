@@ -84,8 +84,8 @@ class LevelsGameModel {
     public func savePersistentState() {
         do {
             // Create the App directory Documents/BB
-            if false == FileManager.default.fileExists(atPath: LevelsGameModel.AppDirURL.path) {
-                try FileManager.default.createDirectory(at: LevelsGameModel.AppDirURL, withIntermediateDirectories: true, attributes: nil)
+            if false == FileManager.default.fileExists(atPath: LevelsGameModel.LevelsDirURL.path) {
+                try FileManager.default.createDirectory(at: LevelsGameModel.LevelsDirURL, withIntermediateDirectories: true, attributes: nil)
             }
             
             // Set persistent data variables in struct here
@@ -171,7 +171,7 @@ class LevelsGameModel {
         
         // Generate a dynamic number of rows based on the level count
         // Essentially, add 5 rows to the base for every 10 levels the user passes
-        numRowsToGenerate = 10 + (5 * (levelCount / 10))
+        numRowsToGenerate = 30 + (5 * (levelCount / 10))
         
         state = TURN_OVER
     }
@@ -339,7 +339,7 @@ class LevelsGameModel {
         }
         else if itemGenerator!.itemArray.count == 0 {
             // The user beat the level!
-            levelCount += 1
+            persistentData!.levelCount += 1
             
             // Show an ad
             

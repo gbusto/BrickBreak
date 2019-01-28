@@ -172,6 +172,10 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         // Initialize the game model
         initGameModel()
         
+        if let controller = gameController {
+            controller.setLevelNumber(level: gameModel!.levelCount)
+        }
+        
         // This kind of breaks MVC a bit because the ball manager shouldn't know the ground height
         gameModel!.ballManager!.setGroundHeight(height: groundNode!.size.height + ballRadius!)
         
@@ -502,10 +506,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
     public func gameOverWin() {
         // Notify the controller that the user won
-        
-        // XXX Need to save the level count here
-        // Addressed in issue #431
-        //gameModel!.saveState()
+        gameModel!.saveState()
         
         if let controller = gameController {
             controller.gameOverWin()
