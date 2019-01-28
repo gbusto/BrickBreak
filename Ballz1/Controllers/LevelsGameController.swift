@@ -21,12 +21,24 @@ class LevelsGameController: UIViewController,
     @IBOutlet weak var resumeButton: UIButton!
     @IBOutlet weak var gameMenuButton: UIButton!
     
-    @IBOutlet weak var bannerAdView: UIView!
+    @IBOutlet weak var bannerAdView: GADBannerView!
+    
+    private var interstitialAdId: GADInterstitial!
     
     private var scene: SKScene?
     
     override func viewDidAppear(_ animated: Bool) {
-        // Load the stuff for ads
+        // Load the banner ad view
+        bannerAdView.adUnitID = AdHandler.getBannerAdID()
+        bannerAdView.rootViewController = self
+        bannerAdView.delegate = self
+        
+        // Load the banner ad
+        let bannerAdRequest = GADRequest()
+        bannerAdRequest.testDevices = AdHandler.getTestDevices()
+        bannerAdView.load(bannerAdRequest)
+        
+        prepareInterstitialAd()
     }
     
     override func viewDidLoad() {
@@ -43,6 +55,45 @@ class LevelsGameController: UIViewController,
         goToGameScene()
     }
     
+    // MARK: Banner ad functions
+    public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
+        // Error loading the ad; hide the banner
+        bannerView.isHidden = true
+        print("Error loading ad: \(error.localizedDescription)")
+    }
+    
+    public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+        // Received an ad; show the banner now
+        bannerView.isHidden = false
+    }
+    
+    // MARK: Interstitial ad functions
+    public func interstitialDidReceiveAd(_ ad: GADInterstitial) {
+        // Received an interstitial ad
+    }
+    
+    public func interstitial(_ ad: GADInterstitial, didFailToReceiveAdWithError error: GADRequestError) {
+        // Failed to receive an interstitial ad
+    }
+    
+    public func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        // Interstitial ad closed out; prepare a new one
+        // The interstitialAd object can only be used once so we need to prepare a new one each time the ad object is used
+        prepareInterstitialAd()
+    }
+    
+    public func prepareInterstitialAd() {
+        // Prepare to load interstitial ad
+        interstitialAdId = GADInterstitial(adUnitID: AdHandler.getInterstitialAdID())
+        interstitialAdId.delegate = self
+        
+        // Attempt to load the interstitial ad
+        let intAdRequest = GADRequest()
+        intAdRequest.testDevices = AdHandler.getTestDevices()
+        interstitialAdId.load(intAdRequest)
+    }
+    
+    // MARK: Public controller functions
     public func goToGameScene() {
         // Reset the level score
         levelScore.text = "0"
@@ -146,6 +197,9 @@ class LevelsGameController: UIViewController,
     
     public func gameOverWin() {
         // Show an interstitial ad
+        if interstitialAdId.isReady {
+            interstitialAdId.present(fromRootViewController: self)
+        }
         
         // Replay the game scene; state should have already been saved
         goToGameScene()
