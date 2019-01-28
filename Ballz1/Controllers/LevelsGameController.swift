@@ -44,6 +44,9 @@ class LevelsGameController: UIViewController,
     }
     
     public func goToGameScene() {
+        // Reset the level score
+        levelScore.text = "0"
+        
         if let view = self.view as! SKView? {
             let scene = LevelsGameScene(size: view.bounds.size)
             self.scene = scene

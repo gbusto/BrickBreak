@@ -64,12 +64,14 @@ class LevelsGameModel {
     // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
     struct PersistentData: Codable {
         var levelCount: Int
+        var highScore: Int
         var showedTutorials: Bool
         
         // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
         // Read Apple's documentation on CodingKey protocol and Codable
         enum CodingKeys: String, CodingKey {
             case levelCount
+            case highScore
             case showedTutorials
         }
     }
@@ -89,6 +91,11 @@ class LevelsGameModel {
             }
             
             // Set persistent data variables in struct here
+            persistentData!.levelCount = levelCount
+            if gameScore > persistentData!.highScore {
+                persistentData!.highScore = gameScore
+                print("Saving high score of \(gameScore)")
+            }
             
             // Save the persistent data
             let pData = try PropertyListEncoder().encode(self.persistentData!)
@@ -128,7 +135,7 @@ class LevelsGameModel {
         
         // Try to load persistent data
         if false == loadPersistentState() {
-            persistentData = PersistentData(levelCount: levelCount, showedTutorials: showedTutorials)
+            persistentData = PersistentData(levelCount: levelCount, highScore: gameScore, showedTutorials: showedTutorials)
         }
         
         /*
@@ -339,7 +346,7 @@ class LevelsGameModel {
         }
         else if itemGenerator!.itemArray.count == 0 {
             // The user beat the level!
-            persistentData!.levelCount += 1
+            levelCount += 1
             
             // Show an ad
             
