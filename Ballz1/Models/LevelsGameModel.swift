@@ -146,7 +146,7 @@ class LevelsGameModel {
         
         // Generate a dynamic number of rows based on the level count
         // Essentially, add 5 rows to the base for every 10 levels the user passes
-        numRowsToGenerate = 30 + (5 * (levelCount / 10))
+        numRowsToGenerate = 10 + (5 * (levelCount / 10))
         
         numberOfBalls = 20 + (3 * (levelCount / 10))
         
