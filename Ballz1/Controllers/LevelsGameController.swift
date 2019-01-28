@@ -124,6 +124,10 @@ class LevelsGameController: UIViewController,
         // App is about to terminate
     }
     
+    public func setLevelNumber(level: Int) {
+        levelCount.text = "\(level)"
+    }
+    
     public func updateScore(score: Int) {
         let currentScore = Int(levelScore.text!)!
         if currentScore < score {
