@@ -266,6 +266,37 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    // MARK: After physics simulation step
+    override func didSimulatePhysics() {
+        // We want to check the balls after each simulation step to ensure it never reaches a completely horizontal or vertical angle
+        for ball in gameModel!.ballManager!.ballArray {
+            if false == ball.isResting {
+                let dx = ball.getNode().physicsBody!.velocity.dx
+                let dy = ball.getNode().physicsBody!.velocity.dy
+                let negativeDelta = CGFloat(-2)
+                let positiveDelta = CGFloat(2)
+                if (dx < positiveDelta && dx > negativeDelta) {
+                    // Correct the velocity's X delta to a minimum value
+                    if dx < 0 {
+                        ball.getNode().physicsBody!.applyImpulse(CGVector(dx: -0.5, dy: 0))
+                    }
+                    else {
+                        ball.getNode().physicsBody!.applyImpulse(CGVector(dx: 0.5, dy: 0))
+                    }
+                }
+                if (dy < positiveDelta && dy > negativeDelta) {
+                    // Correct the velocity's Y delta to a minimum value
+                    if dy < 0 {
+                        ball.getNode().physicsBody!.applyImpulse(CGVector(dx: 0, dy: -0.5))
+                    }
+                    else {
+                        ball.getNode().physicsBody!.applyImpulse(CGVector(dx: 0, dy: 0.5))
+                    }
+                }
+            }
+        }
+    }
+    
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         let gameScore = gameModel!.gameScore
