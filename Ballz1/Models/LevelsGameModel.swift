@@ -94,7 +94,6 @@ class LevelsGameModel {
             persistentData!.levelCount = levelCount
             if gameScore > persistentData!.highScore {
                 persistentData!.highScore = gameScore
-                print("Saving high score of \(gameScore)")
             }
             
             // Save the persistent data
@@ -145,6 +144,12 @@ class LevelsGameModel {
          Game ends whenever there are no items left in the item generator.
          */
         
+        // Generate a dynamic number of rows based on the level count
+        // Essentially, add 5 rows to the base for every 10 levels the user passes
+        numRowsToGenerate = 30 + (5 * (levelCount / 10))
+        
+        numberOfBalls = 20 + (3 * (levelCount / 10))
+        
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
         levelCount = persistentData!.levelCount
         showedTutorials = persistentData!.showedTutorials
@@ -175,10 +180,6 @@ class LevelsGameModel {
             state = TURN_OVER
         }
         */
-        
-        // Generate a dynamic number of rows based on the level count
-        // Essentially, add 5 rows to the base for every 10 levels the user passes
-        numRowsToGenerate = 30 + (5 * (levelCount / 10))
         
         state = TURN_OVER
     }
