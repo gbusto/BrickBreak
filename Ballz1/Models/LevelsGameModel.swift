@@ -173,8 +173,8 @@ class LevelsGameModel {
         // XXX This should be based on the level number (the higher the level, the more difficult it should be)
         // Addressed in issue #429
         itemGenerator!.easyPatternPercent = 40
-        itemGenerator!.intermediatePatternPercent = 35
-        itemGenerator!.hardPatternPercent = 25
+        itemGenerator!.intermediatePatternPercent = 40
+        itemGenerator!.hardPatternPercent = 20
         
         // XXX Force this to be in the TURN_OVER state; getting stuck in WAITING state
         // Addresses in issue #431
