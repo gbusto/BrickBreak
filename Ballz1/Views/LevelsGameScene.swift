@@ -574,9 +574,17 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             self.addChild(ball.getNode())
         }
         
-        //
+        // Add items to the scene
         for i in 1...numRowsToStart {
             let row = gameModel!.generateRow()
+            for item in row {
+                if item is StoneHitBlockItem {
+                    if i % 2 == 0 {
+                        let block = item as! StoneHitBlockItem
+                        block.changeState(duration: 1)
+                    }
+                }
+            }
             addRowToView(rowNum: (numRowsToStart + 1) - i, items: row)
         }
         
