@@ -144,16 +144,16 @@ class LevelsGameModel {
          Game ends whenever there are no items left in the item generator.
          */
         
+        // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
+        levelCount = persistentData!.levelCount
+        showedTutorials = persistentData!.showedTutorials
+        self.numberOfRows = numberOfRows
+        
         // Generate a dynamic number of rows based on the level count
         // Essentially, add 5 rows to the base for every 10 levels the user passes
         numRowsToGenerate = 10 + (5 * (levelCount / 10))
         
         numberOfBalls = 20 + (3 * (levelCount / 10))
-        
-        // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
-        levelCount = persistentData!.levelCount
-        showedTutorials = persistentData!.showedTutorials
-        self.numberOfRows = numberOfRows
         
         // This function will either load ball manager with a saved state or the default ball manager state
         ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: LevelsGameModel.LevelsDirURL)
