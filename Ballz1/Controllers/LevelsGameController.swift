@@ -23,7 +23,9 @@ class LevelsGameController: UIViewController,
     
     @IBOutlet weak var bannerAdView: GADBannerView!
     
-    private var interstitialAdId: GADInterstitial!
+    private var interstitialAd: GADInterstitial!
+    
+    private var leaveGame = false
     
     private var scene: SKScene?
     
@@ -77,20 +79,23 @@ class LevelsGameController: UIViewController,
     }
     
     public func interstitialDidDismissScreen(_ ad: GADInterstitial) {
-        // Interstitial ad closed out; prepare a new one
+        // Interstitial ad closed out; prepare a new one unless the user wants to exit the game
+        if leaveGame {
+            self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+        }
         // The interstitialAd object can only be used once so we need to prepare a new one each time the ad object is used
         prepareInterstitialAd()
     }
     
     public func prepareInterstitialAd() {
         // Prepare to load interstitial ad
-        interstitialAdId = GADInterstitial(adUnitID: AdHandler.getInterstitialAdID())
-        interstitialAdId.delegate = self
+        interstitialAd = GADInterstitial(adUnitID: AdHandler.getInterstitialAdID())
+        interstitialAd.delegate = self
         
         // Attempt to load the interstitial ad
         let intAdRequest = GADRequest()
         intAdRequest.testDevices = AdHandler.getTestDevices()
-        interstitialAdId.load(intAdRequest)
+        interstitialAd.load(intAdRequest)
     }
     
     // MARK: Public controller functions
@@ -130,7 +135,13 @@ class LevelsGameController: UIViewController,
     
     @IBAction func gameMenuButtonPressed(_ sender: Any) {
         // Show an interstitial ad here
-        self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+        if interstitialAd.isReady {
+            leaveGame = true
+            interstitialAd.present(fromRootViewController: self)
+        }
+        else {
+            self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -197,8 +208,8 @@ class LevelsGameController: UIViewController,
     
     public func gameOverWin() {
         // Show an interstitial ad
-        if interstitialAdId.isReady {
-            interstitialAdId.present(fromRootViewController: self)
+        if interstitialAd.isReady {
+            interstitialAd.present(fromRootViewController: self)
         }
         
         // Replay the game scene; state should have already been saved
