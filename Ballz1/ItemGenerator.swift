@@ -589,7 +589,14 @@ class ItemGenerator {
     }
     
     public func saveUser() -> [Item] {
-        let removedItems = itemArray.remove(at: 0)
+        var removedItems: [Item] = []
+        for _ in 1...3 {
+            let items = itemArray.remove(at: 0)
+            for item in items {
+                removedItems.append(item)
+            }
+        }
+        
         removeEmptyRows()
         
         return removedItems

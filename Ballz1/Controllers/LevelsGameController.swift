@@ -113,7 +113,8 @@ class LevelsGameController: UIViewController,
     // MARK: Reward ad functions
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
         // User was rewarded
-        print("User was rewarded!")
+        let scene = self.scene as! LevelsGameScene
+        scene.saveUser()
     }
     
     public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
@@ -232,8 +233,15 @@ class LevelsGameController: UIViewController,
     }
     
     public func gameOverLoss() {
-        // If we failed to load a reward ad, don't allow the user to save themselves
+        let scene = self.scene as! LevelsGameScene
+        
+        if scene.gameModel!.savedUser {
+            // If the user has already been saved, return to the game menu
+            returnToMenu()
+        }
+        
         if false == GADRewardBasedVideoAd.sharedInstance().isReady {
+            // If we failed to load a reward ad, don't allow the user to save themselves
             returnToMenu()
         }
         
