@@ -12,7 +12,8 @@ import GoogleMobileAds
 
 class LevelsGameController: UIViewController,
                             GADBannerViewDelegate,
-                            GADInterstitialDelegate {
+                            GADInterstitialDelegate,
+                            GADRewardBasedVideoAdDelegate {
     
     @IBOutlet weak var levelCount: UILabel!
     @IBOutlet weak var levelScore: UILabel!
@@ -24,6 +25,8 @@ class LevelsGameController: UIViewController,
     @IBOutlet weak var bannerAdView: GADBannerView!
     
     private var interstitialAd: GADInterstitial!
+    
+    private var rewardAdViewController: RewardAdViewController!
     
     private var leaveGame = false
     
@@ -41,6 +44,15 @@ class LevelsGameController: UIViewController,
         bannerAdView.load(bannerAdRequest)
         
         prepareInterstitialAd()
+        
+        // Load the reward ad
+        let rewardAdRequest = GADRequest()
+        rewardAdRequest.testDevices = AdHandler.getTestDevices()
+        GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
+        
+        rewardAdViewController = RewardAdViewController()
+        
+        GADRewardBasedVideoAd.sharedInstance().delegate = self
     }
     
     override func viewDidLoad() {
@@ -81,7 +93,7 @@ class LevelsGameController: UIViewController,
     public func interstitialDidDismissScreen(_ ad: GADInterstitial) {
         // Interstitial ad closed out; prepare a new one unless the user wants to exit the game
         if leaveGame {
-            self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+            returnToMenu()
         }
         // The interstitialAd object can only be used once so we need to prepare a new one each time the ad object is used
         prepareInterstitialAd()
@@ -98,24 +110,23 @@ class LevelsGameController: UIViewController,
         interstitialAd.load(intAdRequest)
     }
     
-    // MARK: Public controller functions
-    public func goToGameScene() {
-        // Reset the level score
-        levelScore.text = "0"
+    // MARK: Reward ad functions
+    public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
+        // User was rewarded
+        let scene = self.scene as! LevelsGameScene
+        scene.saveUser()
+    }
+    
+    public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // The reward ad closed out
         
+        // Dismiss the reward ad view controller
+        rewardAdViewController.dismiss(animated: true, completion: nil)
+        
+        let scene = self.scene as! LevelsGameScene
         if let view = self.view as! SKView? {
-            let scene = LevelsGameScene(size: view.bounds.size)
-            self.scene = scene
-            
-            scene.scaleMode = .aspectFill
-            scene.gameController = self
-            
-            pauseMenuView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
-            resumeButton.imageView?.contentMode = .scaleAspectFit
-            gameMenuButton.imageView?.contentMode = .scaleAspectFit
-            
-            view.presentScene(scene)
-            view.ignoresSiblingOrder = true
+            scene.isPaused = false
+            view.isPaused = false
         }
     }
     
@@ -140,7 +151,7 @@ class LevelsGameController: UIViewController,
             interstitialAd.present(fromRootViewController: self)
         }
         else {
-            self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+            returnToMenu()
         }
     }
     
@@ -189,6 +200,27 @@ class LevelsGameController: UIViewController,
         // App is about to terminate
     }
     
+    // MARK: Public controller functions
+    public func goToGameScene() {
+        // Reset the level score
+        levelScore.text = "0"
+        
+        if let view = self.view as! SKView? {
+            let scene = LevelsGameScene(size: view.bounds.size)
+            self.scene = scene
+            
+            scene.scaleMode = .aspectFill
+            scene.gameController = self
+            
+            pauseMenuView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
+            resumeButton.imageView?.contentMode = .scaleAspectFit
+            gameMenuButton.imageView?.contentMode = .scaleAspectFit
+            
+            view.presentScene(scene)
+            view.ignoresSiblingOrder = true
+        }
+    }
+    
     public func setLevelNumber(level: Int) {
         levelCount.text = "\(level)"
     }
@@ -201,9 +233,39 @@ class LevelsGameController: UIViewController,
     }
     
     public func gameOverLoss() {
-        // Show an interstitial ad
+        let scene = self.scene as! LevelsGameScene
         
-        self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+        if scene.gameModel!.savedUser {
+            // If the user has already been saved, return to the game menu
+            returnToMenu()
+        }
+        
+        if false == GADRewardBasedVideoAd.sharedInstance().isReady {
+            // If we failed to load a reward ad, don't allow the user to save themselves
+            returnToMenu()
+        }
+        
+        let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
+        let yesAction = UIAlertAction(title: "Yes", style: .default) { (handler: UIAlertAction) in
+            // Show a reward ad
+            if GADRewardBasedVideoAd.sharedInstance().isReady {
+                let scene = self.scene as! LevelsGameScene
+                scene.isPaused = true
+                if let view = self.view as! SKView? {
+                    view.isPaused = true
+                }
+                self.present(self.rewardAdViewController, animated: true, completion: nil)
+            }
+        }
+        let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
+            // User doesn't want to watch an ad
+            self.returnToMenu()
+        }
+        
+        alert.addAction(yesAction)
+        alert.addAction(noAction)
+        
+        present(alert, animated: false, completion: nil)
     }
     
     public func gameOverWin() {
@@ -214,5 +276,10 @@ class LevelsGameController: UIViewController,
         
         // Replay the game scene; state should have already been saved
         goToGameScene()
+    }
+    
+    // MARK: Private functions
+    private func returnToMenu() {
+        self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
     }
 }

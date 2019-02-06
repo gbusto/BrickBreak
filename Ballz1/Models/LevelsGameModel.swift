@@ -19,6 +19,8 @@ class LevelsGameModel {
     
     public var showedTutorials = false
     
+    public var savedUser = false
+    
     // MARK: Private properties
     private var persistentData: PersistentData?
     
@@ -221,6 +223,12 @@ class LevelsGameModel {
     
     public func endTurn() {
         ballManager!.returnAllBalls()
+    }
+    
+    public func saveUser() -> [Item] {
+        state = READY
+        savedUser = true
+        return itemGenerator!.saveUser()
     }
     
     public func handleTurn() -> [Item] {

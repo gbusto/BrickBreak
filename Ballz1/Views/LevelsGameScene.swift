@@ -544,6 +544,28 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // Save the user from loss after they watched an ad
+    public func saveUser() {
+        let fadeOut = SKAction.fadeOut(withDuration: 1)
+        let items = gameModel!.saveUser()
+        for item in items {
+            if item is SpacerItem {
+                continue
+            }
+            
+            item.getNode().run(fadeOut) {
+                self.removeChildren(in: [item.getNode()])
+            }
+        }
+        
+        displayEncouragement(emoji: "🤞", text: "Last chance!")
+        
+        // If the user isn't at risk of losing right now then stop flashing red
+        if false == gameModel!.lossRisk() {
+            stopFlashingRed()
+        }
+    }
+    
     // MARK: Private functions
     private func initGameModel() {
         gameModel = LevelsGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, numberOfRows:
