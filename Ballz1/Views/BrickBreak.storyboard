@@ -302,6 +302,9 @@
                         <outlet property="levelClearedNextButton" destination="d0l-SD-sSt" id="rEF-DY-9VI"/>
                         <outlet property="levelClearedView" destination="bXZ-9L-efg" id="LZD-hu-OhD"/>
                         <outlet property="levelCount" destination="djQ-6i-xDb" id="3Gk-Bb-C5C"/>
+                        <outlet property="levelLossMenuButton" destination="EpV-wp-W73" id="hRm-hw-dSO"/>
+                        <outlet property="levelLossRetryButton" destination="cky-AB-dwc" id="5iQ-Zq-QW7"/>
+                        <outlet property="levelLossView" destination="ouj-1h-Bbz" id="MoW-HE-JW3"/>
                         <outlet property="levelScore" destination="wRS-np-rfH" id="X7e-6K-z8T"/>
                         <outlet property="pauseMenuView" destination="2JP-Ap-ELL" id="SgA-98-7Q1"/>
                         <outlet property="resumeButton" destination="VAa-BZ-zCG" id="bmv-o3-RLI"/>
@@ -309,28 +312,67 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1KH-mO-FvK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <view hidden="YES" contentMode="scaleToFill" id="ouj-1h-Bbz">
+                    <rect key="frame" x="0.0" y="0.0" width="270" height="250"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="a0T-Md-eHm">
+                            <rect key="frame" x="0.0" y="0.0" width="270" height="250"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lose 😑" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wIZ-4t-ge3">
+                                    <rect key="frame" x="0.0" y="0.0" width="270" height="83.333333333333329"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="66"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <color key="highlightedColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cky-AB-dwc" userLabel="Retry Button">
+                                    <rect key="frame" x="0.0" y="83.333333333333343" width="270" height="83.333333333333343"/>
+                                    <state key="normal" image="retry_button"/>
+                                    <connections>
+                                        <action selector="levelLossRetry:" destination="lds-87-3TS" eventType="touchUpInside" id="ylU-eS-CnH"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EpV-wp-W73" userLabel="Game Menu Button">
+                                    <rect key="frame" x="0.0" y="166.66666666666666" width="270" height="83.333333333333343"/>
+                                    <state key="normal" image="game_menu_button_curved"/>
+                                    <connections>
+                                        <action selector="levelLossGameMenu:" destination="lds-87-3TS" eventType="touchUpInside" id="qhR-vw-9AN"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="a0T-Md-eHm" firstAttribute="top" secondItem="TNZ-nx-P91" secondAttribute="top" id="O6w-UO-OLm"/>
+                        <constraint firstItem="TNZ-nx-P91" firstAttribute="trailing" secondItem="a0T-Md-eHm" secondAttribute="trailing" id="Pka-n7-J47"/>
+                        <constraint firstItem="a0T-Md-eHm" firstAttribute="leading" secondItem="TNZ-nx-P91" secondAttribute="leading" id="WIm-LE-lre"/>
+                        <constraint firstAttribute="bottom" secondItem="a0T-Md-eHm" secondAttribute="bottom" id="rhy-NM-PrG"/>
+                    </constraints>
+                    <viewLayoutGuide key="safeArea" id="TNZ-nx-P91"/>
+                </view>
                 <view hidden="YES" contentMode="scaleToFill" id="bXZ-9L-efg" userLabel="Cleared View">
-                    <rect key="frame" x="0.0" y="0.0" width="259" height="250"/>
+                    <rect key="frame" x="0.0" y="0.0" width="270" height="250"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="1AM-sX-6Vz">
-                            <rect key="frame" x="0.0" y="0.0" width="259" height="250"/>
+                            <rect key="frame" x="0.0" y="0.0" width="270" height="250"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="WIN! 🎉" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E7U-fC-XR1">
-                                    <rect key="frame" x="11.000000000000014" y="0.0" width="237.33333333333337" height="83.333333333333329"/>
+                                    <rect key="frame" x="16.333333333333329" y="0.0" width="237.33333333333337" height="83.333333333333329"/>
                                     <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="66"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d0l-SD-sSt" userLabel="Next Button">
-                                    <rect key="frame" x="0.0" y="83.333333333333343" width="259" height="83.333333333333343"/>
+                                    <rect key="frame" x="0.0" y="83.333333333333343" width="270" height="83.333333333333343"/>
                                     <state key="normal" image="next_button"/>
                                     <connections>
                                         <action selector="levelClearedNext:" destination="lds-87-3TS" eventType="touchUpInside" id="za5-rA-ADW"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iqC-az-Df5" userLabel="Game Menu Button">
-                                    <rect key="frame" x="0.0" y="166.66666666666666" width="259" height="83.333333333333343"/>
+                                    <rect key="frame" x="0.0" y="166.66666666666666" width="270" height="83.333333333333343"/>
                                     <state key="normal" image="game_menu_button_curved"/>
                                     <connections>
                                         <action selector="levelClearedGameMenu:" destination="lds-87-3TS" eventType="touchUpInside" id="14x-Pb-bK8"/>
@@ -350,27 +392,27 @@
                 </view>
                 <exit id="PUe-Gu-uBq" userLabel="Exit" sceneMemberID="exit"/>
                 <view hidden="YES" contentMode="scaleToFill" id="2JP-Ap-ELL" userLabel="Pause Menu View">
-                    <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
+                    <rect key="frame" x="0.0" y="0.0" width="270" height="250"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleAspectFill" axis="vertical" distribution="fillEqually" spacing="1" translatesAutoresizingMaskIntoConstraints="NO" id="7rN-DO-x2m">
-                            <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
+                            <rect key="frame" x="0.0" y="0.0" width="270" height="250"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paused" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D11-g9-x3B">
-                                    <rect key="frame" x="0.0" y="0.0" width="240" height="82.666666666666671"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="270" height="82.666666666666671"/>
                                     <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="60"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VAa-BZ-zCG" userLabel="Resume Button">
-                                    <rect key="frame" x="0.0" y="83.666666666666657" width="240" height="82.666666666666657"/>
+                                    <rect key="frame" x="0.0" y="83.666666666666657" width="270" height="82.666666666666657"/>
                                     <state key="normal" image="resume_button_curved"/>
                                     <connections>
                                         <action selector="resumeButtonPressed:" destination="lds-87-3TS" eventType="touchUpInside" id="TXC-4B-SHi"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EpW-pu-3Ya" userLabel="Return Game Menu Button">
-                                    <rect key="frame" x="0.0" y="167.33333333333334" width="240" height="82.666666666666657"/>
+                                    <rect key="frame" x="0.0" y="167.33333333333334" width="270" height="82.666666666666657"/>
                                     <state key="normal" image="game_menu_button_curved"/>
                                     <connections>
                                         <action selector="gameMenuButtonPressed:" destination="lds-87-3TS" eventType="touchUpInside" id="PGS-bO-3ea"/>
@@ -432,6 +474,7 @@
         <image name="play_button_curved" width="450" height="105"/>
         <image name="rate_button" width="70" height="70"/>
         <image name="resume_button_curved" width="480" height="120"/>
+        <image name="retry_button" width="480" height="120"/>
         <image name="undo_button" width="300" height="300"/>
     </resources>
 </document>
