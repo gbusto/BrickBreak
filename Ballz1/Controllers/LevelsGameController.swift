@@ -18,6 +18,10 @@ class LevelsGameController: UIViewController,
     @IBOutlet weak var levelCount: UILabel!
     @IBOutlet weak var levelScore: UILabel!
     
+    @IBOutlet var levelLossView: UIView!
+    @IBOutlet var levelLossRetryButton: UIButton!
+    @IBOutlet var levelLossMenuButton: UIButton!
+    
     @IBOutlet var levelClearedView: UIView!
     @IBOutlet var levelClearedNextButton: UIButton!
     @IBOutlet var levelClearedMenuButton: UIButton!
@@ -185,6 +189,31 @@ class LevelsGameController: UIViewController,
         }
     }
     
+    // MARK: Level Lost Button Handlers
+    @IBAction func levelLossRetry(_ sender: Any) {
+        let scene = self.scene as! LevelsGameScene
+        scene.removeLevelClearedScreen()
+        
+        // Show an interstitial ad
+        if interstitialAd.isReady {
+            interstitialAd.present(fromRootViewController: self)
+        }
+        
+        // Replay the game scene; state should have already been saved
+        goToGameScene()
+    }
+   
+    @IBAction func levelLossGameMenu(_ sender: Any) {
+        // Show an interstitial ad here
+        if interstitialAd.isReady {
+            leaveGame = true
+            interstitialAd.present(fromRootViewController: self)
+        }
+        else {
+            returnToMenu()
+        }
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Prepare for a segue
     }
@@ -250,6 +279,10 @@ class LevelsGameController: UIViewController,
             levelClearedNextButton.imageView?.contentMode = .scaleAspectFit
             levelClearedMenuButton.imageView?.contentMode = .scaleAspectFit
             
+            levelLossView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
+            levelLossRetryButton.imageView?.contentMode = .scaleAspectFit
+            levelLossMenuButton.imageView?.contentMode = .scaleAspectFit
+            
             view.presentScene(scene)
             view.ignoresSiblingOrder = true
         }
@@ -271,12 +304,16 @@ class LevelsGameController: UIViewController,
         
         if scene.gameModel!.savedUser {
             // If the user has already been saved, return to the game menu
-            returnToMenu()
+            let scene = self.scene as! LevelsGameScene
+            scene.showLevelLossScreen(levelLossView: levelLossView)
+            return
         }
         
         if false == GADRewardBasedVideoAd.sharedInstance().isReady {
             // If we failed to load a reward ad, don't allow the user to save themselves
-            returnToMenu()
+            let scene = self.scene as! LevelsGameScene
+            scene.showLevelLossScreen(levelLossView: levelLossView)
+            return
         }
         
         let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
@@ -293,7 +330,8 @@ class LevelsGameController: UIViewController,
         }
         let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
             // User doesn't want to watch an ad
-            self.returnToMenu()
+            let scene = self.scene as! LevelsGameScene
+            scene.showLevelLossScreen(levelLossView: self.levelLossView)
         }
         
         alert.addAction(yesAction)
