@@ -516,6 +516,27 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         activeViews = [blurView, pauseView]
     }
     
+    public func showLevelClearedScreen(levelClearedView: UIView) {
+        let blur = UIBlurEffect(style: .dark)
+        let blurView = UIVisualEffectView(effect: blur)
+        blurView.frame = view!.frame
+        view!.addSubview(blurView)
+        
+        levelClearedView.isHidden = false
+        view!.addSubview(levelClearedView)
+        
+        activeViews = [blurView, levelClearedView]
+    }
+    
+    public func removeLevelClearedScreen() {
+        let views = activeViews.filter {
+            $0.removeFromSuperview()
+            return false
+        }
+        
+        activeViews = views
+    }
+    
     public func resumeGame() {
         self.isPaused = false
         self.view!.isPaused = false

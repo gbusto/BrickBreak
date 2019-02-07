@@ -18,6 +18,10 @@ class LevelsGameController: UIViewController,
     @IBOutlet weak var levelCount: UILabel!
     @IBOutlet weak var levelScore: UILabel!
     
+    @IBOutlet var levelClearedView: UIView!
+    @IBOutlet var levelClearedNextButton: UIButton!
+    @IBOutlet var levelClearedMenuButton: UIButton!
+    
     @IBOutlet var pauseMenuView: UIView!
     @IBOutlet weak var resumeButton: UIButton!
     @IBOutlet weak var gameMenuButton: UIButton!
@@ -139,12 +143,38 @@ class LevelsGameController: UIViewController,
         }
     }
     
+    // MARK: Pause Menu Button Handlers
     @IBAction func resumeButtonPressed(_ sender: Any) {
         let scene = self.scene as! LevelsGameScene
         scene.resumeGame()
     }
     
     @IBAction func gameMenuButtonPressed(_ sender: Any) {
+        // Show an interstitial ad here
+        if interstitialAd.isReady {
+            leaveGame = true
+            interstitialAd.present(fromRootViewController: self)
+        }
+        else {
+            returnToMenu()
+        }
+    }
+    
+    // MARK: Level Cleared Button Handlers
+    @IBAction func levelClearedNext(_ sender: Any) {
+        let scene = self.scene as! LevelsGameScene
+        scene.removeLevelClearedScreen()
+        
+        // Show an interstitial ad
+        if interstitialAd.isReady {
+            interstitialAd.present(fromRootViewController: self)
+        }
+        
+        // Replay the game scene; state should have already been saved
+        goToGameScene()
+    }
+    
+    @IBAction func levelClearedGameMenu(_ sender: Any) {
         // Show an interstitial ad here
         if interstitialAd.isReady {
             leaveGame = true
@@ -216,6 +246,10 @@ class LevelsGameController: UIViewController,
             resumeButton.imageView?.contentMode = .scaleAspectFit
             gameMenuButton.imageView?.contentMode = .scaleAspectFit
             
+            levelClearedView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
+            levelClearedNextButton.imageView?.contentMode = .scaleAspectFit
+            levelClearedMenuButton.imageView?.contentMode = .scaleAspectFit
+            
             view.presentScene(scene)
             view.ignoresSiblingOrder = true
         }
@@ -269,13 +303,8 @@ class LevelsGameController: UIViewController,
     }
     
     public func gameOverWin() {
-        // Show an interstitial ad
-        if interstitialAd.isReady {
-            interstitialAd.present(fromRootViewController: self)
-        }
-        
-        // Replay the game scene; state should have already been saved
-        goToGameScene()
+        let scene = self.scene as! LevelsGameScene
+        scene.showLevelClearedScreen(levelClearedView: levelClearedView)
     }
     
     // MARK: Private functions

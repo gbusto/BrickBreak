@@ -298,6 +298,9 @@
                     <connections>
                         <outlet property="bannerAdView" destination="nxt-hu-S3v" id="0jh-dg-iAh"/>
                         <outlet property="gameMenuButton" destination="EpW-pu-3Ya" id="gxf-vg-iHo"/>
+                        <outlet property="levelClearedMenuButton" destination="iqC-az-Df5" id="LK2-Nt-6kc"/>
+                        <outlet property="levelClearedNextButton" destination="d0l-SD-sSt" id="rEF-DY-9VI"/>
+                        <outlet property="levelClearedView" destination="bXZ-9L-efg" id="LZD-hu-OhD"/>
                         <outlet property="levelCount" destination="djQ-6i-xDb" id="3Gk-Bb-C5C"/>
                         <outlet property="levelScore" destination="wRS-np-rfH" id="X7e-6K-z8T"/>
                         <outlet property="pauseMenuView" destination="2JP-Ap-ELL" id="SgA-98-7Q1"/>
@@ -306,6 +309,45 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1KH-mO-FvK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <view hidden="YES" contentMode="scaleToFill" id="bXZ-9L-efg" userLabel="Cleared View">
+                    <rect key="frame" x="0.0" y="0.0" width="259" height="250"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="1AM-sX-6Vz">
+                            <rect key="frame" x="0.0" y="0.0" width="259" height="250"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="WIN! 🎉" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E7U-fC-XR1">
+                                    <rect key="frame" x="11.000000000000014" y="0.0" width="237.33333333333337" height="83.333333333333329"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="66"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d0l-SD-sSt" userLabel="Next Button">
+                                    <rect key="frame" x="0.0" y="83.333333333333343" width="259" height="83.333333333333343"/>
+                                    <state key="normal" image="next_button"/>
+                                    <connections>
+                                        <action selector="levelClearedNext:" destination="lds-87-3TS" eventType="touchUpInside" id="za5-rA-ADW"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iqC-az-Df5" userLabel="Game Menu Button">
+                                    <rect key="frame" x="0.0" y="166.66666666666666" width="259" height="83.333333333333343"/>
+                                    <state key="normal" image="game_menu_button_curved"/>
+                                    <connections>
+                                        <action selector="levelClearedGameMenu:" destination="lds-87-3TS" eventType="touchUpInside" id="14x-Pb-bK8"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="1AM-sX-6Vz" firstAttribute="leading" secondItem="bXZ-9L-efg" secondAttribute="leading" id="qQD-vs-0ma"/>
+                        <constraint firstItem="3uI-Mg-DeX" firstAttribute="trailing" secondItem="1AM-sX-6Vz" secondAttribute="trailing" id="qky-JB-pwR"/>
+                        <constraint firstItem="1AM-sX-6Vz" firstAttribute="top" secondItem="bXZ-9L-efg" secondAttribute="top" id="vro-pi-EVb"/>
+                        <constraint firstItem="3uI-Mg-DeX" firstAttribute="bottom" secondItem="1AM-sX-6Vz" secondAttribute="bottom" id="x4o-Vz-PGk"/>
+                    </constraints>
+                    <viewLayoutGuide key="safeArea" id="3uI-Mg-DeX"/>
+                </view>
                 <exit id="PUe-Gu-uBq" userLabel="Exit" sceneMemberID="exit"/>
                 <view hidden="YES" contentMode="scaleToFill" id="2JP-Ap-ELL" userLabel="Pause Menu View">
                     <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
@@ -386,6 +428,7 @@
         <image name="game_center_button" width="70" height="70"/>
         <image name="game_menu_button_curved" width="480" height="120"/>
         <image name="levels_gameplay_button" width="320" height="87"/>
+        <image name="next_button" width="480" height="120"/>
         <image name="play_button_curved" width="450" height="105"/>
         <image name="rate_button" width="70" height="70"/>
         <image name="resume_button_curved" width="480" height="120"/>
