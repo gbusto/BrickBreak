@@ -309,6 +309,13 @@ class LevelsGameController: UIViewController,
             return
         }
         
+        if scene.gameModel!.getActualRowCount() <= 4 {
+            // If the user loses and there are only 4 rows on the screen, don't save them. They need to restart the level
+            let scene = self.scene as! LevelsGameScene
+            scene.showLevelLossScreen(levelLossView: levelLossView)
+            return
+        }
+        
         if false == GADRewardBasedVideoAd.sharedInstance().isReady {
             // If we failed to load a reward ad, don't allow the user to save themselves
             let scene = self.scene as! LevelsGameScene

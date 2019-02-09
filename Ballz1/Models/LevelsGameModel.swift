@@ -331,20 +331,48 @@ class LevelsGameModel {
         }
     }
     
+    // Some hacky math to figure out how many rows of actual items we have left in the game
+    // The reason we need to do this is because levels have a finite number of rows to play (numRowsToGenerate)
+    // After we've generated all the rows for a level, we continue adding empty rows (rows with SpacerItems) so that we can properly detect lossRisk and gameOver scenarios
+    public func getActualRowCount() -> Int {
+        var actualRowCount = 0
+        
+        if rowNumber >= numRowsToGenerate {
+            // We're not generating rows with items anymore so see by how many rows we've exceeded the number to generate
+            // (If numRowsToGenerate is 10 and rowNumber is rowNumber 18, diff is 8)
+            let diff = rowNumber - numRowsToGenerate
+            // To see how many rows of actual itmes are left, take the difference between the number of rows on the screen and diff
+            // We take numberOfRows - 2 because the top most row is empty, and the last row is unusable because if the blocks reach it then the user loses
+            // (If we have 2 rows left on the screen, numberOfRows - 2 (10) - diff (8) is 2 so this will give the correct number of actual rows left)
+            actualRowCount = (numberOfRows - 2) - diff
+        }
+        else {
+            // If we haven't generated all the rows yet, then do this
+            actualRowCount = numRowsToGenerate - rowNumber + (numberOfRows - 2)
+        }
+        
+        return actualRowCount
+    }
+    
     // XXX This will need to be different for levels; need to generate all rows up front when we initialize the model
     // Addressed in issue #431
     public func generateRow() -> [Item] {
+        rowNumber += 1
+
         if rowNumber >= numRowsToGenerate {
             // XXX This is just a hack for now that needs to be fixed
             // Addressed in issue #431 (I think, the one to fix game states for levels gameplay)
+            // At this point, if the user cleared all the items on the screen there will still technically be rows left in the item array
+            // These rows will just contain SpacerItems. To then let the game scene know that the user cleared all the blocks,
+            // we return an empty array. This is a bad solution because it's kind of a hack, but it works for now.
             if itemGenerator!.itemArray.count == 0 {
                 return []
             }
             
-            // Return an empty row of items
+            // Return an empty row of items (we're not generating anymore items)
             return itemGenerator!.generateRow(emptyRow: true)
         }
-        rowNumber += 1
+        // Generate a normal row
         return itemGenerator!.generateRow()
     }
     
