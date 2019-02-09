@@ -534,6 +534,10 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         blurView.frame = view!.frame
         view!.addSubview(blurView)
         
+        let confetti = Confetti()
+        let emitter = confetti.getEmitter(frame: blurView.bounds)
+        blurView.layer.addSublayer(emitter)
+        
         levelClearedView.isHidden = false
         view!.addSubview(levelClearedView)
         
