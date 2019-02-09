@@ -501,7 +501,9 @@ class ItemGenerator {
         return newRow
     }
     
-    public func hit(name: String) {
+    public func hit(name: String) -> Bool {
+        var successfulHit = true
+        
         for row in itemArray {
             for item in row {
                 if item.getNode().name == name {
@@ -509,6 +511,13 @@ class ItemGenerator {
                     if item.getNode().name!.starts(with: "ball") {
                         // If this item was a ball, increase the max hit count by 2 because it will be transferred over to the ball manager
                         numberOfBalls += 1
+                    }
+                    else if item.getNode().name!.starts(with: "sblock") {
+                        // This is a stone hit block item
+                        let shb = item as! StoneHitBlockItem
+                        if shb.isStone {
+                            successfulHit = false
+                        }
                     }
                     else if item.getNode().name!.starts(with: "bomb") {
                         // If a bomb item was hit, get all adjacent items
@@ -527,9 +536,14 @@ class ItemGenerator {
                             }
                         }
                     }
+                    // Break out only if we found the item
+                    return successfulHit
                 }
             }
         }
+        
+        // If we fall through to here, we didn't find the item so don't count it as a hit
+        return false
     }
     
     // This function is responsible for pruning any items in the first row; once the item generator has numberOfRows - 1 rows in its array, any non-block items are removed from the game scene and will need to be removed from here as well

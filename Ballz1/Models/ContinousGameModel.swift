@@ -341,7 +341,7 @@ class ContinuousGameModel {
                 ballManager!.markBallInactive(name: nameA)
             }
             else {
-                itemGenerator!.hit(name: nameB)
+                let _ = itemGenerator!.hit(name: nameB)
             }
         }
         
@@ -350,7 +350,7 @@ class ContinuousGameModel {
                 ballManager!.markBallInactive(name: nameB)
             }
             else {
-                itemGenerator!.hit(name: nameA)
+                let _ = itemGenerator!.hit(name: nameA)
             }
         }
     }

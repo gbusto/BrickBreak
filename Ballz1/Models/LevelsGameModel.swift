@@ -305,11 +305,13 @@ class LevelsGameModel {
                 ballManager!.markBallInactive(name: nameA)
             }
             else {
+                // Add 1 (or 2) points for hitting anything (except blocks that are currently stone)
                 if "wall" != nameB && "ceiling" != nameB {
-                    scoreThisTurn += additive
-                    gameScore += additive
+                    if itemGenerator!.hit(name: nameB) {
+                        scoreThisTurn += additive
+                        gameScore += additive
+                    }
                 }
-                itemGenerator!.hit(name: nameB)
             }
         }
         
@@ -318,11 +320,13 @@ class LevelsGameModel {
                 ballManager!.markBallInactive(name: nameB)
             }
             else {
+                // Add 1 (or 2) points for hitting anything (except blocks that are currently stone)
                 if "wall" != nameA && "ceiling" != nameA {
-                    scoreThisTurn += additive
-                    gameScore += additive
+                    if itemGenerator!.hit(name: nameA) {
+                        scoreThisTurn += additive
+                        gameScore += additive
+                    }
                 }
-                itemGenerator!.hit(name: nameA)
             }
         }
     }
