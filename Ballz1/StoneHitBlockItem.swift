@@ -16,6 +16,9 @@ class StoneHitBlockItem: Item {
     public var bottomColor: SKColor?
     public var topColor: SKColor?
     
+    // true if the item is currently stone
+    public var isStone = false
+    
     // MARK: Private properties
     private var size : CGSize?
     private var position : CGPoint?
@@ -23,9 +26,6 @@ class StoneHitBlockItem: Item {
     private var fontName = "Verdana"
     private var labelNode : SKLabelNode?
     private var shadowLabel: SKLabelNode?
-    
-    // true if the item is currently stone
-    private var isStone = false
     
     private var originalTexture: SKTexture?
     private var stoneTexture: SKTexture?
@@ -40,7 +40,8 @@ class StoneHitBlockItem: Item {
         
         node = SKSpriteNode(color: .gray, size: size)
         node!.anchorPoint = CGPoint(x: 0, y: 0)
-        node!.name = "block\(num)"
+        // Name it "sblock" for stone block
+        node!.name = "sblock\(num)"
         
         stoneTexture = SKTexture(imageNamed: "stone_texture3")
         
