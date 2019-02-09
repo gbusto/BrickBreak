@@ -12,6 +12,7 @@ class LevelsGameModel {
     
     // MARK: Public properties
     public var gameScore = Int(0)
+    public var highScore = Int(0)
     public var levelCount = Int(1)
     
     public var ballManager: BallManager?
@@ -147,6 +148,7 @@ class LevelsGameModel {
          */
         
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
+        highScore = persistentData!.highScore
         levelCount = persistentData!.levelCount
         showedTutorials = persistentData!.showedTutorials
         self.numberOfRows = numberOfRows
