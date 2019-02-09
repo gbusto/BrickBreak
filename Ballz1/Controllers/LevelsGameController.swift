@@ -23,8 +23,9 @@ class LevelsGameController: UIViewController,
     @IBOutlet var levelLossMenuButton: UIButton!
     
     @IBOutlet var levelClearedView: UIView!
+    @IBOutlet var levelClearedHeaderLabel: UILabel!
+    @IBOutlet var levelClearedScoreLabel: UILabel!
     @IBOutlet var levelClearedNextButton: UIButton!
-    @IBOutlet var levelClearedMenuButton: UIButton!
     
     @IBOutlet var pauseMenuView: UIView!
     @IBOutlet weak var resumeButton: UIButton!
@@ -178,17 +179,6 @@ class LevelsGameController: UIViewController,
         goToGameScene()
     }
     
-    @IBAction func levelClearedGameMenu(_ sender: Any) {
-        // Show an interstitial ad here
-        if interstitialAd.isReady {
-            leaveGame = true
-            interstitialAd.present(fromRootViewController: self)
-        }
-        else {
-            returnToMenu()
-        }
-    }
-    
     // MARK: Level Lost Button Handlers
     @IBAction func levelLossRetry(_ sender: Any) {
         let scene = self.scene as! LevelsGameScene
@@ -277,7 +267,6 @@ class LevelsGameController: UIViewController,
             
             levelClearedView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             levelClearedNextButton.imageView?.contentMode = .scaleAspectFit
-            levelClearedMenuButton.imageView?.contentMode = .scaleAspectFit
             
             levelLossView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             levelLossRetryButton.imageView?.contentMode = .scaleAspectFit
@@ -349,6 +338,15 @@ class LevelsGameController: UIViewController,
     
     public func gameOverWin() {
         let scene = self.scene as! LevelsGameScene
+        let currentScore = scene.gameModel!.gameScore
+        let highScore = scene.gameModel!.highScore
+        print("Current high score is \(highScore)")
+        if currentScore > highScore {
+            print("User beat their high score of \(highScore) with \(currentScore)")
+            levelClearedHeaderLabel.text = "NEW HIGH SCORE"
+        }
+        levelClearedScoreLabel.text = "\(currentScore)"
+        
         scene.showLevelClearedScreen(levelClearedView: levelClearedView)
     }
     
