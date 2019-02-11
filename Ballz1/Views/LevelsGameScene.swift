@@ -478,6 +478,11 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                 displayedOnFire = true
                 gameModel!.addOnFireBonus()
             }
+            
+            if gameModel!.lastItemBroken {
+                // Check if the last item broke. If it did, set swipedDown to true to end the turn
+                swipedDown = true
+            }
         }
     }
     
