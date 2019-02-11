@@ -13,6 +13,7 @@ class LevelsGameModel {
     // MARK: Public properties
     public var gameScore = Int(0)
     public var highScore = Int(0)
+    public var cumulativeScore = Int(0)
     public var levelCount = Int(1)
     
     public var ballManager: BallManager?
@@ -73,6 +74,7 @@ class LevelsGameModel {
     struct PersistentData: Codable {
         var levelCount: Int
         var highScore: Int
+        var cumulativeScore: Int
         var showedTutorials: Bool
         
         // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
@@ -80,6 +82,7 @@ class LevelsGameModel {
         enum CodingKeys: String, CodingKey {
             case levelCount
             case highScore
+            case cumulativeScore
             case showedTutorials
         }
     }
@@ -103,6 +106,10 @@ class LevelsGameModel {
             if gameScore > persistentData!.highScore {
                 persistentData!.highScore = gameScore
             }
+            // Update the cumulative score to be the current cumulative score + game score
+            print("Old cumulative score is \(cumulativeScore)")
+            persistentData!.cumulativeScore = cumulativeScore + gameScore
+            print("New cumulative score is \(persistentData!.cumulativeScore)")
             
             // Save the persistent data
             let pData = try PropertyListEncoder().encode(self.persistentData!)
@@ -142,7 +149,7 @@ class LevelsGameModel {
         
         // Try to load persistent data
         if false == loadPersistentState() {
-            persistentData = PersistentData(levelCount: levelCount, highScore: gameScore, showedTutorials: showedTutorials)
+            persistentData = PersistentData(levelCount: levelCount, highScore: gameScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)
         }
         
         /*
@@ -155,8 +162,16 @@ class LevelsGameModel {
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
         highScore = persistentData!.highScore
         levelCount = persistentData!.levelCount
+        cumulativeScore = persistentData!.cumulativeScore
         showedTutorials = persistentData!.showedTutorials
         self.numberOfRows = numberOfRows
+        
+        if 0 == cumulativeScore && levelCount > 1 {
+            // If the user's cumulative score is 0 and they're beyond the 1st level, set it manually for them
+            // XXX This may need to be removed later
+            cumulativeScore = levelCount * 6000
+            print("Manually set cumulative score to \(cumulativeScore)")
+        }
         
         // Generate a dynamic number of rows based on the level count
         // Essentially, add 5 rows to the base for every 10 levels the user passes
