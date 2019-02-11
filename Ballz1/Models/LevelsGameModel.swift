@@ -48,6 +48,9 @@ class LevelsGameModel {
     
     private var GAME_OVER = Int(255)
     
+    private static var MAX_NUM_ROWS_TO_GENERATE = Int(50)
+    private static var MAX_NUM_BALLS = Int(50)
+    
     static public var GAMEOVER_NONE = Int(0)
     static public var GAMEOVER_LOSS = Int(1)
     static public var GAMEOVER_WIN = Int(2)
@@ -155,9 +158,17 @@ class LevelsGameModel {
         
         // Generate a dynamic number of rows based on the level count
         // Essentially, add 5 rows to the base for every 10 levels the user passes
-        numRowsToGenerate = 10 + (5 * (levelCount / 10))
+        numRowsToGenerate = 10 + (4 * (levelCount / 10))
+        if numRowsToGenerate > LevelsGameModel.MAX_NUM_ROWS_TO_GENERATE {
+            // Cap it off to 50 rows max
+            numRowsToGenerate = LevelsGameModel.MAX_NUM_ROWS_TO_GENERATE
+        }
         
         numberOfBalls = 20 + (3 * (levelCount / 10))
+        if numberOfBalls > LevelsGameModel.MAX_NUM_BALLS {
+            // Cap it off to 50 balls max
+            numberOfBalls = LevelsGameModel.MAX_NUM_BALLS
+        }
         
         // This function will either load ball manager with a saved state or the default ball manager state
         ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: LevelsGameModel.LevelsDirURL)
