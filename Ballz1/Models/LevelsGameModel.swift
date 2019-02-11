@@ -28,6 +28,9 @@ class LevelsGameModel {
     // The total number of rows to generate
     public var numRowsToGenerate = Int(0)
     
+    // A boolean that is true after it detects that the last item has been broken
+    public var lastItemBroken = false
+    
     // MARK: Private properties
     private var persistentData: PersistentData?
     
@@ -284,6 +287,11 @@ class LevelsGameModel {
             else if item is BombItem {
                 addToScore += Int(10 * onFireBonus)
             }
+        }
+        
+        if 0 == itemGenerator!.getItemCount() && rowNumber >= numRowsToGenerate {
+            // After detecting that the last item broke and we've generated all the rows, set this variable so the game scene can end the game
+            lastItemBroken = true
         }
         
         // Check for inactive balls and stop them
