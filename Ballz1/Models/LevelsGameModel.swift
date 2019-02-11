@@ -374,7 +374,7 @@ class LevelsGameModel {
     public func generateRow() -> [Item] {
         rowNumber += 1
 
-        if rowNumber >= numRowsToGenerate {
+        if rowNumber > numRowsToGenerate {
             // XXX This is just a hack for now that needs to be fixed
             // Addressed in issue #431 (I think, the one to fix game states for levels gameplay)
             // At this point, if the user cleared all the items on the screen there will still technically be rows left in the item array
