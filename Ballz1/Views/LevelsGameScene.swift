@@ -357,6 +357,12 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             // Reset the number of hit blocks and the encouragements shown to the user
             brokenHitBlockCount = 0
             displayedOnFire = false
+            
+            let currentCount = gameModel!.rowNumber
+            let maxCount = gameModel!.numRowsToGenerate
+            if currentCount <= maxCount {
+                gameController!.updateRowCountLabel(currentCount: currentCount, maxCount: maxCount)
+            }
         }
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
