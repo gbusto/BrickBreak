@@ -348,7 +348,10 @@ class LevelsGameController: UIViewController,
         if currentScore > highScore {
             levelClearedHeaderLabel.text = "NEW HIGH SCORE"
         }
-        levelClearedScoreLabel.text = "\(currentScore)"
+        else {
+            levelClearedHeaderLabel.text = "LEVEL \(scene.gameModel!.levelCount) PASSED"
+        }
+        levelClearedScoreLabel.text = "\(scene.gameModel!.cumulativeScore)"
         
         scene.showLevelClearedScreen(levelClearedView: levelClearedView)
     }

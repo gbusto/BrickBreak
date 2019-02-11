@@ -22,7 +22,7 @@
                                 <rect key="frame" x="20" y="20" width="374" height="616"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Brick Break" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="40" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xH8-wW-N8G">
-                                        <rect key="frame" x="13.333333333333343" y="0.0" width="347.66666666666663" height="359.66666666666669"/>
+                                        <rect key="frame" x="13.333333333333343" y="0.0" width="347.66666666666663" height="254.66666666666666"/>
                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="200"/>
                                         <color key="textColor" red="0.70008618342942719" green="0.93547368049621582" blue="0.76215052610718903" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
@@ -30,10 +30,10 @@
                                         <size key="shadowOffset" width="3" height="3"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="jcc-nl-bVB">
-                                        <rect key="frame" x="0.0" y="409.66666666666669" width="374" height="206.33333333333331"/>
+                                        <rect key="frame" x="0.0" y="304.66666666666674" width="374" height="311.33333333333326"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0b5-Nx-3KM">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="68.666666666666671"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="103.66666666666667"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" image="classic_play_button">
@@ -46,7 +46,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SIu-eg-Tou" userLabel="Levels Button">
-                                                <rect key="frame" x="0.0" y="68.666666666666629" width="374" height="69"/>
+                                                <rect key="frame" x="0.0" y="103.66666666666663" width="374" height="104"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" image="levels_play_button">
@@ -60,17 +60,17 @@
                                                 </connections>
                                             </button>
                                             <stackView opaque="NO" contentMode="scaleAspectFit" alignment="center" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="nqw-bE-Rpn">
-                                                <rect key="frame" x="112.66666666666666" y="137.66666666666669" width="148.99999999999997" height="68.666666666666686"/>
+                                                <rect key="frame" x="112.66666666666666" y="207.66666666666666" width="148.99999999999997" height="103.66666666666666"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleAspectFit" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kUv-85-qmg">
-                                                        <rect key="frame" x="0.0" y="0.0" width="70" height="68.666666666666671"/>
+                                                        <rect key="frame" x="0.0" y="16.666666666666629" width="70" height="70"/>
                                                         <state key="normal" image="game_center_button"/>
                                                         <connections>
                                                             <action selector="showGameCenter:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="0nK-I9-ow9"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7cD-I5-EAq">
-                                                        <rect key="frame" x="79" y="0.0" width="70" height="68.666666666666671"/>
+                                                        <rect key="frame" x="79" y="16.666666666666629" width="70" height="70"/>
                                                         <state key="normal" image="rate_button"/>
                                                         <connections>
                                                             <action selector="goToAppStore:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="Frp-1B-WWW"/>
@@ -357,8 +357,8 @@
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="1AM-sX-6Vz">
                             <rect key="frame" x="0.0" y="0.0" width="355" height="379"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LEVEL PASSED" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E7U-fC-XR1">
-                                    <rect key="frame" x="67.000000000000014" y="0.0" width="221.33333333333337" height="164"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LEVEL 5 PASSED" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E7U-fC-XR1">
+                                    <rect key="frame" x="42" y="0.0" width="271.33333333333331" height="164"/>
                                     <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="60"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
