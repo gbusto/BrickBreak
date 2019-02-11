@@ -345,9 +345,7 @@ class LevelsGameController: UIViewController,
         let scene = self.scene as! LevelsGameScene
         let currentScore = scene.gameModel!.gameScore
         let highScore = scene.gameModel!.highScore
-        print("Current high score is \(highScore)")
         if currentScore > highScore {
-            print("User beat their high score of \(highScore) with \(currentScore)")
             levelClearedHeaderLabel.text = "NEW HIGH SCORE"
         }
         levelClearedScoreLabel.text = "\(currentScore)"
