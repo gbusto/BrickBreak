@@ -17,6 +17,7 @@ class LevelsGameController: UIViewController,
     
     @IBOutlet weak var levelCount: UILabel!
     @IBOutlet weak var levelScore: UILabel!
+    @IBOutlet var rowCountLabel: UILabel!
     
     @IBOutlet var levelLossView: UIView!
     @IBOutlet var levelLossRetryButton: UIButton!
@@ -279,6 +280,10 @@ class LevelsGameController: UIViewController,
     
     public func setLevelNumber(level: Int) {
         levelCount.text = "\(level)"
+    }
+    
+    public func updateRowCountLabel(currentCount: Int, maxCount: Int) {
+        rowCountLabel.text = "\(currentCount)/\(maxCount)"
     }
     
     public func updateScore(score: Int) {

@@ -22,15 +22,17 @@ class LevelsGameModel {
     
     public var savedUser = false
     
+    // The number of rows we've generated so far
+    public var rowNumber = Int(0)
+    // The total number of rows to generate
+    public var numRowsToGenerate = Int(0)
+    
     // MARK: Private properties
     private var persistentData: PersistentData?
     
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
     private var numberOfRows = Int(0)
-    
-    private var rowNumber = Int(0)
-    private var numRowsToGenerate = Int(0)
     
     private var scoreThisTurn = Int(0)
     private var blockBonus = Int(2)
