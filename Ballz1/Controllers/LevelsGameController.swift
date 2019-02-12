@@ -350,7 +350,7 @@ class LevelsGameController: UIViewController,
             levelClearedHeaderLabel.text = "NEW HIGH SCORE"
         }
         else {
-            levelClearedHeaderLabel.text = "LEVEL \(scene.gameModel!.levelCount) PASSED"
+            levelClearedHeaderLabel.text = "LEVEL \(scene.gameModel!.levelCount - 1) PASSED"
         }
         levelClearedScoreLabel.text = "\(scene.gameModel!.cumulativeScore)"
         
