@@ -169,12 +169,15 @@ class LevelsGameModel {
         showedTutorials = persistentData!.showedTutorials
         self.numberOfRows = numberOfRows
         
+        /*
+        // XXX REMOVE ME
         if 0 == cumulativeScore && levelCount > 1 {
             // If the user's cumulative score is 0 and they're beyond the 1st level, set it manually for them
             // XXX This may need to be removed later
             cumulativeScore = levelCount * 6000
             print("Manually set cumulative score to \(cumulativeScore)")
         }
+        */
         
         // Generate a dynamic number of rows based on the level count
         // Essentially, add 5 rows to the base for every 10 levels the user passes
