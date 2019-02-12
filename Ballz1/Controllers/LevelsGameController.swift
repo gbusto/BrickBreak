@@ -169,6 +169,7 @@ class LevelsGameController: UIViewController,
     // MARK: Level Cleared Button Handlers
     @IBAction func levelClearedNext(_ sender: Any) {
         let scene = self.scene as! LevelsGameScene
+        scene.removeConfetti()
         scene.removeLevelClearedScreen()
         
         // Show an interstitial ad

@@ -61,6 +61,10 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     // Variable to know when actions are complete
     private var actionsStarted = Int(0)
     
+    private var showedConfetti = false
+    
+    private var showingUserWinView = false
+    
     // This is to keep track of the number of broken hit blocks in a given turn
     private var brokenHitBlockCount: Int = 0
     // A boolean because we only want to show the "on fire" encouragement once per turn
@@ -133,6 +137,13 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
          use (ceilingY - groundY) / 12 as block size
          move left/right walls to allow for 8 columns horizontally
          */
+        
+        // Clear out the view of all the subviews
+        let views = activeViews.filter {
+            $0.removeFromSuperview()
+            return false
+        }
+        activeViews = views
         
         // 1. Get ceiling starting y position
         let ceilingY = view.frame.height - view.safeAreaInsets.top - margin!
@@ -304,6 +315,20 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             controller.updateScore(score: gameScore)
         }
         
+        if showingUserWinView {
+            // Get the blur view to fade it in
+            for view in activeViews {
+                print("Updating alpha \(view.alpha)")
+                if view.alpha <= 1 {
+                    view.alpha += 0.02
+                }
+                else {
+                    // Once it's been faded in, stop it from messing with the alpha
+                    showingUserWinView = false
+                }
+            }
+        }
+        
         if gameModel!.isTurnOver() {
             // Return physics simulation to normal speed
             physicsWorld.speed = 1.0
@@ -382,7 +407,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 else if gameOverType == LevelsGameModel.GAMEOVER_WIN {
                     // If the game is over, the game model will change its state to GAME_OVER
-                    view!.isPaused = true
                     // Otherwise show the gameover overlay
                     self.gameOverWin()
                 }
@@ -479,9 +503,15 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                 gameModel!.addOnFireBonus()
             }
             
-            if gameModel!.lastItemBroken {
-                // Check if the last item broke. If it did, set swipedDown to true to end the turn
-                swipedDown = true
+            if gameModel!.lastItemBroken && false == showedConfetti {
+                // Check if the last item broke. If it did, show the confetti!
+                displayEncouragement(emoji: "🎉🎉🎉", text: "")
+                let confetti = Confetti()
+                let emitter = confetti.getEmitter(frame: view!.bounds)
+                emitter.name = "confetti"
+                view!.layer.addSublayer(emitter)
+                
+                showedConfetti = true
             }
         }
     }
@@ -543,14 +573,27 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         let blur = UIBlurEffect(style: .dark)
         let blurView = UIVisualEffectView(effect: blur)
         blurView.frame = view!.frame
+        
+        print("Setting views alphas to 0")
+        // Set the alphas to 0 so we can fade it in
+        blurView.alpha = 0
+        levelClearedView.alpha = 0
+        
+        print("Add blur view to main view")
+        // Add the blur view to the screen
         view!.addSubview(blurView)
         
-        let confetti = Confetti()
-        let emitter = confetti.getEmitter(frame: blurView.bounds)
-        blurView.layer.addSublayer(emitter)
-        
+        print("Set level cleared view to show")
+        // Unhide the level cleared view
         levelClearedView.isHidden = false
+        
+        print("Add level cleared view to main view")
+        // Add the level cleared view to the blur view
         view!.addSubview(levelClearedView)
+        
+        print("Setting flag")
+        // Set a flag so that the update scene tick will fade the view in
+        showingUserWinView = true
         
         activeViews = [blurView, levelClearedView]
     }
@@ -598,6 +641,20 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
         if let controller = gameController {
             controller.gameOverWin()
+        }
+    }
+    
+    public func removeConfetti() {
+        // Clear the sublayer with the confetti
+        print("Attemping to remove confetti sublayer")
+        if let layers = view!.layer.sublayers {
+            for layer in layers {
+                if let name = layer.name {
+                    if name == "confetti" {
+                        layer.removeFromSuperlayer()
+                    }
+                }
+            }
         }
     }
     
