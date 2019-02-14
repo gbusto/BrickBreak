@@ -39,6 +39,7 @@ class LevelsGameController: UIViewController,
     private var rewardAdViewController: RewardAdViewController!
     
     private var leaveGame = false
+    private var gameEnded = false
     
     private var scene: SKScene?
     
@@ -235,6 +236,11 @@ class LevelsGameController: UIViewController,
     @objc func handleAppGoingBackground() {
         // App is going into the background so pause it
         
+        if gameEnded {
+            // If the game ended, don't pause the screen
+            return
+        }
+        
         let scene = self.scene as! LevelsGameScene
         
         if let view = self.view as! SKView? {
@@ -295,6 +301,8 @@ class LevelsGameController: UIViewController,
     }
     
     public func gameOverLoss() {
+        gameEnded = true
+        
         let scene = self.scene as! LevelsGameScene
         
         if scene.gameModel!.savedUser {
@@ -343,6 +351,8 @@ class LevelsGameController: UIViewController,
     }
     
     public func gameOverWin() {
+        gameEnded = true
+        
         let scene = self.scene as! LevelsGameScene
         let currentScore = scene.gameModel!.gameScore
         let highScore = scene.gameModel!.highScore
