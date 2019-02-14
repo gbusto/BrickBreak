@@ -203,6 +203,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
         // Allow ourselves to be the physics contact delegates
         physicsWorld.contactDelegate = self
+        
+        // XXX REMOVE ME
+        showLevelClearedScreen(levelClearedView: gameController!.levelClearedView)
     }
     
     // MVC: A view function; notifies the controller of contact between two bodies
@@ -574,24 +577,24 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         let blurView = UIVisualEffectView(effect: blur)
         blurView.frame = view!.frame
         
-        print("Setting views alphas to 0")
+        //let imageView = UIImageView(image: UIImage(named: "score_background"))
+        //imageView.frame = gameController!.levelClearedScoreLabel.frame
+        
         // Set the alphas to 0 so we can fade it in
         blurView.alpha = 0
         levelClearedView.alpha = 0
         
-        print("Add blur view to main view")
+        levelClearedView.insertSubview(imageView, at: 0)
+        
         // Add the blur view to the screen
         view!.addSubview(blurView)
         
-        print("Set level cleared view to show")
         // Unhide the level cleared view
         levelClearedView.isHidden = false
         
-        print("Add level cleared view to main view")
         // Add the level cleared view to the blur view
         view!.addSubview(levelClearedView)
         
-        print("Setting flag")
         // Set a flag so that the update scene tick will fade the view in
         showingUserWinView = true
         
