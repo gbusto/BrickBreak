@@ -110,9 +110,8 @@ class LevelsGameModel {
                 persistentData!.highScore = gameScore
             }
             // Update the cumulative score to be the current cumulative score + game score
-            print("Old cumulative score is \(cumulativeScore)")
-            persistentData!.cumulativeScore = cumulativeScore + gameScore
-            print("New cumulative score is \(persistentData!.cumulativeScore)")
+            cumulativeScore += gameScore
+            persistentData!.cumulativeScore = cumulativeScore
             
             // Save the persistent data
             let pData = try PropertyListEncoder().encode(self.persistentData!)

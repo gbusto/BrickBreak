@@ -351,26 +351,26 @@
                     <viewLayoutGuide key="safeArea" id="TNZ-nx-P91"/>
                 </view>
                 <view hidden="YES" contentMode="scaleToFill" id="bXZ-9L-efg" userLabel="Cleared View">
-                    <rect key="frame" x="0.0" y="0.0" width="355" height="379"/>
+                    <rect key="frame" x="0.0" y="0.0" width="355" height="473"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="1AM-sX-6Vz">
-                            <rect key="frame" x="0.0" y="0.0" width="355" height="379"/>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="1AM-sX-6Vz">
+                            <rect key="frame" x="0.0" y="0.0" width="355" height="473"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LEVEL 5 PASSED" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E7U-fC-XR1">
-                                    <rect key="frame" x="42" y="0.0" width="271.33333333333331" height="164"/>
-                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="60"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LEVEL 100 ✅" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E7U-fC-XR1">
+                                    <rect key="frame" x="0.0" y="0.0" width="355" height="157.66666666666666"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="54"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P4M-GQ-hYf">
-                                    <rect key="frame" x="159.66666666666666" y="164" width="35.666666666666657" height="82"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="9999999" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P4M-GQ-hYf">
+                                    <rect key="frame" x="0.0" y="157.66666666666669" width="355" height="157.66666666666669"/>
                                     <fontDescription key="fontDescription" name="Avenir-Heavy" family="Avenir" pointSize="60"/>
-                                    <color key="textColor" red="0.70008618339999995" green="0.93547368050000002" blue="0.7621505261" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d0l-SD-sSt" userLabel="Next Button">
-                                    <rect key="frame" x="0.0" y="259" width="355" height="120"/>
+                                    <rect key="frame" x="0.0" y="315.33333333333331" width="355" height="157.66666666666669"/>
                                     <state key="normal" image="next_button"/>
                                     <connections>
                                         <action selector="levelClearedNext:" destination="lds-87-3TS" eventType="touchUpInside" id="za5-rA-ADW"/>

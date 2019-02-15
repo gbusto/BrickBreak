@@ -205,7 +205,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self
         
         // XXX REMOVE ME
-        showLevelClearedScreen(levelClearedView: gameController!.levelClearedView)
+        //showLevelClearedScreen(levelClearedView: gameController!.levelClearedView)
     }
     
     // MVC: A view function; notifies the controller of contact between two bodies
@@ -321,7 +321,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         if showingUserWinView {
             // Get the blur view to fade it in
             for view in activeViews {
-                print("Updating alpha \(view.alpha)")
                 if view.alpha <= 1 {
                     view.alpha += 0.02
                 }
@@ -577,28 +576,32 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         let blurView = UIVisualEffectView(effect: blur)
         blurView.frame = view!.frame
         
-        //let imageView = UIImageView(image: UIImage(named: "score_background"))
-        //imageView.frame = gameController!.levelClearedScoreLabel.frame
+        let imageView = UIImageView(image: UIImage(named: "score_background_wider2"))
+        // Set the center of the image to be the center of the main view
+        imageView.center = view!.center
+        imageView.contentMode = .scaleAspectFit
         
         // Set the alphas to 0 so we can fade it in
         blurView.alpha = 0
         levelClearedView.alpha = 0
+        imageView.alpha = 0
         
-        levelClearedView.insertSubview(imageView, at: 0)
-        
-        // Add the blur view to the screen
+        // Add the blur view to the screen first
         view!.addSubview(blurView)
+        
+        // Add the score background image on top of the blur view but behind the level cleared view
+        view!.addSubview(imageView)
         
         // Unhide the level cleared view
         levelClearedView.isHidden = false
         
-        // Add the level cleared view to the blur view
+        // Add the level cleared view on top of the blur view and the level cleared view
         view!.addSubview(levelClearedView)
         
         // Set a flag so that the update scene tick will fade the view in
         showingUserWinView = true
         
-        activeViews = [blurView, levelClearedView]
+        activeViews = [blurView, levelClearedView, imageView]
     }
     
     public func removeLevelClearedScreen() {

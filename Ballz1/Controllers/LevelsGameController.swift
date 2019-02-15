@@ -354,14 +354,8 @@ class LevelsGameController: UIViewController,
         gameEnded = true
         
         let scene = self.scene as! LevelsGameScene
-        let currentScore = scene.gameModel!.gameScore
-        let highScore = scene.gameModel!.highScore
-        if currentScore > highScore {
-            levelClearedHeaderLabel.text = "NEW HIGH SCORE"
-        }
-        else {
-            levelClearedHeaderLabel.text = "LEVEL \(scene.gameModel!.levelCount - 1) PASSED"
-        }
+    
+        levelClearedHeaderLabel.text = "LEVEL \(scene.gameModel!.levelCount - 1) ✅"
         levelClearedScoreLabel.text = "\(scene.gameModel!.cumulativeScore)"
         
         scene.showLevelClearedScreen(levelClearedView: levelClearedView)
