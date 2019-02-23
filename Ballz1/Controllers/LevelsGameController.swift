@@ -359,7 +359,7 @@ class LevelsGameController: UIViewController,
         
         scene.showLevelPassedScreen(levelPassedView: levelPassedView)
         
-        let _ = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { _ in
+        let _ = Timer.scheduledTimer(withTimeInterval: 6.0, repeats: false) { _ in
             let scene = self.scene as! LevelsGameScene
             scene.removeConfetti()
             scene.removeLevelPassedView()
