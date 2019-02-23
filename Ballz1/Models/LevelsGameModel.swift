@@ -167,7 +167,7 @@ class LevelsGameModel {
         cumulativeScore = persistentData!.cumulativeScore
         showedTutorials = persistentData!.showedTutorials
         self.numberOfRows = numberOfRows
-        
+                
         /*
         // XXX REMOVE ME
         if 0 == cumulativeScore && levelCount > 1 {

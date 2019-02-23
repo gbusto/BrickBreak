@@ -295,14 +295,13 @@
                     <connections>
                         <outlet property="bannerAdView" destination="nxt-hu-S3v" id="0jh-dg-iAh"/>
                         <outlet property="gameMenuButton" destination="EpW-pu-3Ya" id="gxf-vg-iHo"/>
-                        <outlet property="levelClearedHeaderLabel" destination="E7U-fC-XR1" id="yI1-T0-Nhm"/>
-                        <outlet property="levelClearedNextButton" destination="d0l-SD-sSt" id="rEF-DY-9VI"/>
-                        <outlet property="levelClearedScoreLabel" destination="P4M-GQ-hYf" id="eFr-bt-eBJ"/>
-                        <outlet property="levelClearedView" destination="bXZ-9L-efg" id="LZD-hu-OhD"/>
                         <outlet property="levelCount" destination="djQ-6i-xDb" id="3Gk-Bb-C5C"/>
                         <outlet property="levelLossMenuButton" destination="EpV-wp-W73" id="hRm-hw-dSO"/>
                         <outlet property="levelLossRetryButton" destination="cky-AB-dwc" id="5iQ-Zq-QW7"/>
                         <outlet property="levelLossView" destination="ouj-1h-Bbz" id="MoW-HE-JW3"/>
+                        <outlet property="levelPassedLevelLabel" destination="sch-9a-iJz" id="jA6-wT-kzN"/>
+                        <outlet property="levelPassedLevelScore" destination="HeV-yu-1Hk" id="EGw-Hc-NAE"/>
+                        <outlet property="levelPassedView" destination="eNe-4N-TTQ" id="CPA-b8-H9s"/>
                         <outlet property="levelScore" destination="wRS-np-rfH" id="X7e-6K-z8T"/>
                         <outlet property="pauseMenuView" destination="2JP-Ap-ELL" id="SgA-98-7Q1"/>
                         <outlet property="resumeButton" destination="VAa-BZ-zCG" id="bmv-o3-RLI"/>
@@ -350,43 +349,34 @@
                     </constraints>
                     <viewLayoutGuide key="safeArea" id="TNZ-nx-P91"/>
                 </view>
-                <view hidden="YES" contentMode="scaleToFill" id="bXZ-9L-efg" userLabel="Cleared View">
-                    <rect key="frame" x="0.0" y="0.0" width="355" height="473"/>
+                <view hidden="YES" contentMode="scaleToFill" id="eNe-4N-TTQ">
+                    <rect key="frame" x="0.0" y="0.0" width="300" height="150"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="1AM-sX-6Vz">
-                            <rect key="frame" x="0.0" y="0.0" width="355" height="473"/>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="DqS-IQ-Pww">
+                            <rect key="frame" x="0.0" y="0.0" width="300" height="150"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LEVEL 100 ✅" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E7U-fC-XR1">
-                                    <rect key="frame" x="0.0" y="0.0" width="355" height="157.66666666666666"/>
-                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="54"/>
-                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Level XXXX" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sch-9a-iJz">
+                                    <rect key="frame" x="0.0" y="0.0" width="300" height="75"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Heavy" family="Avenir" pointSize="50"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="9999999" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P4M-GQ-hYf">
-                                    <rect key="frame" x="0.0" y="157.66666666666669" width="355" height="157.66666666666669"/>
-                                    <fontDescription key="fontDescription" name="Avenir-Heavy" family="Avenir" pointSize="60"/>
-                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="99999" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HeV-yu-1Hk">
+                                    <rect key="frame" x="0.0" y="75" width="300" height="75"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Heavy" family="Avenir" pointSize="50"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d0l-SD-sSt" userLabel="Next Button">
-                                    <rect key="frame" x="0.0" y="315.33333333333331" width="355" height="157.66666666666669"/>
-                                    <state key="normal" image="next_button"/>
-                                    <connections>
-                                        <action selector="levelClearedNext:" destination="lds-87-3TS" eventType="touchUpInside" id="za5-rA-ADW"/>
-                                    </connections>
-                                </button>
                             </subviews>
                         </stackView>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstItem="1AM-sX-6Vz" firstAttribute="leading" secondItem="bXZ-9L-efg" secondAttribute="leading" id="qQD-vs-0ma"/>
-                        <constraint firstItem="3uI-Mg-DeX" firstAttribute="trailing" secondItem="1AM-sX-6Vz" secondAttribute="trailing" id="qky-JB-pwR"/>
-                        <constraint firstItem="1AM-sX-6Vz" firstAttribute="top" secondItem="bXZ-9L-efg" secondAttribute="top" id="vro-pi-EVb"/>
-                        <constraint firstItem="3uI-Mg-DeX" firstAttribute="bottom" secondItem="1AM-sX-6Vz" secondAttribute="bottom" id="x4o-Vz-PGk"/>
+                        <constraint firstAttribute="bottom" secondItem="DqS-IQ-Pww" secondAttribute="bottom" id="81I-zl-eRo"/>
+                        <constraint firstItem="vpL-Rs-fm4" firstAttribute="trailing" secondItem="DqS-IQ-Pww" secondAttribute="trailing" id="8KG-G0-NwN"/>
+                        <constraint firstItem="DqS-IQ-Pww" firstAttribute="leading" secondItem="vpL-Rs-fm4" secondAttribute="leading" id="Aem-TX-u5V"/>
+                        <constraint firstItem="DqS-IQ-Pww" firstAttribute="top" secondItem="vpL-Rs-fm4" secondAttribute="top" id="Vq4-EU-CUk"/>
                     </constraints>
-                    <viewLayoutGuide key="safeArea" id="3uI-Mg-DeX"/>
+                    <viewLayoutGuide key="safeArea" id="vpL-Rs-fm4"/>
                 </view>
                 <exit id="PUe-Gu-uBq" userLabel="Exit" sceneMemberID="exit"/>
                 <view hidden="YES" contentMode="scaleToFill" id="2JP-Ap-ELL" userLabel="Pause Menu View">
@@ -469,7 +459,6 @@
         <image name="game_center_button" width="70" height="70"/>
         <image name="game_menu_button_curved" width="480" height="120"/>
         <image name="levels_play_button" width="450" height="113"/>
-        <image name="next_button" width="480" height="120"/>
         <image name="rate_button" width="70" height="70"/>
         <image name="resume_button_curved" width="480" height="120"/>
         <image name="retry_button" width="480" height="120"/>

@@ -23,11 +23,10 @@ class LevelsGameController: UIViewController,
     @IBOutlet var levelLossRetryButton: UIButton!
     @IBOutlet var levelLossMenuButton: UIButton!
     
-    @IBOutlet var levelClearedView: UIView!
-    @IBOutlet var levelClearedHeaderLabel: UILabel!
-    @IBOutlet var levelClearedScoreLabel: UILabel!
-    @IBOutlet var levelClearedNextButton: UIButton!
-    
+    @IBOutlet var levelPassedView: UIView!
+    @IBOutlet var levelPassedLevelLabel: UILabel!
+    @IBOutlet var levelPassedLevelScore: UILabel!
+
     @IBOutlet var pauseMenuView: UIView!
     @IBOutlet weak var resumeButton: UIButton!
     @IBOutlet weak var gameMenuButton: UIButton!
@@ -171,7 +170,7 @@ class LevelsGameController: UIViewController,
     @IBAction func levelClearedNext(_ sender: Any) {
         let scene = self.scene as! LevelsGameScene
         scene.removeConfetti()
-        scene.removeLevelClearedScreen()
+        scene.removeLevelPassedView()
         
         // Show an interstitial ad
         if interstitialAd.isReady {
@@ -185,7 +184,7 @@ class LevelsGameController: UIViewController,
     // MARK: Level Lost Button Handlers
     @IBAction func levelLossRetry(_ sender: Any) {
         let scene = self.scene as! LevelsGameScene
-        scene.removeLevelClearedScreen()
+        scene.removeLevelPassedView()
         
         // Show an interstitial ad
         if interstitialAd.isReady {
@@ -273,8 +272,7 @@ class LevelsGameController: UIViewController,
             resumeButton.imageView?.contentMode = .scaleAspectFit
             gameMenuButton.imageView?.contentMode = .scaleAspectFit
             
-            levelClearedView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
-            levelClearedNextButton.imageView?.contentMode = .scaleAspectFit
+            levelPassedView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             
             levelLossView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             levelLossRetryButton.imageView?.contentMode = .scaleAspectFit
@@ -354,11 +352,26 @@ class LevelsGameController: UIViewController,
         gameEnded = true
         
         let scene = self.scene as! LevelsGameScene
-    
-        levelClearedHeaderLabel.text = "LEVEL \(scene.gameModel!.levelCount - 1) ✅"
-        levelClearedScoreLabel.text = "\(scene.gameModel!.cumulativeScore)"
         
-        scene.showLevelClearedScreen(levelClearedView: levelClearedView)
+        levelPassedLevelLabel.text = "Level \(scene.gameModel!.levelCount - 1)"
+        levelPassedLevelScore.text = "\(scene.gameModel!.gameScore)"
+        // If they beat their high score, let them know
+        
+        scene.showLevelPassedScreen(levelPassedView: levelPassedView)
+        
+        let _ = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { _ in
+            let scene = self.scene as! LevelsGameScene
+            scene.removeConfetti()
+            scene.removeLevelPassedView()
+            
+            // Show an interstitial ad
+            if self.interstitialAd.isReady {
+                self.interstitialAd.present(fromRootViewController: self)
+            }
+            
+            // Replay the game scene; state should have already been saved
+            self.goToGameScene()
+        }
     }
     
     // MARK: Private functions

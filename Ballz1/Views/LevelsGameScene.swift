@@ -205,7 +205,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self
         
         // XXX REMOVE ME
-        //showLevelClearedScreen(levelClearedView: gameController!.levelClearedView)
+        //showLevelPassedScreen(levelPassedView: gameController!.levelPassedView)
     }
     
     // MVC: A view function; notifies the controller of contact between two bodies
@@ -318,6 +318,8 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             controller.updateScore(score: gameScore)
         }
         
+        // The view that is displayed when the user wins starts out with an alpha of 0 (completely transparent)
+        // If this flag is set to true, the views have been added to the main view and need to fade in
         if showingUserWinView {
             // Get the blur view to fade it in
             for view in activeViews {
@@ -571,20 +573,25 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         activeViews = views
     }
     
-    public func showLevelClearedScreen(levelClearedView: UIView) {
+    public func showLevelPassedScreen(levelPassedView: UIView) {
         let blur = UIBlurEffect(style: .dark)
         let blurView = UIVisualEffectView(effect: blur)
         blurView.frame = view!.frame
         
-        let imageView = UIImageView(image: UIImage(named: "score_background_wider2"))
+        let imageView = UIImageView(image: UIImage(named: "score_background_yellow_fade"))
         // Set the center of the image to be the center of the main view
         imageView.center = view!.center
         imageView.contentMode = .scaleAspectFit
         
+        let imageView2 = UIImageView(image: UIImage(named: "imageview_background"))
+        imageView2.center = view!.center
+        imageView2.contentMode = .scaleAspectFit
+        
         // Set the alphas to 0 so we can fade it in
         blurView.alpha = 0
-        levelClearedView.alpha = 0
+        levelPassedView.alpha = 0
         imageView.alpha = 0
+        imageView2.alpha = 0
         
         // Add the blur view to the screen first
         view!.addSubview(blurView)
@@ -592,19 +599,54 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         // Add the score background image on top of the blur view but behind the level cleared view
         view!.addSubview(imageView)
         
+        // Add the background image for the labels
+        view!.addSubview(imageView2)
+        
         // Unhide the level cleared view
-        levelClearedView.isHidden = false
+        levelPassedView.isHidden = false
         
         // Add the level cleared view on top of the blur view and the level cleared view
-        view!.addSubview(levelClearedView)
+        view!.addSubview(levelPassedView)
         
         // Set a flag so that the update scene tick will fade the view in
         showingUserWinView = true
         
-        activeViews = [blurView, levelClearedView, imageView]
+        activeViews = [blurView, levelPassedView, imageView, imageView2]
+        
+        let _ = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+            self.addLevelPassedStamp()
+        }
+        
+        if gameModel!.gameScore > gameModel!.highScore {
+            let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
+                self.addHighScoreStamp()
+            }
+        }
     }
     
-    public func removeLevelClearedScreen() {
+    public func addLevelPassedStamp() {
+        let levelPassedStampView = UIImageView(image: UIImage(named: "level_passed_stamp_narrow3"))
+        levelPassedStampView.center = view!.center
+        levelPassedStampView.center.y -= 50
+        levelPassedStampView.contentMode = .scaleAspectFit
+        
+        view!.addSubview(levelPassedStampView)
+        
+        activeViews.append(levelPassedStampView)
+    }
+    
+    public func addHighScoreStamp() {
+        let highScoreStamp = UIImageView(image: UIImage(named: "high_score_stamp_narrow"))
+        highScoreStamp.center = view!.center
+        highScoreStamp.center.y -= 50
+        highScoreStamp.contentMode = .scaleAspectFit
+        
+        view!.addSubview(highScoreStamp)
+        
+        activeViews.append(highScoreStamp)
+    }
+
+    public func removeLevelPassedView() {
         let views = activeViews.filter {
             $0.removeFromSuperview()
             return false
@@ -652,7 +694,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
     public func removeConfetti() {
         // Clear the sublayer with the confetti
-        print("Attemping to remove confetti sublayer")
         if let layers = view!.layer.sublayers {
             for layer in layers {
                 if let name = layer.name {
