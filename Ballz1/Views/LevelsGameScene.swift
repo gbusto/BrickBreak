@@ -267,7 +267,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                                                            touchPoint: point,
                                                            ceilingHeight: ceilingNode!.position.y,
                                                            groundHeight: groundNode!.size.height)
-                gameModel!.prepareTurn(point: firePoint)
+                shootBalls(point: firePoint)
             }
         }
         
@@ -443,24 +443,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                 // Handle ball return gesture
                 gameModel!.endTurn()
                 swipedDown = false
-            }
-            
-            // Shoot a ball with a delay count of ticksDelay
-            // This code is still pretty ugly and can probably be cleaned up
-            if numTicks >= ticksDelay {
-                if gameModel!.shootBall() {
-                    currentBallCount -= 1
-                    if 0 == currentBallCount {
-                        removeBallCountLabel()
-                    }
-                    else {
-                        updateBallCountLabel()
-                    }
-                }
-                numTicks = 0
-            }
-            else {
-                numTicks += 1
             }
             
             // Allow the model to handle a turn
@@ -776,6 +758,25 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         // actionsStarted or animteItems() should only be allowed to be called once and ignored while items are in motion
         // Move the items down in the view
         //animateItems()
+    }
+    
+    private func shootBalls(point: CGPoint) {
+        gameModel!.prepareTurn(point: point)
+        let _ = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+            if self.gameModel!.shootBall() {
+                self.currentBallCount -= 1
+                
+                if 0 == self.currentBallCount {
+                    self.removeBallCountLabel()
+                }
+                else {
+                    self.updateBallCountLabel()
+                }
+            }
+            else {
+                timer.invalidate()
+            }
+        }
     }
     
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
