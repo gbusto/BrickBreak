@@ -613,19 +613,19 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
         activeViews = [blurView, levelPassedView, imageView, imageView2]
         
-        let _ = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+        let _ = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
             self.addLevelPassedStamp()
         }
         
         if gameModel!.gameScore > gameModel!.highScore {
-            let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
+            let _ = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: false) { _ in
                 self.addHighScoreStamp()
             }
         }
     }
     
     public func addLevelPassedStamp() {
-        let levelPassedStampView = UIImageView(image: UIImage(named: "level_passed_stamp_narrow3"))
+        let levelPassedStampView = UIImageView(image: UIImage(named: "level_passed_stamp_largest"))
         levelPassedStampView.center = view!.center
         levelPassedStampView.center.y -= 50
         levelPassedStampView.contentMode = .scaleAspectFit
@@ -636,7 +636,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func addHighScoreStamp() {
-        let highScoreStamp = UIImageView(image: UIImage(named: "high_score_stamp_narrow"))
+        let highScoreStamp = UIImageView(image: UIImage(named: "new_high_score_stamp"))
         highScoreStamp.center = view!.center
         highScoreStamp.center.y -= 50
         highScoreStamp.contentMode = .scaleAspectFit
