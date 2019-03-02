@@ -37,6 +37,8 @@ class LevelsGameController: UIViewController,
     
     private var rewardAdViewController: RewardAdViewController!
     
+    private var userWasRewarded = false
+    
     private var leaveGame = false
     private var gameEnded = false
     
@@ -125,6 +127,7 @@ class LevelsGameController: UIViewController,
         // User was rewarded
         let scene = self.scene as! LevelsGameScene
         scene.saveUser()
+        userWasRewarded = true
     }
     
     public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
@@ -137,6 +140,11 @@ class LevelsGameController: UIViewController,
         if let view = self.view as! SKView? {
             scene.isPaused = false
             view.isPaused = false
+        }
+        
+        if false == userWasRewarded {
+            // Show the level loss screen because the user skipped the reward ad
+            scene.showLevelLossScreen(levelLossView: self.levelLossView)
         }
     }
     
@@ -261,6 +269,9 @@ class LevelsGameController: UIViewController,
         // Reset the level score
         levelScore.text = "0"
         
+        // Reset this boolean
+        userWasRewarded = false
+        
         if let view = self.view as! SKView? {
             let scene = LevelsGameScene(size: view.bounds.size)
             self.scene = scene
@@ -318,10 +329,14 @@ class LevelsGameController: UIViewController,
         }
         
         if false == GADRewardBasedVideoAd.sharedInstance().isReady {
+            print("Reward ad isn't ready...")
             // If we failed to load a reward ad, don't allow the user to save themselves
             let scene = self.scene as! LevelsGameScene
             scene.showLevelLossScreen(levelLossView: levelLossView)
             return
+        }
+        else {
+            print("Reward ad is ready")
         }
         
         let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
