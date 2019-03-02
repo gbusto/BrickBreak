@@ -12,6 +12,7 @@ import UIKit
 import GameKit
 import SpriteKit
 import GameplayKit
+import AVFoundation
 
 class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     @IBOutlet weak var titleLabel: UILabel!
@@ -106,6 +107,14 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     override func viewDidAppear(_ animated: Bool) {
         // Authenticate the player and submit their high score
         authenticatePlayer()
+        
+        // Allow background music/apps to keep playing
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: .defaultToSpeaker)
+        }
+        catch let error as NSError {
+            print("AVAudioSession error: \(error)")
+        }
     }
     
     override func viewDidLoad() {
