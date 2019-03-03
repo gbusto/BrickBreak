@@ -595,13 +595,14 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
         activeViews = [blurView, levelPassedView, imageView, imageView2]
         
-        let _ = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
-            self.addLevelPassedStamp()
-        }
-        
         if gameModel!.gameScore > gameModel!.highScore {
-            let _ = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: false) { _ in
+            let _ = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
                 self.addHighScoreStamp()
+            }
+        }
+        else {
+            let _ = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
+                self.addLevelPassedStamp()
             }
         }
     }
