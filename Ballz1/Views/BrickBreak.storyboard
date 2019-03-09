@@ -22,7 +22,7 @@
                                 <rect key="frame" x="20" y="20" width="374" height="616"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Brick Break" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="40" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xH8-wW-N8G">
-                                        <rect key="frame" x="13.333333333333343" y="0.0" width="347.66666666666663" height="359.66666666666669"/>
+                                        <rect key="frame" x="13.333333333333343" y="0.0" width="347.66666666666663" height="254.66666666666666"/>
                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="200"/>
                                         <color key="textColor" red="0.70008618342942719" green="0.93547368049621582" blue="0.76215052610718903" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
@@ -30,10 +30,10 @@
                                         <size key="shadowOffset" width="3" height="3"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="jcc-nl-bVB">
-                                        <rect key="frame" x="0.0" y="409.66666666666669" width="374" height="206.33333333333331"/>
+                                        <rect key="frame" x="0.0" y="304.66666666666674" width="374" height="311.33333333333326"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0b5-Nx-3KM">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="68.666666666666671"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="103.66666666666667"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" image="classic_play_button">
@@ -46,7 +46,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SIu-eg-Tou" userLabel="Levels Button">
-                                                <rect key="frame" x="0.0" y="68.666666666666629" width="374" height="69"/>
+                                                <rect key="frame" x="0.0" y="103.66666666666663" width="374" height="104"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" image="levels_play_button">
@@ -60,17 +60,17 @@
                                                 </connections>
                                             </button>
                                             <stackView opaque="NO" contentMode="scaleAspectFit" alignment="center" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="nqw-bE-Rpn">
-                                                <rect key="frame" x="112.66666666666666" y="137.66666666666669" width="148.99999999999997" height="68.666666666666686"/>
+                                                <rect key="frame" x="112.66666666666666" y="207.66666666666666" width="148.99999999999997" height="103.66666666666666"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleAspectFit" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kUv-85-qmg">
-                                                        <rect key="frame" x="0.0" y="0.0" width="70" height="68.666666666666671"/>
+                                                        <rect key="frame" x="0.0" y="16.666666666666629" width="70" height="70"/>
                                                         <state key="normal" image="game_center_button"/>
                                                         <connections>
                                                             <action selector="showGameCenter:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="0nK-I9-ow9"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7cD-I5-EAq">
-                                                        <rect key="frame" x="79" y="0.0" width="70" height="68.666666666666671"/>
+                                                        <rect key="frame" x="79" y="16.666666666666629" width="70" height="70"/>
                                                         <state key="normal" image="rate_button"/>
                                                         <connections>
                                                             <action selector="goToAppStore:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="Frp-1B-WWW"/>
@@ -295,13 +295,10 @@
                     <connections>
                         <outlet property="bannerAdView" destination="nxt-hu-S3v" id="0jh-dg-iAh"/>
                         <outlet property="gameMenuButton" destination="EpW-pu-3Ya" id="gxf-vg-iHo"/>
+                        <outlet property="gameOverLevelCount" destination="sch-9a-iJz" id="KKS-60-ija"/>
+                        <outlet property="gameOverLevelScore" destination="HeV-yu-1Hk" id="Y3C-K1-yoM"/>
+                        <outlet property="gameOverView" destination="eNe-4N-TTQ" id="BwE-R3-KYC"/>
                         <outlet property="levelCount" destination="djQ-6i-xDb" id="3Gk-Bb-C5C"/>
-                        <outlet property="levelLossMenuButton" destination="EpV-wp-W73" id="hRm-hw-dSO"/>
-                        <outlet property="levelLossRetryButton" destination="cky-AB-dwc" id="5iQ-Zq-QW7"/>
-                        <outlet property="levelLossView" destination="ouj-1h-Bbz" id="MoW-HE-JW3"/>
-                        <outlet property="levelPassedLevelLabel" destination="sch-9a-iJz" id="jA6-wT-kzN"/>
-                        <outlet property="levelPassedLevelScore" destination="HeV-yu-1Hk" id="EGw-Hc-NAE"/>
-                        <outlet property="levelPassedView" destination="eNe-4N-TTQ" id="CPA-b8-H9s"/>
                         <outlet property="levelScore" destination="wRS-np-rfH" id="X7e-6K-z8T"/>
                         <outlet property="pauseMenuView" destination="2JP-Ap-ELL" id="SgA-98-7Q1"/>
                         <outlet property="resumeButton" destination="VAa-BZ-zCG" id="bmv-o3-RLI"/>
@@ -310,45 +307,6 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1KH-mO-FvK" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <view hidden="YES" contentMode="scaleToFill" id="ouj-1h-Bbz">
-                    <rect key="frame" x="0.0" y="0.0" width="270" height="250"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="a0T-Md-eHm">
-                            <rect key="frame" x="0.0" y="0.0" width="270" height="250"/>
-                            <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lose 😑" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wIZ-4t-ge3">
-                                    <rect key="frame" x="0.0" y="0.0" width="270" height="83.333333333333329"/>
-                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="66"/>
-                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <color key="highlightedColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </label>
-                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cky-AB-dwc" userLabel="Retry Button">
-                                    <rect key="frame" x="0.0" y="83.333333333333343" width="270" height="83.333333333333343"/>
-                                    <state key="normal" image="retry_button"/>
-                                    <connections>
-                                        <action selector="levelLossRetry:" destination="lds-87-3TS" eventType="touchUpInside" id="ylU-eS-CnH"/>
-                                    </connections>
-                                </button>
-                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EpV-wp-W73" userLabel="Game Menu Button">
-                                    <rect key="frame" x="0.0" y="166.66666666666666" width="270" height="83.333333333333343"/>
-                                    <state key="normal" image="game_menu_button_curved"/>
-                                    <connections>
-                                        <action selector="levelLossGameMenu:" destination="lds-87-3TS" eventType="touchUpInside" id="qhR-vw-9AN"/>
-                                    </connections>
-                                </button>
-                            </subviews>
-                        </stackView>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstItem="a0T-Md-eHm" firstAttribute="top" secondItem="TNZ-nx-P91" secondAttribute="top" id="O6w-UO-OLm"/>
-                        <constraint firstItem="TNZ-nx-P91" firstAttribute="trailing" secondItem="a0T-Md-eHm" secondAttribute="trailing" id="Pka-n7-J47"/>
-                        <constraint firstItem="a0T-Md-eHm" firstAttribute="leading" secondItem="TNZ-nx-P91" secondAttribute="leading" id="WIm-LE-lre"/>
-                        <constraint firstAttribute="bottom" secondItem="a0T-Md-eHm" secondAttribute="bottom" id="rhy-NM-PrG"/>
-                    </constraints>
-                    <viewLayoutGuide key="safeArea" id="TNZ-nx-P91"/>
-                </view>
                 <view hidden="YES" contentMode="scaleToFill" id="eNe-4N-TTQ">
                     <rect key="frame" x="0.0" y="0.0" width="300" height="150"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -461,7 +419,6 @@
         <image name="levels_play_button" width="450" height="113"/>
         <image name="rate_button" width="70" height="70"/>
         <image name="resume_button_curved" width="480" height="120"/>
-        <image name="retry_button" width="480" height="120"/>
         <image name="undo_button" width="300" height="300"/>
     </resources>
 </document>

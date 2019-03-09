@@ -19,13 +19,9 @@ class LevelsGameController: UIViewController,
     @IBOutlet weak var levelScore: UILabel!
     @IBOutlet var rowCountLabel: UILabel!
     
-    @IBOutlet var levelLossView: UIView!
-    @IBOutlet var levelLossRetryButton: UIButton!
-    @IBOutlet var levelLossMenuButton: UIButton!
-    
-    @IBOutlet var levelPassedView: UIView!
-    @IBOutlet var levelPassedLevelLabel: UILabel!
-    @IBOutlet var levelPassedLevelScore: UILabel!
+    @IBOutlet var gameOverView: UIView!
+    @IBOutlet var gameOverLevelCount: UILabel!
+    @IBOutlet var gameOverLevelScore: UILabel!
 
     @IBOutlet var pauseMenuView: UIView!
     @IBOutlet weak var resumeButton: UIButton!
@@ -144,7 +140,7 @@ class LevelsGameController: UIViewController,
         
         if false == userWasRewarded {
             // Show the level loss screen because the user skipped the reward ad
-            scene.showLevelLossScreen(levelLossView: self.levelLossView)
+            gameOver(win: false)
         }
     }
     
@@ -164,46 +160,6 @@ class LevelsGameController: UIViewController,
     }
     
     @IBAction func gameMenuButtonPressed(_ sender: Any) {
-        // Show an interstitial ad here
-        if interstitialAd.isReady {
-            leaveGame = true
-            interstitialAd.present(fromRootViewController: self)
-        }
-        else {
-            returnToMenu()
-        }
-    }
-    
-    // MARK: Level Cleared Button Handlers
-    @IBAction func levelClearedNext(_ sender: Any) {
-        let scene = self.scene as! LevelsGameScene
-        scene.removeConfetti()
-        scene.removeLevelPassedView()
-        
-        // Show an interstitial ad
-        if interstitialAd.isReady {
-            interstitialAd.present(fromRootViewController: self)
-        }
-        
-        // Replay the game scene; state should have already been saved
-        goToGameScene()
-    }
-    
-    // MARK: Level Lost Button Handlers
-    @IBAction func levelLossRetry(_ sender: Any) {
-        let scene = self.scene as! LevelsGameScene
-        scene.removeLevelPassedView()
-        
-        // Show an interstitial ad
-        if interstitialAd.isReady {
-            interstitialAd.present(fromRootViewController: self)
-        }
-        
-        // Replay the game scene; state should have already been saved
-        goToGameScene()
-    }
-   
-    @IBAction func levelLossGameMenu(_ sender: Any) {
         // Show an interstitial ad here
         if interstitialAd.isReady {
             leaveGame = true
@@ -283,11 +239,7 @@ class LevelsGameController: UIViewController,
             resumeButton.imageView?.contentMode = .scaleAspectFit
             gameMenuButton.imageView?.contentMode = .scaleAspectFit
             
-            levelPassedView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
-            
-            levelLossView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
-            levelLossRetryButton.imageView?.contentMode = .scaleAspectFit
-            levelLossMenuButton.imageView?.contentMode = .scaleAspectFit
+            gameOverView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             
             view.presentScene(scene)
             view.ignoresSiblingOrder = true
@@ -316,23 +268,20 @@ class LevelsGameController: UIViewController,
         
         if scene.gameModel!.savedUser {
             // If the user has already been saved, return to the game menu
-            let scene = self.scene as! LevelsGameScene
-            scene.showLevelLossScreen(levelLossView: levelLossView)
+            gameOver(win: false)
             return
         }
         
         if scene.gameModel!.getActualRowCount() <= 4 {
             // If the user loses and there are only 4 rows on the screen, don't save them. They need to restart the level
-            let scene = self.scene as! LevelsGameScene
-            scene.showLevelLossScreen(levelLossView: levelLossView)
+            gameOver(win: false)
             return
         }
         
         if false == GADRewardBasedVideoAd.sharedInstance().isReady {
             print("Reward ad isn't ready...")
             // If we failed to load a reward ad, don't allow the user to save themselves
-            let scene = self.scene as! LevelsGameScene
-            scene.showLevelLossScreen(levelLossView: levelLossView)
+            gameOver(win: false)
             return
         }
         else {
@@ -353,8 +302,7 @@ class LevelsGameController: UIViewController,
         }
         let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
             // User doesn't want to watch an ad
-            let scene = self.scene as! LevelsGameScene
-            scene.showLevelLossScreen(levelLossView: self.levelLossView)
+            self.gameOver(win: false)
         }
         
         alert.addAction(yesAction)
@@ -363,7 +311,7 @@ class LevelsGameController: UIViewController,
         present(alert, animated: false, completion: nil)
     }
     
-    public func gameOverWin() {
+    public func gameOver(win: Bool) {
         gameEnded = true
         
         let scene = self.scene as! LevelsGameScene
@@ -374,20 +322,29 @@ class LevelsGameController: UIViewController,
             .strokeWidth: -1.0,
         ]
         
-        //levelPassedLevelLabel.text = "Level \(scene.gameModel!.levelCount - 1)"
-        //levelPassedLevelScore.text = "\(scene.gameModel!.gameScore)"
+        var currentLevelCount = scene.gameModel!.levelCount
+        if win {
+            // At this point in the logic, if the user won then the level count will have incremented by 1
+            // We want to show them the level they just beat/lost
+            currentLevelCount -= 1
+        }
         
-        levelPassedLevelLabel.attributedText = NSAttributedString(string: "Level \(scene.gameModel!.levelCount - 1)", attributes: strokeTextAttributes)
-        levelPassedLevelScore.attributedText = NSAttributedString(string: "\(scene.gameModel!.gameScore)", attributes: strokeTextAttributes)
+        gameOverLevelCount.attributedText = NSAttributedString(string: "Level \(currentLevelCount)",
+            attributes: strokeTextAttributes)
+        gameOverLevelScore.attributedText = NSAttributedString(string: "\(scene.gameModel!.gameScore)",
+            attributes: strokeTextAttributes)
         
         // If they beat their high score, let them know
         
-        scene.showLevelPassedScreen(levelPassedView: levelPassedView)
+        scene.showGameOverView(win: win, gameOverView: gameOverView)
         
         let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
             let scene = self.scene as! LevelsGameScene
-            scene.removeConfetti()
-            scene.removeLevelPassedView()
+            if win {
+                // We only want to remove the confetti if the user won
+                scene.removeConfetti()
+            }
+            scene.removeGameOverView()
             
             // Show an interstitial ad
             if self.interstitialAd.isReady {
