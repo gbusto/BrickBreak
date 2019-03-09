@@ -63,7 +63,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
     private var showedConfetti = false
     
-    private var showingUserWinView = false
+    private var showingGameOverView = false
     
     // This is to keep track of the number of broken hit blocks in a given turn
     private var brokenHitBlockCount: Int = 0
@@ -320,7 +320,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
         // The view that is displayed when the user wins starts out with an alpha of 0 (completely transparent)
         // If this flag is set to true, the views have been added to the main view and need to fade in
-        if showingUserWinView {
+        if showingGameOverView {
             // Get the blur view to fade it in
             for view in activeViews {
                 if view.alpha <= 1 {
@@ -328,7 +328,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 else {
                     // Once it's been faded in, stop it from messing with the alpha
-                    showingUserWinView = false
+                    showingGameOverView = false
                 }
             }
         }
@@ -555,7 +555,12 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         activeViews = views
     }
     
-    public func showLevelPassedScreen(gameOverView: UIView) {
+    public func showGameOverView(win: Bool, gameOverView: UIView) {
+        if view!.isPaused {
+            // Unpause the view if it's paused so we can update it with the user win/loss view
+            view!.isPaused = false
+        }
+        
         let blur = UIBlurEffect(style: .dark)
         let blurView = UIVisualEffectView(effect: blur)
         blurView.frame = view!.frame
@@ -591,24 +596,42 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         view!.addSubview(gameOverView)
         
         // Set a flag so that the update scene tick will fade the view in
-        showingUserWinView = true
+        showingGameOverView = true
         
         activeViews = [blurView, gameOverView, imageView, imageView2]
         
-        if gameModel!.gameScore > gameModel!.highScore {
-            let _ = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
-                self.addHighScoreStamp()
+        if win {
+            if gameModel!.gameScore > gameModel!.highScore {
+                let _ = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
+                    self.addHighScoreStamp()
+                }
+            }
+            else {
+                let _ = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
+                    self.addLevelPassedStamp()
+                }
             }
         }
         else {
             let _ = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
-                self.addLevelPassedStamp()
+                self.addLevelFailedStamp()
             }
         }
     }
     
     public func addLevelPassedStamp() {
         let levelPassedStampView = UIImageView(image: UIImage(named: "level_passed_narrow4"))
+        levelPassedStampView.center = view!.center
+        levelPassedStampView.center.y -= 70
+        levelPassedStampView.contentMode = .scaleAspectFit
+        
+        view!.addSubview(levelPassedStampView)
+        
+        activeViews.append(levelPassedStampView)
+    }
+    
+    public func addLevelFailedStamp() {
+        let levelPassedStampView = UIImageView(image: UIImage(named: "level_failed_narrow4"))
         levelPassedStampView.center = view!.center
         levelPassedStampView.center.y -= 70
         levelPassedStampView.contentMode = .scaleAspectFit
@@ -638,16 +661,16 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         activeViews = views
     }
     
-    public func showLevelLossScreen(levelLossView: UIView) {
+    public func showLevelLossScreen(gameOverView: UIView) {
         let blur = UIBlurEffect(style: .dark)
         let blurView = UIVisualEffectView(effect: blur)
         blurView.frame = view!.frame
         view!.addSubview(blurView)
         
-        levelLossView.isHidden = false
-        view!.addSubview(levelLossView)
+        gameOverView.isHidden = false
+        view!.addSubview(gameOverView)
         
-        activeViews = [blurView, levelLossView]
+        activeViews = [blurView, gameOverView]
     }
     
     public func gameOverLoss() {
@@ -662,7 +685,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         gameModel!.saveState()
         
         if let controller = gameController {
-            controller.gameOverWin()
+            controller.gameOver(win: true)
         }
     }
     
