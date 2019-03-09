@@ -555,7 +555,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         activeViews = views
     }
     
-    public func showLevelPassedScreen(levelPassedView: UIView) {
+    public func showLevelPassedScreen(gameOverView: UIView) {
         let blur = UIBlurEffect(style: .dark)
         let blurView = UIVisualEffectView(effect: blur)
         blurView.frame = view!.frame
@@ -571,7 +571,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
         // Set the alphas to 0 so we can fade it in
         blurView.alpha = 0
-        levelPassedView.alpha = 0
+        gameOverView.alpha = 0
         imageView.alpha = 0
         imageView2.alpha = 0
         
@@ -585,15 +585,15 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         view!.addSubview(imageView2)
         
         // Unhide the level cleared view
-        levelPassedView.isHidden = false
+        gameOverView.isHidden = false
         
         // Add the level cleared view on top of the blur view and the level cleared view
-        view!.addSubview(levelPassedView)
+        view!.addSubview(gameOverView)
         
         // Set a flag so that the update scene tick will fade the view in
         showingUserWinView = true
         
-        activeViews = [blurView, levelPassedView, imageView, imageView2]
+        activeViews = [blurView, gameOverView, imageView, imageView2]
         
         if gameModel!.gameScore > gameModel!.highScore {
             let _ = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
@@ -628,8 +628,8 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
         activeViews.append(highScoreStamp)
     }
-
-    public func removeLevelPassedView() {
+    
+    public func removeGameOverView() {
         let views = activeViews.filter {
             $0.removeFromSuperview()
             return false
@@ -648,15 +648,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         view!.addSubview(levelLossView)
         
         activeViews = [blurView, levelLossView]
-    }
-    
-    public func removeLevelLossScreen() {
-        let views = activeViews.filter {
-            $0.removeFromSuperview()
-            return false
-        }
-        
-        activeViews = views
     }
     
     public func gameOverLoss() {

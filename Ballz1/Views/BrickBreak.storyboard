@@ -295,13 +295,13 @@
                     <connections>
                         <outlet property="bannerAdView" destination="nxt-hu-S3v" id="0jh-dg-iAh"/>
                         <outlet property="gameMenuButton" destination="EpW-pu-3Ya" id="gxf-vg-iHo"/>
+                        <outlet property="gameOverLevelCount" destination="sch-9a-iJz" id="KKS-60-ija"/>
+                        <outlet property="gameOverLevelScore" destination="HeV-yu-1Hk" id="Y3C-K1-yoM"/>
+                        <outlet property="gameOverView" destination="eNe-4N-TTQ" id="BwE-R3-KYC"/>
                         <outlet property="levelCount" destination="djQ-6i-xDb" id="3Gk-Bb-C5C"/>
                         <outlet property="levelLossMenuButton" destination="EpV-wp-W73" id="hRm-hw-dSO"/>
                         <outlet property="levelLossRetryButton" destination="cky-AB-dwc" id="5iQ-Zq-QW7"/>
                         <outlet property="levelLossView" destination="ouj-1h-Bbz" id="MoW-HE-JW3"/>
-                        <outlet property="levelPassedLevelLabel" destination="sch-9a-iJz" id="jA6-wT-kzN"/>
-                        <outlet property="levelPassedLevelScore" destination="HeV-yu-1Hk" id="EGw-Hc-NAE"/>
-                        <outlet property="levelPassedView" destination="eNe-4N-TTQ" id="CPA-b8-H9s"/>
                         <outlet property="levelScore" destination="wRS-np-rfH" id="X7e-6K-z8T"/>
                         <outlet property="pauseMenuView" destination="2JP-Ap-ELL" id="SgA-98-7Q1"/>
                         <outlet property="resumeButton" destination="VAa-BZ-zCG" id="bmv-o3-RLI"/>

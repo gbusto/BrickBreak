@@ -19,13 +19,13 @@ class LevelsGameController: UIViewController,
     @IBOutlet weak var levelScore: UILabel!
     @IBOutlet var rowCountLabel: UILabel!
     
+    @IBOutlet var gameOverView: UIView!
+    @IBOutlet var gameOverLevelCount: UILabel!
+    @IBOutlet var gameOverLevelScore: UILabel!
+    
     @IBOutlet var levelLossView: UIView!
     @IBOutlet var levelLossRetryButton: UIButton!
     @IBOutlet var levelLossMenuButton: UIButton!
-    
-    @IBOutlet var levelPassedView: UIView!
-    @IBOutlet var levelPassedLevelLabel: UILabel!
-    @IBOutlet var levelPassedLevelScore: UILabel!
 
     @IBOutlet var pauseMenuView: UIView!
     @IBOutlet weak var resumeButton: UIButton!
@@ -178,7 +178,7 @@ class LevelsGameController: UIViewController,
     @IBAction func levelClearedNext(_ sender: Any) {
         let scene = self.scene as! LevelsGameScene
         scene.removeConfetti()
-        scene.removeLevelPassedView()
+        scene.removeGameOverView()
         
         // Show an interstitial ad
         if interstitialAd.isReady {
@@ -192,7 +192,7 @@ class LevelsGameController: UIViewController,
     // MARK: Level Lost Button Handlers
     @IBAction func levelLossRetry(_ sender: Any) {
         let scene = self.scene as! LevelsGameScene
-        scene.removeLevelPassedView()
+        scene.removeGameOverView()
         
         // Show an interstitial ad
         if interstitialAd.isReady {
@@ -283,7 +283,7 @@ class LevelsGameController: UIViewController,
             resumeButton.imageView?.contentMode = .scaleAspectFit
             gameMenuButton.imageView?.contentMode = .scaleAspectFit
             
-            levelPassedView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
+            gameOverView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             
             levelLossView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             levelLossRetryButton.imageView?.contentMode = .scaleAspectFit
@@ -374,20 +374,17 @@ class LevelsGameController: UIViewController,
             .strokeWidth: -1.0,
         ]
         
-        //levelPassedLevelLabel.text = "Level \(scene.gameModel!.levelCount - 1)"
-        //levelPassedLevelScore.text = "\(scene.gameModel!.gameScore)"
-        
-        levelPassedLevelLabel.attributedText = NSAttributedString(string: "Level \(scene.gameModel!.levelCount - 1)", attributes: strokeTextAttributes)
-        levelPassedLevelScore.attributedText = NSAttributedString(string: "\(scene.gameModel!.gameScore)", attributes: strokeTextAttributes)
+        gameOverLevelCount.attributedText = NSAttributedString(string: "Level \(scene.gameModel!.levelCount - 1)", attributes: strokeTextAttributes)
+        gameOverLevelScore.attributedText = NSAttributedString(string: "\(scene.gameModel!.gameScore)", attributes: strokeTextAttributes)
         
         // If they beat their high score, let them know
         
-        scene.showLevelPassedScreen(levelPassedView: levelPassedView)
+        scene.showLevelPassedScreen(gameOverView: gameOverView)
         
         let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
             let scene = self.scene as! LevelsGameScene
             scene.removeConfetti()
-            scene.removeLevelPassedView()
+            scene.removeGameOverView()
             
             // Show an interstitial ad
             if self.interstitialAd.isReady {
