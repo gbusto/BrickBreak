@@ -619,7 +619,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func addHighScoreStamp() {
-        let highScoreStamp = UIImageView(image: UIImage(named: "new_high_score_stamp4"))
+        let highScoreStamp = UIImageView(image: UIImage(named: "high_score_narrow4"))
         highScoreStamp.center = view!.center
         highScoreStamp.center.y -= 70
         highScoreStamp.contentMode = .scaleAspectFit
