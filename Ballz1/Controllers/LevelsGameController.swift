@@ -22,10 +22,6 @@ class LevelsGameController: UIViewController,
     @IBOutlet var gameOverView: UIView!
     @IBOutlet var gameOverLevelCount: UILabel!
     @IBOutlet var gameOverLevelScore: UILabel!
-    
-    @IBOutlet var levelLossView: UIView!
-    @IBOutlet var levelLossRetryButton: UIButton!
-    @IBOutlet var levelLossMenuButton: UIButton!
 
     @IBOutlet var pauseMenuView: UIView!
     @IBOutlet weak var resumeButton: UIButton!
@@ -174,46 +170,6 @@ class LevelsGameController: UIViewController,
         }
     }
     
-    // MARK: Level Cleared Button Handlers
-    @IBAction func levelClearedNext(_ sender: Any) {
-        let scene = self.scene as! LevelsGameScene
-        scene.removeConfetti()
-        scene.removeGameOverView()
-        
-        // Show an interstitial ad
-        if interstitialAd.isReady {
-            interstitialAd.present(fromRootViewController: self)
-        }
-        
-        // Replay the game scene; state should have already been saved
-        goToGameScene()
-    }
-    
-    // MARK: Level Lost Button Handlers
-    @IBAction func levelLossRetry(_ sender: Any) {
-        let scene = self.scene as! LevelsGameScene
-        scene.removeGameOverView()
-        
-        // Show an interstitial ad
-        if interstitialAd.isReady {
-            interstitialAd.present(fromRootViewController: self)
-        }
-        
-        // Replay the game scene; state should have already been saved
-        goToGameScene()
-    }
-   
-    @IBAction func levelLossGameMenu(_ sender: Any) {
-        // Show an interstitial ad here
-        if interstitialAd.isReady {
-            leaveGame = true
-            interstitialAd.present(fromRootViewController: self)
-        }
-        else {
-            returnToMenu()
-        }
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Prepare for a segue
     }
@@ -284,10 +240,6 @@ class LevelsGameController: UIViewController,
             gameMenuButton.imageView?.contentMode = .scaleAspectFit
             
             gameOverView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
-            
-            levelLossView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
-            levelLossRetryButton.imageView?.contentMode = .scaleAspectFit
-            levelLossMenuButton.imageView?.contentMode = .scaleAspectFit
             
             view.presentScene(scene)
             view.ignoresSiblingOrder = true
