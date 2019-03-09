@@ -608,9 +608,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func addLevelPassedStamp() {
-        let levelPassedStampView = UIImageView(image: UIImage(named: "level_passed_stamp_largest"))
+        let levelPassedStampView = UIImageView(image: UIImage(named: "level_passed_narrow4"))
         levelPassedStampView.center = view!.center
-        levelPassedStampView.center.y -= 50
+        levelPassedStampView.center.y -= 70
         levelPassedStampView.contentMode = .scaleAspectFit
         
         view!.addSubview(levelPassedStampView)
@@ -619,9 +619,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func addHighScoreStamp() {
-        let highScoreStamp = UIImageView(image: UIImage(named: "new_high_score_stamp"))
+        let highScoreStamp = UIImageView(image: UIImage(named: "new_high_score_stamp4"))
         highScoreStamp.center = view!.center
-        highScoreStamp.center.y -= 50
+        highScoreStamp.center.y -= 70
         highScoreStamp.contentMode = .scaleAspectFit
         
         view!.addSubview(highScoreStamp)

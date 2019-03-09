@@ -368,8 +368,18 @@ class LevelsGameController: UIViewController,
         
         let scene = self.scene as! LevelsGameScene
         
-        levelPassedLevelLabel.text = "Level \(scene.gameModel!.levelCount - 1)"
-        levelPassedLevelScore.text = "\(scene.gameModel!.gameScore)"
+        let strokeTextAttributes: [NSAttributedString.Key: Any] = [
+            .strokeColor: UIColor.white,
+            .foregroundColor: UIColor.black,
+            .strokeWidth: -1.0,
+        ]
+        
+        //levelPassedLevelLabel.text = "Level \(scene.gameModel!.levelCount - 1)"
+        //levelPassedLevelScore.text = "\(scene.gameModel!.gameScore)"
+        
+        levelPassedLevelLabel.attributedText = NSAttributedString(string: "Level \(scene.gameModel!.levelCount - 1)", attributes: strokeTextAttributes)
+        levelPassedLevelScore.attributedText = NSAttributedString(string: "\(scene.gameModel!.gameScore)", attributes: strokeTextAttributes)
+        
         // If they beat their high score, let them know
         
         scene.showLevelPassedScreen(levelPassedView: levelPassedView)
