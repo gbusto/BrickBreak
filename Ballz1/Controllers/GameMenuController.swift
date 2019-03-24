@@ -196,20 +196,27 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             else {
                 if let userScores = scores {
                     print("Got user score: \(userScores[0].value)")
+                    
+                    // Get the user's high score saved to disk
+                    let highScore = self.loadHighScore()
+                    // Get the user's high score from the game center
+                    let score = userScores[0].value
+                    
+                    var submitScore = Int64(highScore)
+                    if score > highScore {
+                        submitScore = score
+                    }
+                    
+                    // Report the game score to the game center
+                    let gkscore = GKScore(leaderboardIdentifier: self.LEADERBOARD_ID, player: self.localPlayer!)
+                    gkscore.value = Int64(submitScore)
+                    GKScore.report([gkscore]) { (error) in
+                        if error != nil {
+                            print("Error reporting score: \(error!)")
+                        }
+                    }
                 }
             }
         })
-        
-        // Try to get the player's high score from storage
-        let highScore = loadHighScore()
-        
-        // Report the game score to the game center
-        let gkscore = GKScore(leaderboardIdentifier: LEADERBOARD_ID, player: localPlayer!)
-        gkscore.value = Int64(highScore)
-        GKScore.report([gkscore]) { (error) in
-            if error != nil {
-                print("Error reporting score: \(error!)")
-            }
-        }
     }
 }
