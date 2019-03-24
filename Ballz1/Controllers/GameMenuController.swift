@@ -79,6 +79,24 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                         // When the first score is reported to a leaderboard, that board is now the default one
                         self.gcDefaultLeaderBoard = leaderboardIdentifier!
                         
+                        // Get the user's instance of the leaderboard to retrieve their scores
+                        let leaderBoard = GKLeaderboard(players: [localPlayer])
+                        // Set the identifier so it knows what leaderboard to check
+                        leaderBoard.identifier = self.gcDefaultLeaderBoard
+                        // Set the time scopre for the score to return (we just set this to all time to go back to the very beginning of time)
+                        leaderBoard.timeScope = .allTime
+                        
+                        leaderBoard.loadScores(completionHandler: {(scores, error) -> Void in
+                            if error != nil {
+                                print("Error loading scores: \(error)")
+                            }
+                            else {
+                                if let userScores = scores {
+                                    print("Got user score: \(userScores[0].value)")
+                                }
+                            }
+                        })
+                        
                         // Try to get the player's high score from storage
                         let highScore = self.loadHighScore()
                         
