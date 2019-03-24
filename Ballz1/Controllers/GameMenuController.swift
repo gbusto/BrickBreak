@@ -42,6 +42,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         }
     }
     
+    // Get the user's high score from disk
     func loadHighScore() -> Int {
         do {
             let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
@@ -52,6 +53,29 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         catch {
             print("Error decoding persistent game state: \(error)")
             return 0
+        }
+    }
+    
+    // Update the user's high score locally (when game center has a higher score on record than is on disk)
+    func updateHighScore(score: Int64) {
+        do {
+            // Bail out if the path to the persistent data doesn't exist
+            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.AppDirURL.path) {
+                return
+            }
+            
+            var pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
+            var persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
+            
+            // Update the high score for the persistent data saved to disk
+            persistentData.highScore = Int(score)
+            
+            // Save the persistent data
+            pData = try PropertyListEncoder().encode(persistentData)
+            try pData.write(to: ContinuousGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
+        }
+        catch {
+            print("Error saving persistent state: \(error)")
         }
     }
     
@@ -101,12 +125,10 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         if let lp = localPlayer {
             // Player is already auth'ed, load their high score
             if lp.isAuthenticated {
-                print("Player is already authenticated")
                 checkHighScore()
             }
         }
         else {
-            print("Player is not yet authenticated")
             authenticatePlayer()
         }
         
@@ -181,6 +203,11 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         return true
     }
     
+    /*
+     * This function checks the user's high score in game center and compares it to the one locally (on disk)
+     * If the score in game center is > than the score on disk, update the user's high score locally
+     * If the score locally is > than the score in game center, update the user's high score in game center
+     */
     private func checkHighScore() {
         // Get the user's instance of the leaderboard to retrieve their scores
         let leaderBoard = GKLeaderboard(players: [localPlayer!])
@@ -192,31 +219,38 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         leaderBoard.loadScores(completionHandler: {(scores, error) -> Void in
             if error != nil {
                 print("Error loading scores: \(error)")
+                // Report a high score of 0 (game center won't overwrite this unless it's higher than what it has on record)
+                // I'm also assuming an error would be thrown here if the user doesn't have a score on the leaderboard yet which is why I'm including this in this code block
+                self.reportHighScore(score: 0)
             }
             else {
                 if let userScores = scores {
-                    print("Got user score: \(userScores[0].value)")
-                    
                     // Get the user's high score saved to disk
-                    let highScore = self.loadHighScore()
+                    let diskScore = self.loadHighScore()
                     // Get the user's high score from the game center
-                    let score = userScores[0].value
+                    let gcScore = userScores[0].value
                     
-                    var submitScore = Int64(highScore)
-                    if score > highScore {
-                        submitScore = score
+                    if diskScore > gcScore {
+                        self.reportHighScore(score: Int64(diskScore))
                     }
                     
-                    // Report the game score to the game center
-                    let gkscore = GKScore(leaderboardIdentifier: self.LEADERBOARD_ID, player: self.localPlayer!)
-                    gkscore.value = Int64(submitScore)
-                    GKScore.report([gkscore]) { (error) in
-                        if error != nil {
-                            print("Error reporting score: \(error!)")
-                        }
+                    if gcScore > diskScore {
+                        self.updateHighScore(score: gcScore)
                     }
                 }
             }
         })
+    }
+    
+    // Report the high score to game center
+    private func reportHighScore(score: Int64) {
+        // Report the game score to the game center
+        let gkscore = GKScore(leaderboardIdentifier: LEADERBOARD_ID, player: localPlayer!)
+        gkscore.value = Int64(score)
+        GKScore.report([gkscore]) { (error) in
+            if error != nil {
+                print("Error reporting score: \(error!)")
+            }
+        }
     }
 }
