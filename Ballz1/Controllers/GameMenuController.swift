@@ -24,6 +24,8 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     /* Variables */
     var gcEnabled = Bool() // Check if the user has Game Center enabled
     var gcDefaultLeaderBoard = String() // Check the default leaderboardID
+    var isAuthenticated = false
+    var localPlayer: GKLocalPlayer?
     
     // IMPORTANT: replace the red string below with your own Leaderboard ID (the one you've set in iTunes Connect)
     let LEADERBOARD_ID = "xyz.ashgames.brickbreak"
@@ -59,18 +61,18 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     func authenticatePlayer() {
-        let localPlayer: GKLocalPlayer = GKLocalPlayer.local
-        localPlayer.authenticateHandler = {(ViewController, error) -> Void in
+        localPlayer = GKLocalPlayer.local
+        localPlayer!.authenticateHandler = {(ViewController, error) -> Void in
             if ((ViewController) != nil) {
                 // 1. Show login if player is not logged in
                 self.present(ViewController!, animated: true, completion: nil)
             }
-            else if (localPlayer.isAuthenticated) {
+            else if (self.localPlayer!.isAuthenticated) {
                 // 2. Player is already authenticated and logged in; load game center
                 self.gcEnabled = true
                 
                 // Get the default leaderboard ID
-                localPlayer.loadDefaultLeaderboardIdentifier(completionHandler: { (leaderboardIdentifier, error) in
+                self.localPlayer!.loadDefaultLeaderboardIdentifier(completionHandler: { (leaderboardIdentifier, error) in
                     if error != nil {
                         print("Error getting leaderboard: \(error!)")
                     }
@@ -79,38 +81,10 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                         // When the first score is reported to a leaderboard, that board is now the default one
                         self.gcDefaultLeaderBoard = leaderboardIdentifier!
                         
-                        // Get the user's instance of the leaderboard to retrieve their scores
-                        let leaderBoard = GKLeaderboard(players: [localPlayer])
-                        // Set the identifier so it knows what leaderboard to check
-                        leaderBoard.identifier = self.gcDefaultLeaderBoard
-                        // Set the time scopre for the score to return (we just set this to all time to go back to the very beginning of time)
-                        leaderBoard.timeScope = .allTime
-                        
-                        leaderBoard.loadScores(completionHandler: {(scores, error) -> Void in
-                            if error != nil {
-                                print("Error loading scores: \(error)")
-                            }
-                            else {
-                                if let userScores = scores {
-                                    print("Got user score: \(userScores[0].value)")
-                                }
-                            }
-                        })
-                        
-                        // Try to get the player's high score from storage
-                        let highScore = self.loadHighScore()
-                        
-                        // Report the game score to the game center
-                        let gkscore = GKScore(leaderboardIdentifier: self.LEADERBOARD_ID, player: localPlayer)
-                        gkscore.value = Int64(highScore)
-                        GKScore.report([gkscore]) { (error) in
-                            if error != nil {
-                                print("Error reporting score: \(error!)")
-                            }
-                        }
-                        
                         // Enable the game center button
                         self.gameCenterButton.isEnabled = true
+                        
+                        self.checkHighScore()
                     }
                 })
             }
@@ -124,7 +98,17 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         // Authenticate the player and submit their high score
-        authenticatePlayer()
+        if let lp = localPlayer {
+            // Player is already auth'ed, load their high score
+            if lp.isAuthenticated {
+                print("Player is already authenticated")
+                checkHighScore()
+            }
+        }
+        else {
+            print("Player is not yet authenticated")
+            authenticatePlayer()
+        }
         
         // Allow background music/apps to keep playing
         do {
@@ -195,5 +179,37 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    private func checkHighScore() {
+        // Get the user's instance of the leaderboard to retrieve their scores
+        let leaderBoard = GKLeaderboard(players: [localPlayer!])
+        // Set the identifier so it knows what leaderboard to check
+        leaderBoard.identifier = gcDefaultLeaderBoard
+        // Set the time scopre for the score to return (we just set this to all time to go back to the very beginning of time)
+        leaderBoard.timeScope = .allTime
+        
+        leaderBoard.loadScores(completionHandler: {(scores, error) -> Void in
+            if error != nil {
+                print("Error loading scores: \(error)")
+            }
+            else {
+                if let userScores = scores {
+                    print("Got user score: \(userScores[0].value)")
+                }
+            }
+        })
+        
+        // Try to get the player's high score from storage
+        let highScore = loadHighScore()
+        
+        // Report the game score to the game center
+        let gkscore = GKScore(leaderboardIdentifier: LEADERBOARD_ID, player: localPlayer!)
+        gkscore.value = Int64(highScore)
+        GKScore.report([gkscore]) { (error) in
+            if error != nil {
+                print("Error reporting score: \(error!)")
+            }
+        }
     }
 }
