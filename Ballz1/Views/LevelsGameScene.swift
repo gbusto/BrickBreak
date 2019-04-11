@@ -126,9 +126,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
 
     // MARK: Override functions
     override func didMove(to view: SKView) {
-        // Display node count
-        view.showsNodeCount = true
-        
         // Load the game scene
         margin = view.frame.height * 0.10
         
