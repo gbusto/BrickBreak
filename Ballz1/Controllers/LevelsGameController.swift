@@ -38,6 +38,11 @@ class LevelsGameController: UIViewController,
     private var leaveGame = false
     private var gameEnded = false
     
+    // Number of consecutive wins the user has had
+    private var numConsecutiveWins = 0
+    
+    private var reviewer: Review?
+    
     private var scene: SKScene?
     
     override func viewDidAppear(_ animated: Bool) {
@@ -75,6 +80,8 @@ class LevelsGameController: UIViewController,
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
         
         goToGameScene()
+        
+        reviewer = Review()
     }
     
     // MARK: Banner ad functions
@@ -105,6 +112,12 @@ class LevelsGameController: UIViewController,
         }
         // The interstitialAd object can only be used once so we need to prepare a new one each time the ad object is used
         prepareInterstitialAd()
+        
+        if numConsecutiveWins == 2 {
+            print("Attempting to prompt user for review")
+            // After the user has won 2 consecutive games in a row, attempt to prompt them for a review
+            reviewer!.attemptReview()
+        }
     }
     
     public func prepareInterstitialAd() {
@@ -337,6 +350,15 @@ class LevelsGameController: UIViewController,
         // If they beat their high score, let them know
         
         scene.showGameOverView(win: win, gameOverView: gameOverView)
+        
+        if win {
+            numConsecutiveWins += 1
+            print("User has had \(numConsecutiveWins) wins in a row")
+        }
+        else {
+            numConsecutiveWins = 0
+            print("User lost... zeroed out numConsecutiveWins")
+        }
         
         let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
             let scene = self.scene as! LevelsGameScene

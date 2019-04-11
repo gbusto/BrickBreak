@@ -204,7 +204,6 @@ class BallItem: Item {
     
     public func extinguish() {
         // Put out the fire
-        print("Putting out the fire on myself \(node!.name)")
         for child in node!.children {
             if let name = child.name {
                 if name == "fireChild" {
