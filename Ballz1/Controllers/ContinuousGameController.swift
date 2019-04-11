@@ -31,6 +31,10 @@ class ContinuousGameController: UIViewController,
     
     private var rewardAdViewController: RewardAdViewController!
     
+    // Made this conditional because I want it to be nil when we start to know whether or not it's been initialized
+    private var startingScore: Int?
+    private var reviewer: Review?
+    
     private var showedReward = false
     private var rewardType = ContinuousGameController.NO_REWARD
     static private var NO_REWARD = Int(0)
@@ -99,6 +103,8 @@ class ContinuousGameController: UIViewController,
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
+            
+            reviewer = Review()
         }
     }
     
@@ -126,6 +132,7 @@ class ContinuousGameController: UIViewController,
             print("No reward type specified... oops?")
         }
         else if rewardType == ContinuousGameController.UNDO_REWARD {
+            
             // Undo the last turn
             let contScene = scene as! ContinousGameScene
             contScene.loadPreviousTurnState()
@@ -374,6 +381,16 @@ class ContinuousGameController: UIViewController,
     public func updateScore(gameScore: Int, highScore: Int) {
         self.gameScoreLabel.text = "\(gameScore)"
         self.highScoreLabel.text = "\(highScore)"
+        
+        if nil == startingScore {
+            startingScore = gameScore
+        }
+        
+        if gameScore - startingScore! >= 50 {
+            print("Attemping to prompt user for review")
+            // Show the user a review prompt after they've scored 50 points since starting the game
+            reviewer!.attemptReview()
+        }
     }
     
     // MARK: View override functions
