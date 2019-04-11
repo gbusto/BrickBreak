@@ -134,6 +134,9 @@ class BallItem: Item {
         }
         node!.physicsBody?.isResting = true
         isResting = true
+        
+        // Put ourselves out
+        self.extinguish()
     }
     
     public func resetBall() {
@@ -189,6 +192,26 @@ class BallItem: Item {
         node!.physicsBody!.applyImpulse(CGVector(dx: impulseX, dy: impulseY))
         isActive = true
         isResting = false
+    }
+    
+    public func setOnFire() {
+        let emitterNode = SKEmitterNode(fileNamed: "Fire.sks")
+        if let emNode = emitterNode {
+            emNode.name = "fireChild"
+            node!.addChild(emNode)
+        }
+    }
+    
+    public func extinguish() {
+        // Put out the fire
+        print("Putting out the fire on myself \(node!.name)")
+        for child in node!.children {
+            if let name = child.name {
+                if name == "fireChild" {
+                    node!.removeChildren(in: [child])
+                }
+            }
+        }
     }
     
     

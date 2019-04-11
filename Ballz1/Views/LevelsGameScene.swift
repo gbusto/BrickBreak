@@ -71,7 +71,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     private var displayedOnFire: Bool = false
     // This is the number of blocks that need to be broken in a given turn to get the "on fire" encouragement
     private static var ON_FIRE_COUNT: Int = 8
-    
+
     // A boolean that says whether or not we're showing encouragement (emoji + text) on the screen
     private var showingEncouragement = false
     

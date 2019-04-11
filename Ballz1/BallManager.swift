@@ -52,6 +52,8 @@ class BallManager {
     
     private var direction : CGPoint?
     
+    private var ballsOnFire = false
+    
     
     // MARK: State handling code
     struct BallManagerState: Codable {
@@ -122,6 +124,16 @@ class BallManager {
         }
     }
     
+    public func setBallsOnFire() {
+        // Sets the balls on fire
+        ballsOnFire = true
+        for ball in ballArray {
+            if ball.isActive {
+                ball.setOnFire()
+            }
+        }
+    }
+    
     
     // MARK: Public functions
     required init(numBalls: Int, radius: CGFloat, restorationURL: URL) {
@@ -157,6 +169,8 @@ class BallManager {
     public func incrementState() {
         if DONE == state {
             state = READY
+            // Reset this boolean to false
+            ballsOnFire = false
             return
         }
         
@@ -220,6 +234,10 @@ class BallManager {
     public func shootBall() {
         let ball = ballArray[numBallsActive]
         ball.fire(point: direction!)
+        if ballsOnFire {
+            // If balls are already on fire then this ball needs to be on fire too
+            ball.setOnFire()
+        }
         numBallsActive += 1
         
         if numBallsActive == ballArray.count {
