@@ -33,6 +33,8 @@
 		03F9A4262151D34800206A84 /* BallItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4252151D34800206A84 /* BallItem.swift */; };
 		03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4272151D56700206A84 /* HitBlockItem.swift */; };
 		03FC3BD3220F0A3000A7B991 /* Confetti.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FC3BD2220F0A3000A7B991 /* Confetti.swift */; };
+		03FE968A225E10CE00E6C864 /* Fire.sks in Resources */ = {isa = PBXBuildFile; fileRef = 03FE9688225E10CE00E6C864 /* Fire.sks */; };
+		03FE968B225E10CE00E6C864 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03FE9689225E10CE00E6C864 /* Assets.xcassets */; };
 		CDC5CFC1717920861940918B /* Pods_Ballz1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1A8F69CD9292C0D9344297C /* Pods_Ballz1.framework */; };
 		F200B2E921EBA3DE00FE0FB6 /* LevelsGameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */; };
 		F200B2EB21EBA4C100FE0FB6 /* LevelsGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2EA21EBA4C100FE0FB6 /* LevelsGameScene.swift */; };
@@ -90,6 +92,8 @@
 		03F9A4252151D34800206A84 /* BallItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItem.swift; sourceTree = "<group>"; };
 		03F9A4272151D56700206A84 /* HitBlockItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitBlockItem.swift; sourceTree = "<group>"; };
 		03FC3BD2220F0A3000A7B991 /* Confetti.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Confetti.swift; sourceTree = "<group>"; };
+		03FE9688225E10CE00E6C864 /* Fire.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Fire.sks; sourceTree = "<group>"; };
+		03FE9689225E10CE00E6C864 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5224C89D7322FB64CBF5D166 /* Pods-Ballz1.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballz1.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1.debug.xcconfig"; sourceTree = "<group>"; };
 		A1A8F69CD9292C0D9344297C /* Pods_Ballz1.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ballz1.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECEC017C6EB71AEF0022F501 /* Pods-Ballz1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballz1.release.xcconfig"; path = "Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1.release.xcconfig"; sourceTree = "<group>"; };
@@ -226,7 +230,9 @@
 		03B8B4EE216919C600FFD589 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				03FE9688225E10CE00E6C864 /* Fire.sks */,
 				03B8B4F521691A2100FFD589 /* GameMenuController.swift */,
+				03FE9689225E10CE00E6C864 /* Assets.xcassets */,
 				03B8B4F721691A2D00FFD589 /* ContinuousGameController.swift */,
 				F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */,
 				037536B921BC055500B62589 /* RewardAdViewController.swift */,
@@ -356,6 +362,8 @@
 				0317DEA9214B5FA300E976E2 /* Main.storyboard in Resources */,
 				03B8B542216AB2B300FFD589 /* BrickBreak.storyboard in Resources */,
 				0342D21B216FEA3B00FE5760 /* Assets.xcassets in Resources */,
+				03FE968A225E10CE00E6C864 /* Fire.sks in Resources */,
+				03FE968B225E10CE00E6C864 /* Assets.xcassets in Resources */,
 				0317DEAE214B5FA500E976E2 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

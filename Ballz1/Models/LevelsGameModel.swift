@@ -320,6 +320,9 @@ class LevelsGameModel {
         let diff = newScore - scoreThisTurn
         gameScore += diff
         scoreThisTurn = newScore
+        
+        // Set the balls on fire
+        ballManager!.setBallsOnFire()
     }
     
     // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
