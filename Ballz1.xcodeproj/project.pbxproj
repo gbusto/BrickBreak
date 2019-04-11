@@ -19,6 +19,7 @@
 		037536B221B74F4800B62589 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 037536B121B74F4800B62589 /* GameKit.framework */; };
 		037536B421BB04CF00B62589 /* AdHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037536B321BB04CF00B62589 /* AdHandler.swift */; };
 		037536BA21BC055500B62589 /* RewardAdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037536B921BC055500B62589 /* RewardAdViewController.swift */; };
+		03837346225EDE3900352EFB /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03837345225EDE3900352EFB /* Review.swift */; };
 		03B8B4F0216919DD00FFD589 /* GameMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4EF216919DD00FFD589 /* GameMenuScene.swift */; };
 		03B8B4F221691A0100FFD589 /* ContinuousGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4F121691A0100FFD589 /* ContinuousGameScene.swift */; };
 		03B8B4F621691A2100FFD589 /* GameMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4F521691A2100FFD589 /* GameMenuController.swift */; };
@@ -78,6 +79,7 @@
 		037536B121B74F4800B62589 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		037536B321BB04CF00B62589 /* AdHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdHandler.swift; sourceTree = "<group>"; };
 		037536B921BC055500B62589 /* RewardAdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardAdViewController.swift; sourceTree = "<group>"; };
+		03837345225EDE3900352EFB /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
 		03B8B4EF216919DD00FFD589 /* GameMenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuScene.swift; sourceTree = "<group>"; };
 		03B8B4F121691A0100FFD589 /* ContinuousGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuousGameScene.swift; sourceTree = "<group>"; };
 		03B8B4F521691A2100FFD589 /* GameMenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuController.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				03B8B4EE216919C600FFD589 /* Controllers */,
 				03B8B4ED216919C000FFD589 /* Models */,
 				03B8B4EC216919B400FFD589 /* Views */,
+				03837345225EDE3900352EFB /* Review.swift */,
 			);
 			path = Ballz1;
 			sourceTree = "<group>";
@@ -431,6 +434,7 @@
 				0317DED4214B6B7900E976E2 /* BallManager.swift in Sources */,
 				03B8B4FC21691A6000FFD589 /* GameMenuModel.swift in Sources */,
 				0317DE9E214B5FA300E976E2 /* AppDelegate.swift in Sources */,
+				03837346225EDE3900352EFB /* Review.swift in Sources */,
 				F200B2E921EBA3DE00FE0FB6 /* LevelsGameController.swift in Sources */,
 				037536B421BB04CF00B62589 /* AdHandler.swift in Sources */,
 				0342D217216CEC8700FE5760 /* SpacerItem.swift in Sources */,
