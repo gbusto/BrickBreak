@@ -24,7 +24,7 @@ class Review {
     static let PersistentDataURL = ReviewDataURL.appendingPathComponent("PersistentData")
     
     //static private var SEVEN_DAYS = TimeInterval(60 * 60 * 24 * 7)
-    static private var SEVEN_DAYS = TimeInterval(30)
+    static private var SEVEN_DAYS = TimeInterval(60 * 60 * 24)
     
     struct PersistentData: Codable {
         // The last date on which the user was prompted for a review
