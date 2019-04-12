@@ -355,6 +355,10 @@ class ContinuousGameModel {
         }
     }
     
+    public func setBallsOnFire() {
+        ballManager!.setBallsOnFire()
+    }
+    
     public func generateRow() -> [Item] {
         let count = itemGenerator!.getBlockCount()
         // If the user is doing well and there are no items on the screen, generate a harder pattern
