@@ -64,6 +64,8 @@ class ItemGenerator {
     // Boolean as to whether or not we should use drand to generate randomness
     private var USE_DRAND = false
     
+    private var ballsOnFire = false
+    
     
     // The distribution for these patterns should be 65, 25, 10 (easy, intermediate, hard)
     private static let EASY_PATTERNS: [[Int]] = [
@@ -501,6 +503,10 @@ class ItemGenerator {
         return newRow
     }
     
+    public func setOnFireBonus(_ flag: Bool) {
+        ballsOnFire = flag
+    }
+    
     public func hit(name: String) -> Bool {
         var successfulHit = true
         
@@ -512,11 +518,21 @@ class ItemGenerator {
                         // If this item was a ball, increase the max hit count by 2 because it will be transferred over to the ball manager
                         numberOfBalls += 1
                     }
+                    else if item.getNode().name!.starts(with: "block") {
+                        if ballsOnFire {
+                            // If balls are on fire, process a second hit against the blocks (ball hits are x2 when they're on fire)
+                            item.hitItem()
+                        }
+                    }
                     else if item.getNode().name!.starts(with: "sblock") {
                         // This is a stone hit block item
                         let shb = item as! StoneHitBlockItem
                         if shb.isStone {
                             successfulHit = false
+                        }
+                        if ballsOnFire {
+                            // If balls are on fire, process a second hit against the blocks (ball hits are x2 when they're on fire)
+                            item.hitItem()
                         }
                     }
                     else if item.getNode().name!.starts(with: "bomb") {

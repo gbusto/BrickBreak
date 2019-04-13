@@ -330,6 +330,9 @@ class ContinuousGameModel {
         
         // Go from TURN_OVER state to WAITING state
         incrementState()
+        
+        // Reset the x2 ball hit flag
+        itemGenerator!.setOnFireBonus(false)
     }
     
     // MARK: Physics contact functions
@@ -357,6 +360,9 @@ class ContinuousGameModel {
     
     public func setBallsOnFire() {
         ballManager!.setBallsOnFire()
+        
+        // Set the ball hit x2 flag
+        itemGenerator!.setOnFireBonus(true)
     }
     
     public func generateRow() -> [Item] {

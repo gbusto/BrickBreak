@@ -323,11 +323,16 @@ class LevelsGameModel {
         
         // Set the balls on fire
         ballManager!.setBallsOnFire()
+        // Ball hits are now x2
+        itemGenerator!.setOnFireBonus(true)
     }
     
     // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
     public func handleTurnOver() {
         ballManager!.checkNewArray()
+        
+        // Reset the flag in item generator for ball hits x2
+        itemGenerator!.setOnFireBonus(false)
         
         // Submit this score to game center after finishing a level
         
