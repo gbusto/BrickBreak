@@ -116,7 +116,8 @@ class LevelsGameController: UIViewController,
         if numConsecutiveWins == 2 {
             print("Attempting to prompt user for review")
             // After the user has won 2 consecutive games in a row, attempt to prompt them for a review
-            reviewer!.attemptReview()
+            // XXX UNCOMMENT THIS WHENEVER I HAVE A BETTER PLAN FOR IT
+            //reviewer!.attemptReview()
         }
     }
     
