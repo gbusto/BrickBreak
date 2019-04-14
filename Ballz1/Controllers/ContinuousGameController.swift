@@ -389,7 +389,8 @@ class ContinuousGameController: UIViewController,
         if gameScore - startingScore! >= 50 {
             print("Attemping to prompt user for review")
             // Show the user a review prompt after they've scored 50 points since starting the game
-            reviewer!.attemptReview()
+            // XXX UNCOMMENT THIS WHENEVER I HAVE A BETTER PLAN FOR IT
+            //reviewer!.attemptReview()
         }
     }
     
