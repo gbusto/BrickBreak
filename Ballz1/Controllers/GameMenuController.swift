@@ -29,6 +29,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     
     // IMPORTANT: replace the red string below with your own Leaderboard ID (the one you've set in iTunes Connect)
     let LEADERBOARD_ID = "xyz.ashgames.brickbreak"
+    let LEVELS_LEADERBOARD_ID = "xyz.ashgames.brickbreak.levelnumber"
     
     struct PersistentData: Codable {
         var highScore: Int
@@ -39,6 +40,36 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         enum CodingKeys: String, CodingKey {
             case highScore
             case showedTutorials
+        }
+    }
+    
+    // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
+    struct PersistentLevelsData: Codable {
+        var levelCount: Int
+        var highScore: Int
+        var cumulativeScore: Int
+        var showedTutorials: Bool
+        
+        // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
+        // Read Apple's documentation on CodingKey protocol and Codable
+        enum CodingKeys: String, CodingKey {
+            case levelCount
+            case highScore
+            case cumulativeScore
+            case showedTutorials
+        }
+    }
+    
+    func loadLevelNumber() -> Int {
+        do {
+            let pData = try Data(contentsOf: LevelsGameModel.PersistentDataURL)
+            let persistentData = try PropertyListDecoder().decode(PersistentLevelsData.self, from: pData)
+            
+            return persistentData.levelCount
+        }
+        catch {
+            print("Error decoding persistent levels data: \(error)")
+            return 0
         }
     }
     
@@ -79,6 +110,26 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         }
     }
     
+    // XXX Not currently being used but will be in the future
+    func updateLevelNumber(level: Int64) {
+        do {
+            if false == FileManager.default.fileExists(atPath: LevelsGameModel.AppDirURL.path) {
+                return
+            }
+            
+            var pData = try Data(contentsOf: LevelsGameModel.PersistentDataURL)
+            var persistentData = try PropertyListDecoder().decode(PersistentLevelsData.self, from: pData)
+            
+            persistentData.levelCount = Int(level)
+            
+            pData = try PropertyListEncoder().encode(persistentData)
+            try pData.write(to: LevelsGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
+        }
+        catch {
+            print("Error saving persistent level state: \(error)")
+        }
+    }
+    
     // MARK: Gamecenter delegate protocol
     func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
         gameCenterViewController.dismiss(animated: true, completion: nil)
@@ -109,6 +160,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                         self.gameCenterButton.isEnabled = true
                         
                         self.checkHighScore()
+                        self.checkLevelNumber()
                     }
                 })
             }
@@ -126,6 +178,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             // Player is already auth'ed, load their high score
             if lp.isAuthenticated {
                 checkHighScore()
+                checkLevelNumber()
             }
         }
         else {
@@ -203,6 +256,24 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         return true
     }
     
+    private func checkLevelNumber() {
+        let leaderBoard = GKLeaderboard(players: [localPlayer!])
+        leaderBoard.identifier = LEVELS_LEADERBOARD_ID
+        leaderBoard.timeScope = .allTime
+        
+        leaderBoard.loadScores(completionHandler: {(scores, error) -> Void in
+            if error != nil {
+                // Error when attempting to get the level numbers from the leaderboard
+                print("Error loading level numbers: \(error)")
+            }
+            else {
+                // XXX Here is where we will add code to make sure the level number on disk matches the level number in GameCenter
+                let levelNumber = self.loadLevelNumber()
+                self.reportLevelNumber(level: Int64(levelNumber))
+            }
+        })
+    }
+    
     /*
      * This function checks the user's high score in game center and compares it to the one locally (on disk)
      * If the score in game center is > than the score on disk, update the user's high score locally
@@ -247,6 +318,16 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         // Report the game score to the game center
         let gkscore = GKScore(leaderboardIdentifier: LEADERBOARD_ID, player: localPlayer!)
         gkscore.value = Int64(score)
+        GKScore.report([gkscore]) { (error) in
+            if error != nil {
+                print("Error reporting score: \(error!)")
+            }
+        }
+    }
+    
+    private func reportLevelNumber(level: Int64) {
+        let gkscore = GKScore(leaderboardIdentifier: LEVELS_LEADERBOARD_ID, player: localPlayer!)
+        gkscore.value = level
         GKScore.report([gkscore]) { (error) in
             if error != nil {
                 print("Error reporting score: \(error!)")

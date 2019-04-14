@@ -72,7 +72,6 @@ class LevelsGameModel {
     static let PersistentDataURL = LevelsDirURL.appendingPathComponent("PersistentData")
     
     
-    // MARK: State handling code
     // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
     struct PersistentData: Codable {
         var levelCount: Int
