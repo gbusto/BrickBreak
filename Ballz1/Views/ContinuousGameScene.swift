@@ -158,7 +158,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         */
         
         // 1. Get ceiling starting y position
-        let ceilingY = view.frame.height - view.safeAreaInsets.top - margin!
+        let ceilingY = view.frame.height - margin!
         // 2. Get floor ending y position
         let groundY = margin!
         let blockSize1 = (ceilingY - groundY) / ContinousGameScene.NUM_ROWS
@@ -938,7 +938,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         ceilingNode!.strokeColor = colorScheme!.marginColor
         ceilingNode!.lineWidth = 1
         ceilingNode!.physicsBody = physBody
-        ceilingNode!.position = CGPoint(x: 0, y: view.frame.height - view.safeAreaInsets.top - margin)
+        ceilingNode!.position = CGPoint(x: 0, y: view.frame.height - margin)
         
         self.addChild(ceilingNode!)
     }
