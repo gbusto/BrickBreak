@@ -242,6 +242,9 @@ class LevelsGameController: UIViewController,
         // Reset this boolean
         userWasRewarded = false
         
+        // Reset this boolean so the game will pause correctly
+        gameEnded = false
+        
         if let view = self.view as! SKView? {
             let scene = LevelsGameScene(size: view.bounds.size)
             self.scene = scene
