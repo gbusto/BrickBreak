@@ -28,6 +28,7 @@ class ContinuousGameController: UIViewController,
     @IBOutlet var pauseMenuView: UIView!
     @IBOutlet var resumeButton: UIButton!
     @IBOutlet var returnGameMenuButton: UIButton!
+    @IBOutlet var heartImageView: UIImageView!
     
     private var rewardAdViewController: RewardAdViewController!
     
@@ -141,6 +142,7 @@ class ContinuousGameController: UIViewController,
             // Save the user!
             let contScene = scene as! ContinousGameScene
             contScene.saveUser()
+            userWasSaved()
         }
         
         // Reset the reward type since we just rewarded the user
@@ -284,6 +286,10 @@ class ContinuousGameController: UIViewController,
         if undoButtonIsEnabled() {
             undoButton.alpha = ContinuousGameController.DISABLED_ALPHA
         }
+    }
+    
+    public func userWasSaved() {
+        heartImageView.image = UIImage(named: "used_life")
     }
     
     public func undoButtonIsEnabled() -> Bool {

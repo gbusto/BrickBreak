@@ -194,6 +194,10 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         // This kind of breaks MVC a bit because the ball manager shouldn't know the ground height
         gameModel!.ballManager!.setGroundHeight(height: groundNode!.size.height + ballRadius!)
         
+        if gameModel!.userWasSaved {
+            gameController!.userWasSaved()
+        }
+        
         rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleRightSwipe(_:)))
         rightSwipeGesture!.direction = .right
         rightSwipeGesture!.numberOfTouchesRequired = 1

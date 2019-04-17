@@ -18,6 +18,7 @@ class LevelsGameController: UIViewController,
     @IBOutlet weak var levelCount: UILabel!
     @IBOutlet weak var levelScore: UILabel!
     @IBOutlet var rowCountLabel: UILabel!
+    @IBOutlet var heartImageView: UIImageView!
     
     @IBOutlet var gameOverView: UIView!
     @IBOutlet var gameOverLevelCount: UILabel!
@@ -137,6 +138,7 @@ class LevelsGameController: UIViewController,
         // User was rewarded
         let scene = self.scene as! LevelsGameScene
         scene.saveUser()
+        heartImageView.image = UIImage(named: "used_life")
         userWasRewarded = true
     }
     
