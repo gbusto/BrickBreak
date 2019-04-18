@@ -884,23 +884,6 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private func shootBalls(point: CGPoint) {
         gameModel!.prepareTurn(point: point)
         gameModel!.ballManager!.shootBalls()
-        /* XXX
-        let _ = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
-            if self.gameModel!.shootBall() {
-                self.currentBallCount -= 1
-                
-                if 0 == self.currentBallCount {
-                    self.removeBallCountLabel()
-                }
-                else {
-                    self.updateBallCountLabel()
-                }
-            }
-            else {
-                timer.invalidate()
-            }
-        }
-        */
     }
 
     

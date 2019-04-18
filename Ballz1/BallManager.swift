@@ -54,6 +54,8 @@ class BallManager {
     
     private var ballsOnFire = false
     
+    private var swipedDown = false
+    
     
     // MARK: State handling code
     struct BallManagerState: Codable {
@@ -171,6 +173,8 @@ class BallManager {
             state = READY
             // Reset this boolean to false
             ballsOnFire = false
+            // Reset this boolean letting the shootBalls() function know whether or not the user swiped down and we should stop shooting
+            swipedDown = false
             return
         }
         
@@ -243,32 +247,32 @@ class BallManager {
             ball.setOnFire()
         }
         numBallsActive += 1
-        
-        if numBallsActive == ballArray.count {
-            // Increment state from SHOOTING to WAITING
-            incrementState()
-        }
     }
     
     public func shootBalls() {
         let _ = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
-            if self.isShooting() {
-                self.shootBall()
+            // Check to see if the user swiped down while we were still shooting; we need to stop shooting if they did
+            if self.allBallsFired() || self.swipedDown {
+                timer.invalidate()
+                // Increment state from SHOOTING to WAITING
+                self.incrementState()
             }
             else {
-                timer.invalidate()
+                self.shootBall()
             }
         }
     }
     
     private func allBallsFired() -> Bool {
-        return ballArray[-1].isActive
+        return ballArray[numberOfBalls - 1].isActive
     }
     
     public func returnAllBalls() {
         if false == firstBallReturned {
             firstBallReturned = true
         }
+        
+        swipedDown = true
         
         for ball in ballArray {
             ball.isActive = false
@@ -278,13 +282,7 @@ class BallManager {
             ball.stop(point: originPoint!)
         }
         
-        // Set numBallsActivet to the array size so that in stopInactiveBalls() the code will change state from WAITING to DONE
-        numBallsActive = ballArray.count
-        
-        if isShooting() {
-            // Only change our state if we're in SHOOTING state to the WAITING state
-            incrementState()
-        }
+        // shootBalls() will increment the ball manager's state if it's shooting
     }
     
     public func markBallInactive(name: String) {
@@ -320,13 +318,14 @@ class BallManager {
         }
         
         if isWaiting() {
-            var numBallsDone = 0
+            var activeBallInPlay = false
             for ball in ballArray {
-                if (false == ball.isActive) && (ball.isResting) {
-                    numBallsDone += 1
+                if ball.isActive || (false == ball.isResting) {
+                    activeBallInPlay = true
+                    break
                 }
             }
-            if numBallsDone == numBallsActive {
+            if false == activeBallInPlay {
                 // Increment state from WAITING to DONE
                 incrementState()
                 firstBallReturned = false
