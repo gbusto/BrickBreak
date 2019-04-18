@@ -231,6 +231,10 @@ class BallManager {
         ball.getNode().name! = "bm\(ballArray.count + newBallArray.count)"
     }
     
+    public func numRestingBalls() -> Int {
+        return numberOfBalls - numBallsActive
+    }
+    
     public func shootBall() {
         let ball = ballArray[numBallsActive]
         ball.fire(point: direction!)
@@ -244,6 +248,21 @@ class BallManager {
             // Increment state from SHOOTING to WAITING
             incrementState()
         }
+    }
+    
+    public func shootBalls() {
+        let _ = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+            if self.isShooting() {
+                self.shootBall()
+            }
+            else {
+                timer.invalidate()
+            }
+        }
+    }
+    
+    private func allBallsFired() -> Bool {
+        return ballArray[-1].isActive
     }
     
     public func returnAllBalls() {

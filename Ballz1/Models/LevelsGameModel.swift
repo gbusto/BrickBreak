@@ -246,6 +246,7 @@ class LevelsGameModel {
         incrementState()
     }
     
+    /* XXX REMOVE ME
     public func shootBall() -> Bool {
         if ballManager!.isShooting() {
             ballManager!.shootBall()
@@ -254,6 +255,7 @@ class LevelsGameModel {
         
         return false
     }
+    */
     
     public func endTurn() {
         ballManager!.returnAllBalls()

@@ -274,6 +274,7 @@ class ContinuousGameModel {
         incrementState()
     }
     
+    /* XXX REMOVE ME
     public func shootBall() -> Bool {
         if ballManager!.isShooting() {
             ballManager!.shootBall()
@@ -282,6 +283,7 @@ class ContinuousGameModel {
         
         return false
     }
+    */
     
     public func endTurn() {
         ballManager!.returnAllBalls()

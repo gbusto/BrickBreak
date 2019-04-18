@@ -435,6 +435,14 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 startTime = currentTime
             }
             
+            currentBallCount = gameModel!.ballManager!.numRestingBalls()
+            if currentBallCount > 0 {
+                updateBallCountLabel()
+            }
+            else {
+                removeBallCountLabel()
+            }
+            
             // If the user's turn has gone on longer than 10 seconds and there are still tutorials to show, we want to show them how to fast forward
             if (Int(currentTime) - Int(startTime)) > 10 && tutorialsList.count > 0 {
                 // Only show it if the user hasn't fast forwarded yet
@@ -875,6 +883,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     private func shootBalls(point: CGPoint) {
         gameModel!.prepareTurn(point: point)
+        gameModel!.ballManager!.shootBalls()
+        /* XXX
         let _ = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
             if self.gameModel!.shootBall() {
                 self.currentBallCount -= 1
@@ -890,6 +900,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
                 timer.invalidate()
             }
         }
+        */
     }
 
     
