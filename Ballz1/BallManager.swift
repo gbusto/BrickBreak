@@ -292,7 +292,7 @@ class BallManager {
                     var ballPosition = ball.node!.position
                     if ballPosition.y > groundHeight {
                         // Ensure the ball is on the ground and not above it
-                        ballPosition.y = groundHeight
+                        ball.node!.position.y = groundHeight
                     }
                     originPoint = ball.node!.position
                 }
