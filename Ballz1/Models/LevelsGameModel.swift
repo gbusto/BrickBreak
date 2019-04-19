@@ -286,8 +286,13 @@ class LevelsGameModel {
             lastItemBroken = true
         }
         
-        // Check for inactive balls and stop them
-        ballManager!.stopInactiveBalls()
+        // Iterate over all the balls in the array of stopped balls, stop them, and move them to their new origin point
+        ballManager!.handleStoppedBalls()
+        
+        // Check to see if the ball manager is still waiting for balls to return
+        if ballManager!.isWaiting() {
+            ballManager!.waitForBalls()
+        }
         
         // Wait for the ball manager to finish
         if ballManager!.isDone() {

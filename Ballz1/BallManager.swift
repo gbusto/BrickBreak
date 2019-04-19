@@ -56,6 +56,8 @@ class BallManager {
     
     private var swipedDown = false
     
+    private var stoppedBalls: [BallItem] = []
+    
     
     // MARK: State handling code
     struct BallManagerState: Codable {
@@ -130,7 +132,7 @@ class BallManager {
         // Sets the balls on fire
         ballsOnFire = true
         for ball in ballArray {
-            if ball.isActive {
+            if false == ball.isResting {
                 ball.setOnFire()
             }
         }
@@ -184,7 +186,8 @@ class BallManager {
     public func checkNewArray() {
         let array = newBallArray.filter {
             // Tell the ball to return to the origin point and reset its physics bitmasks
-            $0.stop(point: originPoint!)
+            $0.stop()
+            $0.moveBallTo(originPoint!)
             // Add the new ball to the ball manager's array
             self.ballArray.append($0)
             // This tells the filter to remove the ball from newBallArray
@@ -264,7 +267,7 @@ class BallManager {
     }
     
     private func allBallsFired() -> Bool {
-        return ballArray[numberOfBalls - 1].isActive
+        return (false == ballArray[numberOfBalls - 1].isResting)
     }
     
     public func returnAllBalls() {
@@ -275,11 +278,11 @@ class BallManager {
         swipedDown = true
         
         for ball in ballArray {
-            ball.isActive = false
             ball.getNode().physicsBody!.collisionBitMask = 0
             ball.getNode().physicsBody!.categoryBitMask = 0
             ball.getNode().physicsBody!.contactTestBitMask = 0
-            ball.stop(point: originPoint!)
+            ball.stop()
+            ball.moveBallTo(originPoint!)
         }
         
         // shootBalls() will increment the ball manager's state if it's shooting
@@ -288,11 +291,52 @@ class BallManager {
     public func markBallInactive(name: String) {
         for ball in ballArray {
             if ball.node!.name == name {
-                ball.isActive = false
+                stoppedBalls.append(ball)
+                ball.stop()
             }
         }
     }
     
+    // This function should be called in the model's MID_TURN state
+    public func handleStoppedBalls() {
+        if stoppedBalls.count > 0 {
+            // Pop this ball off the front of thel ist
+            let ball = stoppedBalls.removeFirst()
+            //ball.stop() // REMOVE ME
+            if false == firstBallReturned {
+                // The first ball hasn't been returned yet
+                firstBallReturned = true
+                var ballPosition = ball.node!.position
+                if ballPosition.y > groundHeight {
+                    // Ensure the ball is on the ground and not above it
+                    ballPosition.y = groundHeight
+                }
+                originPoint = ball.node!.position
+            }
+            ball.moveBallTo(originPoint!)
+        }
+    }
+    
+    // This function should be called in the model's
+    public func waitForBalls() {
+        var activeBallInPlay = false
+        for ball in ballArray {
+            if false == ball.isResting {
+                activeBallInPlay = true
+                break
+            }
+        }
+        if false == activeBallInPlay {
+            // Increment state from WAITING to DONE
+            incrementState()
+            firstBallReturned = false
+            numBallsActive = 0
+            // Done waiting for balls
+        }
+        // Still waiting for balls
+    }
+    
+    /* XXX REMOVE ME
     public func stopInactiveBalls() {
         if isReady() || isDone() {
             return
@@ -313,7 +357,7 @@ class BallManager {
                     }
                     originPoint = ball.node!.position
                 }
-                ball.stop(point: originPoint!)
+                ball.moveBallTo(originPoint!)
             }
         }
         
@@ -333,4 +377,5 @@ class BallManager {
             }
         }
     }
+    */
 }
