@@ -241,6 +241,9 @@ class LevelsGameController: UIViewController,
         // Reset the level score
         levelScore.text = "0"
         
+        // Reset the heart (life) image
+        heartImageView.image = UIImage(named: "unused_life")
+        
         // Reset this boolean
         userWasRewarded = false
         
