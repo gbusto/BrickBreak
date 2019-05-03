@@ -253,6 +253,15 @@ class BallManager {
     }
     
     public func shootBalls() {
+        // Make sure that before we start shooting balls there aren't any lingering in this list
+        /*
+            There was a weird bug after refactoring BallManager: the game scene (ContinuousGameScene) would place balls from the
+            ball manager on the ground (which the game would record as a collision) and the chain of events would fire and all
+            balls in the BallManager's list would end up in the stoppedBalls list. When firing balls for the first time, it would
+            process that list (in handleStoppedBalls) and tell them to stop and return to their origin point.
+            This fixes that bug by ensuring that the stoppedBalls list is empty when starting to shoot balls.
+        */
+        stoppedBalls = []
         let _ = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
             // Check to see if the user swiped down while we were still shooting; we need to stop shooting if they did
             if self.allBallsFired() || self.swipedDown {
