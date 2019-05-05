@@ -433,6 +433,14 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
         // Actions to perform while in the middle of a turn
         if gameModel!.isMidTurn() {
+            currentBallCount = gameModel!.ballManager!.numRestingBalls()
+            if currentBallCount > 0 {
+                updateBallCountLabel()
+            }
+            else {
+                removeBallCountLabel()
+            }
+            
             if false == addedGesture {
                 // Ask the model if we showed the fast forward tutorial
                 view!.gestureRecognizers = [rightSwipeGesture!, downSwipeGesture!]
@@ -777,21 +785,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
     private func shootBalls(point: CGPoint) {
         gameModel!.prepareTurn(point: point)
-        let _ = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
-            if self.gameModel!.shootBall() {
-                self.currentBallCount -= 1
-                
-                if 0 == self.currentBallCount {
-                    self.removeBallCountLabel()
-                }
-                else {
-                    self.updateBallCountLabel()
-                }
-            }
-            else {
-                timer.invalidate()
-            }
-        }
+        gameModel!.ballManager!.shootBalls()
     }
     
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins

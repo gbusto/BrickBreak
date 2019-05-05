@@ -13,7 +13,6 @@ class BallItem: Item {
     
     // MARK: Public properties
     public var node : SKShapeNode?
-    public var isActive = false
     public var isResting = true
     
     // MARK: Private functions
@@ -123,20 +122,24 @@ class BallItem: Item {
     }
     
     // MARK: Public functions
-    public func stop(point: CGPoint) {
+    public func stop() {
         if node!.hasActions() {
             // If the node is currently executing any actions, just stop them so we can stop the ball now
             node!.removeAllActions()
         }
-        // Now with all actions stopped, we can tell the ball to return to this point
-        node!.run(SKAction.move(to: point, duration: 0.2)) {
-            self.resetBall()
-        }
+        
         node!.physicsBody?.isResting = true
         isResting = true
         
         // Put ourselves out
         self.extinguish()
+    }
+    
+    public func moveBallTo(_ point: CGPoint) {
+        // Now with all actions stopped, we can tell the ball to return to this point
+        node!.run(SKAction.move(to: point, duration: 0.2)) {
+            self.resetBall()
+        }
     }
     
     public func resetBall() {
@@ -190,7 +193,6 @@ class BallItem: Item {
         let impulseY = (newY - originPoint.y) / 5
         
         node!.physicsBody!.applyImpulse(CGVector(dx: impulseX, dy: impulseY))
-        isActive = true
         isResting = false
     }
     

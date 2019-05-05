@@ -54,6 +54,10 @@ class BallManager {
     
     private var ballsOnFire = false
     
+    private var swipedDown = false
+    
+    private var stoppedBalls: [BallItem] = []
+    
     
     // MARK: State handling code
     struct BallManagerState: Codable {
@@ -128,7 +132,7 @@ class BallManager {
         // Sets the balls on fire
         ballsOnFire = true
         for ball in ballArray {
-            if ball.isActive {
+            if false == ball.isResting {
                 ball.setOnFire()
             }
         }
@@ -171,6 +175,8 @@ class BallManager {
             state = READY
             // Reset this boolean to false
             ballsOnFire = false
+            // Reset this boolean letting the shootBalls() function know whether or not the user swiped down and we should stop shooting
+            swipedDown = false
             return
         }
         
@@ -180,7 +186,8 @@ class BallManager {
     public func checkNewArray() {
         let array = newBallArray.filter {
             // Tell the ball to return to the origin point and reset its physics bitmasks
-            $0.stop(point: originPoint!)
+            $0.stop()
+            $0.moveBallTo(originPoint!)
             // Add the new ball to the ball manager's array
             self.ballArray.append($0)
             // This tells the filter to remove the ball from newBallArray
@@ -231,6 +238,10 @@ class BallManager {
         ball.getNode().name! = "bm\(ballArray.count + newBallArray.count)"
     }
     
+    public func numRestingBalls() -> Int {
+        return numberOfBalls - numBallsActive
+    }
+    
     public func shootBall() {
         let ball = ballArray[numBallsActive]
         ball.fire(point: direction!)
@@ -239,11 +250,33 @@ class BallManager {
             ball.setOnFire()
         }
         numBallsActive += 1
-        
-        if numBallsActive == ballArray.count {
-            // Increment state from SHOOTING to WAITING
-            incrementState()
+    }
+    
+    public func shootBalls() {
+        // Make sure that before we start shooting balls there aren't any lingering in this list
+        /*
+            There was a weird bug after refactoring BallManager: the game scene (ContinuousGameScene) would place balls from the
+            ball manager on the ground (which the game would record as a collision) and the chain of events would fire and all
+            balls in the BallManager's list would end up in the stoppedBalls list. When firing balls for the first time, it would
+            process that list (in handleStoppedBalls) and tell them to stop and return to their origin point.
+            This fixes that bug by ensuring that the stoppedBalls list is empty when starting to shoot balls.
+        */
+        stoppedBalls = []
+        let _ = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+            // Check to see if the user swiped down while we were still shooting; we need to stop shooting if they did
+            if self.allBallsFired() || self.swipedDown {
+                timer.invalidate()
+                // Increment state from SHOOTING to WAITING
+                self.incrementState()
+            }
+            else {
+                self.shootBall()
+            }
         }
+    }
+    
+    private func allBallsFired() -> Bool {
+        return (false == ballArray[numberOfBalls - 1].isResting)
     }
     
     public func returnAllBalls() {
@@ -251,68 +284,64 @@ class BallManager {
             firstBallReturned = true
         }
         
+        swipedDown = true
+        
         for ball in ballArray {
-            ball.isActive = false
             ball.getNode().physicsBody!.collisionBitMask = 0
             ball.getNode().physicsBody!.categoryBitMask = 0
             ball.getNode().physicsBody!.contactTestBitMask = 0
-            ball.stop(point: originPoint!)
+            ball.stop()
+            ball.moveBallTo(originPoint!)
         }
         
-        // Set numBallsActivet to the array size so that in stopInactiveBalls() the code will change state from WAITING to DONE
-        numBallsActive = ballArray.count
-        
-        if isShooting() {
-            // Only change our state if we're in SHOOTING state to the WAITING state
-            incrementState()
-        }
+        // shootBalls() will increment the ball manager's state if it's shooting
     }
     
     public func markBallInactive(name: String) {
         for ball in ballArray {
             if ball.node!.name == name {
-                ball.isActive = false
+                stoppedBalls.append(ball)
+                ball.stop()
             }
         }
     }
     
-    public func stopInactiveBalls() {
-        if isReady() || isDone() {
-            return
+    // This function should be called in the model's MID_TURN state
+    public func handleStoppedBalls() {
+        if stoppedBalls.count > 0 {
+            // Pop this ball off the front of thel ist
+            let ball = stoppedBalls.removeFirst()
+            //ball.stop() // REMOVE ME
+            if false == firstBallReturned {
+                // The first ball hasn't been returned yet
+                firstBallReturned = true
+                var ballPosition = ball.node!.position
+                if ballPosition.y > groundHeight {
+                    // Ensure the ball is on the ground and not above it
+                    ballPosition.y = groundHeight
+                }
+                originPoint = ball.node!.position
+            }
+            ball.moveBallTo(originPoint!)
         }
-                
+    }
+    
+    // This function should be called in the model's
+    public func waitForBalls() {
+        var activeBallInPlay = false
         for ball in ballArray {
-            if ball.isResting {
-                continue
-            }
-            if false == ball.isActive {
-                if false == firstBallReturned {
-                    // Set the new origin point once a ball has returned
-                    firstBallReturned = true
-                    var ballPosition = ball.node!.position
-                    if ballPosition.y > groundHeight {
-                        // Ensure the ball is on the ground and not above it
-                        ball.node!.position.y = groundHeight
-                    }
-                    originPoint = ball.node!.position
-                }
-                ball.stop(point: originPoint!)
+            if false == ball.isResting {
+                activeBallInPlay = true
+                break
             }
         }
-        
-        if isWaiting() {
-            var numBallsDone = 0
-            for ball in ballArray {
-                if (false == ball.isActive) && (ball.isResting) {
-                    numBallsDone += 1
-                }
-            }
-            if numBallsDone == numBallsActive {
-                // Increment state from WAITING to DONE
-                incrementState()
-                firstBallReturned = false
-                numBallsActive = 0
-            }
+        if false == activeBallInPlay {
+            // Increment state from WAITING to DONE
+            incrementState()
+            firstBallReturned = false
+            numBallsActive = 0
+            // Done waiting for balls
         }
+        // Still waiting for balls
     }
 }
