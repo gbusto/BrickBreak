@@ -344,47 +344,4 @@ class BallManager {
         }
         // Still waiting for balls
     }
-    
-    /* XXX REMOVE ME
-    public func stopInactiveBalls() {
-        if isReady() || isDone() {
-            return
-        }
-                
-        for ball in ballArray {
-            if ball.isResting {
-                continue
-            }
-            if false == ball.isActive {
-                if false == firstBallReturned {
-                    // Set the new origin point once a ball has returned
-                    firstBallReturned = true
-                    var ballPosition = ball.node!.position
-                    if ballPosition.y > groundHeight {
-                        // Ensure the ball is on the ground and not above it
-                        ball.node!.position.y = groundHeight
-                    }
-                    originPoint = ball.node!.position
-                }
-                ball.moveBallTo(originPoint!)
-            }
-        }
-        
-        if isWaiting() {
-            var activeBallInPlay = false
-            for ball in ballArray {
-                if ball.isActive || (false == ball.isResting) {
-                    activeBallInPlay = true
-                    break
-                }
-            }
-            if false == activeBallInPlay {
-                // Increment state from WAITING to DONE
-                incrementState()
-                firstBallReturned = false
-                numBallsActive = 0
-            }
-        }
-    }
-    */
 }
