@@ -826,7 +826,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // Initialize the game model (this is where the code for loading a saved game model will go)
     private func initGameModel() {
         // The controller also needs a copy of this game model object
-        gameModel = ContinuousGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, numberOfRows: Int(ContinousGameScene.NUM_ROWS))
+        gameModel = ContinuousGameModel(numberOfRows: Int(ContinousGameScene.NUM_ROWS))
+        gameModel!.initBallManager(ballRadius: ballRadius!)
+        gameModel!.initItemGenerator(blockSize: blockSize!, ballRadius: ballRadius!)
         
         // Initialize the ball count label
         ballCountLabel = SKLabelNode(fontNamed: fontName)
