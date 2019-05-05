@@ -188,7 +188,7 @@ class ContinuousGameModel {
     }
     
     // MARK: Initialization functions
-    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int) {
+    required init(numberOfRows: Int) {
         state = WAITING
         
         // Try to load persistent data
@@ -209,10 +209,14 @@ class ContinuousGameModel {
         gameScore = gameState!.gameScore
         userWasSaved = gameState!.userWasSaved
         self.numberOfRows = numberOfRows
-        
+    }
+    
+    public func initBallManager(ballRadius: CGFloat) {
         // This function will either load ball manager with a saved state or the default ball manager state
         ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: ContinuousGameModel.ContinuousDirURL)
-        
+    }
+    
+    public func initItemGenerator(blockSize: CGSize, ballRadius: CGFloat) {
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
         itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
                                       numberOfBalls: ballManager!.numberOfBalls,
