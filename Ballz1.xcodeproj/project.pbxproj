@@ -43,6 +43,7 @@
 		F2677A7E216C3FFF00CE3FC0 /* BallProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */; };
 		F2F20380227CB932009298AB /* BallManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F2037F227CB932009298AB /* BallManagerTests.swift */; };
 		F2F20382227F2167009298AB /* ContinuousGameModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F20381227F2167009298AB /* ContinuousGameModelTests.swift */; };
+		F2F20384227F2E2F009298AB /* BallItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F20383227F2E2F009298AB /* BallItemTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +108,7 @@
 		F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallProjection.swift; sourceTree = "<group>"; };
 		F2F2037F227CB932009298AB /* BallManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallManagerTests.swift; sourceTree = "<group>"; };
 		F2F20381227F2167009298AB /* ContinuousGameModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuousGameModelTests.swift; sourceTree = "<group>"; };
+		F2F20383227F2E2F009298AB /* BallItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItemTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,6 +195,7 @@
 				0317DEB8214B5FA500E976E2 /* Ballz1Tests.swift */,
 				F2F2037F227CB932009298AB /* BallManagerTests.swift */,
 				F2F20381227F2167009298AB /* ContinuousGameModelTests.swift */,
+				F2F20383227F2E2F009298AB /* BallItemTests.swift */,
 			);
 			path = Ballz1Tests;
 			sourceTree = "<group>";
@@ -457,6 +460,7 @@
 				F2F20380227CB932009298AB /* BallManagerTests.swift in Sources */,
 				F2F20382227F2167009298AB /* ContinuousGameModelTests.swift in Sources */,
 				0317DEB9214B5FA500E976E2 /* Ballz1Tests.swift in Sources */,
+				F2F20384227F2E2F009298AB /* BallItemTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
