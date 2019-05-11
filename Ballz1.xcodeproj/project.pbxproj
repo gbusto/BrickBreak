@@ -45,6 +45,7 @@
 		F2F20382227F2167009298AB /* ContinuousGameModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F20381227F2167009298AB /* ContinuousGameModelTests.swift */; };
 		F2F20384227F2E2F009298AB /* BallItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F20383227F2E2F009298AB /* BallItemTests.swift */; };
 		F2F20386227F419D009298AB /* HitBlockItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F20385227F419D009298AB /* HitBlockItemTests.swift */; };
+		F2F20388227F4569009298AB /* StoneHitBlockItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F20387227F4569009298AB /* StoneHitBlockItemTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +112,7 @@
 		F2F20381227F2167009298AB /* ContinuousGameModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuousGameModelTests.swift; sourceTree = "<group>"; };
 		F2F20383227F2E2F009298AB /* BallItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallItemTests.swift; sourceTree = "<group>"; };
 		F2F20385227F419D009298AB /* HitBlockItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitBlockItemTests.swift; sourceTree = "<group>"; };
+		F2F20387227F4569009298AB /* StoneHitBlockItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoneHitBlockItemTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,6 +201,7 @@
 				F2F20381227F2167009298AB /* ContinuousGameModelTests.swift */,
 				F2F20383227F2E2F009298AB /* BallItemTests.swift */,
 				F2F20385227F419D009298AB /* HitBlockItemTests.swift */,
+				F2F20387227F4569009298AB /* StoneHitBlockItemTests.swift */,
 			);
 			path = Ballz1Tests;
 			sourceTree = "<group>";
@@ -462,6 +465,7 @@
 			files = (
 				F2F20386227F419D009298AB /* HitBlockItemTests.swift in Sources */,
 				F2F20380227CB932009298AB /* BallManagerTests.swift in Sources */,
+				F2F20388227F4569009298AB /* StoneHitBlockItemTests.swift in Sources */,
 				F2F20382227F2167009298AB /* ContinuousGameModelTests.swift in Sources */,
 				0317DEB9214B5FA500E976E2 /* Ballz1Tests.swift in Sources */,
 				F2F20384227F2E2F009298AB /* BallItemTests.swift in Sources */,
