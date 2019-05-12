@@ -141,6 +141,7 @@ class BallManager {
     
     // MARK: Public functions
     required init(numBalls: Int, radius: CGFloat, restorationURL: URL) {
+        // XXX It shouldn't need to know ball radius... that should be something only the view knows
         ballRadius = radius
         
         let url = restorationURL.appendingPathComponent(BallManager.BallManagerPath)
@@ -166,6 +167,7 @@ class BallManager {
         // Empty constructor
     }
     
+    // XXX This class shouldn't be aware of groundHeight! Only the view should
     public func setGroundHeight(height: CGFloat) {
         groundHeight = height
     }
@@ -183,6 +185,11 @@ class BallManager {
         state += 1
     }
     
+    /*  XXX
+        Maybe rewrite this function to accept an array as the parameter for easier testing?
+        Also, maybe separate the visual logic of moving the balls to the origin point into the view.
+        I think it'll make testing easier if I separate all the logic that does anything visually into the view file and keep all of this other logic as non-view. I think it'll make everything more testable and then I can even run through game scenarios more quickly than if I needed to have the game view up.
+    */
     public func checkNewArray() {
         let array = newBallArray.filter {
             // Tell the ball to return to the origin point and reset its physics bitmasks
@@ -200,10 +207,12 @@ class BallManager {
         numberOfBalls = ballArray.count
     }
     
+    // XXX Is this necessary?
     public func setOriginPoint(point: CGPoint) {
         originPoint = point
     }
     
+    // XXX Write a unit test for this. This may have/introduce bugs; it seems kind of weird
     public func getOriginPoint() -> CGPoint {
         if let op = originPoint {
             return op
@@ -228,11 +237,13 @@ class BallManager {
         return (state == DONE)
     }
     
+    // XXX Is this necessary?
     public func setDirection(point: CGPoint) {
         direction = point
     }
     
-    public func addBall(ball: BallItem) {//, atPoint: CGPoint) {
+    // XXX Could this be rewritten or added to something else?
+    public func addBall(ball: BallItem) {
         newBallArray.append(ball)
         // Update the ball name to avoid name collisions in the ball manager
         ball.getNode().name! = "bm\(ballArray.count + newBallArray.count)"
@@ -252,6 +263,9 @@ class BallManager {
         numBallsActive += 1
     }
     
+    /*  XXX
+        Based on my comment above, I think this is visual logic that should maybe be moved into the view? It originally was then I moved it into the BallManager file.
+    */
     public func shootBalls() {
         // Make sure that before we start shooting balls there aren't any lingering in this list
         /*
@@ -279,6 +293,9 @@ class BallManager {
         return (false == ballArray[numberOfBalls - 1].isResting)
     }
     
+    /*  XXX
+        Also contains some logic for the visual part of the game... might move it back into the view file.
+    */
     public func returnAllBalls() {
         if false == firstBallReturned {
             firstBallReturned = true
@@ -307,6 +324,9 @@ class BallManager {
     }
     
     // This function should be called in the model's MID_TURN state
+    // XXX This function seems like it's kind of doing a lot... maybe some of this should be broken up and the .moveBallTo() should be back in the view.
+    // XXX I definitely think that only the view should move items around and determine where to move them to, then tell the BallManager where it moved them to (i.e. the originPoint)
+    // The view should be responsible for enforcing that the balls actually land and stay on the ground, not the BallManager
     public func handleStoppedBalls() {
         if stoppedBalls.count > 0 {
             // Pop this ball off the front of thel ist
@@ -327,6 +347,7 @@ class BallManager {
     }
     
     // This function should be called in the model's
+    // XXX I should also rewrite this to make it easier to unit test.
     public func waitForBalls() {
         var activeBallInPlay = false
         for ball in ballArray {

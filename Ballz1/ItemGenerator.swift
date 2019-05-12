@@ -299,7 +299,9 @@ class ItemGenerator {
     // MARK: Public functions
     required init(blockSize: CGSize, ballRadius: CGFloat, numberOfBalls: Int, numberOfRows: Int, numItems: Int, restorationURL: URL, useDrand: Bool = false, seed: Int = 0) {
         // XXX Change restoration URL to be optional; if it's nil, don't try to load any data
+        // XXX Maybe this should only be something that the view is aware of
         self.blockSize = blockSize
+        // XXX Same with this... something that only the view is aware of
         self.ballRadius = ballRadius
         self.numberOfRows = numberOfRows
         numItemsPerRow = numItems

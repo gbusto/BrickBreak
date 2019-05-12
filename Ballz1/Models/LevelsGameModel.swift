@@ -259,7 +259,6 @@ class LevelsGameModel {
     public func handleTurn() -> [Item] {
         var addToScore = Int(0)
         
-        // Check to see if the user collected any ball items so far
         let removedItems = itemGenerator!.removeItems()
         for item in removedItems {
             if item is BallItem {
@@ -324,6 +323,7 @@ class LevelsGameModel {
     
     // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
     public func handleTurnOver() {
+        // XXX This might not be necessary in levels? This should only be checking for new balls that the user collected and you can't collect balls in levels.
         ballManager!.checkNewArray()
         
         // Reset the flag in item generator for ball hits x2
@@ -424,6 +424,10 @@ class LevelsGameModel {
     }
     
     // The floor of the game scene; if another row doesn't fit
+    /*  XXX
+     Rewrite this to maybe detect gameover without needing to call a function first; it should just end up in the GAME_OVER state
+     and the view's update() loop should check for .isGameOver()
+    */
     public func gameOver() -> Int {
         // XXX This needs to be updated to capture if the user lost
         // Also, the lossRisk function will need to be updated too
