@@ -33,7 +33,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
     // Ball count label
     private var ballCountLabel: SKLabelNode?
-    private var prevBallCount = Int(0)
     private var currentBallCount = Int(0)
     // This is to prevent the ball count label from being too far right or too far left
     private var ballCountLabelMargin = CGFloat(0.05)
@@ -228,9 +227,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
         // Allow ourselves to be the physics contact delegates
         physicsWorld.contactDelegate = self
-        
-        // XXX REMOVE ME
-        //showLevelPassedScreen(levelPassedView: gameController!.levelPassedView)
     }
     
     // MVC: A view function; notifies the controller of contact between two bodies
@@ -284,8 +280,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             if gameModel!.isReady() {
                 // Show the arrow and update it
                 if inGame(point) && (false == self.isPaused) {
-                    // XXX REMOVE ME
-                    //let originPoint = gameModel!.ballManager!.getOriginPoint()
                     let originPoint = self.originPoint
                     ballProjection.showArrow(scene: self)
                     let _ = ballProjection.updateArrow(startPoint: originPoint,
@@ -308,8 +302,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             }
             else if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Update the arrow location
-                // XXX REMOVE ME
-                //let originPoint = gameModel!.ballManager!.getOriginPoint()
                 let _ = ballProjection.updateArrow(startPoint: originPoint,
                                                    touchPoint: point,
                                                    ceilingHeight: ceilingNode!.position.y,
@@ -325,8 +317,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             
             if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Set the direction for the balls to shoot
-                // XXX REMOVE ME
-                //let originPoint = gameModel!.ballManager!.getOriginPoint()
                 let firePoint = ballProjection.updateArrow(startPoint: originPoint,
                                                            touchPoint: point,
                                                            ceilingHeight: ceilingNode!.position.y,
@@ -347,8 +337,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: After physics simulation step
     override func didSimulatePhysics() {
         // We want to check the balls after each simulation step to ensure it never reaches a completely horizontal or vertical angle
-        // XXX REMOVE ME
-        //for ball in gameModel!.ballManager!.ballArray {
         for ball in ballArray {
             if false == ball.isResting {
                 let dx = ball.getNode().physicsBody!.velocity.dx
@@ -451,18 +439,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             // Move the items down in the view
             animateItems()
             
-            // Display the label showing how many balls the user has (this needs to be done after we have collected any new balls the user acquired)
-            // XXX REMOVE ME
-            //currentBallCount = gameModel!.getBalls().count
-            currentBallCount = ballArray.count
-            // See if the user acquired any new balls
-            let diff = currentBallCount - prevBallCount
-            if diff > 0 {
-                // Show a floating label saying how many balls the user acquired that turn
-                showBallsAcquiredLabel(count: diff)
-            }
-            // Update the previous ball count to the current count so that next time around we can see if the user acquired more balls
-            prevBallCount = currentBallCount
+            // Add back the ball count label
             addBallCountLabel()
             
             // Check the model to update the score label
@@ -557,14 +534,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 else if item is BombItem {
                     self.removeChildren(in: [item.getNode()])
-                }
-                else if item is BallItem {
-                    // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
-                    let vector = CGVector(dx: 0, dy: ballRadius! * 0.5)
-                    let ball = item.getNode()
-                    ball.physicsBody!.affectedByGravity = true
-                    ball.run(SKAction.applyImpulse(vector, duration: 0.05))
-                    ballHitAnimation(color: colorScheme!.hitBallColor, position: ball.position)
                 }
             }
             
@@ -797,6 +766,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX Common function
     // Save the user from loss after they watched an ad
     public func saveUser() {
         let fadeOut = SKAction.fadeOut(withDuration: 1)
@@ -842,7 +812,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         
         let balls = gameModel!.getBalls()
         currentBallCount = balls.count
-        prevBallCount = balls.count
         for ball in balls {
             ball.loadItem(position: ballPosition)
             ball.resetBall()
@@ -870,7 +839,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         //animateItems()
     }
     
-    /*  XXX
+    /*  XXX Common Function
      Also contains some logic for the visual part of the game... might move it back into the view file.
      */
     public func returnAllBalls() {
@@ -889,6 +858,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         // shootBalls() will increment the ball manager's state if it's shooting
     }
     
+    // XXX Common function
     private func setBallsOnFire() {
         ballsOnFire = true
         for ball in ballArray {
@@ -898,11 +868,13 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX Common function
     private func shootBalls(point: CGPoint) {
         gameModel!.prepareTurn()
         startTimer(point)
     }
     
+    // XXX Common function
     private func startTimer(_ point: CGPoint) {
         let _ = Timer.scheduledTimer(withTimeInterval: fireDelay, repeats: true) { timer in
             if self.endTurn {
@@ -942,6 +914,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX Common function
     private func handleStoppedBalls() {
         if stoppedBalls.count > 0 {
             // Pop this ball off the front of the list
@@ -959,6 +932,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX Common function
     private func waitForBalls() {
         var activeBallInPlay = false
         let _ = ballArray.filter {
@@ -973,25 +947,21 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    /* XXX REMOVE ME
-    private func shootBalls2(point: CGPoint) {
-        gameModel!.prepareTurn(point: point)
-        gameModel!.ballManager!.shootBalls()
-    }
-    */
-    
+    // XXX Common function
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
     private func inGame(_ point: CGPoint) -> Bool {
         return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
     }
     
+    // XXX Common function
     // Initialize the different walls and physics edges
     private func initWalls(view: SKView) {
         initGround(view: view, margin: margin!)
         initCeiling(view: view, margin: margin!)
         initSideWalls(view: view, margin: margin!)
     }
-    
+
+    // XXX Common function
     private func initGround(view: SKView, margin: CGFloat) {
         let size = CGSize(width: view.frame.width, height: margin)
         groundNode = SKSpriteNode(color: colorScheme!.marginColor, size: size)
@@ -1014,6 +984,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(groundNode!)
     }
     
+    // XXX Common function
     private func initCeiling(view: SKView, margin: CGFloat) {
         let startPoint = CGPoint(x: leftWallWidth, y: 0)
         let endPoint = CGPoint(x: view.frame.width - rightWallWidth, y: 0)
@@ -1034,6 +1005,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(ceilingNode!)
     }
     
+    // XXX Common function
     private func initSideWalls(view: SKView, margin: CGFloat) {
         let leftWallSize = CGSize(width: leftWallWidth, height: view.frame.height - (margin * 2))
         let lwStartPoint = CGPoint(x: leftWallWidth, y: 0)
@@ -1083,6 +1055,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(rightWallNode!)
     }
     
+    // XXX Common function
     // Creates a physics edge; this code can be reused for side walls and the ceiling node
     private func createPhysicsEdge(startPoint: CGPoint, endPoint: CGPoint) -> SKPhysicsBody {
         let physBody = SKPhysicsBody(edgeFrom: startPoint, to: endPoint)
@@ -1096,6 +1069,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         return physBody
     }
     
+    // XXX Common function
     // Flashes the fast forward image to give the user some feedback about what's happening
     private func flashSpeedupImage() {
         let pos = CGPoint(x: self.view!.frame.midX, y: self.view!.frame.midY)
@@ -1116,6 +1090,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX Common function
     private func animateItems() {
         actionsStarted = gameModel!.itemGenerator!.getItemCount()
         
@@ -1181,6 +1156,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         gameModel!.itemGenerator!.pruneFirstRow()
     }
     
+    // XXX Common function
     private func colorizeBlocks(itemRow: [Item]) {
         bottomColor = topColor
         colorIndex += 1
@@ -1206,6 +1182,8 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
     }
+    
+    // XXX Common function
     private func addRowToView(rowNum: Int, items: [Item]) {
         colorizeBlocks(itemRow: items)
         
@@ -1248,10 +1226,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX Common function
     private func addBallCountLabel() {
         currentBallCount = gameModel!.getBalls().count
-        // XXX REMOVE ME
-        //let originPoint = gameModel!.ballManager!.getOriginPoint()
         var newPoint = CGPoint(x: originPoint.x, y: (originPoint.y + (ballRadius! * 1.5)))
         let viewWidth = view!.frame.width - (leftWallWidth * 2)
         // This is to prevent the ball count label from going off the screen
@@ -1277,37 +1254,17 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX Common function
     private func updateBallCountLabel() {
         ballCountLabel!.text = "x\(currentBallCount)"
     }
     
+    // XXX Common function
     private func removeBallCountLabel() {
         self.removeChildren(in: [ballCountLabel!])
     }
     
-    private func showBallsAcquiredLabel(count: Int) {
-        let fontSize = ballRadius! * 2
-        // XXX REMOVE ME
-        //let originPoint = gameModel!.ballManager!.getOriginPoint()
-        let pos = CGPoint(x: originPoint.x, y: originPoint.y + fontSize)
-        let label = SKLabelNode()
-        label.text = "+\(count)"
-        label.fontSize = fontSize
-        label.fontName = fontName
-        label.position = pos
-        label.alpha = 0
-        
-        let vect = CGVector(dx: 0, dy: fontSize * 3)
-        let action1 = SKAction.fadeIn(withDuration: 0.5)
-        let action2 = SKAction.move(by: vect, duration: 1)
-        let action3 = SKAction.fadeOut(withDuration: 0.5)
-        self.addChild(label)
-        label.run(action2)
-        label.run(SKAction.sequence([action1, action3])) {
-            self.scene!.removeChildren(in: [label])
-        }
-    }
-    
+    // XXX Common function
     private func displayEncouragement(emoji: String, text: String) {
         if showingEncouragement {
             // If we're showing encouragement on the screen, don't display something else
@@ -1346,6 +1303,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(text)
     }
     
+    // XXX Common function
     private func startFlashingRed() {
         // If the screen is already flashing red then don't do anything
         if let node = self.childNode(withName: "warningNode") {
@@ -1373,6 +1331,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(frontNode)
     }
     
+    // XXX Common function
     private func stopFlashingRed() {
         if let node = self.childNode(withName: "warningNode") {
             node.run(SKAction.fadeOut(withDuration: 1)) {
@@ -1382,6 +1341,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX Common function
     private func breakBlock(color1: SKColor, color2: SKColor, position: CGPoint) {
         let colors: [UIColor] = [color1, color2]
         let alphas: [CGFloat] = [0.1, 0.2, 0.3, 0.4, 0.5]
@@ -1410,37 +1370,6 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             let action2 = SKAction.fadeOut(withDuration: 1)
             block.run(SKAction.sequence([action1, action2])) {
                 self.removeChildren(in: [block])
-            }
-        }
-    }
-    
-    private func ballHitAnimation(color: SKColor, position: CGPoint) {
-        let alphas: [CGFloat] = [0.3, 0.4, 0.5, 0.6, 0.7]
-        let numDroplets = 8
-        var balls: [SKShapeNode] = []
-        for _ in 0...(numDroplets - 1) {
-            let newPosition = CGPoint(x: position.x + CGFloat(Int.random(in: -10...10)),
-                                      y: position.y + CGFloat(Int.random(in: -10...10)))
-            let ball = SKShapeNode(circleOfRadius: ballRadius! / 2)
-            ball.position = newPosition
-            ball.alpha = alphas.randomElement()!
-            ball.fillColor = color
-            
-            let physBody = SKPhysicsBody()
-            physBody.affectedByGravity = true
-            physBody.isDynamic = true
-            ball.physicsBody = physBody
-            
-            balls.append(ball)
-            self.addChild(ball)
-        }
-        
-        for ball in balls {
-            let vector = CGVector(dx: CGFloat(Int.random(in: -150...150)), dy: CGFloat(Int.random(in: 200...400)))
-            let action1 = SKAction.applyImpulse(vector, duration: 0.1)
-            let action2 = SKAction.fadeOut(withDuration: 1)
-            ball.run(SKAction.sequence([action1, action2])) {
-                self.removeChildren(in: [ball])
             }
         }
     }

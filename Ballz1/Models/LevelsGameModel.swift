@@ -236,24 +236,8 @@ class LevelsGameModel {
         // Save the item generator's turn state as soon as the user starts the next turn
         itemGenerator!.saveTurnState()
         
-        // Also save the ball manager's state
-        // XXX REMOVE ME
-        //ballManager!.saveTurnState()
-        
-        // XXX REMOVE ME
-        //ballManager!.setDirection(point: point)
-        
-        // XXX REMOVE ME
-        // Change the ball manager's state from READY to SHOOTING
-        //ballManager!.incrementState()
-        
         // Change our state from READY to MID_TURN
         incrementState()
-    }
-    
-    // XXX REMOVE ME
-    public func endTurn() {
-        ballManager!.returnAllBalls()
     }
     
     public func saveUser() -> [Item] {
@@ -267,15 +251,6 @@ class LevelsGameModel {
         
         let removedItems = itemGenerator!.removeItems()
         for item in removedItems {
-            /* XXX REMOVE ME
-            if item is BallItem {
-                addToScore += Int(2 * onFireBonus)
-                // Transfer ownership of the from the item generator to the ball manager
-                let ball = item as! BallItem
-                ballManager!.addBall(ball: ball)
-            }
-            else if item is HitBlockItem {
-            */
             if item is HitBlockItem {
                 addToScore += Int(Double(blockBonus) * onFireBonus)
                 blockBonus += Int(2 * onFireBonus)
@@ -296,25 +271,6 @@ class LevelsGameModel {
         
         // XXX We are now incrementing the model's state in the view when it detects all balls have landed
         
-        /* XXX REMOVE ME
-        // Iterate over all the balls in the array of stopped balls, stop them, and move them to their new origin point
-        ballManager!.handleStoppedBalls()
-        
-        // Check to see if the ball manager is still waiting for balls to return
-        if ballManager!.isWaiting() {
-            ballManager!.waitForBalls()
-        }
-        
-        // Wait for the ball manager to finish
-        if ballManager!.isDone() {
-            // Increment state from MID_TURN to TURN_OVER
-            incrementState()
-            
-            // Increment the ball manager's state from DONE to READY
-            ballManager!.incrementState()
-        }
-        */
-        
         gameScore += addToScore
         scoreThisTurn += addToScore
         
@@ -328,11 +284,6 @@ class LevelsGameModel {
         gameScore += diff
         scoreThisTurn = newScore
         
-        /* XXX REMOVE ME
-        // Set the balls on fire
-        ballManager!.setBallsOnFire()
-        */
-        
         // Ball hits are now x2
         itemGenerator!.setOnFireBonus(true)
     }
@@ -340,8 +291,6 @@ class LevelsGameModel {
     // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
     public func handleTurnOver() {
         // XXX This might not be necessary in levels? This should only be checking for new balls that the user collected and you can't collect balls in levels.
-        // XXX REMOVE ME
-        //ballManager!.checkNewArray()
         
         // Reset the flag in item generator for ball hits x2
         itemGenerator!.setOnFireBonus(false)
@@ -372,39 +321,6 @@ class LevelsGameModel {
             scoreThisTurn += additive
             gameScore += additive
         }
-        
-        /* XXX REMOVE ME
-        if nameA.starts(with: "bm") {
-            if "ground" == nameB {
-                ballManager!.markBallInactive(name: nameA)
-            }
-            else {
-                // Add 1 (or 2) points for hitting anything (except blocks that are currently stone)
-                if "wall" != nameB && "ceiling" != nameB {
-                    if itemGenerator!.hit(name: nameB) {
-                        scoreThisTurn += additive
-                        gameScore += additive
-                    }
-                }
-            }
- 
-        }
-        
-        if nameB.starts(with: "bm") {
-            if "ground" == nameA {
-                ballManager!.markBallInactive(name: nameB)
-            }
-            else {
-                // Add 1 (or 2) points for hitting anything (except blocks that are currently stone)
-                if "wall" != nameA && "ceiling" != nameA {
-                    if itemGenerator!.hit(name: nameA) {
-                        scoreThisTurn += additive
-                        gameScore += additive
-                    }
-                }
-            }
-        }
-        */
     }
     
     // Some hacky math to figure out how many rows of actual items we have left in the game
