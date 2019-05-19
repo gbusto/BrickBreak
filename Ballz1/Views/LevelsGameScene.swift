@@ -140,6 +140,10 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     private var ballsOnFire = false
     // XXX New variable
     private var firedAllBalls = false
+    // XXX New variable
+    private var numBallsFired = 0
+    // XXX New variable
+    private var endTurn = false
 
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -396,6 +400,11 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if gameModel!.isTurnOver() {
+            endTurn = false
+            
+            // Reset the number of balls that were fired to 0
+            numBallsFired = 0
+            
             // Reset this; let's us know when all balls have been fired
             firedAllBalls = false
             
@@ -520,6 +529,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                 // Handle ball return gesture
                 returnAllBalls()
                 swipedDown = false
+                endTurn = true
             }
             
             // Allow the model to handle a turn
@@ -888,38 +898,46 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    // XXX New function
     private func shootBalls(point: CGPoint) {
         gameModel!.prepareTurn()
-        
-        var accumulatedDelay = Double(0)
-        for i in 0...(ballArray.count - 1) {
-            let ball = ballArray[i]
-            let lastBall = i == (ballArray.count - 1)
-            // XXX This still won't work as expected... to increase the speed at which balls fire
-            if physicsWorld.speed > 1.0 && (fireDelay == LevelsGameScene.DEFAULT_FIRE_DELAY) {
-                fireDelay = fireDelay / 2
+        startTimer(point)
+    }
+    
+    private func startTimer(_ point: CGPoint) {
+        let _ = Timer.scheduledTimer(withTimeInterval: fireDelay, repeats: true) { timer in
+            if self.endTurn {
+                // Let the game know that we've shot all the balls
+                self.firedAllBalls = true
+                // If the user swiped down, invalidate the timer and stop
+                timer.invalidate()
+                return
             }
-            accumulatedDelay += fireDelay
-            let _ = Timer.scheduledTimer(withTimeInterval: accumulatedDelay, repeats: false) { timer in
-                // Check to see if the user swiped down in the timer
-                if self.swipedDown {
-                    return
-                }
-                
-                ball.fire(point: point)
-                if self.ballsOnFire {
-                    ball.setOnFire()
-                }
-                self.currentBallCount -= 1
-                // If we're on the last ball. after firing it remove the ball count label
-                if lastBall {
-                    self.removeBallCountLabel()
-                    self.firedAllBalls = true
-                }
-                else {
-                    self.updateBallCountLabel()
-                }
+            
+            if self.physicsWorld.speed > 1.0 && (self.fireDelay == LevelsGameScene.DEFAULT_FIRE_DELAY) {
+                timer.invalidate()
+                self.fireDelay = self.fireDelay / 2
+                self.startTimer(point)
+                return
+            }
+            
+            // Set this boolean so we know whether or not this is the last ball and need to remove the label
+            let lastBall = (self.numBallsFired == (self.ballArray.count - 1))
+            
+            let ball = self.ballArray[self.numBallsFired]
+            ball.fire(point: point)
+            self.numBallsFired += 1
+            if self.ballsOnFire {
+                ball.setOnFire()
+            }
+            self.currentBallCount -= 1
+            // If we're on the last ball. after firing it remove the ball count label
+            if lastBall {
+                self.removeBallCountLabel()
+                self.firedAllBalls = true
+                timer.invalidate()
+            }
+            else {
+                self.updateBallCountLabel()
             }
         }
     }
