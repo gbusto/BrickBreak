@@ -228,7 +228,7 @@ class LevelsGameModel {
         return ballManager!.ballArray
     }
     
-    public func prepareTurn(point: CGPoint) {
+    public func prepareTurn() {
         // Reset the score for this turn to 0
         scoreThisTurn = 0
         resetAdditives()
@@ -237,15 +237,21 @@ class LevelsGameModel {
         itemGenerator!.saveTurnState()
         
         // Also save the ball manager's state
-        ballManager!.saveTurnState()
+        // XXX REMOVE ME
+        //ballManager!.saveTurnState()
         
-        ballManager!.setDirection(point: point)
+        // XXX REMOVE ME
+        //ballManager!.setDirection(point: point)
+        
+        // XXX REMOVE ME
         // Change the ball manager's state from READY to SHOOTING
-        ballManager!.incrementState()
+        //ballManager!.incrementState()
+        
         // Change our state from READY to MID_TURN
         incrementState()
     }
     
+    // XXX REMOVE ME
     public func endTurn() {
         ballManager!.returnAllBalls()
     }
@@ -261,6 +267,7 @@ class LevelsGameModel {
         
         let removedItems = itemGenerator!.removeItems()
         for item in removedItems {
+            /* XXX REMOVE ME
             if item is BallItem {
                 addToScore += Int(2 * onFireBonus)
                 // Transfer ownership of the from the item generator to the ball manager
@@ -268,6 +275,8 @@ class LevelsGameModel {
                 ballManager!.addBall(ball: ball)
             }
             else if item is HitBlockItem {
+            */
+            if item is HitBlockItem {
                 addToScore += Int(Double(blockBonus) * onFireBonus)
                 blockBonus += Int(2 * onFireBonus)
             }
@@ -285,6 +294,9 @@ class LevelsGameModel {
             lastItemBroken = true
         }
         
+        // XXX We are now incrementing the model's state in the view when it detects all balls have landed
+        
+        /* XXX REMOVE ME
         // Iterate over all the balls in the array of stopped balls, stop them, and move them to their new origin point
         ballManager!.handleStoppedBalls()
         
@@ -301,6 +313,7 @@ class LevelsGameModel {
             // Increment the ball manager's state from DONE to READY
             ballManager!.incrementState()
         }
+        */
         
         gameScore += addToScore
         scoreThisTurn += addToScore
@@ -315,8 +328,11 @@ class LevelsGameModel {
         gameScore += diff
         scoreThisTurn = newScore
         
+        /* XXX REMOVE ME
         // Set the balls on fire
         ballManager!.setBallsOnFire()
+        */
+        
         // Ball hits are now x2
         itemGenerator!.setOnFireBonus(true)
     }
@@ -324,7 +340,8 @@ class LevelsGameModel {
     // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
     public func handleTurnOver() {
         // XXX This might not be necessary in levels? This should only be checking for new balls that the user collected and you can't collect balls in levels.
-        ballManager!.checkNewArray()
+        // XXX REMOVE ME
+        //ballManager!.checkNewArray()
         
         // Reset the flag in item generator for ball hits x2
         itemGenerator!.setOnFireBonus(false)
@@ -343,6 +360,20 @@ class LevelsGameModel {
         }
         // Items that start with the name bm are ball manager balls. They are named differently from the other items so we can quickly check if a ball manager ball is interacting with an item from the item generator
         // Add any extra cases in here if they need special attention
+        var item = ""
+        if nameA.starts(with: "bm") {
+            item = nameB
+        }
+        else {
+            item = nameA
+        }
+        
+        if itemGenerator!.hit(name: item) {
+            scoreThisTurn += additive
+            gameScore += additive
+        }
+        
+        /* XXX REMOVE ME
         if nameA.starts(with: "bm") {
             if "ground" == nameB {
                 ballManager!.markBallInactive(name: nameA)
@@ -356,6 +387,7 @@ class LevelsGameModel {
                     }
                 }
             }
+ 
         }
         
         if nameB.starts(with: "bm") {
@@ -372,6 +404,7 @@ class LevelsGameModel {
                 }
             }
         }
+        */
     }
     
     // Some hacky math to figure out how many rows of actual items we have left in the game

@@ -123,6 +123,23 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
     private static var NUM_ROWS = CGFloat(12)
     private static var NUM_COLUMNS = CGFloat(8)
+    
+    // XXX New variable; moving it out of the BallManager
+    private var ballArray: [BallItem] = []
+    // XXX New variable; delay before firing a ball
+    private var fireDelay = LevelsGameScene.DEFAULT_FIRE_DELAY
+    // XXX New variable; default fire delay
+    private static var DEFAULT_FIRE_DELAY = Double(0.1)
+    // XXX New variable
+    private var stoppedBalls: [BallItem] = []
+    // XXX New variable
+    private var firstBallReturned = false
+    // XXX New variable
+    private var originPoint = CGPoint(x: 0, y: 0)
+    // XXX New variable
+    private var ballsOnFire = false
+    // XXX New variable
+    private var firedAllBalls = false
 
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -190,6 +207,10 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         // This kind of breaks MVC a bit because the ball manager shouldn't know the ground height
         gameModel!.ballManager!.setGroundHeight(height: groundNode!.size.height + ballRadius!)
         
+        ballArray = gameModel!.ballManager!.ballArray
+        // XXX Sloppy... find a better way to initialize this
+        originPoint = ballArray[0].getNode().position
+        
         rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleRightSwipe(_:)))
         rightSwipeGesture!.direction = .right
         rightSwipeGesture!.numberOfTouchesRequired = 1
@@ -213,6 +234,41 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         let nameA = contact.bodyA.node?.name!
         let nameB = contact.bodyB.node?.name!
         
+        // Don't need to handle cases where a ball makes contact with a ceiling or a wall... just ignore it
+        if ("wall" == nameA! || "wall" == nameB!) || ("ceiling" == nameA! || "ceiling" == nameB!) {
+            return
+        }
+        
+        // Handle the case where nameA is a ball and it hit the ground
+        if nameA!.starts(with: "bm") && "ground" == nameB! {
+            print("Ball \(nameA!) made contact with ground")
+            // XXX TEST THIS OUT
+            let _ = ballArray.filter {
+                if $0.getNode().name! == nameA! {
+                    self.stoppedBalls.append($0)
+                    $0.stop()
+                }
+                return true
+            }
+            // Bail out because we don't need to continue
+            return
+        }
+        
+        // Same as the case above; handle the case where a ball hit the ground
+        if nameB!.starts(with: "bm") && "ground" == nameA! {
+            // XXX TEST THIS OUT
+            let _ = ballArray.filter {
+                if $0.getNode().name! == nameB! {
+                    self.stoppedBalls.append($0)
+                    $0.stop()
+                }
+                return true
+            }
+            // Bail out because we don't need to continue
+            return
+        }
+        
+        // Allow the game model to do whatever it needs with this collision; mainly to update the score
         gameModel!.handleContact(nameA: nameA!, nameB: nameB!)
     }
     
@@ -224,7 +280,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             if gameModel!.isReady() {
                 // Show the arrow and update it
                 if inGame(point) && (false == self.isPaused) {
-                    let originPoint = gameModel!.ballManager!.getOriginPoint()
+                    // XXX REMOVE ME
+                    //let originPoint = gameModel!.ballManager!.getOriginPoint()
+                    let originPoint = self.originPoint
                     ballProjection.showArrow(scene: self)
                     let _ = ballProjection.updateArrow(startPoint: originPoint,
                                                        touchPoint: point,
@@ -246,7 +304,8 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             }
             else if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Update the arrow location
-                let originPoint = gameModel!.ballManager!.getOriginPoint()
+                // XXX REMOVE ME
+                //let originPoint = gameModel!.ballManager!.getOriginPoint()
                 let _ = ballProjection.updateArrow(startPoint: originPoint,
                                                    touchPoint: point,
                                                    ceilingHeight: ceilingNode!.position.y,
@@ -262,7 +321,8 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             
             if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Set the direction for the balls to shoot
-                let originPoint = gameModel!.ballManager!.getOriginPoint()
+                // XXX REMOVE ME
+                //let originPoint = gameModel!.ballManager!.getOriginPoint()
                 let firePoint = ballProjection.updateArrow(startPoint: originPoint,
                                                            touchPoint: point,
                                                            ceilingHeight: ceilingNode!.position.y,
@@ -283,7 +343,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: After physics simulation step
     override func didSimulatePhysics() {
         // We want to check the balls after each simulation step to ensure it never reaches a completely horizontal or vertical angle
-        for ball in gameModel!.ballManager!.ballArray {
+        // XXX REMOVE ME
+        //for ball in gameModel!.ballManager!.ballArray {
+        for ball in ballArray {
             if false == ball.isResting {
                 let dx = ball.getNode().physicsBody!.velocity.dx
                 let dy = ball.getNode().physicsBody!.velocity.dy
@@ -334,8 +396,20 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if gameModel!.isTurnOver() {
+            // Reset this; let's us know when all balls have been fired
+            firedAllBalls = false
+            
+            // Reset the boolean specifying whether or not balls are on fire
+            ballsOnFire = false
+            
+            // Reset this boolean saying that the first ball has touched the ground
+            firstBallReturned = false
+            
             // Return physics simulation to normal speed
             physicsWorld.speed = 1.0
+            
+            // Return the fireDelay to the default
+            fireDelay = LevelsGameScene.DEFAULT_FIRE_DELAY
             
             // Reset the tick delay for firing balls
             ticksDelay = 6
@@ -369,7 +443,9 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             animateItems()
             
             // Display the label showing how many balls the user has (this needs to be done after we have collected any new balls the user acquired)
-            currentBallCount = gameModel!.getBalls().count
+            // XXX REMOVE ME
+            //currentBallCount = gameModel!.getBalls().count
+            currentBallCount = ballArray.count
             // See if the user acquired any new balls
             let diff = currentBallCount - prevBallCount
             if diff > 0 {
@@ -428,19 +504,12 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if gameModel!.isReady() {
-            // Don't need to do anything here
+            // Reset this list to empty
+            stoppedBalls = []
         }
         
         // Actions to perform while in the middle of a turn
         if gameModel!.isMidTurn() {
-            currentBallCount = gameModel!.ballManager!.numRestingBalls()
-            if currentBallCount > 0 {
-                updateBallCountLabel()
-            }
-            else {
-                removeBallCountLabel()
-            }
-            
             if false == addedGesture {
                 // Ask the model if we showed the fast forward tutorial
                 view!.gestureRecognizers = [rightSwipeGesture!, downSwipeGesture!]
@@ -449,7 +518,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
             
             if swipedDown {
                 // Handle ball return gesture
-                gameModel!.endTurn()
+                returnAllBalls()
                 swipedDown = false
             }
             
@@ -495,6 +564,7 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                 displayEncouragement(emoji: "🔥", text: "On fire!")
                 displayedOnFire = true
                 gameModel!.addOnFireBonus()
+                setBallsOnFire()
             }
             
             if gameModel!.lastItemBroken && false == showedConfetti {
@@ -506,6 +576,13 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
                 view!.layer.addSublayer(emitter)
                 
                 showedConfetti = true
+            }
+            
+            // Check on the balls that have hit the ground and marked as inactive and move them to the new origin point
+            handleStoppedBalls()
+            if firedAllBalls {
+                // Wait for all balls to return
+                waitForBalls()
             }
         }
     }
@@ -783,10 +860,107 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
         //animateItems()
     }
     
+    /*  XXX
+     Also contains some logic for the visual part of the game... might move it back into the view file.
+     */
+    public func returnAllBalls() {
+        if false == firstBallReturned {
+            firstBallReturned = true
+        }
+        
+        for ball in ballArray {
+            ball.getNode().physicsBody!.collisionBitMask = 0
+            ball.getNode().physicsBody!.categoryBitMask = 0
+            ball.getNode().physicsBody!.contactTestBitMask = 0
+            ball.stop()
+            ball.moveBallTo(originPoint)
+        }
+        
+        // shootBalls() will increment the ball manager's state if it's shooting
+    }
+    
+    private func setBallsOnFire() {
+        ballsOnFire = true
+        for ball in ballArray {
+            if false == ball.isResting {
+                ball.setOnFire()
+            }
+        }
+    }
+    
+    // XXX New function
     private func shootBalls(point: CGPoint) {
+        gameModel!.prepareTurn()
+        
+        var accumulatedDelay = Double(0)
+        for i in 0...(ballArray.count - 1) {
+            let ball = ballArray[i]
+            let lastBall = i == (ballArray.count - 1)
+            // XXX This still won't work as expected... to increase the speed at which balls fire
+            if physicsWorld.speed > 1.0 && (fireDelay == LevelsGameScene.DEFAULT_FIRE_DELAY) {
+                fireDelay = fireDelay / 2
+            }
+            accumulatedDelay += fireDelay
+            let _ = Timer.scheduledTimer(withTimeInterval: accumulatedDelay, repeats: false) { timer in
+                // Check to see if the user swiped down in the timer
+                if self.swipedDown {
+                    return
+                }
+                
+                ball.fire(point: point)
+                if self.ballsOnFire {
+                    ball.setOnFire()
+                }
+                self.currentBallCount -= 1
+                // If we're on the last ball. after firing it remove the ball count label
+                if lastBall {
+                    self.removeBallCountLabel()
+                    self.firedAllBalls = true
+                }
+                else {
+                    self.updateBallCountLabel()
+                }
+            }
+        }
+    }
+    
+    private func handleStoppedBalls() {
+        if stoppedBalls.count > 0 {
+            // Pop this ball off the front of the list
+            let ball = stoppedBalls.removeFirst()
+            if false == firstBallReturned {
+                firstBallReturned = true
+                var ballPosition = ball.getNode().position
+                if ballPosition.y > groundNode!.size.height {
+                    ballPosition.y = groundNode!.size.height
+                }
+                originPoint = ball.getNode().position
+            }
+            // This should work and prevent balls from landing in the middle of the screen...
+            ball.moveBallTo(originPoint)
+        }
+    }
+    
+    private func waitForBalls() {
+        var activeBallInPlay = false
+        let _ = ballArray.filter {
+            if false == $0.isResting {
+                activeBallInPlay = true
+            }
+            return true
+        }
+        if false == activeBallInPlay {
+            // XXX Careful with this... we're not letting the game model update its own state
+            gameModel!.incrementState()
+        }
+    }
+    
+    /* XXX REMOVE ME
+    private func shootBalls2(point: CGPoint) {
         gameModel!.prepareTurn(point: point)
         gameModel!.ballManager!.shootBalls()
     }
+    */
     
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
     private func inGame(_ point: CGPoint) -> Bool {
@@ -1058,7 +1232,8 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
     private func addBallCountLabel() {
         currentBallCount = gameModel!.getBalls().count
-        let originPoint = gameModel!.ballManager!.getOriginPoint()
+        // XXX REMOVE ME
+        //let originPoint = gameModel!.ballManager!.getOriginPoint()
         var newPoint = CGPoint(x: originPoint.x, y: (originPoint.y + (ballRadius! * 1.5)))
         let viewWidth = view!.frame.width - (leftWallWidth * 2)
         // This is to prevent the ball count label from going off the screen
@@ -1094,7 +1269,8 @@ class LevelsGameScene: SKScene, SKPhysicsContactDelegate {
     
     private func showBallsAcquiredLabel(count: Int) {
         let fontSize = ballRadius! * 2
-        let originPoint = gameModel!.ballManager!.getOriginPoint()
+        // XXX REMOVE ME
+        //let originPoint = gameModel!.ballManager!.getOriginPoint()
         let pos = CGPoint(x: originPoint.x, y: originPoint.y + fontSize)
         let label = SKLabelNode()
         label.text = "+\(count)"
