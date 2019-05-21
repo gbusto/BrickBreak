@@ -13,6 +13,11 @@ import CoreGraphics
 
 class LevelsGameScene: GameScene {
     
+    // MARK: Public attributes
+    public var gameModel: LevelsGameModel?
+    
+    public var gameController: LevelsGameController?
+    
     // Variables for handling swipe gestures
     private var rightSwipeGesture: UISwipeGestureRecognizer?
     private var downSwipeGesture: UISwipeGestureRecognizer?
@@ -298,10 +303,11 @@ class LevelsGameScene: GameScene {
             }
             
             // Move the items down in the view
-            animateItems()
+            animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
+            gameModel!.itemGenerator!.pruneFirstRow()
             
             // Add back the ball count label
-            addBallCountLabel()
+            addBallCountLabel(ballCount: gameModel!.getBalls().count)
             
             // Check the model to update the score label
             // Update the current game score

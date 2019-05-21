@@ -14,10 +14,6 @@ import CoreGraphics
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    // MARK: Public attributes
-    public var gameModel: LevelsGameModel?
-    
-    public var gameController: LevelsGameController?
     
     // MARK: Private attributes
     private var colorScheme: GameSceneColorScheme?
@@ -180,11 +176,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return 0 == actionsStarted
     }
     
-    public func animateItems() {
-        actionsStarted = gameModel!.itemGenerator!.getItemCount()
+    public func animateItems(numItems: Int, array: [[Item]]) {
+        actionsStarted = numItems
         
         let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
-        let array = gameModel!.itemGenerator!.itemArray
         
         if 0 == array.count {
             // No items to animate
@@ -241,8 +236,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
-        
-        gameModel!.itemGenerator!.pruneFirstRow()
     }
     
     public func colorizeBlocks(itemRow: [Item]) {
@@ -313,8 +306,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    public func addBallCountLabel() {
-        currentBallCount = gameModel!.getBalls().count
+    public func addBallCountLabel(ballCount: Int) {
+        currentBallCount = ballCount
         var newPoint = CGPoint(x: originPoint.x, y: (originPoint.y + (ballRadius! * 1.5)))
         let viewWidth = view!.frame.width - (leftWallWidth * 2)
         // This is to prevent the ball count label from going off the screen
