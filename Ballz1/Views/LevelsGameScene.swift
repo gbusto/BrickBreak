@@ -274,8 +274,6 @@ class LevelsGameScene: GameScene {
             fireDelay = LevelsGameScene.DEFAULT_FIRE_DELAY
             
             // Reset the tick delay for firing balls
-            // XXX REMOVE ME
-            //ticksDelay = 6
             
             // Clear gesture recognizers in the view
             view!.gestureRecognizers = []
@@ -443,8 +441,6 @@ class LevelsGameScene: GameScene {
                 // Speed up the physics simulation
                 if physicsWorld.speed < 3.0 {
                     physicsWorld.speed = 3.0
-                    // XXX REMOVE ME
-                    //ticksDelay = 1
                     
                     flashSpeedupImage()
                 }
