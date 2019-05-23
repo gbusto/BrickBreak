@@ -13,47 +13,56 @@ import SpriteKit
 import GameplayKit
 import CoreGraphics
 
-class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
+class ContinousGameScene: GameScene {
     
     // MARK: Public properties
     // The game model
     public var gameModel: ContinuousGameModel?
     
     public var gameController: ContinuousGameController?
-    
+
     // MARK: Private properties
+    /* XXX REMOVE ME
     private var colorScheme: GameSceneColorScheme?
     
     // The margin aka the ceiling height and ground height
     private var margin: CGFloat?
+    */
     
     // Number of items per row
     private var numItemsPerRow = Int(8)
     
+    /* XXX REMOVE ME
     // The ball radius
     private var ballRadius: CGFloat?
     // The generic item width (typically the view's (width / (number of items per row))
     private var rowHeight: CGFloat?
     // The block size
     private var blockSize: CGSize?
-    
+ 
     private var ballCountLabelMargin = CGFloat(0.05)
+    */
     
     private var lastUndoTurnScore = 0
     static private var MAX_TURNS_FORCE_UNDO = Int(5)
     
+    /* XXX REMOVE ME
     // Nodes that will be shown in the view
     private var groundNode: SKSpriteNode?
     private var ceilingNode: SKShapeNode?
     private var leftWallNode: SKShapeNode?
     private var rightWallNode: SKShapeNode?
+    */
     
+    /* XXX REMOVE ME
     // This is essentially the minimum X value for the game play area; if it is zero, it looks like it goes off the left side of the screen; when set to 1 it looks better
     private var leftWallWidth = CGFloat(1)
     private var rightWallWidth = CGFloat(0)
+    */
     
     private var ballProjection = BallProjection()
     
+    /* XXX REMOVE ME
     private var fontName: String = "HelveticaNeue"
     private var topColor: UIColor = .black
     private var bottomColor: UIColor = .white
@@ -79,11 +88,14 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         UIColor(rgb: 0xf48fb1),
         UIColor(rgb: 0xef9a9a),
     ]
+    */
     
     // Ball count label
-    private var ballCountLabel: SKLabelNode?
+    // XXX REMOVE ME
+    //private var ballCountLabel: SKLabelNode?
     private var prevBallCount = Int(0)
-    private var currentBallCount = Int(0)
+    // XXX REMOVE ME
+    //private var currentBallCount = Int(0)
     
     // A counter for each time update is called
     private var numTicks = Int(0)
@@ -103,10 +115,12 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // A boolean that says whether or not we're showing encouragement (emoji + text) on the screen
     private var showingEncouragement = false
     
+    /* XXX REMOVE ME
     // Colors for the scene
     // XXX Maybe remove
     private var sceneColor = UIColor.init(red: 20/255, green: 20/255, blue: 20/255, alpha: 1)
     private var marginColor = UIColor.init(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
+    */
         
     // This is to keep track of the number of broken hit blocks in a given turn
     private var brokenHitBlockCount: Int = 0
@@ -115,21 +129,26 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // This is the number of blocks that need to be broken in a given turn to get the "on fire" encouragement
     private static var ON_FIRE_COUNT: Int = 8
     
+    /* XXX REMOVE ME
     // Stuff for collisions
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitMask = UInt32(0b0001)
     private var groundCategoryBitmask = UInt32(0b0101)
+    */
     
     // XXX Maybe remove
     // Stuff for lighting
     private var lightingBitMask = UInt32(0b0001)
     
+    /* XXX REMOVE ME
     private static var NUM_ROWS = CGFloat(12)
     private static var NUM_COLUMNS = CGFloat(8)
+    */
     
     private var startTime = TimeInterval(0)
     
-    private var activeViews: [UIView] = []
+    // XXX REMOVE ME
+    //private var activeViews: [UIView] = []
     
     enum Tutorials {
         case noTutorial
@@ -146,6 +165,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
+        /* XXX REMOVE ME
         margin = view.frame.height * 0.10
         
         /*
@@ -190,6 +210,9 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         topColor = colorList[colorIndex]
         
         initWalls(view: view)
+        */
+        super.didMove(to: view)
+        
         initGameModel()
         // This kind of breaks MVC a bit because the ball manager shouldn't know the ground height
         gameModel!.ballManager!.setGroundHeight(height: groundNode!.size.height + ballRadius!)
@@ -214,7 +237,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             showTutorial(tutorial: .gameplayTutorial)
         }
         
-        self.backgroundColor = colorScheme!.backgroundColor
+        // XXX REMOVE ME
+        //self.backgroundColor = colorScheme!.backgroundColor
         
         physicsWorld.contactDelegate = self
     }
@@ -350,7 +374,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             addRowToView(rowNum: 1, items: items)
             
             // Move the items down in the view
-            animateItems()
+            animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
+            gameModel!.itemGenerator!.pruneFirstRow()
             
             // Display the label showing how many balls the user has (this needs to be done after we have collected any new balls the user acquired)
             currentBallCount = gameModel!.getBalls().count
@@ -362,7 +387,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             }
             // Update the previous ball count to the current count so that next time around we can see if the user acquired more balls
             prevBallCount = currentBallCount
-            addBallCountLabel()
+            addBallCountLabel(ballCount: gameModel!.getBalls().count)
             
             // Check the model to update the score label
             updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
@@ -594,7 +619,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // Move the items down in the view
-        animateItems()
+        animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
+        gameModel!.itemGenerator!.pruneFirstRow()
         
         // At this point the ball manager's state should be updated; update the view to reflect that
         let balls = gameModel!.getBalls()
@@ -607,7 +633,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             self.addChild(ball.getNode())
         }
         removeBallCountLabel()
-        addBallCountLabel()
+        addBallCountLabel(ballCount: gameModel!.getBalls().count)
         
         // Update the score labels
         updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
@@ -690,6 +716,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    /*
     private func animateItems() {
         actionsStarted = gameModel!.itemGenerator!.getItemCount()
         
@@ -822,6 +849,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
     }
+    */
     
     // Initialize the game model (this is where the code for loading a saved game model will go)
     private func initGameModel() {
@@ -846,7 +874,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             // Correct ball position's Y value (in case ground size changed for whatever reason) to prevent it from floating above the ground or being below the ground
             ballPosition.y = groundNode!.size.height + ballRadius!
             gameModel!.ballManager!.setOriginPoint(point: ballPosition)
-            addBallCountLabel()
+            addBallCountLabel(ballCount: gameModel!.getBalls().count)
         }
         else if gameModel!.isTurnOver() {
             // We're starting a new game
@@ -877,7 +905,8 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // Move the items down in the view
-        animateItems()
+        animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
+        gameModel!.itemGenerator!.pruneFirstRow()
         
         // Set the last turn undone as the current game score
         lastUndoTurnScore = gameModel!.gameScore
@@ -894,6 +923,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
     }
     
+    /* XXX REMOVE ME
     // Initialize the different walls and physics edges
     private func initWalls(view: SKView) {
         initGround(view: view, margin: margin!)
@@ -1004,6 +1034,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         
         return physBody
     }
+    */
     
     private func updateScore(highScore: Int, gameScore: Int) {
         if let controller = gameController {
@@ -1066,6 +1097,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    /* XXX REMOVE ME
     // Flashes the fast forward image to give the user some feedback about what's happening
     private func flashSpeedupImage() {
         let pos = CGPoint(x: self.view!.frame.midX, y: self.view!.frame.midY)
@@ -1085,6 +1117,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             self.removeChildren(in: [imageNode])
         }
     }
+    */
     
     // Shows the user how to play the game
     private func showGameplayTutorial() {
@@ -1128,7 +1161,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     // NOTE: Ceiling height on the iPhone 5s is < 60px (or 60 units) and so the text and pointer image need to be scaled down to accommodate for that (which is why I compare margin! to <60)
     private func showTopBarTutorial() {
         let pointerNode = SKSpriteNode(imageNamed: "hand_pointing")
-        if margin! < 60 {
+        if getMargin() < 60 {
             pointerNode.size = CGSize(width: 30, height: 38)
         }
         else {
@@ -1140,7 +1173,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         let labelNode = SKLabelNode(fontNamed: colorScheme!.fontName)
         labelNode.zPosition = 105
         labelNode.fontColor = .white
-        if margin! < 60 {
+        if getMargin() < 60 {
             labelNode.fontSize = 12
             labelNode.position = CGPoint(x: pointerNode.position.x, y: pointerNode.position.y - 30)
         }
@@ -1159,13 +1192,13 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         highScoreHelper.fontColor = .white
         highScoreHelper.verticalAlignmentMode = .center
         highScoreHelper.horizontalAlignmentMode = .left
-        if margin! < 60 {
+        if getMargin() < 60 {
             highScoreHelper.fontSize = 12
-            highScoreHelper.position = CGPoint(x: leftWallWidth, y: ceilingNode!.position.y + 4)
+            highScoreHelper.position = CGPoint(x: getLeftWallWidth(), y: ceilingNode!.position.y + 4)
         }
         else {
             highScoreHelper.fontSize = 20
-            highScoreHelper.position = CGPoint(x: leftWallWidth, y: ceilingNode!.position.y + 10)
+            highScoreHelper.position = CGPoint(x: getRightWallWidth(), y: ceilingNode!.position.y + 10)
         }
         highScoreHelper.numberOfLines = 1
         
@@ -1175,7 +1208,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         gameScoreHelper.fontColor = .white
         gameScoreHelper.verticalAlignmentMode = .center
         gameScoreHelper.horizontalAlignmentMode = .center
-        if margin! < 60 {
+        if getMargin() < 60 {
             gameScoreHelper.fontSize = 12
             gameScoreHelper.position = CGPoint(x: view!.frame.midX, y: ceilingNode!.position.y + 4)
         }
@@ -1191,13 +1224,13 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         undoHelper.fontColor = .white
         undoHelper.verticalAlignmentMode = .center
         undoHelper.horizontalAlignmentMode = .right
-        if margin! < 60 {
+        if getMargin() < 60 {
             undoHelper.fontSize = 12
-            undoHelper.position = CGPoint(x: view!.frame.width - rightWallWidth, y: ceilingNode!.position.y + 4)
+            undoHelper.position = CGPoint(x: view!.frame.width - getRightWallWidth(), y: ceilingNode!.position.y + 4)
         }
         else {
             undoHelper.fontSize = 20
-            undoHelper.position = CGPoint(x: view!.frame.width - rightWallWidth, y: ceilingNode!.position.y + 10)
+            undoHelper.position = CGPoint(x: view!.frame.width - getRightWallWidth(), y: ceilingNode!.position.y + 10)
         }
         undoHelper.numberOfLines = 1
         
@@ -1385,6 +1418,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(label3)
     }
     
+    /* XXX REMOVE ME
     private func addBallCountLabel() {
         currentBallCount = gameModel!.getBalls().count
         let originPoint = gameModel!.ballManager!.getOriginPoint()
@@ -1420,6 +1454,7 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
     private func removeBallCountLabel() {
         self.removeChildren(in: [ballCountLabel!])
     }
+    */
     
     private func showBallsAcquiredLabel(count: Int) {
         let fontSize = ballRadius! * 2
@@ -1486,6 +1521,38 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    private func ballHitAnimation(color: SKColor, position: CGPoint) {
+        let alphas: [CGFloat] = [0.3, 0.4, 0.5, 0.6, 0.7]
+        let numDroplets = 8
+        var balls: [SKShapeNode] = []
+        for _ in 0...(numDroplets - 1) {
+            let newPosition = CGPoint(x: position.x + CGFloat(Int.random(in: -10...10)),
+                                      y: position.y + CGFloat(Int.random(in: -10...10)))
+            let ball = SKShapeNode(circleOfRadius: ballRadius! / 2)
+            ball.position = newPosition
+            ball.alpha = alphas.randomElement()!
+            ball.fillColor = color
+            
+            let physBody = SKPhysicsBody()
+            physBody.affectedByGravity = true
+            physBody.isDynamic = true
+            ball.physicsBody = physBody
+            
+            balls.append(ball)
+            self.addChild(ball)
+        }
+        
+        for ball in balls {
+            let vector = CGVector(dx: CGFloat(Int.random(in: -150...150)), dy: CGFloat(Int.random(in: 200...400)))
+            let action1 = SKAction.applyImpulse(vector, duration: 0.1)
+            let action2 = SKAction.fadeOut(withDuration: 1)
+            ball.run(SKAction.sequence([action1, action2])) {
+                self.removeChildren(in: [ball])
+            }
+        }
+    }
+    
+    /* XXX REMOVE ME
     private func displayEncouragement(emoji: String, text: String) {
         if showingEncouragement {
             // If we're showing encouragement on the screen, don't display something else
@@ -1591,35 +1658,5 @@ class ContinousGameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
     }
-    
-    private func ballHitAnimation(color: SKColor, position: CGPoint) {
-        let alphas: [CGFloat] = [0.3, 0.4, 0.5, 0.6, 0.7]
-        let numDroplets = 8
-        var balls: [SKShapeNode] = []
-        for _ in 0...(numDroplets - 1) {
-            let newPosition = CGPoint(x: position.x + CGFloat(Int.random(in: -10...10)),
-                                      y: position.y + CGFloat(Int.random(in: -10...10)))
-            let ball = SKShapeNode(circleOfRadius: ballRadius! / 2)
-            ball.position = newPosition
-            ball.alpha = alphas.randomElement()!
-            ball.fillColor = color
-            
-            let physBody = SKPhysicsBody()
-            physBody.affectedByGravity = true
-            physBody.isDynamic = true
-            ball.physicsBody = physBody
-            
-            balls.append(ball)
-            self.addChild(ball)
-        }
-        
-        for ball in balls {
-            let vector = CGVector(dx: CGFloat(Int.random(in: -150...150)), dy: CGFloat(Int.random(in: 200...400)))
-            let action1 = SKAction.applyImpulse(vector, duration: 0.1)
-            let action2 = SKAction.fadeOut(withDuration: 1)
-            ball.run(SKAction.sequence([action1, action2])) {
-                self.removeChildren(in: [ball])
-            }
-        }
-    }
+    */
 }

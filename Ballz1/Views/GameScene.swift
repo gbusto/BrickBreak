@@ -14,10 +14,11 @@ import CoreGraphics
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    // MARK: Public attributes
+    public var colorScheme: GameSceneColorScheme?
+
     
     // MARK: Private attributes
-    private var colorScheme: GameSceneColorScheme?
-    
     // The margin aka the ceiling height and ground height
     private var margin: CGFloat?
     
@@ -149,6 +150,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Set the background color based on the color scheme value
         self.backgroundColor = colorScheme!.backgroundColor
+    }
+    
+    public func getMargin() -> CGFloat {
+        return margin!
+    }
+    
+    public func getLeftWallWidth() -> CGFloat {
+        return leftWallWidth
+    }
+    
+    public func getRightWallWidth() -> CGFloat {
+        return rightWallWidth
     }
     
     // MARK: Public function
