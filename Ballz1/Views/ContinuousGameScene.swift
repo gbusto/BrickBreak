@@ -74,7 +74,7 @@ class ContinousGameScene: GameScene {
     private var tutorialIsShowing = false
     private var tutorialNodes: [SKNode] = []
     private var tutorialType: Tutorials?
-    private var tutorialsList: [Tutorials] = []    
+    private var tutorialsList: [Tutorials] = []
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -251,7 +251,7 @@ class ContinousGameScene: GameScene {
             }
             // Update the previous ball count to the current count so that next time around we can see if the user acquired more balls
             prevBallCount = currentBallCount
-            addBallCountLabel(ballCount: gameModel!.getBalls().count)
+            addBallCountLabel(position: gameModel!.ballManager!.getOriginPoint(), ballCount: gameModel!.getBalls().count)
             
             // Check the model to update the score label
             updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
@@ -497,7 +497,7 @@ class ContinousGameScene: GameScene {
             self.addChild(ball.getNode())
         }
         removeBallCountLabel()
-        addBallCountLabel(ballCount: gameModel!.getBalls().count)
+        addBallCountLabel(position: gameModel!.ballManager!.getOriginPoint(), ballCount: gameModel!.getBalls().count)
         
         // Update the score labels
         updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
@@ -738,7 +738,7 @@ class ContinousGameScene: GameScene {
             // Correct ball position's Y value (in case ground size changed for whatever reason) to prevent it from floating above the ground or being below the ground
             ballPosition.y = groundNode!.size.height + ballRadius!
             gameModel!.ballManager!.setOriginPoint(point: ballPosition)
-            addBallCountLabel(ballCount: gameModel!.getBalls().count)
+            addBallCountLabel(position: gameModel!.ballManager!.getOriginPoint(), ballCount: gameModel!.getBalls().count)
         }
         else if gameModel!.isTurnOver() {
             // We're starting a new game

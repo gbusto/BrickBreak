@@ -16,7 +16,8 @@ class LevelsGameModel {
     public var cumulativeScore = Int(0)
     public var levelCount = Int(1)
     
-    public var ballManager: BallManager?
+    public var numberOfBalls = Int(10)
+    
     public var itemGenerator: ItemGenerator?
     
     public var showedTutorials = false
@@ -35,7 +36,6 @@ class LevelsGameModel {
     private var persistentData: PersistentData?
     
     private var numberOfItems = Int(8)
-    private var numberOfBalls = Int(10)
     private var numberOfRows = Int(0)
     
     private var scoreThisTurn = Int(0)
@@ -191,12 +191,14 @@ class LevelsGameModel {
             numberOfBalls = LevelsGameModel.MAX_NUM_BALLS
         }
         
+        /*
         // This function will either load ball manager with a saved state or the default ball manager state
         ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: LevelsGameModel.LevelsDirURL)
+        */
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
         itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
-                                      numberOfBalls: ballManager!.numberOfBalls,
+                                      numberOfBalls: numberOfBalls,
                                       numberOfRows: numberOfRows,
                                       numItems: numberOfItems,
                                       restorationURL: LevelsGameModel.LevelsDirURL,
@@ -224,10 +226,6 @@ class LevelsGameModel {
     }
     
     // MARK: Public functions
-    public func getBalls() -> [BallItem] {
-        return ballManager!.ballArray
-    }
-    
     public func prepareTurn() {
         // Reset the score for this turn to 0
         scoreThisTurn = 0

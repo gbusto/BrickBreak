@@ -87,9 +87,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var contactTestBitMask = UInt32(0b0001)
     private var groundCategoryBitmask = UInt32(0b0101)
     
-    // XXX New variable
-    public var originPoint = CGPoint(x: 0, y: 0)
-    
     public static var NUM_ROWS = CGFloat(12)
     public static var NUM_COLUMNS = CGFloat(8)
     
@@ -319,9 +316,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    public func addBallCountLabel(ballCount: Int) {
+    public func addBallCountLabel(position: CGPoint, ballCount: Int) {
         currentBallCount = ballCount
-        var newPoint = CGPoint(x: originPoint.x, y: (originPoint.y + (ballRadius! * 1.5)))
+        var newPoint = CGPoint(x: position.x, y: (position.y + (ballRadius! * 1.5)))
         let viewWidth = view!.frame.width - (leftWallWidth * 2)
         // This is to prevent the ball count label from going off the screen
         if newPoint.x < (leftWallWidth + (viewWidth * ballCountLabelMargin)) {

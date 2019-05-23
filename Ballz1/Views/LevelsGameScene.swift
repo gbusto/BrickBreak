@@ -18,6 +18,8 @@ class LevelsGameScene: GameScene {
     
     public var gameController: LevelsGameController?
     
+    public var originPoint = CGPoint(x: 0, y: 0)
+    
     // Variables for handling swipe gestures
     private var rightSwipeGesture: UISwipeGestureRecognizer?
     private var downSwipeGesture: UISwipeGestureRecognizer?
@@ -74,13 +76,6 @@ class LevelsGameScene: GameScene {
         if let controller = gameController {
             controller.setLevelNumber(level: gameModel!.levelCount)
         }
-        
-        // This kind of breaks MVC a bit because the ball manager shouldn't know the ground height
-        gameModel!.ballManager!.setGroundHeight(height: groundNode!.size.height + ballRadius!)
-        
-        ballArray = gameModel!.ballManager!.ballArray
-        // XXX Sloppy... find a better way to initialize this
-        originPoint = ballArray[0].getNode().position
         
         rightSwipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleRightSwipe(_:)))
         rightSwipeGesture!.direction = .right
@@ -145,7 +140,6 @@ class LevelsGameScene: GameScene {
             if gameModel!.isReady() {
                 // Show the arrow and update it
                 if inGame(point) && (false == self.isPaused) {
-                    let originPoint = self.originPoint
                     ballProjection.showArrow(scene: self)
                     let _ = ballProjection.updateArrow(startPoint: originPoint,
                                                        touchPoint: point,
@@ -304,8 +298,9 @@ class LevelsGameScene: GameScene {
             animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
             gameModel!.itemGenerator!.pruneFirstRow()
             
+            print("CALLING ADDBALLCOUNTLABEL: \(originPoint)")
             // Add back the ball count label
-            addBallCountLabel(ballCount: gameModel!.getBalls().count)
+            addBallCountLabel(position: originPoint, ballCount: ballArray.count)
             
             // Check the model to update the score label
             // Update the current game score
@@ -662,7 +657,7 @@ class LevelsGameScene: GameScene {
         ballCountLabel = SKLabelNode(fontNamed: fontName)
         ballCountLabel!.name = "ballCountLabel"
         
-        var ballPosition = CGPoint(x: view!.frame.midX, y: groundNode!.size.height + ballRadius!)
+        originPoint = CGPoint(x: view!.frame.midX, y: groundNode!.size.height + ballRadius!)
         if gameModel!.isTurnOver() {
             // We're starting a new game
             // The reason we start the game model in a TURN_OVER state for a new game is because in this state
@@ -675,10 +670,14 @@ class LevelsGameScene: GameScene {
         
         // Update the level count label
         
-        let balls = gameModel!.getBalls()
-        currentBallCount = balls.count
-        for ball in balls {
-            ball.loadItem(position: ballPosition)
+        currentBallCount = gameModel!.numberOfBalls
+        for i in 1...currentBallCount {
+            let ball = BallItem()
+            let size = CGSize(width: ballRadius!, height: ballRadius!)
+            ball.initItem(num: i, size: size)
+            ball.getNode().name! = "bm\(i)"
+            ballArray.append(ball)
+            ball.loadItem(position: originPoint)
             ball.resetBall()
             self.addChild(ball.getNode())
         }
