@@ -149,6 +149,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.backgroundColor = colorScheme!.backgroundColor
     }
     
+    public func initBallArray(numberOfBalls: Int, point: CGPoint) -> [BallItem] {
+        var ballArray: [BallItem] = []
+        for i in 1...numberOfBalls {
+            let ball = BallItem()
+            let size = CGSize(width: ballRadius!, height: ballRadius!)
+            ball.initItem(num: i, size: size)
+            ball.getNode().name! = "bm\(i)"
+            ballArray.append(ball)
+            ball.loadItem(position: point)
+            ball.resetBall()
+        }
+        
+        return ballArray
+    }
+    
     public func getMargin() -> CGFloat {
         return margin!
     }
@@ -349,6 +364,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public func removeBallCountLabel() {
         self.removeChildren(in: [ballCountLabel!])
+    }
+    
+    public func allBallsStopped(_ ballArray: [BallItem]) -> Bool {
+        var allBallsStopped = true
+        let _ = ballArray.filter {
+            if false == $0.isResting {
+                allBallsStopped = false
+            }
+            return true
+        }
+        return allBallsStopped
     }
     
     public func displayEncouragement(emoji: String, text: String) {

@@ -421,7 +421,10 @@ class LevelsGameScene: GameScene {
             handleStoppedBalls()
             if firedAllBalls {
                 // Wait for all balls to return
-                waitForBalls()
+                if allBallsStopped(ballArray) {
+                    // Increment game model state from MID_TURN to TURN_OVER
+                    gameModel!.incrementState()
+                }
             }
         }
     }
@@ -671,6 +674,7 @@ class LevelsGameScene: GameScene {
         // Update the level count label
         
         currentBallCount = gameModel!.numberOfBalls
+        /* XXX REMOVE ME
         for i in 1...currentBallCount {
             let ball = BallItem()
             let size = CGSize(width: ballRadius!, height: ballRadius!)
@@ -679,6 +683,11 @@ class LevelsGameScene: GameScene {
             ballArray.append(ball)
             ball.loadItem(position: originPoint)
             ball.resetBall()
+            self.addChild(ball.getNode())
+        }
+        */
+        ballArray = initBallArray(numberOfBalls: currentBallCount, point: originPoint)
+        for ball in ballArray {
             self.addChild(ball.getNode())
         }
         
@@ -793,21 +802,6 @@ class LevelsGameScene: GameScene {
             }
             // This should work and prevent balls from landing in the middle of the screen...
             ball.moveBallTo(originPoint)
-        }
-    }
-    
-    // XXX Common function
-    private func waitForBalls() {
-        var activeBallInPlay = false
-        let _ = ballArray.filter {
-            if false == $0.isResting {
-                activeBallInPlay = true
-            }
-            return true
-        }
-        if false == activeBallInPlay {
-            // XXX Careful with this... we're not letting the game model update its own state
-            gameModel!.incrementState()
         }
     }
     
