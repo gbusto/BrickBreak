@@ -90,6 +90,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     public static var NUM_ROWS = CGFloat(12)
     public static var NUM_COLUMNS = CGFloat(8)
     
+    /* Ball-related variables */
+    public var originPoint = CGPoint(x: 0, y: 0)
+    public var ballArray: [BallItem] = []
+    public var fireDelay = GameScene.DEFAULT_FIRE_DELAY
+    public static var DEFAULT_FIRE_DELAY = Double(0.1)
+    public var stoppedBalls: [BallItem] = []
+    public var firstBallReturned = false
+    public var ballsOnFire = false
+    public var firedAllBalls = false
+    public var numBallsFired = 0
+    public var endTurn = false
+    
     override func didMove(to view: SKView) {
         // Load the game scene
         margin = view.frame.height * 0.10
@@ -595,4 +607,95 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         return physBody
     }
+    
+    /*************************************************/
+    
+    public func returnAllBalls() {
+        if false == firstBallReturned {
+            firstBallReturned = true
+        }
+        
+        for ball in ballArray {
+            ball.getNode().physicsBody!.collisionBitMask = 0
+            ball.getNode().physicsBody!.categoryBitMask = 0
+            ball.getNode().physicsBody!.contactTestBitMask = 0
+            ball.stop()
+            ball.moveBallTo(originPoint)
+        }
+        
+        // shootBalls() will increment the ball manager's state if it's shooting
+    }
+    
+    public func setBallsOnFire() {
+        ballsOnFire = true
+        for ball in ballArray {
+            if false == ball.isResting {
+                ball.setOnFire()
+            }
+        }
+    }
+    
+    public func startTimer(_ point: CGPoint) {
+        let _ = Timer.scheduledTimer(withTimeInterval: fireDelay, repeats: true) { timer in
+            if self.endTurn {
+                // Let the game know that we've shot all the balls
+                self.firedAllBalls = true
+                // If the user swiped down, invalidate the timer and stop
+                timer.invalidate()
+                return
+            }
+            
+            if self.physicsWorld.speed > 1.0 && (self.fireDelay == LevelsGameScene.DEFAULT_FIRE_DELAY) {
+                timer.invalidate()
+                self.fireDelay = self.fireDelay / 2
+                self.startTimer(point)
+                return
+            }
+            
+            // Set this boolean so we know whether or not this is the last ball and need to remove the label
+            let lastBall = (self.numBallsFired == (self.ballArray.count - 1))
+            
+            let ball = self.ballArray[self.numBallsFired]
+            ball.fire(point: point)
+            self.numBallsFired += 1
+            if self.ballsOnFire {
+                ball.setOnFire()
+            }
+            self.currentBallCount -= 1
+            // If we're on the last ball. after firing it remove the ball count label
+            if lastBall {
+                self.removeBallCountLabel()
+                self.firedAllBalls = true
+                timer.invalidate()
+            }
+            else {
+                self.updateBallCountLabel()
+            }
+        }
+    }
+    
+    // Actions to perform when a ball stops (reaches the ground)
+    public func handleStoppedBalls() {
+        if stoppedBalls.count > 0 {
+            // Pop this ball off the front of the list
+            let ball = stoppedBalls.removeFirst()
+            if false == firstBallReturned {
+                firstBallReturned = true
+                var ballPosition = ball.getNode().position
+                if ballPosition.y > groundNode!.size.height {
+                    ballPosition.y = groundNode!.size.height
+                }
+                originPoint = ball.getNode().position
+            }
+            // This should work and prevent balls from landing in the middle of the screen...
+            ball.moveBallTo(originPoint)
+        }
+    }
+    
+    // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
+    public func inGame(_ point: CGPoint) -> Bool {
+        return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
+    }
+    
+    
 }

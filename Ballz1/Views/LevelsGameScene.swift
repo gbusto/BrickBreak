@@ -18,7 +18,8 @@ class LevelsGameScene: GameScene {
     
     public var gameController: LevelsGameController?
     
-    public var originPoint = CGPoint(x: 0, y: 0)
+    // XXX REMOVE ME
+    //public var originPoint = CGPoint(x: 0, y: 0)
     
     // Variables for handling swipe gestures
     private var rightSwipeGesture: UISwipeGestureRecognizer?
@@ -47,24 +48,18 @@ class LevelsGameScene: GameScene {
     
     private var numRowsGenerated = Int(0)
     
-    // XXX New variable; moving it out of the BallManager
+    // XXX New variables for adding ball manager stuff here
+    /* XXX REMOVE THESE
     private var ballArray: [BallItem] = []
-    // XXX New variable; delay before firing a ball
     private var fireDelay = LevelsGameScene.DEFAULT_FIRE_DELAY
-    // XXX New variable; default fire delay
     private static var DEFAULT_FIRE_DELAY = Double(0.1)
-    // XXX New variable
     private var stoppedBalls: [BallItem] = []
-    // XXX New variable
     private var firstBallReturned = false
-    // XXX New variable
     private var ballsOnFire = false
-    // XXX New variable
     private var firedAllBalls = false
-    // XXX New variable
     private var numBallsFired = 0
-    // XXX New variable
     private var endTurn = false
+    */
 
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -246,6 +241,7 @@ class LevelsGameScene: GameScene {
             }
         }
         
+        // XXX Create a generic resetGame function in GameScene to hold common reset code between LevelsGameScene and ContinuousGameScene
         if gameModel!.isTurnOver() {
             endTurn = false
             
@@ -265,7 +261,7 @@ class LevelsGameScene: GameScene {
             physicsWorld.speed = 1.0
             
             // Return the fireDelay to the default
-            fireDelay = LevelsGameScene.DEFAULT_FIRE_DELAY
+            fireDelay = GameScene.DEFAULT_FIRE_DELAY
             
             // Reset the tick delay for firing balls
             
@@ -298,7 +294,6 @@ class LevelsGameScene: GameScene {
             animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
             gameModel!.itemGenerator!.pruneFirstRow()
             
-            print("CALLING ADDBALLCOUNTLABEL: \(originPoint)")
             // Add back the ball count label
             addBallCountLabel(position: originPoint, ballCount: ballArray.count)
             
@@ -674,18 +669,6 @@ class LevelsGameScene: GameScene {
         // Update the level count label
         
         currentBallCount = gameModel!.numberOfBalls
-        /* XXX REMOVE ME
-        for i in 1...currentBallCount {
-            let ball = BallItem()
-            let size = CGSize(width: ballRadius!, height: ballRadius!)
-            ball.initItem(num: i, size: size)
-            ball.getNode().name! = "bm\(i)"
-            ballArray.append(ball)
-            ball.loadItem(position: originPoint)
-            ball.resetBall()
-            self.addChild(ball.getNode())
-        }
-        */
         ballArray = initBallArray(numberOfBalls: currentBallCount, point: originPoint)
         for ball in ballArray {
             self.addChild(ball.getNode())
@@ -712,102 +695,9 @@ class LevelsGameScene: GameScene {
         //animateItems()
     }
     
-    /*  XXX Common Function
-     Also contains some logic for the visual part of the game... might move it back into the view file.
-     */
-    public func returnAllBalls() {
-        if false == firstBallReturned {
-            firstBallReturned = true
-        }
-        
-        for ball in ballArray {
-            ball.getNode().physicsBody!.collisionBitMask = 0
-            ball.getNode().physicsBody!.categoryBitMask = 0
-            ball.getNode().physicsBody!.contactTestBitMask = 0
-            ball.stop()
-            ball.moveBallTo(originPoint)
-        }
-        
-        // shootBalls() will increment the ball manager's state if it's shooting
-    }
-    
-    // XXX Common function
-    private func setBallsOnFire() {
-        ballsOnFire = true
-        for ball in ballArray {
-            if false == ball.isResting {
-                ball.setOnFire()
-            }
-        }
-    }
-    
     // XXX Common function
     private func shootBalls(point: CGPoint) {
         gameModel!.prepareTurn()
         startTimer(point)
-    }
-    
-    // XXX Common function
-    private func startTimer(_ point: CGPoint) {
-        let _ = Timer.scheduledTimer(withTimeInterval: fireDelay, repeats: true) { timer in
-            if self.endTurn {
-                // Let the game know that we've shot all the balls
-                self.firedAllBalls = true
-                // If the user swiped down, invalidate the timer and stop
-                timer.invalidate()
-                return
-            }
-            
-            if self.physicsWorld.speed > 1.0 && (self.fireDelay == LevelsGameScene.DEFAULT_FIRE_DELAY) {
-                timer.invalidate()
-                self.fireDelay = self.fireDelay / 2
-                self.startTimer(point)
-                return
-            }
-            
-            // Set this boolean so we know whether or not this is the last ball and need to remove the label
-            let lastBall = (self.numBallsFired == (self.ballArray.count - 1))
-            
-            let ball = self.ballArray[self.numBallsFired]
-            ball.fire(point: point)
-            self.numBallsFired += 1
-            if self.ballsOnFire {
-                ball.setOnFire()
-            }
-            self.currentBallCount -= 1
-            // If we're on the last ball. after firing it remove the ball count label
-            if lastBall {
-                self.removeBallCountLabel()
-                self.firedAllBalls = true
-                timer.invalidate()
-            }
-            else {
-                self.updateBallCountLabel()
-            }
-        }
-    }
-    
-    // XXX Common function
-    private func handleStoppedBalls() {
-        if stoppedBalls.count > 0 {
-            // Pop this ball off the front of the list
-            let ball = stoppedBalls.removeFirst()
-            if false == firstBallReturned {
-                firstBallReturned = true
-                var ballPosition = ball.getNode().position
-                if ballPosition.y > groundNode!.size.height {
-                    ballPosition.y = groundNode!.size.height
-                }
-                originPoint = ball.getNode().position
-            }
-            // This should work and prevent balls from landing in the middle of the screen...
-            ball.moveBallTo(originPoint)
-        }
-    }
-    
-    // XXX Common function
-    // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
-    private func inGame(_ point: CGPoint) -> Bool {
-        return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
     }
 }

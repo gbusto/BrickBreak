@@ -580,141 +580,6 @@ class ContinousGameScene: GameScene {
         }
     }
     
-    /*
-    private func animateItems() {
-        actionsStarted = gameModel!.itemGenerator!.getItemCount()
-        
-        let action = SKAction.moveBy(x: 0, y: -rowHeight!, duration: 1)
-        let array = gameModel!.itemGenerator!.itemArray
-        
-        if 0 == array.count {
-            // No items to animate
-            return
-        }
-        
-        for i in 0...(array.count - 1) {
-            let row = array[i]
-            for item in row {
-                if item is SpacerItem {
-                    // SpacerItems aren't included in the actionsStarted count so skip their animation here
-                    continue
-                }
-                
-                if item is StoneHitBlockItem {
-                    let block = item as! StoneHitBlockItem
-                    block.changeState(duration: 1)
-                }
-                
-                // If the item is invisible, have it fade in
-                if 0 == item.getNode().alpha {
-                    // If this is the newest row
-                    let fadeIn = SKAction.fadeIn(withDuration: 1)
-                    item.getNode().run(SKAction.group([fadeIn, action])) {
-                        self.actionsStarted -= 1
-                    }
-                }
-                else if (i == 0) && (array.count == Int(ContinousGameScene.NUM_ROWS - 1)) {
-                    // Move these items down on the screen
-                    if (item is BallItem) || (item is BombItem) {
-                        // If this is a ball item or bomb item, these items should just fade out and be removed from the scene and the item generator
-                        let fadeOut = SKAction.fadeOut(withDuration: 1)
-                        item.getNode().run(SKAction.group([action, fadeOut])) {
-                            self.removeChildren(in: [item.getNode()])
-                            self.actionsStarted -= 1
-                        }
-                    }
-                    else {
-                        // Otherwise if this item is just a block then move it down; it will be removed later if the user decides to save themselves
-                        item.getNode().run(action) {
-                            self.actionsStarted -= 1
-                        }
-                    }
-                    
-                    // Reset the physics body on this node so it doesn't push the ball through the ground
-                    item.getNode().physicsBody = nil
-                    
-                    // Don't remove the row from the itemArray; the model will handle that
-                }
-                else {
-                    item.getNode().run(action) {
-                        self.actionsStarted -= 1
-                    }
-                }
-            }
-        }
-        
-        gameModel!.itemGenerator!.pruneFirstRow()
-    }
-    
-    private func colorizeBlocks(itemRow: [Item]) {
-        bottomColor = topColor
-        colorIndex += 1
-        if colorIndex == colorList.count {
-            colorIndex = 0
-        }
-        topColor = colorList[colorIndex]
-        
-        for item in itemRow {
-            if item is HitBlockItem {
-                let block = item as! HitBlockItem
-                block.setAttributes(bottomColor: bottomColor,
-                                    topColor: topColor,
-                                    textColor: colorScheme!.blockTextColor,
-                                    fontName: colorScheme!.fontName)
-            }
-            if item is StoneHitBlockItem {
-                let block = item as! StoneHitBlockItem
-                block.setAttributes(bottomColor: bottomColor,
-                                    topColor: topColor,
-                                    textColor: colorScheme!.blockTextColor,
-                                    fontName: colorScheme!.fontName)
-            }
-        }
-    }
-    
-    private func addRowToView(rowNum: Int, items: [Item]) {
-        colorizeBlocks(itemRow: items)
-        
-        if items.count > 0 {
-            for i in 0...(items.count - 1) {
-                let item = items[i]
-                if item is SpacerItem {
-                    continue
-                }
-                
-                var pos = CGPoint(x: 0, y: 0)
-                if item is HitBlockItem {
-                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.025) + leftWallWidth
-                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
-                    pos = CGPoint(x: posX, y: posY)
-                }
-                else if item is StoneHitBlockItem {
-                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.025) + leftWallWidth
-                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
-                    pos = CGPoint(x: posX, y: posY)
-                }
-                else if item is BombItem {
-                    let posX = (CGFloat(i) * rowHeight!) + leftWallWidth
-                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
-                    pos = CGPoint(x: posX, y: posY)
-                }
-                else if item is BallItem {
-                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! / 2) + leftWallWidth
-                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum))) + (rowHeight! / 2)
-                    pos = CGPoint(x: posX, y: posY)
-                    let ball = item as! BallItem
-                    ball.setColor(color: colorScheme!.hitBallColor)
-                }
-                
-                // The item will fade in
-                item.getNode().alpha = 0
-                item.loadItem(position: pos)
-                self.addChild(item.getNode())
-            }
-        }
-    }
-    */
-    
     // Initialize the game model (this is where the code for loading a saved game model will go)
     private func initGameModel() {
         // The controller also needs a copy of this game model object
@@ -781,11 +646,12 @@ class ContinousGameScene: GameScene {
         gameModel!.ballManager!.shootBalls()
     }
 
-    
+    /* XXX REMOVE ME
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
     private func inGame(_ point: CGPoint) -> Bool {
         return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
     }
+    */
     
     private func updateScore(highScore: Int, gameScore: Int) {
         if let controller = gameController {
