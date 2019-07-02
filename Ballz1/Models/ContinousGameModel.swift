@@ -30,7 +30,9 @@ class ContinuousGameModel {
     // XXX REMOVE ME
     //private var persistentData: PersistentData?
     private var persistentData: DataManager.ClassicPersistentData?
-    private var gameState: GameState?
+    // XXX REMOVE ME
+    //private var gameState: GameState?
+    private var gameState: DataManager.ClassicGameState?
     
     private var numberOfItems = Int(8)
     private var numberOfBalls = Int(10)
@@ -76,6 +78,7 @@ class ContinuousGameModel {
     }
     */
     
+    /* XXX REMOVE ME
     // This struct is used for managing any state from this class that is required to save the user's place
     struct GameState: Codable {
         var gameScore: Int
@@ -86,18 +89,43 @@ class ContinuousGameModel {
             case userWasSaved
         }
     }
+    */
     
     public func saveState() {
         // If we're in the middle of a turn, we don't want to save the state. Users could exploit this to cheat
         if isReady() || isGameOver() {
             // XXX REMOVE ME
             //savePersistentState()
+            
+            // Handle saving off persistent game data
             // XXX Look into this logic to make sure this is correct.. doesn't seem right unless we do a check somewhere else in the code to update the user's high score accordingly
             if persistentData!.highScore != highScore {
                 persistentData!.highScore = highScore
             }
             DataManager.shared.saveClassicPersistentData(highScore: persistentData!.highScore, showedTutorials: persistentData!.showedTutorials)
-            saveGameState()
+            
+            // Handle saving off game state
+            if GAME_OVER == state {
+                // If it's a game over, clear the game state so we start fresh next time
+                // Don't save any of this stuff after a game over
+                clearGameState()
+                return
+            }
+            
+            // XXX REMOVE ME
+            //saveGameState()
+            DataManager.shared.saveClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
+            
+            // Save off the ball manager state
+            if false == DataManager.shared.saveClassicBallState(numberOfBalls: ballManager!.numberOfBalls, originPoint: ballManager!.getOriginPoint()) {
+                print("Failed to save ball manager state for classic mode!")
+            }
+            else {
+                print("Successfully saved ball manager state for classic mode!")
+            }
+            
+            // Save off item generator state
+            itemGenerator!.saveState()
         }
     }
     
@@ -127,6 +155,7 @@ class ContinuousGameModel {
     }
     */
     
+    /* XXX REMOVE ME
     public func saveGameState() {
         do {
             // If it's a game over, clear the game state so we start fresh next time
@@ -169,6 +198,7 @@ class ContinuousGameModel {
             print("Error encoding game state: \(error)")
         }
     }
+    */
     
     /* XXX REMOVE ME
     public func loadPersistentState() -> Bool {
@@ -188,11 +218,12 @@ class ContinuousGameModel {
     }
     */
     
+    /* XXX REMOVE ME
     public func loadGameState() -> Bool {
         do {
             // Load game state for this game mode
             let gameData = try Data(contentsOf: ContinuousGameModel.GameStateURL)
-            gameState = try PropertyListDecoder().decode(GameState.self, from: gameData)
+            gameState = try PropertyListDecoder().decode(DataManager.ClassicGameState.self, from: gameData)
             
             return true
         }
@@ -201,6 +232,7 @@ class ContinuousGameModel {
             return false
         }
     }
+    */
     
     public func clearGameState() {
         do {
@@ -228,9 +260,12 @@ class ContinuousGameModel {
         }
         
         // Try to load game state
-        if false == loadGameState() {
+        // XXX REMOVE ME
+        //if false == loadGameState() {
+        gameState = DataManager.shared.loadClassicGameState()
+        if nil == gameState {
             // Defaults to loading gameScore of 0
-            gameState = GameState(gameScore: gameScore, userWasSaved: userWasSaved)
+            gameState = DataManager.ClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
         }
         
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0

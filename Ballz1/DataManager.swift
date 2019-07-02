@@ -168,6 +168,27 @@ class DataManager {
         }
     }
     
+    public func saveClassicGameState(gameScore: Int, userWasSaved: Bool) -> Bool {
+        do {
+            // Create the directory for this game mode (Documents/BB/ContinuousDir)
+            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.ContinuousDirURL.path) {
+                try FileManager.default.createDirectory(at: ContinuousGameModel.ContinuousDirURL, withIntermediateDirectories: true, attributes: nil)
+            }
+            
+            let classicGameState: ClassicGameState = ClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
+            
+            // Save the game data
+            let pData = try PropertyListEncoder().encode(classicGameState)
+            try pData.write(to: DataManager.ClassicGameStateURL, options: .completeFileProtectionUnlessOpen)
+            
+            return true
+        }
+        catch {
+            print("Error encoding game state: \(error)")
+            return false
+        }
+    }
+    
     
     // MARK: Public functions to load data
     
@@ -205,6 +226,19 @@ class DataManager {
             let data = try Data(contentsOf: DataManager.PersistentDataURL)
             let persistentData: ClassicPersistentData = try PropertyListDecoder().decode(DataManager.ClassicPersistentData.self, from: data)
             return persistentData
+        }
+        catch {
+            print("Error loading persistent data state: \(error)")
+            return nil
+        }
+    }
+    
+    // Function to load classic game state
+    public func loadClassicGameState() -> ClassicGameState? {
+        do {
+            let data = try Data(contentsOf: DataManager.ClassicGameStateURL)
+            let gameState: ClassicGameState = try PropertyListDecoder().decode(DataManager.ClassicGameState.self, from: data)
+            return gameState
         }
         catch {
             print("Error loading persistent data state: \(error)")
