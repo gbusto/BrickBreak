@@ -10,6 +10,13 @@ import Foundation
 import GameplayKit
 
 class DataManager {
+    
+    /* Paths:
+     Classic Persistent Data: /<AppDocumentDir>/BB/PersistentData
+     Classic Game State: /<AppDocumentDir>/BB/ContinuousDir/GameState
+     Classic Ball State: /<AppDocumentDir>/BB/ContinuousDir/BallManager
+     Classic Item State: /<AppDocumentDir>/BB/ContinuousDir/ItemGenerator
+    */
 
     // For storing data
     static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -75,7 +82,7 @@ class DataManager {
     }
     
     // Struct to save/load classic game data
-    struct PersistentClassicData: Codable {
+    struct ClassicPersistentData: Codable {
         var highScore: Int
         var showedTutorials: Bool
         
@@ -114,7 +121,7 @@ class DataManager {
         do {
             let bmState = BallManagerState(numberOfBalls: numberOfBalls, originPoint: originPoint)
             let data = try PropertyListEncoder().encode(bmState)
-            try data.write(to: url)
+            try data.write(to: url, options: .completeFileProtectionUnlessOpen)
             return true
         }
         catch {
@@ -132,11 +139,31 @@ class DataManager {
             let igState = ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: itemArray, itemHitCountArray: itemHitCountArray, blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
             
             let data = try PropertyListEncoder().encode(igState)
-            try data.write(to: url)
+            try data.write(to: url, options: .completeFileProtectionUnlessOpen)
             return true
         }
         catch {
             print("Error saving item generator state: \(error)")
+            return false
+        }
+    }
+    
+    public func saveClassicPersistentData(highScore: Int, showedTutorials: Bool) -> Bool {
+        do {
+            // Create the App directory Documents/BB
+            if false == FileManager.default.fileExists(atPath: DataManager.AppDirURL.path) {
+                try FileManager.default.createDirectory(at: DataManager.AppDirURL, withIntermediateDirectories: true, attributes: nil)
+            }
+            
+            let classicPersistentData = ClassicPersistentData(highScore: highScore, showedTutorials: showedTutorials)
+            
+            // Save the persistent data
+            let pData = try PropertyListEncoder().encode(classicPersistentData)
+            try pData.write(to: DataManager.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
+            return true
+        }
+        catch {
+            print("Error saving persistent state: \(error)")
             return false
         }
     }
@@ -168,6 +195,19 @@ class DataManager {
         }
         catch {
             print("Error loading item generator state: \(error)")
+            return nil
+        }
+    }
+    
+    // Function to load classic persistent data
+    public func loadClassicPeristentData() -> ClassicPersistentData? {
+        do {
+            let data = try Data(contentsOf: DataManager.PersistentDataURL)
+            let persistentData: ClassicPersistentData = try PropertyListDecoder().decode(DataManager.ClassicPersistentData.self, from: data)
+            return persistentData
+        }
+        catch {
+            print("Error loading persistent data state: \(error)")
             return nil
         }
     }

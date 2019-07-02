@@ -27,7 +27,9 @@ class ContinuousGameModel {
     public var showedTutorials = false
     
     // MARK: Private properties
-    private var persistentData: PersistentData?
+    // XXX REMOVE ME
+    //private var persistentData: PersistentData?
+    private var persistentData: DataManager.ClassicPersistentData?
     private var gameState: GameState?
     
     private var numberOfItems = Int(8)
@@ -60,6 +62,7 @@ class ContinuousGameModel {
     
     // MARK: State handling code
     // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
+    /* XXX REMOVE ME
     struct PersistentData: Codable {
         var highScore: Int
         var showedTutorials: Bool
@@ -71,6 +74,7 @@ class ContinuousGameModel {
             case showedTutorials
         }
     }
+    */
     
     // This struct is used for managing any state from this class that is required to save the user's place
     struct GameState: Codable {
@@ -86,11 +90,18 @@ class ContinuousGameModel {
     public func saveState() {
         // If we're in the middle of a turn, we don't want to save the state. Users could exploit this to cheat
         if isReady() || isGameOver() {
-            savePersistentState()
+            // XXX REMOVE ME
+            //savePersistentState()
+            // XXX Look into this logic to make sure this is correct.. doesn't seem right unless we do a check somewhere else in the code to update the user's high score accordingly
+            if persistentData!.highScore != highScore {
+                persistentData!.highScore = highScore
+            }
+            DataManager.shared.saveClassicPersistentData(highScore: persistentData!.highScore, showedTutorials: persistentData!.showedTutorials)
             saveGameState()
         }
     }
     
+    /* XXX REMOVE ME
     public func savePersistentState() {
         do {
             // Create the App directory Documents/BB
@@ -114,6 +125,7 @@ class ContinuousGameModel {
             print("Error saving persistent state: \(error)")
         }
     }
+    */
     
     public func saveGameState() {
         do {
@@ -158,11 +170,14 @@ class ContinuousGameModel {
         }
     }
     
+    /* XXX REMOVE ME
     public func loadPersistentState() -> Bool {
         do {
             // Load the persistent data
             let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
-            persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
+            // XXX REMOVE ME
+            //persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
+            persistentData = try PropertyListDecoder().decode(DataManager.ClassicPersistentData.self, from: pData)
             
             return true
         }
@@ -171,6 +186,7 @@ class ContinuousGameModel {
             return false
         }
     }
+    */
     
     public func loadGameState() -> Bool {
         do {
@@ -201,9 +217,14 @@ class ContinuousGameModel {
         state = WAITING
         
         // Try to load persistent data
-        if false == loadPersistentState() {
+        // XXX REMOVE ME
+        //if false == loadPersistentState() {
+        persistentData = DataManager.shared.loadClassicPeristentData()
+        if nil == persistentData {
             // Defaults to load highScore of 0
-            persistentData = PersistentData(highScore: highScore, showedTutorials: showedTutorials)
+            // XXX REMOVE ME
+            //persistentData = PersistentData(highScore: highScore, showedTutorials: showedTutorials)
+            persistentData = DataManager.ClassicPersistentData(highScore: highScore, showedTutorials: showedTutorials)
         }
         
         // Try to load game state
