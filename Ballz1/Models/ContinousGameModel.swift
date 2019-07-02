@@ -139,7 +139,14 @@ class ContinuousGameModel {
             try gameData.write(to: ContinuousGameModel.GameStateURL, options: .completeFileProtectionUnlessOpen)
             
             // Save the ball manager's state
-            ballManager!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
+            // XXX REMOVE ME
+            //ballManager!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
+            if false == DataManager.shared.saveClassicBallState(numberOfBalls: ballManager!.numberOfBalls, originPoint: ballManager!.getOriginPoint()) {
+                print("Failed to save ball manager state for classic mode!")
+            }
+            else {
+                print("Successfully saved ball manager state for classic mode!")
+            }
             
             // Save the item generator's state
             itemGenerator!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
@@ -213,7 +220,9 @@ class ContinuousGameModel {
     
     public func initBallManager(ballRadius: CGFloat) {
         // This function will either load ball manager with a saved state or the default ball manager state
-        ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius, restorationURL: ContinuousGameModel.ContinuousDirURL)
+        let bmState = DataManager.shared.loadClassicBallState()
+        ballManager = BallManager(numBalls: bmState!.numberOfBalls, radius: ballRadius, restorationURL: ContinuousGameModel.ContinuousDirURL)
+        ballManager!.setOriginPoint(point: bmState!.originPoint!)
     }
     
     public func initItemGenerator(blockSize: CGSize, ballRadius: CGFloat) {

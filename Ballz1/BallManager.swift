@@ -70,6 +70,7 @@ class BallManager {
         }
     }
     
+    /* XXX REMOVE ME
     public func saveState(restorationURL: URL) {
         let url = restorationURL.appendingPathComponent(BallManager.BallManagerPath)
         
@@ -85,6 +86,7 @@ class BallManager {
             print("Error saving ball manager state: \(error)")
         }
     }
+    */
     
     public func saveTurnState() {
         // Save the ball manager's turn state
@@ -116,6 +118,7 @@ class BallManager {
         return true
     }
     
+    /* XXX REMOVE ME
     public func loadState(restorationURL: URL) -> Bool {
         do {
             let data = try Data(contentsOf: restorationURL)
@@ -127,6 +130,7 @@ class BallManager {
             return false
         }
     }
+    */
     
     public func setBallsOnFire() {
         // Sets the balls on fire
@@ -144,10 +148,13 @@ class BallManager {
         // XXX It shouldn't need to know ball radius... that should be something only the view knows
         ballRadius = radius
         
+        /* XXX REMOVE ME
         let url = restorationURL.appendingPathComponent(BallManager.BallManagerPath)
         if false == loadState(restorationURL: url) {
             bmState = BallManagerState(numberOfBalls: numBalls, originPoint: nil)
         }
+        */
+        bmState = BallManagerState(numberOfBalls: numBalls, originPoint: nil)
 
         numberOfBalls = bmState!.numberOfBalls
         originPoint = bmState!.originPoint
