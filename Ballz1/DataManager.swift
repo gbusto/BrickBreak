@@ -23,6 +23,8 @@ class DataManager {
     static let ClassicGameStateURL = ClassicDirURL.appendingPathComponent("GameState")
     // Path for saving ball manager state
     static let BallManagerPath = "BallManager"
+    // Path for saving item generator state
+    static let ItemGeneratorPath = "ItemGenerator"
     
     // Struct to save/load ball state
     struct BallManagerState: Codable {
@@ -121,6 +123,24 @@ class DataManager {
         }
     }
     
+    // Function to save item generator state
+    public func saveClassicItemGeneratorState(numberOfBalls: Int, itemTypeDict: [Int: Int], itemArray: [[Int]], itemHitCountArray: [[Int]], blockTypeArray: [Int], nonBlockTypeArray: [Int]) -> Bool {
+        
+        let url = DataManager.ClassicDirURL.appendingPathComponent(DataManager.ItemGeneratorPath)
+        
+        do {
+            let igState = ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: itemArray, itemHitCountArray: itemHitCountArray, blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
+            
+            let data = try PropertyListEncoder().encode(igState)
+            try data.write(to: url)
+            return true
+        }
+        catch {
+            print("Error saving item generator state: \(error)")
+            return false
+        }
+    }
+    
     
     // MARK: Public functions to load data
     
@@ -134,6 +154,20 @@ class DataManager {
         }
         catch {
             print("Error loading ball manager state: \(error)")
+            return nil
+        }
+    }
+    
+    // Function to load item generator data
+    public func loadClassicItemGeneratorState() -> ItemGeneratorState? {
+        do {
+            let url = DataManager.ClassicDirURL.appendingPathComponent(DataManager.ItemGeneratorPath)
+            let data = try Data(contentsOf: url)
+            let igState: ItemGeneratorState = try PropertyListDecoder().decode(ItemGeneratorState.self, from: data)
+            return igState
+        }
+        catch {
+            print("Error loading item generator state: \(error)")
             return nil
         }
     }

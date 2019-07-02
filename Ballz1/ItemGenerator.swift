@@ -28,7 +28,9 @@ class ItemGenerator {
     
     // -------------------------------------------------------------
     // MARK: Private attributes
-    private var igState: ItemGeneratorState?
+    // XXX REMOVE ME
+    //private var igState: ItemGeneratorState?
+    private var igState: DataManager.ItemGeneratorState?
     static let ItemGeneratorPath = "ItemGenerator"
     
     // Number of items to fit on each row
@@ -98,6 +100,7 @@ class ItemGenerator {
     
     
     // MARK: State handling functions
+    /* XXX REMOVE ME
     struct ItemGeneratorState: Codable {
         var numberOfBalls: Int
         var itemTypeDict: [Int: Int]
@@ -116,6 +119,7 @@ class ItemGenerator {
             case nonBlockTypeArray
         }
     }
+    */
     
     // The struct for stuff needed to restore state from the previous turn
     struct ItemGeneratorPrevTurn {
@@ -163,6 +167,13 @@ class ItemGenerator {
         return prevTurn
     }
     
+    public func saveState() {
+        let backedUpItems = backupItems()
+        
+        DataManager.shared.saveClassicItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: backedUpItems.itemArray, itemHitCountArray: backedUpItems.itemHitCountArray, blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
+    }
+    
+    /* XXX REMOVE ME
     public func saveState(restorationURL: URL) {
         let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
         do {
@@ -184,12 +195,13 @@ class ItemGenerator {
             print("Failed to save item generator state: \(error)")
         }
     }
+    */
     
     public func saveTurnState() {
         // Backup the items into this state struct
         prevTurnState = backupItems()
     }
-    
+
     public func loadTurnState() -> Bool {
         // Return false if the array for the previous turn is empty
         if prevTurnState.itemArray.isEmpty {
@@ -206,10 +218,11 @@ class ItemGenerator {
         return true
     }
     
+    /* XXX REMOVE ME
     public func loadState(restorationURL: URL) -> Bool {
         do {
             let data = try Data(contentsOf: restorationURL)
-            igState = try PropertyListDecoder().decode(ItemGeneratorState.self, from: data)
+            igState = try PropertyListDecoder().decode(DataManager.ItemGeneratorState.self, from: data)
             return true
         }
         catch {
@@ -217,6 +230,7 @@ class ItemGenerator {
             return false
         }
     }
+    */
     
     // Gets the item count (doesn't include spacer items)
     public func getItemCount() -> Int {
@@ -311,9 +325,12 @@ class ItemGenerator {
             srand48(seed)
         }
         
-        let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
+        // XXX REMOVE ME
+        //let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
         // Try to load state and if not initialize things to their default values
-        if false == loadState(restorationURL: url) {
+        //if false == loadState(restorationURL: url) {
+        igState = DataManager.shared.loadClassicItemGeneratorState()
+        if igState == nil {
             // Initialize the allowed item types with only one type for now
             addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 95)
             addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 5)
@@ -321,7 +338,7 @@ class ItemGenerator {
             addNonBlockItemType(type: ItemGenerator.BALL, percentage: 8)
             addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
             
-            igState = ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
+            igState = DataManager.ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
         }
         
         // Set these global variables based on the item generator state

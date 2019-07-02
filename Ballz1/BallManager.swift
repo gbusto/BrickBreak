@@ -29,10 +29,10 @@ class BallManager {
     
     private var originPoint: CGPoint?
     
-    private var bmState: BallManagerState?
+    private var bmState: DataManager.BallManagerState?
     static let BallManagerPath = "BallManager"
     
-    private var prevTurnState = BallManagerState(numberOfBalls: 0, originPoint: CGPoint(x: 0, y: 0))
+    private var prevTurnState = DataManager.BallManagerState(numberOfBalls: 0, originPoint: CGPoint(x: 0, y: 0))
     
     // MARK: State values
     // READY state means that all balls are at rest, all animations are complete
@@ -60,6 +60,7 @@ class BallManager {
     
     
     // MARK: State handling code
+    /* XXX REMOVE ME
     struct BallManagerState: Codable {
         var numberOfBalls: Int
         var originPoint: CGPoint?
@@ -69,6 +70,7 @@ class BallManager {
             case originPoint
         }
     }
+    */
     
     /* XXX REMOVE ME
     public func saveState(restorationURL: URL) {
@@ -154,7 +156,7 @@ class BallManager {
             bmState = BallManagerState(numberOfBalls: numBalls, originPoint: nil)
         }
         */
-        bmState = BallManagerState(numberOfBalls: numBalls, originPoint: nil)
+        bmState = DataManager.BallManagerState(numberOfBalls: numBalls, originPoint: nil)
 
         numberOfBalls = bmState!.numberOfBalls
         originPoint = bmState!.originPoint

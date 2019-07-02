@@ -149,7 +149,9 @@ class ContinuousGameModel {
             }
             
             // Save the item generator's state
-            itemGenerator!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
+            // XXX REMOVE ME
+            //itemGenerator!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
+            itemGenerator!.saveState()
         }
         catch {
             print("Error encoding game state: \(error)")
