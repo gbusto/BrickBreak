@@ -60,35 +60,6 @@ class BallManager {
     
     
     // MARK: State handling code
-    /* XXX REMOVE ME
-    struct BallManagerState: Codable {
-        var numberOfBalls: Int
-        var originPoint: CGPoint?
-        
-        enum CodingKeys: String, CodingKey {
-            case numberOfBalls
-            case originPoint
-        }
-    }
-    */
-    
-    /* XXX REMOVE ME
-    public func saveState(restorationURL: URL) {
-        let url = restorationURL.appendingPathComponent(BallManager.BallManagerPath)
-        
-        do {
-            // Update the ball manager's state before we save it
-            bmState!.numberOfBalls = numberOfBalls
-            bmState!.originPoint = originPoint
-            
-            let data = try PropertyListEncoder().encode(self.bmState!)
-            try data.write(to: url)
-        }
-        catch {
-            print("Error saving ball manager state: \(error)")
-        }
-    }
-    */
     
     public func saveTurnState() {
         // Save the ball manager's turn state
@@ -120,20 +91,6 @@ class BallManager {
         return true
     }
     
-    /* XXX REMOVE ME
-    public func loadState(restorationURL: URL) -> Bool {
-        do {
-            let data = try Data(contentsOf: restorationURL)
-            bmState = try PropertyListDecoder().decode(BallManagerState.self, from: data)
-            return true
-        }
-        catch {
-            print("Error loading ball manager state: \(error)")
-            return false
-        }
-    }
-    */
-    
     public func setBallsOnFire() {
         // Sets the balls on fire
         ballsOnFire = true
@@ -150,12 +107,6 @@ class BallManager {
         // XXX It shouldn't need to know ball radius... that should be something only the view knows
         ballRadius = radius
         
-        /* XXX REMOVE ME
-        let url = restorationURL.appendingPathComponent(BallManager.BallManagerPath)
-        if false == loadState(restorationURL: url) {
-            bmState = BallManagerState(numberOfBalls: numBalls, originPoint: nil)
-        }
-        */
         bmState = DataManager.BallManagerState(numberOfBalls: numBalls, originPoint: nil)
 
         numberOfBalls = bmState!.numberOfBalls

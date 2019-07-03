@@ -28,8 +28,6 @@ class ItemGenerator {
     
     // -------------------------------------------------------------
     // MARK: Private attributes
-    // XXX REMOVE ME
-    //private var igState: ItemGeneratorState?
     private var igState: DataManager.ItemGeneratorState?
     static let ItemGeneratorPath = "ItemGenerator"
     
@@ -100,26 +98,6 @@ class ItemGenerator {
     
     
     // MARK: State handling functions
-    /* XXX REMOVE ME
-    struct ItemGeneratorState: Codable {
-        var numberOfBalls: Int
-        var itemTypeDict: [Int: Int]
-        // An array of tuples where index 0 is the item type (SPACER, HIT_BLOCK, BALL, etc) and index 1 is the hit block count (it's only really needed for hit block items)
-        var itemArray: [[Int]]
-        var itemHitCountArray: [[Int]]
-        var blockTypeArray: [Int]
-        var nonBlockTypeArray: [Int]
-        
-        enum CodingKeys: String, CodingKey {
-            case numberOfBalls
-            case itemTypeDict
-            case itemArray
-            case itemHitCountArray
-            case blockTypeArray
-            case nonBlockTypeArray
-        }
-    }
-    */
     
     // The struct for stuff needed to restore state from the previous turn
     struct ItemGeneratorPrevTurn {
@@ -173,30 +151,6 @@ class ItemGenerator {
         DataManager.shared.saveClassicItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: backedUpItems.itemArray, itemHitCountArray: backedUpItems.itemHitCountArray, blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
     }
     
-    /* XXX REMOVE ME
-    public func saveState(restorationURL: URL) {
-        let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
-        do {
-            igState!.numberOfBalls = numberOfBalls
-            igState!.itemTypeDict = itemTypeDict
-            
-            // Backup the item array
-            let backedUpItems = backupItems()
-            
-            igState!.itemArray = backedUpItems.itemArray
-            igState!.itemHitCountArray = backedUpItems.itemHitCountArray
-            igState!.blockTypeArray = blockTypeArray
-            igState!.nonBlockTypeArray = nonBlockTypeArray
-            
-            let data = try PropertyListEncoder().encode(igState!)
-            try data.write(to: url)
-        }
-        catch {
-            print("Failed to save item generator state: \(error)")
-        }
-    }
-    */
-    
     public func saveTurnState() {
         // Backup the items into this state struct
         prevTurnState = backupItems()
@@ -217,20 +171,6 @@ class ItemGenerator {
         
         return true
     }
-    
-    /* XXX REMOVE ME
-    public func loadState(restorationURL: URL) -> Bool {
-        do {
-            let data = try Data(contentsOf: restorationURL)
-            igState = try PropertyListDecoder().decode(DataManager.ItemGeneratorState.self, from: data)
-            return true
-        }
-        catch {
-            print("Failed to load item generator state: \(error)")
-            return false
-        }
-    }
-    */
     
     // Gets the item count (doesn't include spacer items)
     public func getItemCount() -> Int {
@@ -325,10 +265,7 @@ class ItemGenerator {
             srand48(seed)
         }
         
-        // XXX REMOVE ME
-        //let url = restorationURL.appendingPathComponent(ItemGenerator.ItemGeneratorPath)
         // Try to load state and if not initialize things to their default values
-        //if false == loadState(restorationURL: url) {
         igState = DataManager.shared.loadClassicItemGeneratorState()
         if igState == nil {
             // Initialize the allowed item types with only one type for now

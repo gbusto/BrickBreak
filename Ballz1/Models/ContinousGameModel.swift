@@ -27,11 +27,7 @@ class ContinuousGameModel {
     public var showedTutorials = false
     
     // MARK: Private properties
-    // XXX REMOVE ME
-    //private var persistentData: PersistentData?
     private var persistentData: DataManager.ClassicPersistentData?
-    // XXX REMOVE ME
-    //private var gameState: GameState?
     private var gameState: DataManager.ClassicGameState?
     
     private var numberOfItems = Int(8)
@@ -63,40 +59,11 @@ class ContinuousGameModel {
     
     
     // MARK: State handling code
-    // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
-    /* XXX REMOVE ME
-    struct PersistentData: Codable {
-        var highScore: Int
-        var showedTutorials: Bool
-        
-        // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
-        // Read Apple's documentation on CodingKey protocol and Codable
-        enum CodingKeys: String, CodingKey {
-            case highScore
-            case showedTutorials
-        }
-    }
-    */
-    
-    /* XXX REMOVE ME
-    // This struct is used for managing any state from this class that is required to save the user's place
-    struct GameState: Codable {
-        var gameScore: Int
-        var userWasSaved: Bool
-        
-        enum CodingKeys: String, CodingKey {
-            case gameScore
-            case userWasSaved
-        }
-    }
-    */
+
     
     public func saveState() {
         // If we're in the middle of a turn, we don't want to save the state. Users could exploit this to cheat
         if isReady() || isGameOver() {
-            // XXX REMOVE ME
-            //savePersistentState()
-            
             // Handle saving off persistent game data
             // XXX Look into this logic to make sure this is correct.. doesn't seem right unless we do a check somewhere else in the code to update the user's high score accordingly
             if persistentData!.highScore != highScore {
@@ -112,8 +79,6 @@ class ContinuousGameModel {
                 return
             }
             
-            // XXX REMOVE ME
-            //saveGameState()
             DataManager.shared.saveClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
             
             // Save off the ball manager state
@@ -128,111 +93,6 @@ class ContinuousGameModel {
             itemGenerator!.saveState()
         }
     }
-    
-    /* XXX REMOVE ME
-    public func savePersistentState() {
-        do {
-            // Create the App directory Documents/BB
-            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.AppDirURL.path) {
-                try FileManager.default.createDirectory(at: ContinuousGameModel.AppDirURL, withIntermediateDirectories: true, attributes: nil)
-            }
-            
-            // Check if the user beat their high score; if they did then save it
-            if persistentData!.highScore != highScore {
-                persistentData!.highScore = highScore
-            }
-            
-            // Save state to know if user was shown tutorial
-            persistentData!.showedTutorials = showedTutorials
-            
-            // Save the persistent data
-            let pData = try PropertyListEncoder().encode(self.persistentData!)
-            try pData.write(to: ContinuousGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
-        }
-        catch {
-            print("Error saving persistent state: \(error)")
-        }
-    }
-    */
-    
-    /* XXX REMOVE ME
-    public func saveGameState() {
-        do {
-            // If it's a game over, clear the game state so we start fresh next time
-            if GAME_OVER == state {
-                clearGameState()
-                return
-            }
-            
-            // Don't save any of this stuff after a game over
-
-            // Create the directory for this game mode (Documents/BB/ContinuousDir)
-            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.ContinuousDirURL.path) {
-                try FileManager.default.createDirectory(at: ContinuousGameModel.ContinuousDirURL, withIntermediateDirectories: true, attributes: nil)
-            }
-            
-            // Save game state stuff (right now it's just the current game score)
-            gameState!.gameScore = gameScore
-            gameState!.userWasSaved = userWasSaved
-            
-            // Save the game state
-            let gameData = try PropertyListEncoder().encode(self.gameState!)
-            try gameData.write(to: ContinuousGameModel.GameStateURL, options: .completeFileProtectionUnlessOpen)
-            
-            // Save the ball manager's state
-            // XXX REMOVE ME
-            //ballManager!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
-            if false == DataManager.shared.saveClassicBallState(numberOfBalls: ballManager!.numberOfBalls, originPoint: ballManager!.getOriginPoint()) {
-                print("Failed to save ball manager state for classic mode!")
-            }
-            else {
-                print("Successfully saved ball manager state for classic mode!")
-            }
-            
-            // Save the item generator's state
-            // XXX REMOVE ME
-            //itemGenerator!.saveState(restorationURL: ContinuousGameModel.ContinuousDirURL)
-            itemGenerator!.saveState()
-        }
-        catch {
-            print("Error encoding game state: \(error)")
-        }
-    }
-    */
-    
-    /* XXX REMOVE ME
-    public func loadPersistentState() -> Bool {
-        do {
-            // Load the persistent data
-            let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
-            // XXX REMOVE ME
-            //persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
-            persistentData = try PropertyListDecoder().decode(DataManager.ClassicPersistentData.self, from: pData)
-            
-            return true
-        }
-        catch {
-            print("Error decoding persistent game state: \(error)")
-            return false
-        }
-    }
-    */
-    
-    /* XXX REMOVE ME
-    public func loadGameState() -> Bool {
-        do {
-            // Load game state for this game mode
-            let gameData = try Data(contentsOf: ContinuousGameModel.GameStateURL)
-            gameState = try PropertyListDecoder().decode(DataManager.ClassicGameState.self, from: gameData)
-            
-            return true
-        }
-        catch {
-            print("Error decoding game state: \(error)")
-            return false
-        }
-    }
-    */
     
     public func clearGameState() {
         do {
@@ -249,19 +109,13 @@ class ContinuousGameModel {
         state = WAITING
         
         // Try to load persistent data
-        // XXX REMOVE ME
-        //if false == loadPersistentState() {
         persistentData = DataManager.shared.loadClassicPeristentData()
         if nil == persistentData {
             // Defaults to load highScore of 0
-            // XXX REMOVE ME
-            //persistentData = PersistentData(highScore: highScore, showedTutorials: showedTutorials)
             persistentData = DataManager.ClassicPersistentData(highScore: highScore, showedTutorials: showedTutorials)
         }
         
         // Try to load game state
-        // XXX REMOVE ME
-        //if false == loadGameState() {
         gameState = DataManager.shared.loadClassicGameState()
         if nil == gameState {
             // Defaults to loading gameScore of 0

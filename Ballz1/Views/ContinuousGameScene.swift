@@ -645,13 +645,6 @@ class ContinousGameScene: GameScene {
         gameModel!.prepareTurn(point: point)
         gameModel!.ballManager!.shootBalls()
     }
-
-    /* XXX REMOVE ME
-    // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
-    private func inGame(_ point: CGPoint) -> Bool {
-        return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
-    }
-    */
     
     private func updateScore(highScore: Int, gameScore: Int) {
         if let controller = gameController {
