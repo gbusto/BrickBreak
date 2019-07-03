@@ -251,7 +251,7 @@ class ItemGenerator {
     }
     
     // MARK: Public functions
-    required init(blockSize: CGSize, ballRadius: CGFloat, numberOfBalls: Int, numberOfRows: Int, numItems: Int, restorationURL: URL, useDrand: Bool = false, seed: Int = 0) {
+    required init(blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int, numItems: Int, state: DataManager.ItemGeneratorState?, useDrand: Bool = false, seed: Int = 0) {
         // XXX Change restoration URL to be optional; if it's nil, don't try to load any data
         // XXX Maybe this should only be something that the view is aware of
         self.blockSize = blockSize
@@ -265,17 +265,19 @@ class ItemGenerator {
             srand48(seed)
         }
         
-        // Try to load state and if not initialize things to their default values
-        igState = DataManager.shared.loadClassicItemGeneratorState()
-        if igState == nil {
+        if nil == state {
+            // Try to load state and if not initialize things to their default values
             // Initialize the allowed item types with only one type for now
             addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 95)
             addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 5)
             addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 90)
             addNonBlockItemType(type: ItemGenerator.BALL, percentage: 8)
             addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
-            
+
             igState = DataManager.ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
+        }
+        else {
+            igState = state
         }
         
         // Set these global variables based on the item generator state

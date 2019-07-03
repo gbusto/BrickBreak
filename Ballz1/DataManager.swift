@@ -22,12 +22,19 @@ class DataManager {
     static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     // This is the main app directory
     static let AppDirURL = AppDirectory.appendingPathComponent("BB")
+    
     // This is persistent data that will contain the high score
     static let PersistentDataURL = AppDirURL.appendingPathComponent("PersistentData")
     // The directory to store game state for this game type (classic mode)
     static let ClassicDirURL = AppDirURL.appendingPathComponent("ContinuousDir")
     // The path where game state is stored for this game mode
     static let ClassicGameStateURL = ClassicDirURL.appendingPathComponent("GameState")
+
+    // The directory to store game state for this game type
+    static let LevelsDirURL = AppDirURL.appendingPathComponent("LevelsDir")
+    // The path where game state is stored for this game mode
+    static let LevelsPersistentDataURL = LevelsDirURL.appendingPathComponent("PersistentData")
+    
     // Path for saving ball manager state
     static let BallManagerPath = "BallManager"
     // Path for saving item generator state
@@ -65,7 +72,7 @@ class DataManager {
     }
     
     // Struct to save/load persistent level data
-    struct PersistentLevelData: Codable {
+    struct LevelsPersistentData: Codable {
         var levelCount: Int
         var highScore: Int
         var cumulativeScore: Int
@@ -189,6 +196,28 @@ class DataManager {
         }
     }
     
+    public func saveLevelsPersistentData(levelCount: Int, highScore: Int, cumulativeScore: Int, showedTutorials: Bool) -> Bool {
+        
+        do {
+            // Create the App directory Documents/BB
+            if false == FileManager.default.fileExists(atPath: DataManager.LevelsDirURL.path) {
+                try FileManager.default.createDirectory(at: DataManager.LevelsDirURL, withIntermediateDirectories: true, attributes: nil)
+            }
+            
+            let levelsPersistentData: LevelsPersistentData = LevelsPersistentData(levelCount: levelCount, highScore: highScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)
+            
+            // Save the persistent data
+            let pData = try PropertyListEncoder().encode(levelsPersistentData)
+            try pData.write(to: DataManager.LevelsPersistentDataURL, options: .completeFileProtectionUnlessOpen)
+            
+            return true
+        }
+        catch {
+            print("Error saving persistent state: \(error)")
+            return false
+        }
+    }
+    
     
     // MARK: Public functions to load data
     
@@ -239,6 +268,18 @@ class DataManager {
             let data = try Data(contentsOf: DataManager.ClassicGameStateURL)
             let gameState: ClassicGameState = try PropertyListDecoder().decode(DataManager.ClassicGameState.self, from: data)
             return gameState
+        }
+        catch {
+            print("Error loading persistent data state: \(error)")
+            return nil
+        }
+    }
+    
+    public func loadLevelsPersistentData() -> LevelsPersistentData? {
+        do {
+            let data = try Data(contentsOf: DataManager.LevelsPersistentDataURL)
+            let persistentData: LevelsPersistentData = try PropertyListDecoder().decode(DataManager.LevelsPersistentData.self, from: data)
+            return persistentData
         }
         catch {
             print("Error loading persistent data state: \(error)")

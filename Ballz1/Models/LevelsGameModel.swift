@@ -33,7 +33,9 @@ class LevelsGameModel {
     public var lastItemBroken = false
     
     // MARK: Private properties
-    private var persistentData: PersistentData?
+    // XXX REMOVE ME
+    //private var persistentData: PersistentData?
+    private var persistentData: DataManager.LevelsPersistentData?
     
     private var numberOfItems = Int(8)
     private var numberOfRows = Int(0)
@@ -73,6 +75,7 @@ class LevelsGameModel {
     
     
     // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
+    /* XXX REMOVE ME
     struct PersistentData: Codable {
         var levelCount: Int
         var highScore: Int
@@ -88,53 +91,26 @@ class LevelsGameModel {
             case showedTutorials
         }
     }
+    */
     
     public func saveState() {
         // If we're in the middle of a turn, we don't want to save the state. Users could exploit this to cheat
         if isReady() || isGameOver() {
-            savePersistentState()
-        }
-    }
-    
-    public func savePersistentState() {
-        do {
-            // Create the App directory Documents/BB
-            if false == FileManager.default.fileExists(atPath: LevelsGameModel.LevelsDirURL.path) {
-                try FileManager.default.createDirectory(at: LevelsGameModel.LevelsDirURL, withIntermediateDirectories: true, attributes: nil)
+            // XXX REMOVE ME
+            //savePersistentData()
+            
+            // Update the game score
+            if gameScore > highScore {
+                highScore = gameScore
             }
             
-            // Set persistent data variables in struct here
-            persistentData!.levelCount = levelCount
-            if gameScore > persistentData!.highScore {
-                persistentData!.highScore = gameScore
-            }
-            // Update the cumulative score to be the current cumulative score + game score
             cumulativeScore += gameScore
-            persistentData!.cumulativeScore = cumulativeScore
             
-            // Save the persistent data
-            let pData = try PropertyListEncoder().encode(self.persistentData!)
-            try pData.write(to: LevelsGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
-        }
-        catch {
-            print("Error saving persistent state: \(error)")
+            DataManager.shared.saveLevelsPersistentData(levelCount: levelCount, highScore: highScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)
         }
     }
     
-    public func loadPersistentState() -> Bool {
-        do {
-            // Load the persistent data
-            let pData = try Data(contentsOf: LevelsGameModel.PersistentDataURL)
-            persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
-            
-            return true
-        }
-        catch {
-            print("Error decoding persistent game state: \(error)")
-            return false
-        }
-    }
-    
+    /* XXX REMOVE ME
     public func clearGameState() {
         do {
             try FileManager.default.removeItem(atPath: LevelsGameModel.LevelsDirURL.path)
@@ -143,14 +119,18 @@ class LevelsGameModel {
             print("Error clearing state: \(error)")
         }
     }
+    */
     
     // MARK: Initialization functions
     required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int) {
         state = WAITING
         
         // Try to load persistent data
-        if false == loadPersistentState() {
-            persistentData = PersistentData(levelCount: levelCount, highScore: gameScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)
+        // XXX REMOVE ME
+        //if false == loadPersistentData() {
+        persistentData = DataManager.shared.loadLevelsPersistentData()
+        if nil == persistentData {
+            persistentData = DataManager.LevelsPersistentData(levelCount: levelCount, highScore: gameScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)
         }
         
         /*
@@ -193,12 +173,13 @@ class LevelsGameModel {
         
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
         itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
-                                      numberOfBalls: numberOfBalls,
                                       numberOfRows: numberOfRows,
                                       numItems: numberOfItems,
-                                      restorationURL: LevelsGameModel.LevelsDirURL,
+                                      state: nil,
                                       useDrand: true,
                                       seed: levelCount)
+        // XXX This isn't so clean.. find a better way to set the number of balls for the item generator
+        itemGenerator!.numberOfBalls = numberOfBalls
         
         // We don't want to have ball items in levels
         itemGenerator!.removeBallTypeGeneration()

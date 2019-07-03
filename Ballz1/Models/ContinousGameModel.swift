@@ -133,17 +133,22 @@ class ContinuousGameModel {
     public func initBallManager(ballRadius: CGFloat) {
         // This function will either load ball manager with a saved state or the default ball manager state
         let bmState = DataManager.shared.loadClassicBallState()
-        ballManager = BallManager(numBalls: bmState!.numberOfBalls, radius: ballRadius, restorationURL: ContinuousGameModel.ContinuousDirURL)
-        ballManager!.setOriginPoint(point: bmState!.originPoint!)
+        if bmState != nil {
+            ballManager = BallManager(numBalls: bmState!.numberOfBalls, radius: ballRadius)
+            ballManager!.setOriginPoint(point: bmState!.originPoint!)
+        }
+        else {
+            ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius)
+        }
     }
     
     public func initItemGenerator(blockSize: CGSize, ballRadius: CGFloat) {
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
+        let igState = DataManager.shared.loadClassicItemGeneratorState()
         itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
-                                      numberOfBalls: ballManager!.numberOfBalls,
                                       numberOfRows: numberOfRows,
                                       numItems: numberOfItems,
-                                      restorationURL: ContinuousGameModel.ContinuousDirURL)
+                                      state: igState)
         if 0 == itemGenerator!.itemArray.count {
             state = TURN_OVER
         }

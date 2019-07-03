@@ -103,7 +103,7 @@ class BallManager {
     
     
     // MARK: Public functions
-    required init(numBalls: Int, radius: CGFloat, restorationURL: URL) {
+    required init(numBalls: Int, radius: CGFloat) {
         // XXX It shouldn't need to know ball radius... that should be something only the view knows
         ballRadius = radius
         
