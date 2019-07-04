@@ -30,7 +30,6 @@ class BallManager {
     private var originPoint: CGPoint?
     
     private var bmState: DataManager.BallManagerState?
-    static let BallManagerPath = "BallManager"
     
     private var prevTurnState = DataManager.BallManagerState(numberOfBalls: 0, originPoint: CGPoint(x: 0, y: 0))
     

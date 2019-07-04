@@ -29,7 +29,6 @@ class ItemGenerator {
     // -------------------------------------------------------------
     // MARK: Private attributes
     private var igState: DataManager.ItemGeneratorState?
-    static let ItemGeneratorPath = "ItemGenerator"
     
     // Number of items to fit on each row
     private var numItemsPerRow = Int(0)
