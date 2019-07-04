@@ -73,26 +73,6 @@ class LevelsGameModel {
     // The path where game state is stored for this game mode
     static let PersistentDataURL = LevelsDirURL.appendingPathComponent("PersistentData")
     
-    
-    // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
-    /* XXX REMOVE ME
-    struct PersistentData: Codable {
-        var levelCount: Int
-        var highScore: Int
-        var cumulativeScore: Int
-        var showedTutorials: Bool
-        
-        // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
-        // Read Apple's documentation on CodingKey protocol and Codable
-        enum CodingKeys: String, CodingKey {
-            case levelCount
-            case highScore
-            case cumulativeScore
-            case showedTutorials
-        }
-    }
-    */
-    
     public func saveState() {
         // If we're in the middle of a turn, we don't want to save the state. Users could exploit this to cheat
         if isReady() || isGameOver() {

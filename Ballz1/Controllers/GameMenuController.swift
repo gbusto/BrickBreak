@@ -30,104 +30,39 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     // IMPORTANT: replace the red string below with your own Leaderboard ID (the one you've set in iTunes Connect)
     let LEADERBOARD_ID = "xyz.ashgames.brickbreak"
     let LEVELS_LEADERBOARD_ID = "xyz.ashgames.brickbreak.levelnumber"
-    
-    struct PersistentData: Codable {
-        var highScore: Int
-        var showedTutorials: Bool
-        
-        // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
-        // Read Apple's documentation on CodingKey protocol and Codable
-        enum CodingKeys: String, CodingKey {
-            case highScore
-            case showedTutorials
-        }
-    }
-    
-    // This struct is used for managing persistent data (such as your overall high score, what level you're on, etc)
-    struct PersistentLevelsData: Codable {
-        var levelCount: Int
-        var highScore: Int
-        var cumulativeScore: Int
-        var showedTutorials: Bool
-        
-        // This serves as the authoritative list of properties that must be included when instances of a codable type are encoded or decoded
-        // Read Apple's documentation on CodingKey protocol and Codable
-        enum CodingKeys: String, CodingKey {
-            case levelCount
-            case highScore
-            case cumulativeScore
-            case showedTutorials
-        }
-    }
-    
+
+    // Get the user's current level number from Levels game mode (saved to disk)
     func loadLevelNumber() -> Int {
-        do {
-            let pData = try Data(contentsOf: LevelsGameModel.PersistentDataURL)
-            let persistentData = try PropertyListDecoder().decode(PersistentLevelsData.self, from: pData)
-            
-            return persistentData.levelCount
-        }
-        catch {
-            print("Error decoding persistent levels data: \(error)")
+        let persistentData = DataManager.shared.loadLevelsPersistentData()
+        if nil == persistentData {
             return 0
         }
+        print("Read level number '\(persistentData!.levelCount)' from disk")
+        return persistentData!.levelCount
     }
     
-    // Get the user's high score from disk
+    // Get the user's high score from Classic game mode (saved to disk)
     func loadHighScore() -> Int {
-        do {
-            let pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
-            let persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
-        
-            return persistentData.highScore
-        }
-        catch {
-            print("Error decoding persistent game state: \(error)")
+        let persistentData = DataManager.shared.loadClassicPeristentData()
+        if nil == persistentData {
             return 0
         }
+        print("Read high score '\(persistentData!.highScore)' from disk")
+        return persistentData!.highScore
     }
     
     // Update the user's high score locally (when game center has a higher score on record than is on disk)
     func updateHighScore(score: Int64) {
-        do {
-            // Bail out if the path to the persistent data doesn't exist
-            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.AppDirURL.path) {
-                return
-            }
-            
-            var pData = try Data(contentsOf: ContinuousGameModel.PersistentDataURL)
-            var persistentData = try PropertyListDecoder().decode(PersistentData.self, from: pData)
-            
-            // Update the high score for the persistent data saved to disk
-            persistentData.highScore = Int(score)
-            
-            // Save the persistent data
-            pData = try PropertyListEncoder().encode(persistentData)
-            try pData.write(to: ContinuousGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
-        }
-        catch {
-            print("Error saving persistent state: \(error)")
-        }
+        print("Saving high score '\(Int(score))' to disk")
+        let persistentData = DataManager.shared.loadClassicPeristentData()
+        DataManager.shared.saveClassicPersistentData(highScore: Int(score), showedTutorials: persistentData!.showedTutorials)
     }
     
     // XXX Not currently being used but will be in the future
     func updateLevelNumber(level: Int64) {
-        do {
-            if false == FileManager.default.fileExists(atPath: LevelsGameModel.AppDirURL.path) {
-                return
-            }
-            
-            var pData = try Data(contentsOf: LevelsGameModel.PersistentDataURL)
-            var persistentData = try PropertyListDecoder().decode(PersistentLevelsData.self, from: pData)
-            
-            persistentData.levelCount = Int(level)
-            
-            pData = try PropertyListEncoder().encode(persistentData)
-            try pData.write(to: LevelsGameModel.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
-        }
-        catch {
-            print("Error saving persistent level state: \(error)")
-        }
+        print("Saving high score '\(Int(level))' to disk")
+        let persistentData = DataManager.shared.loadLevelsPersistentData()
+        DataManager.shared.saveLevelsPersistentData(levelCount: Int(level), highScore: persistentData!.highScore, cumulativeScore: persistentData!.cumulativeScore, showedTutorials: persistentData!.showedTutorials)
     }
     
     // MARK: Gamecenter delegate protocol

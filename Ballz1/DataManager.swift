@@ -129,6 +129,7 @@ class DataManager {
             let bmState = BallManagerState(numberOfBalls: numberOfBalls, originPoint: originPoint)
             let data = try PropertyListEncoder().encode(bmState)
             try data.write(to: url, options: .completeFileProtectionUnlessOpen)
+            print("Saved classic ball state: \(bmState)")
             return true
         }
         catch {
@@ -147,6 +148,7 @@ class DataManager {
             
             let data = try PropertyListEncoder().encode(igState)
             try data.write(to: url, options: .completeFileProtectionUnlessOpen)
+            print("Saved classic item generator state: \(igState)")
             return true
         }
         catch {
@@ -167,6 +169,7 @@ class DataManager {
             // Save the persistent data
             let pData = try PropertyListEncoder().encode(classicPersistentData)
             try pData.write(to: DataManager.PersistentDataURL, options: .completeFileProtectionUnlessOpen)
+            print("Saved classic persistent data: \(classicPersistentData)")
             return true
         }
         catch {
@@ -187,7 +190,7 @@ class DataManager {
             // Save the game data
             let pData = try PropertyListEncoder().encode(classicGameState)
             try pData.write(to: DataManager.ClassicGameStateURL, options: .completeFileProtectionUnlessOpen)
-            
+            print("Saved classic game state: \(classicGameState)")
             return true
         }
         catch {
@@ -209,7 +212,7 @@ class DataManager {
             // Save the persistent data
             let pData = try PropertyListEncoder().encode(levelsPersistentData)
             try pData.write(to: DataManager.LevelsPersistentDataURL, options: .completeFileProtectionUnlessOpen)
-            
+            print("Saved levels persistent data: \(levelsPersistentData)")
             return true
         }
         catch {
@@ -227,6 +230,7 @@ class DataManager {
             let url = DataManager.ClassicDirURL.appendingPathComponent(DataManager.BallManagerPath)
             let data = try Data(contentsOf: url)
             let bmState: BallManagerState = try PropertyListDecoder().decode(BallManagerState.self, from: data)
+            print("Loaded classic ball state: \(bmState)")
             return bmState
         }
         catch {
@@ -241,6 +245,7 @@ class DataManager {
             let url = DataManager.ClassicDirURL.appendingPathComponent(DataManager.ItemGeneratorPath)
             let data = try Data(contentsOf: url)
             let igState: ItemGeneratorState = try PropertyListDecoder().decode(ItemGeneratorState.self, from: data)
+            print("Loaded classic item generator state: \(igState)")
             return igState
         }
         catch {
@@ -254,6 +259,7 @@ class DataManager {
         do {
             let data = try Data(contentsOf: DataManager.PersistentDataURL)
             let persistentData: ClassicPersistentData = try PropertyListDecoder().decode(DataManager.ClassicPersistentData.self, from: data)
+            print("Loaded classic persistent data: \(persistentData)")
             return persistentData
         }
         catch {
@@ -267,6 +273,7 @@ class DataManager {
         do {
             let data = try Data(contentsOf: DataManager.ClassicGameStateURL)
             let gameState: ClassicGameState = try PropertyListDecoder().decode(DataManager.ClassicGameState.self, from: data)
+            print("Loaded classic game state: \(gameState)")
             return gameState
         }
         catch {
@@ -279,6 +286,7 @@ class DataManager {
         do {
             let data = try Data(contentsOf: DataManager.LevelsPersistentDataURL)
             let persistentData: LevelsPersistentData = try PropertyListDecoder().decode(DataManager.LevelsPersistentData.self, from: data)
+            print("Loaded levels persistent data: \(persistentData)")
             return persistentData
         }
         catch {
