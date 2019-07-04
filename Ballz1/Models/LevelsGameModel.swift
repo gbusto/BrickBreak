@@ -33,8 +33,6 @@ class LevelsGameModel {
     public var lastItemBroken = false
     
     // MARK: Private properties
-    // XXX REMOVE ME
-    //private var persistentData: PersistentData?
     private var persistentData: DataManager.LevelsPersistentData?
     
     private var numberOfItems = Int(8)
@@ -63,16 +61,6 @@ class LevelsGameModel {
     static public var GAMEOVER_LOSS = Int(1)
     static public var GAMEOVER_WIN = Int(2)
     
-    // For storing data
-    static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
-    // This is the main app directory
-    static let AppDirURL = AppDirectory.appendingPathComponent("BB")
-    // This is persistent data that will contain the high score
-    // The directory to store game state for this game type
-    static let LevelsDirURL = AppDirURL.appendingPathComponent("LevelsDir")
-    // The path where game state is stored for this game mode
-    static let PersistentDataURL = LevelsDirURL.appendingPathComponent("PersistentData")
-    
     public func saveState() {
         // If we're in the middle of a turn, we don't want to save the state. Users could exploit this to cheat
         if isReady() || isGameOver() {
@@ -90,24 +78,11 @@ class LevelsGameModel {
         }
     }
     
-    /* XXX REMOVE ME
-    public func clearGameState() {
-        do {
-            try FileManager.default.removeItem(atPath: LevelsGameModel.LevelsDirURL.path)
-        }
-        catch {
-            print("Error clearing state: \(error)")
-        }
-    }
-    */
-    
     // MARK: Initialization functions
     required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int) {
         state = WAITING
         
         // Try to load persistent data
-        // XXX REMOVE ME
-        //if false == loadPersistentData() {
         persistentData = DataManager.shared.loadLevelsPersistentData()
         if nil == persistentData {
             persistentData = DataManager.LevelsPersistentData(levelCount: levelCount, highScore: gameScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)

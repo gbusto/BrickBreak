@@ -181,8 +181,8 @@ class DataManager {
     public func saveClassicGameState(gameScore: Int, userWasSaved: Bool) -> Bool {
         do {
             // Create the directory for this game mode (Documents/BB/ContinuousDir)
-            if false == FileManager.default.fileExists(atPath: ContinuousGameModel.ContinuousDirURL.path) {
-                try FileManager.default.createDirectory(at: ContinuousGameModel.ContinuousDirURL, withIntermediateDirectories: true, attributes: nil)
+            if false == FileManager.default.fileExists(atPath: DataManager.ClassicDirURL.path) {
+                try FileManager.default.createDirectory(at: DataManager.ClassicDirURL, withIntermediateDirectories: true, attributes: nil)
             }
             
             let classicGameState: ClassicGameState = ClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
@@ -292,6 +292,33 @@ class DataManager {
         catch {
             print("Error loading persistent data state: \(error)")
             return nil
+        }
+    }
+    
+    
+    // MARK: Public functions to clear game state/data
+    
+    // Function to remove classic game state after the user loses (so we don't load it up next time they go to play classic mode)
+    // THIS DOES NOT CLEAR ANY PERSISTENT DATA
+    public func clearClassicGameState() {
+        do {
+            try FileManager.default.removeItem(atPath: DataManager.ClassicGameStateURL.path)
+            try FileManager.default.removeItem(atPath: DataManager.ClassicDirURL.path)
+            print("Successfully cleared classic game state")
+        }
+        catch {
+            print("Error clearing classic game state: \(error)")
+        }
+    }
+    
+    public func clearLevelsPersistentData() {
+        do {
+            return
+            // UNCOMMENT THIS LINE TO TRULY REMOVE LEVELS PERSISTENT GAME DATA
+            //try FileManager.default.removeItem(atPath: LevelsGameModel.LevelsDirURL.path)
+        }
+        catch {
+            print("Error clearing state: \(error)")
         }
     }
 }

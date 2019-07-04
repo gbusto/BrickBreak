@@ -18,9 +18,6 @@ class LevelsGameScene: GameScene {
     
     public var gameController: LevelsGameController?
     
-    // XXX REMOVE ME
-    //public var originPoint = CGPoint(x: 0, y: 0)
-    
     // Variables for handling swipe gestures
     private var rightSwipeGesture: UISwipeGestureRecognizer?
     private var downSwipeGesture: UISwipeGestureRecognizer?

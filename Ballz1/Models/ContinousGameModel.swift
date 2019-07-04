@@ -46,18 +46,6 @@ class ContinuousGameModel {
     
     private var GAME_OVER = Int(255)
     
-    // For storing data
-    static let AppDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
-    // This is the main app directory
-    static let AppDirURL = AppDirectory.appendingPathComponent("BB")
-    // This is persistent data that will contain the high score
-    static let PersistentDataURL = AppDirURL.appendingPathComponent("PersistentData")
-    // The directory to store game state for this game type
-    static let ContinuousDirURL = AppDirURL.appendingPathComponent("ContinuousDir")
-    // The path where game state is stored for this game mode
-    static let GameStateURL = ContinuousDirURL.appendingPathComponent("GameState")
-    
-    
     // MARK: State handling code
 
     
@@ -75,7 +63,7 @@ class ContinuousGameModel {
             if GAME_OVER == state {
                 // If it's a game over, clear the game state so we start fresh next time
                 // Don't save any of this stuff after a game over
-                clearGameState()
+                DataManager.shared.clearClassicGameState()
                 return
             }
             
@@ -91,16 +79,6 @@ class ContinuousGameModel {
             
             // Save off item generator state
             itemGenerator!.saveState()
-        }
-    }
-    
-    public func clearGameState() {
-        do {
-             try FileManager.default.removeItem(atPath: ContinuousGameModel.GameStateURL.path)
-             try FileManager.default.removeItem(atPath: ContinuousGameModel.ContinuousDirURL.path)
-        }
-        catch {
-            print("Error clearing state: \(error)")
         }
     }
     
