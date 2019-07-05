@@ -16,7 +16,8 @@ class ContinuousGameModel {
     public var gameScore = Int(0)
     public var highScore = Int(0)
     
-    public var ballManager: BallManager?
+    // XXX REMOVE ME
+    //public var ballManager: BallManager?
     public var itemGenerator: ItemGenerator?
     
     public var userWasSaved = false
@@ -49,7 +50,7 @@ class ContinuousGameModel {
     // MARK: State handling code
 
     
-    public func saveState() {
+    public func saveState(numberOfBalls: Int, originPoint: CGPoint) {
         // If we're in the middle of a turn, we don't want to save the state. Users could exploit this to cheat
         if isReady() || isGameOver() {
             // Handle saving off persistent game data
@@ -70,7 +71,10 @@ class ContinuousGameModel {
             DataManager.shared.saveClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
             
             // Save off the ball manager state
-            if false == DataManager.shared.saveClassicBallState(numberOfBalls: ballManager!.numberOfBalls, originPoint: ballManager!.getOriginPoint()) {
+            // XXX REMOVE ME
+            //if false == DataManager.shared.saveClassicBallState(numberOfBalls: ballManager!.numberOfBalls, originPoint: ballManager!.getOriginPoint()) {
+            // XXX NEEDS WORK
+            if false == DataManager.shared.saveClassicBallState(numberOfBalls: numberOfBalls, originPoint: originPoint) {
                 print("Failed to save ball manager state for classic mode!")
             }
             else {
@@ -108,6 +112,7 @@ class ContinuousGameModel {
         self.numberOfRows = numberOfRows
     }
     
+    /* XXX REMOVE ME
     public func initBallManager(ballRadius: CGFloat) {
         // This function will either load ball manager with a saved state or the default ball manager state
         let bmState = DataManager.shared.loadClassicBallState()
@@ -119,6 +124,7 @@ class ContinuousGameModel {
             ballManager = BallManager(numBalls: numberOfBalls, radius: ballRadius)
         }
     }
+    */
     
     public func initItemGenerator(blockSize: CGSize, ballRadius: CGFloat) {
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
@@ -133,19 +139,24 @@ class ContinuousGameModel {
     }
     
     // MARK: Public functions
+    /* XXX REMOVE ME
     public func getBalls() -> [BallItem] {
         return ballManager!.ballArray
     }
+    */
     
     // Load the previous turn state
+    // XXX NEEDS WORK
     public func loadPreviousTurnState() -> Bool {
         if prevTurnSaved {
             if false == itemGenerator!.loadTurnState() {
                 return false
             }
+            /* XXX REMOVE ME
             if false == ballManager!.loadTurnState() {
                 return false
             }
+            */
             
             // Undo the scores
             if highScore == gameScore {
@@ -169,22 +180,26 @@ class ContinuousGameModel {
         // Save the item generator's turn state as soon as the user starts the next turn
         itemGenerator!.saveTurnState()
         
-        // Also save the ball manager's state
-        ballManager!.saveTurnState()
+        // XXX REMOVE ME
+        //ballManager!.saveTurnState()
         
         // Reset this to true since we saved state
         prevTurnSaved = true
         
-        ballManager!.setDirection(point: point)
+        // XXX REMOVE ME
+        //ballManager!.setDirection(point: point)
         // Change the ball manager's state from READY to SHOOTING
-        ballManager!.incrementState()
+        // XXX REMOVE ME
+        //ballManager!.incrementState()
         // Change our state from READY to MID_TURN
         incrementState()
     }
     
+    /* XXX REMOVE ME
     public func endTurn() {
         ballManager!.returnAllBalls()
     }
+    */
     
     public func saveUser() -> [Item] {
         state = READY
@@ -195,22 +210,29 @@ class ContinuousGameModel {
     public func handleTurn() -> [Item] {
         // Check to see if the user collected any ball items so far
         let removedItems = itemGenerator!.removeItems()
+        /* XXX REMOVE ME
         for item in removedItems {
             if item is BallItem {
                 // Transfer ownership of the from the item generator to the ball manager
                 let ball = item as! BallItem
+                // XXX NEEDS WORK
                 ballManager!.addBall(ball: ball)
             }
         }
+        */
         
+        // XXX REMOVE ME
         // Iterate over all the balls in the array of stopped balls, stop them, and move them to their new origin point
-        ballManager!.handleStoppedBalls()
+        //ballManager!.handleStoppedBalls()
         
+        /* XXX REMOVE ME
         // Check to see if the ball manager is still waiting for balls to return
         if ballManager!.isWaiting() {
             ballManager!.waitForBalls()
         }
+        */
         
+        /* XXX REMOVE ME
         // Wait for the ball manager to finish
         if ballManager!.isDone() {
             // Increment state from MID_TURN to TURN_OVER
@@ -219,13 +241,18 @@ class ContinuousGameModel {
             // Increment the ball manager's state from DONE to READY
             ballManager!.incrementState()
         }
+        */
+        
+        // XXX NEEDS WORK; need to figure out how to increment our state from MID_TURN to TURN_OVER
+        // This happens in isMidTurn in main update loop for scene
         
         return removedItems
     }
     
     // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
     public func handleTurnOver() {
-        ballManager!.checkNewArray()
+        // XXX REMOVE ME
+        //ballManager!.checkNewArray()
         
         gameScore += 1
         if gameScore >= highScore {
@@ -243,6 +270,7 @@ class ContinuousGameModel {
     public func handleContact(nameA: String, nameB: String) {
         // Items that start with the name bm are ball manager balls. They are named differently from the other items so we can quickly check if a ball manager ball is interacting with an item from the item generator
         // Add any extra cases in here if they need special attention
+        /* XXX REMOVE ME
         if nameA.starts(with: "bm") {
             if "ground" == nameB {
                 ballManager!.markBallInactive(name: nameA)
@@ -260,12 +288,34 @@ class ContinuousGameModel {
                 let _ = itemGenerator!.hit(name: nameA)
             }
         }
+        */
+        
+        // XXX NEEDS WORK
+        // Items that start with the name bm are ball manager balls. They are named differently from the other items so we can quickly check if a ball manager ball is interacting with an item from the item generator
+        // Add any extra cases in here if they need special attention
+        var item = ""
+        if nameA.starts(with: "bm") {
+            item = nameB
+        }
+        else {
+            item = nameA
+        }
+        
+        if itemGenerator!.hit(name: item) {
+            // Pass; don't need to do anything here
+        }
     }
     
+    /* XXX REMOVE ME
     public func setBallsOnFire() {
         ballManager!.setBallsOnFire()
         
         // Set the ball hit x2 flag
+        itemGenerator!.setOnFireBonus(true)
+    }
+    */
+    
+    public func addOnFireBonus() {
         itemGenerator!.setOnFireBonus(true)
     }
     

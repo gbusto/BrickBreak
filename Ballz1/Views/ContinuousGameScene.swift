@@ -76,13 +76,19 @@ class ContinousGameScene: GameScene {
     private var tutorialType: Tutorials?
     private var tutorialsList: [Tutorials] = []
     
+    static var DEFAULT_NUM_BALLS = Int(10)
+    
+    private var prevBallState = DataManager.BallManagerState(numberOfBalls: 0, originPoint: CGPoint(x: 0, y: 0))
+    private var newBallArray: [BallItem] = []
+    
     // MARK: Override functions
     override func didMove(to view: SKView) {
         super.didMove(to: view)
         
         initGameModel()
+        // XXX REMOVE ME
         // This kind of breaks MVC a bit because the ball manager shouldn't know the ground height
-        gameModel!.ballManager!.setGroundHeight(height: groundNode!.size.height + ballRadius!)
+        //gameModel!.ballManager!.setGroundHeight(height: groundNode!.size.height + ballRadius!)
         
         if gameModel!.userWasSaved {
             gameController!.userWasSaved()
@@ -112,6 +118,41 @@ class ContinousGameScene: GameScene {
         let nameA = contact.bodyA.node?.name!
         let nameB = contact.bodyB.node?.name!
         
+        // Don't need to handle cases where a ball makes contact with a ceiling or a wall... just ignore it
+        if ("wall" == nameA! || "wall" == nameB!) || ("ceiling" == nameA! || "ceiling" == nameB!) {
+            return
+        }
+        
+        // Handle the case where nameA is a ball and it hit the ground
+        if nameA!.starts(with: "bm") && "ground" == nameB! {
+            print("Ball \(nameA!) made contact with ground")
+            // XXX TEST THIS OUT
+            let _ = ballArray.filter {
+                if $0.getNode().name! == nameA! {
+                    self.stoppedBalls.append($0)
+                    $0.stop()
+                }
+                return true
+            }
+            // Bail out because we don't need to continue
+            return
+        }
+        
+        // Same as the case above; handle the case where a ball hit the ground
+        if nameB!.starts(with: "bm") && "ground" == nameA! {
+            // XXX TEST THIS OUT
+            let _ = ballArray.filter {
+                if $0.getNode().name! == nameB! {
+                    self.stoppedBalls.append($0)
+                    $0.stop()
+                }
+                return true
+            }
+            // Bail out because we don't need to continue
+            return
+        }
+        
+        // Allow the game model to do whatever it needs with this collision; mainly to update the score
         gameModel!.handleContact(nameA: nameA!, nameB: nameB!)
     }
     
@@ -123,7 +164,8 @@ class ContinousGameScene: GameScene {
             if gameModel!.isReady() {
                 // Show the arrow and update it
                 if inGame(point) && (false == self.isPaused) {
-                    let originPoint = gameModel!.ballManager!.getOriginPoint()
+                    // XXX REMOVE ME
+                    //let originPoint = gameModel!.ballManager!.getOriginPoint()
                     ballProjection.showArrow(scene: self)
                     let _ = ballProjection.updateArrow(startPoint: originPoint,
                                                        touchPoint: point,
@@ -145,7 +187,8 @@ class ContinousGameScene: GameScene {
             }
             else if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Update the arrow location
-                let originPoint = gameModel!.ballManager!.getOriginPoint()
+                // XXX REMOVE ME
+                //let originPoint = gameModel!.ballManager!.getOriginPoint()
                 let _ = ballProjection.updateArrow(startPoint: originPoint,
                                                    touchPoint: point,
                                                    ceilingHeight: ceilingNode!.position.y,
@@ -161,7 +204,8 @@ class ContinousGameScene: GameScene {
             
             if gameModel!.isReady() && ballProjection.arrowShowing {
                 // Set the direction for the balls to shoot
-                let originPoint = gameModel!.ballManager!.getOriginPoint()
+                // XXX REMOVE ME
+                //let originPoint = gameModel!.ballManager!.getOriginPoint()
                 let firePoint = ballProjection.updateArrow(startPoint: originPoint,
                                                            touchPoint: point,
                                                            ceilingHeight: ceilingNode!.position.y,
@@ -189,7 +233,9 @@ class ContinousGameScene: GameScene {
     // MARK: After physics simulation step
     override func didSimulatePhysics() {
         // We want to check the balls after each simulation step to ensure it never reaches a completely horizontal or vertical angle
-        for ball in gameModel!.ballManager!.ballArray {
+        // XXX REMOVE ME
+        //for ball in gameModel!.ballManager!.ballArray {
+        for ball in ballArray {
             if false == ball.isResting {
                 let dx = ball.getNode().physicsBody!.velocity.dx
                 let dy = ball.getNode().physicsBody!.velocity.dy
@@ -220,6 +266,19 @@ class ContinousGameScene: GameScene {
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if gameModel!.isTurnOver() {
+            endTurn = false
+            
+            numBallsFired = 0
+            
+            firedAllBalls = false
+            
+            ballsOnFire = false
+            
+            firstBallReturned = false
+            
+            // Return the fireDelay to the default
+            fireDelay = GameScene.DEFAULT_FIRE_DELAY
+            
             // Return physics simulation to normal speed
             physicsWorld.speed = 1.0
             
@@ -232,6 +291,7 @@ class ContinousGameScene: GameScene {
             
             // Tell the game model to update now that the turn has ended
             gameModel!.handleTurnOver()
+            clearNewBallArray()
             
             // Get the newly generated items and add them to the view
             let items = gameModel!.generateRow()
@@ -242,7 +302,9 @@ class ContinousGameScene: GameScene {
             gameModel!.itemGenerator!.pruneFirstRow()
             
             // Display the label showing how many balls the user has (this needs to be done after we have collected any new balls the user acquired)
-            currentBallCount = gameModel!.getBalls().count
+            // XXX REMOVE ME
+            //currentBallCount = gameModel!.getBalls().count
+            currentBallCount = ballArray.count
             // See if the user acquired any new balls
             let diff = currentBallCount - prevBallCount
             if diff > 0 {
@@ -251,7 +313,9 @@ class ContinousGameScene: GameScene {
             }
             // Update the previous ball count to the current count so that next time around we can see if the user acquired more balls
             prevBallCount = currentBallCount
-            addBallCountLabel(position: gameModel!.ballManager!.getOriginPoint(), ballCount: gameModel!.getBalls().count)
+            // XXX REMOVE ME
+            //addBallCountLabel(position: gameModel!.ballManager!.getOriginPoint(), ballCount: gameModel!.getBalls().count)
+            addBallCountLabel(position: originPoint, ballCount: ballArray.count)
             
             // Check the model to update the score label
             updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
@@ -324,6 +388,7 @@ class ContinousGameScene: GameScene {
                 startTime = currentTime
             }
             
+            /* XXX REMOVE ME
             currentBallCount = gameModel!.ballManager!.numRestingBalls()
             if currentBallCount > 0 {
                 updateBallCountLabel()
@@ -331,6 +396,7 @@ class ContinousGameScene: GameScene {
             else {
                 removeBallCountLabel()
             }
+            */
             
             // If the user's turn has gone on longer than 10 seconds and there are still tutorials to show, we want to show them how to fast forward
             if (Int(currentTime) - Int(startTime)) > 10 && tutorialsList.count > 0 {
@@ -348,8 +414,11 @@ class ContinousGameScene: GameScene {
             
             if swipedDown {
                 // Handle ball return gesture
-                gameModel!.endTurn()
+                returnAllBalls()
                 swipedDown = false
+                endTurn = true
+                // XXX REMOVE ME
+                // gameModel!.endTurn()
             }
             
             // Allow the model to handle a turn
@@ -381,10 +450,15 @@ class ContinousGameScene: GameScene {
                 else if item is BallItem {
                     // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
                     let vector = CGVector(dx: 0, dy: ballRadius! * 0.5)
-                    let ball = item.getNode()
-                    ball.physicsBody!.affectedByGravity = true
-                    ball.run(SKAction.applyImpulse(vector, duration: 0.05))
-                    ballHitAnimation(color: colorScheme!.hitBallColor, position: ball.position)
+                    let ball = item as! BallItem
+                    let ballNode = item.getNode()
+                    ballNode.physicsBody!.affectedByGravity = true
+                    ballNode.run(SKAction.applyImpulse(vector, duration: 0.05))
+                    ballHitAnimation(color: colorScheme!.hitBallColor, position: ballNode.position)
+                    
+                    // Ball is transferred from item generator to our ball array
+                    newBallArray.append(ball)
+                    ballNode.name! = "bm\(ballArray.count + newBallArray.count)"
                 }
             }
             
@@ -393,18 +467,32 @@ class ContinousGameScene: GameScene {
                 // Display the on fire encouragement
                 displayEncouragement(emoji: "🔥", text: "On fire!")
                 displayedOnFire = true
-                
-                gameModel!.setBallsOnFire()
+                gameModel!.addOnFireBonus()
+                setBallsOnFire()
+                // XXX REMOVE ME
+                //gameModel!.setBallsOnFire()
+            }
+            
+            // Check on the balls that have hit the ground and marked as inactive and move them to the new origin point
+            handleStoppedBalls()
+            if firedAllBalls {
+                // Wait for all balls to return
+                if allBallsStopped(ballArray) {
+                    // Increment game model state from MID_TURN to TURN_OVER
+                    gameModel!.incrementState()
+                }
             }
         }
     }
     
+    // XXX NEEDS WORK
     public func saveState() {
-        gameModel!.saveState()
+        gameModel!.saveState(numberOfBalls: ballArray.count, originPoint: originPoint)
     }
     
+    // XXX NEEDS WORK
     public func endGame() {
-        gameModel!.saveState()
+        gameModel!.saveState(numberOfBalls: ballArray.count, originPoint: originPoint)
         handleGameOver()
     }
     
@@ -448,13 +536,16 @@ class ContinousGameScene: GameScene {
         
         // Get the old item array so we can remove all of those items
         let oldItemArray = gameModel!.itemGenerator!.itemArray
+        // XXX NEEDS WORK
         // Get the old ball array so we can remove all of them
-        let oldBallArray = gameModel!.ballManager!.ballArray
+        // XXX REMOVE ME
+        //let oldBallArray = gameModel!.ballManager!.ballArray
+        let oldBallArray = ballArray
         
         // Tell the item generator and game model to prepare the new item array
         let success = gameModel!.loadPreviousTurnState()
         
-        if false == success {
+        if (false == gameModel!.loadPreviousTurnState()) || (false == loadPreviousBallState()) {
             return
         }
         
@@ -487,17 +578,22 @@ class ContinousGameScene: GameScene {
         gameModel!.itemGenerator!.pruneFirstRow()
         
         // At this point the ball manager's state should be updated; update the view to reflect that
-        let balls = gameModel!.getBalls()
-        let ballPosition = gameModel!.ballManager!.getOriginPoint()
-        currentBallCount = balls.count
-        prevBallCount = balls.count
-        for ball in balls {
-            ball.loadItem(position: ballPosition)
+        // XXX REMOVE ME
+        //let balls = gameModel!.getBalls()
+        //let ballPosition = gameModel!.ballManager!.getOriginPoint()
+        currentBallCount = ballArray.count
+        prevBallCount = ballArray.count
+        for ball in ballArray {
+            // XXX REMOVE ME
+            //ball.loadItem(position: ballPosition)
+            ball.loadItem(position: originPoint)
             ball.resetBall()
             self.addChild(ball.getNode())
         }
         removeBallCountLabel()
-        addBallCountLabel(position: gameModel!.ballManager!.getOriginPoint(), ballCount: gameModel!.getBalls().count)
+        // XXX REMOVE ME
+        //addBallCountLabel(position: gameModel!.ballManager!.getOriginPoint(), ballCount: gameModel!.getBalls().count)
+        addBallCountLabel(position: originPoint, ballCount: ballArray.count)
         
         // Update the score labels
         updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
@@ -584,7 +680,8 @@ class ContinousGameScene: GameScene {
     private func initGameModel() {
         // The controller also needs a copy of this game model object
         gameModel = ContinuousGameModel(numberOfRows: Int(GameScene.NUM_ROWS))
-        gameModel!.initBallManager(ballRadius: ballRadius!)
+        // XXX REMOVE ME
+        //gameModel!.initBallManager(ballRadius: ballRadius!)
         gameModel!.initItemGenerator(blockSize: blockSize!, ballRadius: ballRadius!)
         
         // Initialize the ball count label
@@ -599,11 +696,16 @@ class ContinousGameScene: GameScene {
             // 1. Check if we're about to lose
             // 2. Check if the game is over
             // And we want to re-warn the user that they're about to lose if they are one row away from a game over
-            ballPosition = gameModel!.ballManager!.getOriginPoint()
+            // XXX REMOVE ME
+            //ballPosition = gameModel!.ballManager!.getOriginPoint()
+            ballPosition = originPoint
             // Correct ball position's Y value (in case ground size changed for whatever reason) to prevent it from floating above the ground or being below the ground
             ballPosition.y = groundNode!.size.height + ballRadius!
-            gameModel!.ballManager!.setOriginPoint(point: ballPosition)
-            addBallCountLabel(position: gameModel!.ballManager!.getOriginPoint(), ballCount: gameModel!.getBalls().count)
+            // XXX REMOVE ME
+            //gameModel!.ballManager!.setOriginPoint(point: ballPosition)
+            // XXX REMOVE ME
+            //addBallCountLabel(position: gameModel!.ballManager!.getOriginPoint(), ballCount: gameModel!.getBalls().count)
+            addBallCountLabel(position: originPoint, ballCount: ballArray.count)
         }
         else if gameModel!.isTurnOver() {
             // We're starting a new game
@@ -617,10 +719,11 @@ class ContinousGameScene: GameScene {
         
         updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
         
-        let balls = gameModel!.getBalls()
-        currentBallCount = balls.count
-        prevBallCount = balls.count
-        for ball in balls {
+        // XXX REMOVE ME
+        //let balls = gameModel!.getBalls()
+        currentBallCount = ballArray.count
+        prevBallCount = ballArray.count
+        for ball in ballArray {
             ball.loadItem(position: ballPosition)
             ball.resetBall()
             self.addChild(ball.getNode())
@@ -633,7 +736,24 @@ class ContinousGameScene: GameScene {
             count -= 1
         }
         
+        // Initialized the ball array
+        if let ballState = DataManager.shared.loadClassicBallState() {
+            currentBallCount = ballState.numberOfBalls
+            originPoint = ballState.originPoint!
+            // Move the label to the loaded origin point
+            addBallCountLabel(position: originPoint, ballCount: currentBallCount)
+        }
+        else {
+            currentBallCount = ContinousGameScene.DEFAULT_NUM_BALLS
+            originPoint = CGPoint(x: view!.frame.midX, y: groundNode!.size.height + ballRadius!)
+        }
+        ballArray = initBallArray(numberOfBalls: currentBallCount, point: originPoint)
+        for ball in ballArray {
+            self.addChild(ball.getNode())
+        }
+        
         // Move the items down in the view
+        
         animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
         gameModel!.itemGenerator!.pruneFirstRow()
         
@@ -642,8 +762,14 @@ class ContinousGameScene: GameScene {
     }
     
     private func shootBalls(point: CGPoint) {
+        // Save off the ball state before firing them
+        prevBallState.numberOfBalls = ballArray.count
+        prevBallState.originPoint = originPoint
+        
         gameModel!.prepareTurn(point: point)
-        gameModel!.ballManager!.shootBalls()
+        // XXX REMOVE ME
+        //gameModel!.ballManager!.shootBalls()
+        startTimer(point)
     }
     
     private func updateScore(highScore: Int, gameScore: Int) {
@@ -1008,7 +1134,8 @@ class ContinousGameScene: GameScene {
     
     private func showBallsAcquiredLabel(count: Int) {
         let fontSize = ballRadius! * 2
-        let originPoint = gameModel!.ballManager!.getOriginPoint()
+        // XXX REMOVE ME
+        //let originPoint = gameModel!.ballManager!.getOriginPoint()
         let pos = CGPoint(x: originPoint.x, y: originPoint.y + fontSize)
         let label = SKLabelNode()
         label.text = "+\(count)"
@@ -1100,5 +1227,41 @@ class ContinousGameScene: GameScene {
                 self.removeChildren(in: [ball])
             }
         }
+    }
+    
+    // Loads the previous state for balls
+    private func loadPreviousBallState() -> Bool {
+        if 0 == prevBallState.numberOfBalls {
+            return false
+        }
+        
+        let diff = ballArray.count - prevBallState.numberOfBalls
+        if diff > 0 {
+            for _ in 0...(diff - 1) {
+                let _ = ballArray.popLast()
+            }
+        }
+        
+        // Ball array should now have the correct number of balls
+        originPoint = prevBallState.originPoint!
+        
+        prevBallState.numberOfBalls = 0
+        prevBallState.originPoint = CGPoint(x: 0, y: 0)
+        
+        return true
+    }
+    
+    private func clearNewBallArray() {
+        let array = newBallArray.filter {
+            // Tell the ball to return to the origin point and reset its physics bitmasks
+            $0.stop()
+            $0.moveBallTo(originPoint)
+            // Add the new ball to the ball manager's array
+            self.ballArray.append($0)
+            // This tells the filter to remove the ball from newBallArray
+            return false
+        }
+        
+        newBallArray = array
     }
 }
