@@ -171,14 +171,9 @@
 		0317DE9C214B5FA300E976E2 /* Ballz1 */ = {
 			isa = PBXGroup;
 			children = (
+				F23266AD22CFEDAE001BF315 /* Items */,
 				037536B321BB04CF00B62589 /* AdHandler.swift */,
 				0317DE9D214B5FA300E976E2 /* AppDelegate.swift */,
-				03F9A4272151D56700206A84 /* HitBlockItem.swift */,
-				03F4C93A217235DA00D38D84 /* StoneHitBlockItem.swift */,
-				03F4C93C2172756000D38D84 /* BombItem.swift */,
-				03F9A4252151D34800206A84 /* BallItem.swift */,
-				0342D216216CEC8700FE5760 /* SpacerItem.swift */,
-				03F9A4232151C3D600206A84 /* Item.swift */,
 				03F9A4212151C37800206A84 /* ItemGenerator.swift */,
 				F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */,
 				03053570218DFEAF0038D1D8 /* ColorScheme.swift */,
@@ -271,6 +266,19 @@
 				ECEC017C6EB71AEF0022F501 /* Pods-Ballz1.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		F23266AD22CFEDAE001BF315 /* Items */ = {
+			isa = PBXGroup;
+			children = (
+				03F9A4272151D56700206A84 /* HitBlockItem.swift */,
+				03F4C93A217235DA00D38D84 /* StoneHitBlockItem.swift */,
+				03F4C93C2172756000D38D84 /* BombItem.swift */,
+				03F9A4252151D34800206A84 /* BallItem.swift */,
+				0342D216216CEC8700FE5760 /* SpacerItem.swift */,
+				03F9A4232151C3D600206A84 /* Item.swift */,
+			);
+			path = Items;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
