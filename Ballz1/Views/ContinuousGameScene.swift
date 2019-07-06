@@ -380,6 +380,9 @@ class ContinousGameScene: GameScene {
             if false == tutorialIsShowing && tutorialsList.count > 0 {
                 showTutorial(tutorial: .topBarTutorial)
             }
+            
+            // Reset this list to empty
+            stoppedBalls = []
         }
         
         // Actions to perform while in the middle of a turn
