@@ -46,8 +46,6 @@ class ContinousGameScene: GameScene {
     
     private var arrowIsShowing = false
     
-    private var actionsStarted = Int(0)
-    
     // A boolean that says whether or not we're showing encouragement (emoji + text) on the screen
     private var showingEncouragement = false
         
@@ -336,7 +334,7 @@ class ContinousGameScene: GameScene {
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
         if gameModel!.isWaiting() {
-            if 0 == actionsStarted {
+            if doneAnimatingItems() {
                 // Increment game model state from WAITING to READY
                 gameModel!.incrementState()
                 
