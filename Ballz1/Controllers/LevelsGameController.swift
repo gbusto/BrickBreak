@@ -319,6 +319,7 @@ class LevelsGameController: UIViewController,
                 if let view = self.view as! SKView? {
                     view.isPaused = true
                 }
+                self.gameEnded = false
                 self.present(self.rewardAdViewController, animated: true, completion: nil)
             }
         }
