@@ -546,7 +546,7 @@ class ContinousGameScene: GameScene {
         // Tell the item generator and game model to prepare the new item array
         let success = gameModel!.loadPreviousTurnState()
         
-        if (false == gameModel!.loadPreviousTurnState()) || (false == loadPreviousBallState()) {
+        if (false == success) || (false == loadPreviousBallState()) {
             return
         }
         
