@@ -15,6 +15,8 @@ class BallItem: Item {
     public var node : SKShapeNode?
     public var isResting = true
     
+    public var outOfBounds = false
+    
     // MARK: Private functions
     // Only used in the hitItem() function
     private var wasHit = false
@@ -32,13 +34,15 @@ class BallItem: Item {
     private var categoryBitMask = UInt32(0b0010)
     private var contactTestBitMask = UInt32(0b0001)
     
+    private var defaultColor: UIColor = .white
+    
     
     // MARK: Protocol functions
     public func initItem(num: Int, size: CGSize) {
         radius = size.width
         let ball = SKShapeNode(circleOfRadius: radius!)
         ball.zPosition = 100
-        ball.fillColor = .white
+        ball.fillColor = defaultColor
         ball.name = "ball\(num)"
         
         let physBody = SKPhysicsBody(circleOfRadius: radius!)
@@ -61,7 +65,7 @@ class BallItem: Item {
     public func startAnimation() {
         let circleNode = SKShapeNode(circleOfRadius: radius! * 0.5)
         circleNode.lineWidth = CGFloat(1)
-        circleNode.strokeColor = .white
+        circleNode.strokeColor = defaultColor
         circleNode.fillColor = .clear
         circleNode.position = CGPoint(x: 0, y: 0)
         circleNode.zPosition = node!.zPosition - 1
@@ -138,6 +142,9 @@ class BallItem: Item {
     public func moveBallTo(_ point: CGPoint) {
         // Now with all actions stopped, we can tell the ball to return to this point
         node!.run(SKAction.move(to: point, duration: 0.2)) {
+            // Reset this variable
+            self.outOfBounds = false
+            
             self.resetBall()
         }
     }
@@ -146,7 +153,7 @@ class BallItem: Item {
         node!.physicsBody!.collisionBitMask = collisionBitMask
         node!.physicsBody!.categoryBitMask = categoryBitMask
         node!.physicsBody!.contactTestBitMask = contactTestBitMask
-        node!.fillColor = .white
+        node!.fillColor = defaultColor
         node!.physicsBody!.affectedByGravity = false
         
         node!.removeAllActions()
