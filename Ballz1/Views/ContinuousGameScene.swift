@@ -246,6 +246,10 @@ class ContinousGameScene: GameScene {
                         ball.getNode().physicsBody!.applyImpulse(CGVector(dx: 0, dy: 0.5))
                     }
                 }
+                
+                if isOutOfBounds(ballPosition: ball.getNode().position) {
+                    ball.outOfBounds = true
+                }
             }
         }
     }

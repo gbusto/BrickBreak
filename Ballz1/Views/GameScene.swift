@@ -383,6 +383,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let _ = ballArray.filter {
             if false == $0.isResting {
                 allBallsStopped = false
+                if $0.outOfBounds {
+                    // If the ball is out of bounds, stop it and move it back to the origin point
+                    self.stoppedBalls.append($0)
+                    $0.stop()
+                }
             }
             return true
         }
@@ -697,5 +702,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
     }
     
-    
+    // Checks if a ball is out of bounds
+    public func isOutOfBounds(ballPosition: CGPoint) -> Bool {
+        return ((ballPosition.y > 1000) || (ballPosition.x < -1000) || (ballPosition.x > 1000))
+    }
 }
