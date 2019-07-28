@@ -37,6 +37,7 @@
 		03FE968A225E10CE00E6C864 /* Fire.sks in Resources */ = {isa = PBXBuildFile; fileRef = 03FE9688225E10CE00E6C864 /* Fire.sks */; };
 		03FE968B225E10CE00E6C864 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03FE9689225E10CE00E6C864 /* Assets.xcassets */; };
 		CDC5CFC1717920861940918B /* Pods_Ballz1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1A8F69CD9292C0D9344297C /* Pods_Ballz1.framework */; };
+		D53B21EF22EE2E8500399C89 /* ClassicTutorialPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53B21EE22EE2E8500399C89 /* ClassicTutorialPageController.swift */; };
 		F200B2E921EBA3DE00FE0FB6 /* LevelsGameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */; };
 		F200B2EB21EBA4C100FE0FB6 /* LevelsGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2EA21EBA4C100FE0FB6 /* LevelsGameScene.swift */; };
 		F200B2ED21EBCA3900FE0FB6 /* LevelsGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2EC21EBCA3900FE0FB6 /* LevelsGameModel.swift */; };
@@ -103,6 +104,7 @@
 		03FE9689225E10CE00E6C864 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5224C89D7322FB64CBF5D166 /* Pods-Ballz1.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballz1.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1.debug.xcconfig"; sourceTree = "<group>"; };
 		A1A8F69CD9292C0D9344297C /* Pods_Ballz1.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Ballz1.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D53B21EE22EE2E8500399C89 /* ClassicTutorialPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassicTutorialPageController.swift; sourceTree = "<group>"; };
 		ECEC017C6EB71AEF0022F501 /* Pods-Ballz1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballz1.release.xcconfig"; path = "Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1.release.xcconfig"; sourceTree = "<group>"; };
 		F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameController.swift; sourceTree = "<group>"; };
 		F200B2EA21EBA4C100FE0FB6 /* LevelsGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameScene.swift; sourceTree = "<group>"; };
@@ -249,6 +251,7 @@
 				03B8B4F721691A2D00FFD589 /* ContinuousGameController.swift */,
 				F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */,
 				037536B921BC055500B62589 /* RewardAdViewController.swift */,
+				D53B21EE22EE2E8500399C89 /* ClassicTutorialPageController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -465,6 +468,7 @@
 				03B8B4F621691A2100FFD589 /* GameMenuController.swift in Sources */,
 				03B8B4FE21691A7600FFD589 /* ContinousGameModel.swift in Sources */,
 				03B8B4F221691A0100FFD589 /* ContinuousGameScene.swift in Sources */,
+				D53B21EF22EE2E8500399C89 /* ClassicTutorialPageController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

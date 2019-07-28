@@ -75,6 +75,12 @@ class ContinuousGameController: UIViewController,
         
         // This is a view controller to fix buggy behavior with the reward ads
         rewardAdViewController = RewardAdViewController()
+        
+        // Check if we need to show the tutorial
+        if true {
+            let viewController = UIStoryboard.init(name: "BrickBreak", bundle: nil).instantiateViewController(withIdentifier: "ClassicTutorialController")
+            viewController.present(viewController, animated: true, completion: nil)
+        }
     }
     
     override func viewDidLoad() {

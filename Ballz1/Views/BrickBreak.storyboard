@@ -105,6 +105,59 @@
             </objects>
             <point key="canvasLocation" x="48.75" y="-8.75"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="MyF-4t-DQo">
+            <objects>
+                <viewController storyboardIdentifier="ClassicTutorial1" id="zN0-D1-lXb" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="4Tq-1L-hzB">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.4069244190141208" green="0.73963250547500681" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <viewLayoutGuide key="safeArea" id="DL3-df-T4f"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Jc1-lm-jeR" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="280" y="-1444"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="SDi-cV-hY4">
+            <objects>
+                <viewController storyboardIdentifier="ClassicTutorial2" id="CNJ-EW-S4J" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wg8-J9-aUP">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.68495319870084281" green="0.45954367587052358" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <viewLayoutGuide key="safeArea" id="1sR-6K-A3H"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mvX-hQ-5Ow" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1032" y="-1444"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="LtG-YR-s1C">
+            <objects>
+                <viewController storyboardIdentifier="ClassicTutorial3" id="ht2-cL-i1R" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="1Rn-jT-Do6">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.27943379797885037" green="1" blue="0.80936090868175181" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <viewLayoutGuide key="safeArea" id="LBS-2U-ctf"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iEG-hM-GrE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1787" y="-1445"/>
+        </scene>
+        <!--Classic Tutorial Page Controller-->
+        <scene sceneID="QWF-2n-v18">
+            <objects>
+                <pageViewController storyboardIdentifier="ClassicTutorialController" autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="EKp-v4-cbC" customClass="ClassicTutorialPageController" customModule="Ballz1" customModuleProvider="target" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0PS-Xs-Drs" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1032" y="-750"/>
+        </scene>
         <!--Continuous Game Controller-->
         <scene sceneID="kPW-Q4-Rfj">
             <objects>
