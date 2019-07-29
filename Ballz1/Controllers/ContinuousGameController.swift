@@ -79,7 +79,7 @@ class ContinuousGameController: UIViewController,
         // Check if we need to show the tutorial
         if true {
             let viewController = UIStoryboard.init(name: "BrickBreak", bundle: nil).instantiateViewController(withIdentifier: "ClassicTutorialController")
-            viewController.present(viewController, animated: true, completion: nil)
+            self.present(viewController, animated: true, completion: nil)
         }
     }
     

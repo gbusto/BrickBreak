@@ -13,9 +13,9 @@ class ClassicTutorialPageController: UIPageViewController, UIPageViewControllerD
     
     // Returns the view controllers in order for classic tutorial/onboarding
     private(set) lazy var orderedViewControllers: [UIViewController] = {
-        return [newClassicTutorialViewController(storyboardId: "ClassicTutorial1"),
-                newClassicTutorialViewController(storyboardId: "ClassicTutorial2"),
-                newClassicTutorialViewController(storyboardId: "ClassicTutorial3")
+        return [newClassicTutorialViewController(storyboardId: "ClassicTutorialController1"),
+                newClassicTutorialViewController(storyboardId: "ClassicTutorialController2"),
+                newClassicTutorialViewController(storyboardId: "ClassicTutorialController3")
         ]
     }()
     

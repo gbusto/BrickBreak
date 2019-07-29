@@ -108,47 +108,117 @@
         <!--View Controller-->
         <scene sceneID="MyF-4t-DQo">
             <objects>
-                <viewController storyboardIdentifier="ClassicTutorial1" id="zN0-D1-lXb" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ClassicTutorialController1" id="zN0-D1-lXb" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="4Tq-1L-hzB">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="fNz-tX-omT">
+                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="onboarding_1_hand@4x" translatesAutoresizingMaskIntoConstraints="NO" id="eaH-ij-ylc">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="358"/>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap, Aim, Release to Shoot" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dby-Ku-kRS">
+                                        <rect key="frame" x="0.0" y="358" width="414" height="358"/>
+                                        <fontDescription key="fontDescription" name="Avenir-Heavy" family="Avenir" pointSize="50"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="dby-Ku-kRS" firstAttribute="leading" secondItem="fNz-tX-omT" secondAttribute="leading" constant="20" id="M6a-cc-CxI"/>
+                                    <constraint firstAttribute="trailing" secondItem="dby-Ku-kRS" secondAttribute="trailing" constant="20" id="kQw-CW-4U2"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
                         <color key="backgroundColor" red="0.4069244190141208" green="0.73963250547500681" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstItem="DL3-df-T4f" firstAttribute="trailing" secondItem="fNz-tX-omT" secondAttribute="trailing" id="aGy-62-S5e"/>
+                            <constraint firstItem="DL3-df-T4f" firstAttribute="bottom" secondItem="fNz-tX-omT" secondAttribute="bottom" id="aoH-7e-62o"/>
+                            <constraint firstItem="fNz-tX-omT" firstAttribute="top" secondItem="DL3-df-T4f" secondAttribute="top" id="b7B-eK-Prv"/>
+                            <constraint firstItem="fNz-tX-omT" firstAttribute="leading" secondItem="DL3-df-T4f" secondAttribute="leading" id="vPD-8J-0no"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="DL3-df-T4f"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jc1-lm-jeR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="280" y="-1444"/>
+            <point key="canvasLocation" x="290" y="-1588"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="SDi-cV-hY4">
             <objects>
-                <viewController storyboardIdentifier="ClassicTutorial2" id="CNJ-EW-S4J" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ClassicTutorialController2" id="CNJ-EW-S4J" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="wg8-J9-aUP">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="PA1-2P-RzG">
+                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="onboarding_2_fire@4x" translatesAutoresizingMaskIntoConstraints="NO" id="bEy-OJ-Vi3">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="358"/>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swipe right to fast forward; swipe down to force turn to end" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4LA-mQ-o8N">
+                                        <rect key="frame" x="0.0" y="358" width="414" height="358"/>
+                                        <fontDescription key="fontDescription" name="Avenir-Heavy" family="Avenir" pointSize="50"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                        </subviews>
                         <color key="backgroundColor" red="0.68495319870084281" green="0.45954367587052358" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstItem="1sR-6K-A3H" firstAttribute="trailing" secondItem="PA1-2P-RzG" secondAttribute="trailing" id="PNd-5M-tw3"/>
+                            <constraint firstItem="PA1-2P-RzG" firstAttribute="leading" secondItem="1sR-6K-A3H" secondAttribute="leading" id="a0t-NQ-qct"/>
+                            <constraint firstItem="1sR-6K-A3H" firstAttribute="bottom" secondItem="PA1-2P-RzG" secondAttribute="bottom" id="wdB-ya-vXJ"/>
+                            <constraint firstItem="PA1-2P-RzG" firstAttribute="top" secondItem="1sR-6K-A3H" secondAttribute="top" id="y8w-aY-RaR"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="1sR-6K-A3H"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mvX-hQ-5Ow" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1032" y="-1444"/>
+            <point key="canvasLocation" x="1032" y="-1588"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="LtG-YR-s1C">
             <objects>
-                <viewController storyboardIdentifier="ClassicTutorial3" id="ht2-cL-i1R" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ClassicTutorialController3" id="ht2-cL-i1R" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1Rn-jT-Do6">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="mYF-BH-wT3">
+                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="onboarding_3_items@4x" translatesAutoresizingMaskIntoConstraints="NO" id="iE0-kz-ILM">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="358"/>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JFz-em-b78">
+                                        <rect key="frame" x="0.0" y="358" width="414" height="358"/>
+                                        <fontDescription key="fontDescription" name="Avenir-Heavy" family="Avenir" pointSize="50"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                        </subviews>
                         <color key="backgroundColor" red="0.27943379797885037" green="1" blue="0.80936090868175181" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstItem="LBS-2U-ctf" firstAttribute="trailing" secondItem="mYF-BH-wT3" secondAttribute="trailing" id="0bU-YY-IW1"/>
+                            <constraint firstItem="LBS-2U-ctf" firstAttribute="bottom" secondItem="mYF-BH-wT3" secondAttribute="bottom" id="Aml-sq-MIs"/>
+                            <constraint firstItem="mYF-BH-wT3" firstAttribute="top" secondItem="LBS-2U-ctf" secondAttribute="top" id="BbA-af-2rj"/>
+                            <constraint firstItem="mYF-BH-wT3" firstAttribute="leading" secondItem="LBS-2U-ctf" secondAttribute="leading" id="YBN-tG-jZ9"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="LBS-2U-ctf"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iEG-hM-GrE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1787" y="-1445"/>
+            <point key="canvasLocation" x="1793" y="-1588"/>
         </scene>
         <!--Classic Tutorial Page Controller-->
         <scene sceneID="QWF-2n-v18">
@@ -156,7 +226,7 @@
                 <pageViewController storyboardIdentifier="ClassicTutorialController" autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="EKp-v4-cbC" customClass="ClassicTutorialPageController" customModule="Ballz1" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0PS-Xs-Drs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1032" y="-750"/>
+            <point key="canvasLocation" x="1032" y="-911"/>
         </scene>
         <!--Continuous Game Controller-->
         <scene sceneID="kPW-Q4-Rfj">
@@ -494,6 +564,9 @@
         <image name="game_center_button" width="70" height="70"/>
         <image name="game_menu_button_curved" width="480" height="120"/>
         <image name="levels_play_button" width="450" height="113"/>
+        <image name="onboarding_1_hand@4x" width="1596" height="1600"/>
+        <image name="onboarding_2_fire@4x" width="1596" height="1600"/>
+        <image name="onboarding_3_items@4x" width="1596" height="1600"/>
         <image name="rate_button" width="70" height="70"/>
         <image name="resume_button_curved" width="480" height="120"/>
         <image name="undo_button" width="300" height="300"/>
