@@ -35,6 +35,9 @@ class DataManager {
     // The path where game state is stored for this game mode
     static let LevelsPersistentDataURL = LevelsDirURL.appendingPathComponent("PersistentData")
     
+    static let OnboardingDirURL = AppDirURL.appendingPathComponent("OnboardingDir")
+    static let InitialOnboardingStateURL = OnboardingDirURL.appendingPathComponent("InitialOnboardingState")
+    
     // Path for saving ball manager state
     static let BallManagerPath = "BallManager"
     // Path for saving item generator state
@@ -112,9 +115,20 @@ class DataManager {
         }
     }
     
+    struct InitialOnboardingState: Codable {
+        var showedClassicOnboarding: Bool
+        var showedLevelOnboarding: Bool
+        
+        enum CodingKeys: String, CodingKey {
+            case showedClassicOnboarding
+            case showedLevelOnboarding
+        }
+    }
+    
     
     // MARK: Initializer
     static let shared = DataManager()
+    
     
     private init() {}
     
@@ -221,6 +235,27 @@ class DataManager {
         }
     }
     
+    public func saveInitialOnboardingState(showedClassicOnboarding: Bool, showedLevelOnboarding: Bool) -> Bool {
+        do {
+            // Create the App directory Documents/BB
+            if false == FileManager.default.fileExists(atPath: DataManager.OnboardingDirURL.path) {
+                try FileManager.default.createDirectory(at: DataManager.OnboardingDirURL, withIntermediateDirectories: true, attributes: nil)
+            }
+            
+            let onboardingState: InitialOnboardingState = InitialOnboardingState(showedClassicOnboarding: showedClassicOnboarding, showedLevelOnboarding: showedLevelOnboarding)
+            
+            // Save the onboarding data
+            let pData = try PropertyListEncoder().encode(onboardingState)
+            try pData.write(to: DataManager.InitialOnboardingStateURL, options: .completeFileProtectionUnlessOpen)
+            print("Saved onboarding data: \(onboardingState)")
+            return true
+        }
+        catch {
+            print("Error saving onboarding state: \(error)")
+            return false
+        }
+    }
+    
     
     // MARK: Public functions to load data
     
@@ -291,6 +326,19 @@ class DataManager {
         }
         catch {
             print("Error loading persistent data state: \(error)")
+            return nil
+        }
+    }
+    
+    public func loadInitialOnboardingState() -> InitialOnboardingState? {
+        do {
+            let data = try Data(contentsOf: DataManager.InitialOnboardingStateURL)
+            let onboardingState: InitialOnboardingState = try PropertyListDecoder().decode(DataManager.InitialOnboardingState.self, from: data)
+            print("Loaded initial onboarding state: \(onboardingState)")
+            return onboardingState
+        }
+        catch {
+            print("Error loading initial onboarding state: \(error)")
             return nil
         }
     }

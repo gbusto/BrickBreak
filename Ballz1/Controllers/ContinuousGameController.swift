@@ -46,6 +46,20 @@ class ContinuousGameController: UIViewController,
     static private var ENABLED_ALPHA = CGFloat(1.0)
     
     override func viewDidAppear(_ animated: Bool) {
+        // Check if we need to show the tutorial
+        if let initialOnboardingState = DataManager.shared.loadInitialOnboardingState() {
+            if false == initialOnboardingState.showedClassicOnboarding {
+                showInitialOnboarding()
+            }
+            else {
+                // Already showed classic onboarding
+            }
+        }
+        else {
+            // Haven't saved/loaded any onboarding state
+            showInitialOnboarding()
+        }
+        
         // Set up the banner ad
         bannerView.adUnitID = AdHandler.getBannerAdID()
         bannerView.rootViewController = self
@@ -415,5 +429,11 @@ class ContinuousGameController: UIViewController,
     
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    private func showInitialOnboarding() {
+        print("Showing classic onboarding")
+        let viewController = UIStoryboard.init(name: "BrickBreak", bundle: nil).instantiateViewController(withIdentifier: "ClassicTutorialController")
+        self.present(viewController, animated: true, completion: nil)
     }
 }
