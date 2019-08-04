@@ -44,12 +44,17 @@ class ClassicTutorialController3: UIViewController {
     }
 
     @IBAction private func buttonTouchEvent(sender: Any?, forEvent event: UIEvent) {
+        // This is the only way I found to get the button background color to change on press; the events and states aren't enough
+        // Get all touch associated with the play button
         if let touches = event.touches(for: playButton) {
+            // There should only be one, so attempt to get the only touch event
             if let touch = touches.first {
+                // Check for the touch began phase
                 if touch.phase == .began {
                     // The button has been pressed
                     playButton.backgroundColor = pressedButtonColor
                 }
+                // Check for the touch ended phase
                 else if touch.phase == .ended {
                     // The button has been depressed
                     playButton.backgroundColor = buttonColor
