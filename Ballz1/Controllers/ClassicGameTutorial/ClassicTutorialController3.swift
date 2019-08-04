@@ -29,9 +29,7 @@ class ClassicTutorialController3: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        print("ClassicTutorialController3 view loaded!")
-        
+                
         let bottomColor = UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0)
         let topColor = UIColor(red: 50/255, green: 50/255, blue: 50/255, alpha: 1.0)
         let gradientLayer = CAGradientLayer()
@@ -58,6 +56,28 @@ class ClassicTutorialController3: UIViewController {
                 }
             }
         }
+    }
+    
+    @IBAction func dismissClassicTutorial(_ sender: Any) {
+        if let initialOnboardingState = DataManager.shared.loadInitialOnboardingState() {
+            // Set the classic onboarding boolean to true, but leave the level one set to whatever it currently is
+            if DataManager.shared.saveInitialOnboardingState(showedClassicOnboarding: true, showedLevelOnboarding: initialOnboardingState.showedLevelOnboarding) {
+                print("Successfully saved initial classic onboarding state")
+            }
+            else {
+                print("Failed to save initial classic onboarding state")
+            }
+        }
+        else {
+            // If this data has never been loaded, follow this path instead
+            if DataManager.shared.saveInitialOnboardingState(showedClassicOnboarding: true, showedLevelOnboarding: false) {
+                print("Successfully saved inital classic onboarding state")
+            }
+            else {
+                print("Failed to save initial classic onboarding state")
+            }
+        }
+        dismiss(animated: true, completion: nil)
     }
 }
 

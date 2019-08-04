@@ -1,15 +1,15 @@
 //
-//  ClassicTutorialController1.swift
+//  LevelsTutorialController2.swift
 //  Ballz1
 //
-//  Created by Gabriel Busto on 7/28/19.
+//  Created by Gabriel Busto on 8/3/19.
 //  Copyright © 2019 Self. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-class ClassicTutorialController1: UIViewController {
+class LevelsTutorialController2: UIViewController {
     
     @IBOutlet var backgroundGradientView: UIView!
     

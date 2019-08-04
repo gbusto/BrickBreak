@@ -47,6 +47,10 @@ class LevelsGameController: UIViewController,
     private var scene: SKScene?
     
     override func viewDidAppear(_ animated: Bool) {
+        if true {
+            showInitialOnboarding()
+        }
+        
         // Load the banner ad view
         bannerAdView.adUnitID = AdHandler.getBannerAdID()
         bannerAdView.rootViewController = self
@@ -391,5 +395,11 @@ class LevelsGameController: UIViewController,
     // MARK: Private functions
     private func returnToMenu() {
         self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+    }
+    
+    private func showInitialOnboarding() {
+        print("Showing classic onboarding")
+        let viewController = UIStoryboard.init(name: "BrickBreak", bundle: nil).instantiateViewController(withIdentifier: "LevelsTutorialController")
+        self.present(viewController, animated: true, completion: nil)
     }
 }

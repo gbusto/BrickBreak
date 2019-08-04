@@ -18,6 +18,10 @@
 		0362B64B22EE6DF70032C7CB /* ClassicTutorialController1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0362B64A22EE6DF70032C7CB /* ClassicTutorialController1.swift */; };
 		0362B64D22EE6EB00032C7CB /* ClassicTutorialController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0362B64C22EE6EB00032C7CB /* ClassicTutorialController2.swift */; };
 		0362B64F22EE6EC90032C7CB /* ClassicTutorialController3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0362B64E22EE6EC90032C7CB /* ClassicTutorialController3.swift */; };
+		0362B65722F62A070032C7CB /* LevelsTutorialPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0362B65622F62A070032C7CB /* LevelsTutorialPageController.swift */; };
+		0362B65922F62B350032C7CB /* LevelsTutorialController1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0362B65822F62B350032C7CB /* LevelsTutorialController1.swift */; };
+		0362B65B22F62B420032C7CB /* LevelsTutorialController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0362B65A22F62B420032C7CB /* LevelsTutorialController2.swift */; };
+		0362B65D22F62B4E0032C7CB /* LevelsTutorialController3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0362B65C22F62B4E0032C7CB /* LevelsTutorialController3.swift */; };
 		037536B221B74F4800B62589 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 037536B121B74F4800B62589 /* GameKit.framework */; };
 		037536B421BB04CF00B62589 /* AdHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037536B321BB04CF00B62589 /* AdHandler.swift */; };
 		037536BA21BC055500B62589 /* RewardAdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037536B921BC055500B62589 /* RewardAdViewController.swift */; };
@@ -87,6 +91,10 @@
 		0362B64A22EE6DF70032C7CB /* ClassicTutorialController1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassicTutorialController1.swift; sourceTree = "<group>"; };
 		0362B64C22EE6EB00032C7CB /* ClassicTutorialController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassicTutorialController2.swift; sourceTree = "<group>"; };
 		0362B64E22EE6EC90032C7CB /* ClassicTutorialController3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassicTutorialController3.swift; sourceTree = "<group>"; };
+		0362B65622F62A070032C7CB /* LevelsTutorialPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsTutorialPageController.swift; sourceTree = "<group>"; };
+		0362B65822F62B350032C7CB /* LevelsTutorialController1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsTutorialController1.swift; sourceTree = "<group>"; };
+		0362B65A22F62B420032C7CB /* LevelsTutorialController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsTutorialController2.swift; sourceTree = "<group>"; };
+		0362B65C22F62B4E0032C7CB /* LevelsTutorialController3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsTutorialController3.swift; sourceTree = "<group>"; };
 		037536B121B74F4800B62589 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		037536B321BB04CF00B62589 /* AdHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdHandler.swift; sourceTree = "<group>"; };
 		037536B921BC055500B62589 /* RewardAdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardAdViewController.swift; sourceTree = "<group>"; };
@@ -237,6 +245,17 @@
 			path = ClassicGameTutorial;
 			sourceTree = "<group>";
 		};
+		0362B65522F629760032C7CB /* LevelsGameTutorial */ = {
+			isa = PBXGroup;
+			children = (
+				0362B65622F62A070032C7CB /* LevelsTutorialPageController.swift */,
+				0362B65822F62B350032C7CB /* LevelsTutorialController1.swift */,
+				0362B65A22F62B420032C7CB /* LevelsTutorialController2.swift */,
+				0362B65C22F62B4E0032C7CB /* LevelsTutorialController3.swift */,
+			);
+			path = LevelsGameTutorial;
+			sourceTree = "<group>";
+		};
 		03B8B4EC216919B400FFD589 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -262,13 +281,14 @@
 		03B8B4EE216919C600FFD589 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				0362B65522F629760032C7CB /* LevelsGameTutorial */,
 				0362B64922EE6DB90032C7CB /* ClassicGameTutorial */,
 				03FE9688225E10CE00E6C864 /* Fire.sks */,
 				03B8B4F521691A2100FFD589 /* GameMenuController.swift */,
-				03FE9689225E10CE00E6C864 /* Assets.xcassets */,
 				03B8B4F721691A2D00FFD589 /* ContinuousGameController.swift */,
 				F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */,
 				037536B921BC055500B62589 /* RewardAdViewController.swift */,
+				03FE9689225E10CE00E6C864 /* Assets.xcassets */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -460,19 +480,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0362B65722F62A070032C7CB /* LevelsTutorialPageController.swift in Sources */,
 				037536BA21BC055500B62589 /* RewardAdViewController.swift in Sources */,
 				03FC3BD3220F0A3000A7B991 /* Confetti.swift in Sources */,
 				0362B64D22EE6EB00032C7CB /* ClassicTutorialController2.swift in Sources */,
 				03F4C93D2172756000D38D84 /* BombItem.swift in Sources */,
 				03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */,
+				0362B65D22F62B4E0032C7CB /* LevelsTutorialController3.swift in Sources */,
 				03B8B4F0216919DD00FFD589 /* GameMenuScene.swift in Sources */,
 				03F9A4242151C3D600206A84 /* Item.swift in Sources */,
 				03F4C93B217235DA00D38D84 /* StoneHitBlockItem.swift in Sources */,
+				0362B65922F62B350032C7CB /* LevelsTutorialController1.swift in Sources */,
 				F200B2ED21EBCA3900FE0FB6 /* LevelsGameModel.swift in Sources */,
 				F2677A7E216C3FFF00CE3FC0 /* BallProjection.swift in Sources */,
 				F200B2EB21EBA4C100FE0FB6 /* LevelsGameScene.swift in Sources */,
 				0362B64B22EE6DF70032C7CB /* ClassicTutorialController1.swift in Sources */,
 				03B5F94922910D11003A3A3C /* GameScene.swift in Sources */,
+				0362B65B22F62B420032C7CB /* LevelsTutorialController2.swift in Sources */,
 				F23266A622CB134F001BF315 /* DataManager.swift in Sources */,
 				0362B64F22EE6EC90032C7CB /* ClassicTutorialController3.swift in Sources */,
 				03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */,

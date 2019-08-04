@@ -1,21 +1,21 @@
 //
-//  ClassicTutorialController1.swift
+//  LevelsTutorialController3.swift
 //  Ballz1
 //
-//  Created by Gabriel Busto on 7/28/19.
+//  Created by Gabriel Busto on 8/3/19.
 //  Copyright © 2019 Self. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-class ClassicTutorialController1: UIViewController {
+class LevelsTutorialController3: UIViewController {
     
     @IBOutlet var backgroundGradientView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        
         let bottomColor = UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0)
         let topColor = UIColor(red: 50/255, green: 50/255, blue: 50/255, alpha: 1.0)
         
@@ -26,3 +26,4 @@ class ClassicTutorialController1: UIViewController {
         backgroundGradientView.layer.insertSublayer(gradientLayer, at: 0)
     }
 }
+
