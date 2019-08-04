@@ -55,6 +55,25 @@ class LevelsTutorialController3: UIViewController {
     }
     
     @IBAction func dismissLevelsTutorial(_ sender: Any) {
+        if let initialOnboardingState = DataManager.shared.loadInitialOnboardingState() {
+            // Set the classic onboarding boolean to true, but leave the level one set to whatever it currently is
+            if DataManager.shared.saveInitialOnboardingState(showedClassicOnboarding:
+                // Successfully saved initial levels onboarding state
+                initialOnboardingState.showedClassicOnboarding, showedLevelOnboarding: true) {
+            }
+            else {
+                // Failed to save initial levels onboarding state
+            }
+        }
+        else {
+            // If this data has never been loaded, follow this path instead
+            if DataManager.shared.saveInitialOnboardingState(showedClassicOnboarding: false, showedLevelOnboarding: true) {
+                // Successfully saved inital levels onboarding state
+            }
+            else {
+                // Failed to save initial levels onboarding state
+            }
+        }
         dismiss(animated: true, completion: nil)
     }
     

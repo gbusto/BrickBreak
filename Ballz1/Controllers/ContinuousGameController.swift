@@ -52,7 +52,7 @@ class ContinuousGameController: UIViewController,
                 showInitialOnboarding()
             }
             else {
-                print("Already showed classic onboarding")
+                // Already showed classic onboarding
             }
         }
         else {

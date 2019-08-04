@@ -47,7 +47,16 @@ class LevelsGameController: UIViewController,
     private var scene: SKScene?
     
     override func viewDidAppear(_ animated: Bool) {
-        if true {
+        // Check if we need to show the tutorial
+        if let initialOnboardingState = DataManager.shared.loadInitialOnboardingState() {
+            if false == initialOnboardingState.showedLevelOnboarding {
+                showInitialOnboarding()
+            }
+            else {
+                // Already showed levels onboarding
+            }
+        }
+        else {
             showInitialOnboarding()
         }
         

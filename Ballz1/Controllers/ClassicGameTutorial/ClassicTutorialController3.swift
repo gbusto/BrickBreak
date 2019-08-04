@@ -9,16 +9,6 @@
 import Foundation
 import UIKit
 
-/*
-private extension UIButton {
-    override open var isHighlighted: Bool {
-        didSet {
-            backgroundColor = isHighlighted ? UIColor(red: 51/255, green: 109/255, blue: 193/255, alpha: 1.0) : UIColor(red: 58/255, green: 124/255, blue: 220/255, alpha: 1.0)
-        }
-    }
-}
- */
-
 class ClassicTutorialController3: UIViewController {
     
     @IBOutlet var backgroundGradientView: UIView!
@@ -66,20 +56,21 @@ class ClassicTutorialController3: UIViewController {
     @IBAction func dismissClassicTutorial(_ sender: Any) {
         if let initialOnboardingState = DataManager.shared.loadInitialOnboardingState() {
             // Set the classic onboarding boolean to true, but leave the level one set to whatever it currently is
-            if DataManager.shared.saveInitialOnboardingState(showedClassicOnboarding: true, showedLevelOnboarding: initialOnboardingState.showedLevelOnboarding) {
-                print("Successfully saved initial classic onboarding state")
+            if DataManager.shared.saveInitialOnboardingState(showedClassicOnboarding: true, showedLevelOnboarding:
+                // Successfully saved initial classic onboarding state
+                initialOnboardingState.showedLevelOnboarding) {
             }
             else {
-                print("Failed to save initial classic onboarding state")
+                // Failed to save initial classic onboarding state
             }
         }
         else {
             // If this data has never been loaded, follow this path instead
             if DataManager.shared.saveInitialOnboardingState(showedClassicOnboarding: true, showedLevelOnboarding: false) {
-                print("Successfully saved inital classic onboarding state")
+                // Successfully saved inital classic onboarding state
             }
             else {
-                print("Failed to save initial classic onboarding state")
+                // Failed to save initial classic onboarding state
             }
         }
         dismiss(animated: true, completion: nil)

@@ -22,7 +22,7 @@
                                 <rect key="frame" x="20" y="20" width="335" height="547"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Brick Break" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="40" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xH8-wW-N8G">
-                                        <rect key="frame" x="18" y="0.0" width="299.5" height="226"/>
+                                        <rect key="frame" x="18" y="0.0" width="299.5" height="319.5"/>
                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="200"/>
                                         <color key="textColor" red="0.70008618342942719" green="0.93547368049621582" blue="0.76215052610718903" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
@@ -30,10 +30,10 @@
                                         <size key="shadowOffset" width="3" height="3"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" distribution="fillEqually" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="jcc-nl-bVB">
-                                        <rect key="frame" x="0.0" y="276" width="335" height="271"/>
+                                        <rect key="frame" x="0.0" y="369.5" width="335" height="177.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0b5-Nx-3KM">
-                                                <rect key="frame" x="0.0" y="0.0" width="335" height="90.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="335" height="59"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" image="classic_play_button">
@@ -46,7 +46,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SIu-eg-Tou" userLabel="Levels Button">
-                                                <rect key="frame" x="0.0" y="90.5" width="335" height="90"/>
+                                                <rect key="frame" x="0.0" y="59" width="335" height="59.5"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="40"/>
                                                 <state key="normal" image="levels_play_button">
@@ -60,17 +60,17 @@
                                                 </connections>
                                             </button>
                                             <stackView opaque="NO" contentMode="scaleAspectFit" alignment="center" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="nqw-bE-Rpn">
-                                                <rect key="frame" x="93" y="181" width="149" height="90"/>
+                                                <rect key="frame" x="93" y="118.5" width="149" height="59"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleAspectFit" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kUv-85-qmg">
-                                                        <rect key="frame" x="0.0" y="10" width="70" height="70"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="70" height="59"/>
                                                         <state key="normal" image="game_center_button"/>
                                                         <connections>
                                                             <action selector="showGameCenter:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="0nK-I9-ow9"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7cD-I5-EAq">
-                                                        <rect key="frame" x="79" y="10" width="70" height="70"/>
+                                                        <rect key="frame" x="79" y="0.0" width="70" height="59"/>
                                                         <state key="normal" image="rate_button"/>
                                                         <connections>
                                                             <action selector="goToAppStore:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="Frp-1B-WWW"/>
@@ -127,11 +127,29 @@
                                                 <rect key="frame" x="0.0" y="283.5" width="335" height="283.5"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4XX-eR-sQV">
-                                                        <rect key="frame" x="0.0" y="0.0" width="335" height="94.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="335" height="56.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap the screen, drag your finger to aim, release to shoot" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bir-nQ-284">
-                                                        <rect key="frame" x="0.0" y="94.5" width="335" height="94.5"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap the screen" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bir-nQ-284">
+                                                        <rect key="frame" x="0.0" y="56.5" width="335" height="57"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
+                                                        <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                        <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <size key="shadowOffset" width="1" height="2"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Drag your finger to aim" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kYN-L4-288">
+                                                        <rect key="frame" x="0.0" y="113.5" width="335" height="56.5"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
+                                                        <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                        <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <size key="shadowOffset" width="1" height="2"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Release to shoot" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0vm-0A-s0k">
+                                                        <rect key="frame" x="0.0" y="170" width="335" height="57"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
                                                         <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
@@ -140,7 +158,7 @@
                                                         <size key="shadowOffset" width="1" height="2"/>
                                                     </label>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x56-WL-4R1">
-                                                        <rect key="frame" x="0.0" y="189" width="335" height="94.5"/>
+                                                        <rect key="frame" x="0.0" y="227" width="335" height="56.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
                                                 </subviews>
@@ -198,11 +216,27 @@
                                                 <rect key="frame" x="0.0" y="283.5" width="335" height="283.5"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DFa-JT-Zhx">
-                                                        <rect key="frame" x="0.0" y="0.0" width="335" height="94.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="335" height="56.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="When balls are in motion, swipe right to fast forward; swipe down to force turn to end" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qgb-LM-qi2">
-                                                        <rect key="frame" x="0.0" y="94.5" width="335" height="94.5"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="When balls are in motion:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qgb-LM-qi2">
+                                                        <rect key="frame" x="0.0" y="56.5" width="335" height="57"/>
+                                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="highlightedColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <size key="shadowOffset" width="1" height="2"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swipe right to fast forward" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fmh-fJ-WzK">
+                                                        <rect key="frame" x="0.0" y="113.5" width="335" height="56.5"/>
+                                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="highlightedColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <size key="shadowOffset" width="1" height="2"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swipe down to force end turn" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TsW-8I-jZX">
+                                                        <rect key="frame" x="0.0" y="170" width="335" height="57"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <color key="highlightedColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -210,7 +244,7 @@
                                                         <size key="shadowOffset" width="1" height="2"/>
                                                     </label>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bAV-YT-O6n">
-                                                        <rect key="frame" x="0.0" y="189" width="335" height="94.5"/>
+                                                        <rect key="frame" x="0.0" y="227" width="335" height="56.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
                                                 </subviews>
@@ -268,11 +302,19 @@
                                                 <rect key="frame" x="0.0" y="283.5" width="335" height="283.5"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p1K-Yj-XtW">
-                                                        <rect key="frame" x="0.0" y="0.0" width="335" height="94.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="335" height="71"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap the top bar to pause and use the undo button to redo your turn." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="YaK-3l-Jmx">
-                                                        <rect key="frame" x="0.0" y="94.5" width="335" height="94.5"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use the undo button to redo your turn" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="OA9-C1-zG0">
+                                                        <rect key="frame" x="0.0" y="71" width="335" height="71"/>
+                                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="30"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="highlightedColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <size key="shadowOffset" width="1" height="2"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Make it as far as you can!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="mw4-Sc-Q8w">
+                                                        <rect key="frame" x="0.0" y="142" width="335" height="70.5"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="30"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <color key="highlightedColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -280,10 +322,10 @@
                                                         <size key="shadowOffset" width="1" height="2"/>
                                                     </label>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7Mw-ke-Mpw">
-                                                        <rect key="frame" x="0.0" y="189" width="335" height="94.5"/>
+                                                        <rect key="frame" x="0.0" y="212.5" width="335" height="71"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TbH-mx-kJy">
-                                                                <rect key="frame" x="20" y="20" width="295" height="54.5"/>
+                                                                <rect key="frame" x="10" y="10" width="315" height="51"/>
                                                                 <color key="backgroundColor" name="controlAccentColor" catalog="System" colorSpace="catalog"/>
                                                                 <fontDescription key="fontDescription" name="Avenir-Heavy" family="Avenir" pointSize="22"/>
                                                                 <color key="tintColor" red="0.34358019400000001" green="0.32479983550000002" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -297,10 +339,10 @@
                                                         </subviews>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <constraints>
-                                                            <constraint firstItem="TbH-mx-kJy" firstAttribute="leading" secondItem="7Mw-ke-Mpw" secondAttribute="leading" constant="20" id="JFg-kU-cVy"/>
-                                                            <constraint firstAttribute="trailing" secondItem="TbH-mx-kJy" secondAttribute="trailing" constant="20" id="Pzn-bc-dtR"/>
-                                                            <constraint firstAttribute="bottom" secondItem="TbH-mx-kJy" secondAttribute="bottom" constant="20" id="tFo-7Q-M7D"/>
-                                                            <constraint firstItem="TbH-mx-kJy" firstAttribute="top" secondItem="7Mw-ke-Mpw" secondAttribute="top" constant="20" id="weB-KM-caC"/>
+                                                            <constraint firstItem="TbH-mx-kJy" firstAttribute="leading" secondItem="7Mw-ke-Mpw" secondAttribute="leading" constant="10" id="JFg-kU-cVy"/>
+                                                            <constraint firstAttribute="trailing" secondItem="TbH-mx-kJy" secondAttribute="trailing" constant="10" id="Pzn-bc-dtR"/>
+                                                            <constraint firstAttribute="bottom" secondItem="TbH-mx-kJy" secondAttribute="bottom" constant="10" id="tFo-7Q-M7D"/>
+                                                            <constraint firstItem="TbH-mx-kJy" firstAttribute="top" secondItem="7Mw-ke-Mpw" secondAttribute="top" constant="10" id="weB-KM-caC"/>
                                                         </constraints>
                                                     </view>
                                                 </subviews>
@@ -358,11 +400,29 @@
                                                 <rect key="frame" x="0.0" y="283.5" width="335" height="283.5"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QnF-QA-cAD">
-                                                        <rect key="frame" x="0.0" y="0.0" width="335" height="94.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="335" height="56.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap the screen, drag your finger to aim, release to shoot" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Orv-e5-vIr">
-                                                        <rect key="frame" x="0.0" y="94.5" width="335" height="94.5"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap the screen" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lAa-w8-tD9">
+                                                        <rect key="frame" x="0.0" y="56.5" width="335" height="57"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
+                                                        <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                        <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <size key="shadowOffset" width="1" height="2"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Drag your finger to aim" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="78p-Gj-tlX">
+                                                        <rect key="frame" x="0.0" y="113.5" width="335" height="56.5"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
+                                                        <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                        <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <size key="shadowOffset" width="1" height="2"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Release to shoot" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1No-x6-9Hj">
+                                                        <rect key="frame" x="0.0" y="170" width="335" height="57"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
                                                         <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
@@ -371,7 +431,7 @@
                                                         <size key="shadowOffset" width="1" height="2"/>
                                                     </label>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tnd-sm-Njr">
-                                                        <rect key="frame" x="0.0" y="189" width="335" height="94.5"/>
+                                                        <rect key="frame" x="0.0" y="227" width="335" height="56.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
                                                 </subviews>
@@ -428,11 +488,27 @@
                                                 <rect key="frame" x="0.0" y="283.5" width="335" height="283.5"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jAP-QE-6Fk">
-                                                        <rect key="frame" x="0.0" y="0.0" width="335" height="94.5"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="335" height="56.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="When balls are in motion, swipe right to fast forward; swipe down to force turn to end" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qTI-O8-22Y">
-                                                        <rect key="frame" x="0.0" y="94.5" width="335" height="94.5"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="When balls are in motion:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iuc-4O-5h4">
+                                                        <rect key="frame" x="0.0" y="56.5" width="335" height="57"/>
+                                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="highlightedColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <size key="shadowOffset" width="1" height="2"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swipe right to fast forward" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wFP-PO-50m">
+                                                        <rect key="frame" x="0.0" y="113.5" width="335" height="56.5"/>
+                                                        <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="highlightedColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <size key="shadowOffset" width="1" height="2"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Swipe down to force end turn" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VPQ-Pj-Zjc">
+                                                        <rect key="frame" x="0.0" y="170" width="335" height="57"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <color key="highlightedColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -440,7 +516,7 @@
                                                         <size key="shadowOffset" width="1" height="2"/>
                                                     </label>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1f4-Wa-9sU">
-                                                        <rect key="frame" x="0.0" y="189" width="335" height="94.5"/>
+                                                        <rect key="frame" x="0.0" y="227" width="335" height="56.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
                                                 </subviews>
@@ -490,7 +566,7 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="RlO-LK-stn">
                                         <rect key="frame" x="20" y="40" width="335" height="567"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="levels_onboarding_3_items@4x" translatesAutoresizingMaskIntoConstraints="NO" id="1A2-z7-Ubd">
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="levels_onboarding_3_items_attempt2@4x" translatesAutoresizingMaskIntoConstraints="NO" id="1A2-z7-Ubd">
                                                 <rect key="frame" x="0.0" y="0.0" width="335" height="283.5"/>
                                             </imageView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="m8A-Pw-z70">
@@ -500,7 +576,7 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="335" height="94.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </view>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap the top bar to pause and keep and get to the end of the level!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="3jK-qi-DYF">
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Make it to the end of each level!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="10" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="3jK-qi-DYF">
                                                         <rect key="frame" x="0.0" y="94.5" width="335" height="94.5"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="30"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -918,7 +994,7 @@
         <image name="classic_play_button" width="450" height="114"/>
         <image name="game_center_button" width="70" height="70"/>
         <image name="game_menu_button_curved" width="480" height="120"/>
-        <image name="levels_onboarding_3_items@4x" width="1616" height="1616"/>
+        <image name="levels_onboarding_3_items_attempt2@4x" width="1616" height="1617"/>
         <image name="levels_play_button" width="450" height="113"/>
         <image name="onboarding_1_fire_attempt2@4x" width="1616" height="1616"/>
         <image name="onboarding_2_actions_attempt2@4x" width="1616" height="1617"/>
