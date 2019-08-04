@@ -714,6 +714,9 @@ class ContinousGameScene: GameScene {
         
         // Set the last turn undone as the current game score
         lastUndoTurnScore = gameModel!.gameScore
+    
+        // Force this to true so that we don't show it anymore
+        gameModel!.showedTutorials = true
     }
     
     private func shootBalls(point: CGPoint) {
