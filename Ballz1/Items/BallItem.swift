@@ -156,7 +156,8 @@ class BallItem: Item {
         node!.fillColor = defaultColor
         node!.physicsBody!.affectedByGravity = false
         
-        node!.removeAllActions()
+        // XXX Remove this line because it may be causing the bug where we stop balls before they reach the origin point
+        //node!.removeAllActions()
         node!.removeAllChildren()
     }
     
