@@ -156,7 +156,6 @@ class BallItem: Item {
         node!.fillColor = defaultColor
         node!.physicsBody!.affectedByGravity = false
         
-        node!.removeAllActions()
         node!.removeAllChildren()
     }
     
