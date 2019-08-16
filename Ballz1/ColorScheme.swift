@@ -95,7 +95,7 @@ class GameMenuColorScheme {
     var titleColor: SKColor
     var buttonColor: SKColor
     var buttonTextColor: SKColor
-    var fontName: String = "Avenir-Medium"
+    var fontName: String = "Avenir-Light"
     
     required init() {
         //backgroundColor = SKColor(red: 48/255, green: 52/255, blue: 50/255, alpha: 1)
@@ -117,7 +117,7 @@ class GameSceneColorScheme {
     var stoneTexture: SKTexture
     var blockTexture: SKTexture
     var dividingLine: SKTexture
-    var fontName: String = "Avenir-Medium"
+    var fontName: String = "Avenir-Light"
     
     required init(backgroundSize: CGSize, blockSize: CGSize) {
         var bottomColor = SKColor(red: 187/255, green: 143/255, blue: 206/255, alpha: 1)
