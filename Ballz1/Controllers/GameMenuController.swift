@@ -31,9 +31,9 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     let LEADERBOARD_ID = "xyz.ashgames.brickbreak"
     let LEVELS_LEADERBOARD_ID = "xyz.ashgames.brickbreak.levelnumber"
     
-    private var classicButtonColorValue1 = 0x2ABAFF
+    private var classicButtonColorValue1 = 0x1599FF
     private var classicButtonColorValue2 = 0x3F6CFF
-    private var levelsButtonColorValue1 = 0xC57FFF
+    private var levelsButtonColorValue1 = 0xD4008E
     private var levelsButtonColorValue2 = 0xFF1597
 
     // Get the user's current level number from Levels game mode (saved to disk)
@@ -122,6 +122,9 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         levelsButton.backgroundColor = .clear
         levelsButton.layer.insertSublayer(levelsGradientLayer, at: 0)
         levelsButton.addTarget(self, action: #selector(levelsButtonTouchEvent), for: .allEvents)
+        
+        gameCenterButton.layer.cornerRadius = gameCenterButton.frame.height * 0.5
+        rateButton.layer.cornerRadius = rateButton.frame.height * 0.5
         
         // Authenticate the player and submit their high score
         if let lp = localPlayer {
@@ -350,6 +353,9 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         gradientLayer.frame = button.bounds
         gradientLayer.colors = [color1.cgColor, color2.cgColor]
         gradientLayer.cornerRadius = button.frame.height * 0.5
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1.0, y: 0)
+        gradientLayer.locations = [0.0, 1.0]
         return gradientLayer
     }
 }
