@@ -30,6 +30,11 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     // IMPORTANT: replace the red string below with your own Leaderboard ID (the one you've set in iTunes Connect)
     let LEADERBOARD_ID = "xyz.ashgames.brickbreak"
     let LEVELS_LEADERBOARD_ID = "xyz.ashgames.brickbreak.levelnumber"
+    
+    private var classicButtonColorValue1 = 0x2ABAFF
+    private var classicButtonColorValue2 = 0x3F6CFF
+    private var levelsButtonColorValue1 = 0xC57FFF
+    private var levelsButtonColorValue2 = 0xFF1597
 
     // Get the user's current level number from Levels game mode (saved to disk)
     func loadLevelNumber() -> Int {
@@ -108,6 +113,16 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        let classicGradientLayer = createButtonGradient(button: playButton, color1: UIColor(rgb: classicButtonColorValue1), color2: UIColor(rgb: classicButtonColorValue2))
+        playButton.backgroundColor = .clear
+        playButton.layer.insertSublayer(classicGradientLayer, at: 0)
+        playButton.addTarget(self, action: #selector(classicButtonTouchEvent), for: .allEvents)
+        
+        let levelsGradientLayer = createButtonGradient(button: levelsButton, color1: UIColor(rgb: levelsButtonColorValue1), color2: UIColor(rgb: levelsButtonColorValue2))
+        levelsButton.backgroundColor = .clear
+        levelsButton.layer.insertSublayer(levelsGradientLayer, at: 0)
+        levelsButton.addTarget(self, action: #selector(levelsButtonTouchEvent), for: .allEvents)
+        
         // Authenticate the player and submit their high score
         if let lp = localPlayer {
             // Player is already auth'ed, load their high score
@@ -144,6 +159,66 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
+        }
+    }
+    
+    @IBAction private func classicButtonTouchEvent(sender: Any?, forEvent event: UIEvent) {
+        // This is the only way I found to get the button background color to change on press; the events and states aren't enough
+        // Get all touch associated with the play button
+        if let touches = event.touches(for: playButton) {
+            // There should only be one, so attempt to get the only touch event
+            if let touch = touches.first {
+                // Check for the touch began phase
+                if touch.phase == .began {
+                    // The button has been pressed
+                    let color1 = UIColor(rgb: classicButtonColorValue1 - 0x101010)
+                    let color2 = UIColor(rgb: classicButtonColorValue2 - 0x101010 )
+                    let gradientLayer = createButtonGradient(button: playButton, color1: color1, color2: color2)
+                    playButton.backgroundColor = .clear
+                    playButton.layer.insertSublayer(gradientLayer, at: 0)
+                    playButton.layer.sublayers!.remove(at: 1)
+                }
+                    // Check for the touch ended phase
+                else if touch.phase == .ended {
+                    // The button has been depressed
+                    let color1 = UIColor(rgb: classicButtonColorValue1)
+                    let color2 = UIColor(rgb: classicButtonColorValue2)
+                    let gradientLayer = createButtonGradient(button: playButton, color1: color1, color2: color2)
+                    playButton.backgroundColor = .clear
+                    playButton.layer.insertSublayer(gradientLayer, at: 0)
+                    playButton.layer.sublayers!.remove(at: 1)
+                }
+            }
+        }
+    }
+    
+    @IBAction private func levelsButtonTouchEvent(sender: Any?, forEvent event: UIEvent) {
+        // This is the only way I found to get the button background color to change on press; the events and states aren't enough
+        // Get all touch associated with the play button
+        if let touches = event.touches(for: levelsButton) {
+            // There should only be one, so attempt to get the only touch event
+            if let touch = touches.first {
+                // Check for the touch began phase
+                if touch.phase == .began {
+                    // The button has been pressed
+                    let color1 = UIColor(rgb: levelsButtonColorValue1 - 0x101010)
+                    let color2 = UIColor(rgb: levelsButtonColorValue2 - 0x101010)
+                    let gradientLayer = createButtonGradient(button: levelsButton, color1: color1, color2: color2)
+                    levelsButton.backgroundColor = .clear
+                    levelsButton.layer.insertSublayer(gradientLayer, at: 0)
+                    levelsButton.layer.sublayers!.remove(at: 1)
+                }
+                    // Check for the touch ended phase
+                else if touch.phase == .ended {
+                    // The button has been depressed
+                    let color1 = UIColor(rgb: levelsButtonColorValue1)
+                    let color2 = UIColor(rgb: levelsButtonColorValue2)
+                    let gradientLayer = createButtonGradient(button: levelsButton, color1: color1, color2: color2)
+                    levelsButton.backgroundColor = .clear
+                    levelsButton.layer.insertSublayer(gradientLayer, at: 0)
+                    levelsButton.layer.sublayers!.remove(at: 1)
+                }
+            }
         }
     }
     
@@ -268,5 +343,13 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                 print("Error reporting score: \(error!)")
             }
         }
+    }
+    
+    private func createButtonGradient(button: UIButton, color1: UIColor, color2: UIColor) -> CAGradientLayer {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = button.bounds
+        gradientLayer.colors = [color1.cgColor, color2.cgColor]
+        gradientLayer.cornerRadius = button.frame.height * 0.5
+        return gradientLayer
     }
 }
