@@ -174,8 +174,8 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                 // Check for the touch began phase
                 if touch.phase == .began {
                     // The button has been pressed
-                    let color1 = UIColor(rgb: classicButtonColorValue1 - 0x101010)
-                    let color2 = UIColor(rgb: classicButtonColorValue2 - 0x101010 )
+                    let color1 = adjustColor(color: classicButtonColorValue1, offset: 0x101010, add: false)
+                    let color2 = adjustColor(color: classicButtonColorValue2, offset: 0x101010, add: false)
                     let gradientLayer = createButtonGradient(button: playButton, color1: color1, color2: color2)
                     playButton.backgroundColor = .clear
                     playButton.layer.insertSublayer(gradientLayer, at: 0)
@@ -204,8 +204,8 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                 // Check for the touch began phase
                 if touch.phase == .began {
                     // The button has been pressed
-                    let color1 = UIColor(rgb: levelsButtonColorValue1 - 0x101010)
-                    let color2 = UIColor(rgb: levelsButtonColorValue2 - 0x101010)
+                    let color1 = adjustColor(color: levelsButtonColorValue1, offset: 0x101010, add: false)
+                    let color2 = adjustColor(color: levelsButtonColorValue2, offset: 0x101010, add: false)
                     let gradientLayer = createButtonGradient(button: levelsButton, color1: color1, color2: color2)
                     levelsButton.backgroundColor = .clear
                     levelsButton.layer.insertSublayer(gradientLayer, at: 0)
@@ -357,5 +357,55 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         gradientLayer.endPoint = CGPoint(x: 1.0, y: 0)
         gradientLayer.locations = [0.0, 1.0]
         return gradientLayer
+    }
+    
+    private func adjustColor(color: Int, offset: Int, add: Bool) -> UIColor {
+        /*
+            Params:
+                color - An int that is the RGB color as an Int
+                offset - The offset int to subtract from the RGB int
+        */
+        
+        var int1 = (color & 0xff0000) >> 16
+        var int2 = (color & 0x00ff00) >> 8
+        var int3 = color & 0x0000ff
+        
+        let off1 = (offset & 0xff0000) >> 16
+        let off2 = (offset & 0x00ff00) >> 8
+        let off3 = offset & 0x0000ff
+        
+        if add {
+            int1 += off1
+            int2 += off2
+            int3 += off3
+        }
+        else {
+            int1 -= off1
+            int2 -= off2
+            int3 -= off3
+        }
+        
+        if int1 < 0 {
+            int1 = 0
+        }
+        else if int1 > 0xff {
+            int1 = 0xff
+        }
+        
+        if int2 < 0 {
+            int2 = 0
+        }
+        else if int2 > 0xff {
+            int2 = 0xff
+        }
+        
+        if int3 < 0 {
+            int3 = 0
+        }
+        else if int3 > 0xff {
+            int3 = 0xff
+        }
+        
+        return UIColor(rgb: (int1 << 16) + (int2 << 8) + (int3))
     }
 }
