@@ -112,8 +112,12 @@ class ContinuousGameController: UIViewController,
             disableUndoButton()
             
             pauseMenuView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
+            // XXX These lines might not be needed anymore since we're not using images
             resumeButton.imageView?.contentMode = .scaleAspectFit
             returnGameMenuButton.imageView?.contentMode = .scaleAspectFit
+            
+            resumeButton.layer.cornerRadius = resumeButton.frame.height * 0.5
+            returnGameMenuButton.layer.cornerRadius = returnGameMenuButton.frame.height * 0.5
             
             view.presentScene(scene)
             

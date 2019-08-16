@@ -141,7 +141,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oAj-oP-AHG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="48.75" y="-8.75"/>
+            <point key="canvasLocation" x="62" y="101"/>
         </scene>
         <!--Classic Tutorial Controller1-->
         <scene sceneID="MyF-4t-DQo">
@@ -779,28 +779,32 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bKq-uJ-cqH" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <view hidden="YES" contentMode="scaleToFill" id="fb1-Dl-c5Y">
-                    <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
+                    <rect key="frame" x="0.0" y="0.0" width="250" height="250"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <stackView opaque="NO" contentMode="scaleAspectFill" axis="vertical" distribution="fillEqually" spacing="1" translatesAutoresizingMaskIntoConstraints="NO" id="D47-sN-cOu">
-                            <rect key="frame" x="0.0" y="0.0" width="240" height="250"/>
+                        <stackView opaque="NO" contentMode="scaleAspectFill" axis="vertical" distribution="fillEqually" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="D47-sN-cOu">
+                            <rect key="frame" x="0.0" y="0.0" width="250" height="250"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paused" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1ah-SP-HdK">
-                                    <rect key="frame" x="0.0" y="0.0" width="240" height="82.5"/>
-                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="60"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="250" height="70"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="60"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e51-Wl-Jyp">
-                                    <rect key="frame" x="0.0" y="83.5" width="240" height="83"/>
-                                    <state key="normal" image="resume_button_curved"/>
+                                    <rect key="frame" x="0.0" y="90" width="250" height="70"/>
+                                    <color key="backgroundColor" red="0.83137254901960778" green="0.0" blue="0.55686274509803924" alpha="1" colorSpace="calibratedRGB"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="32"/>
+                                    <state key="normal" title="Resume"/>
                                     <connections>
                                         <action selector="resumeGame:" destination="SQo-9G-tie" eventType="touchUpInside" id="vCj-fi-bV7"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fDJ-ex-okL">
-                                    <rect key="frame" x="0.0" y="167.5" width="240" height="82.5"/>
-                                    <state key="normal" image="game_menu_button_curved"/>
+                                    <rect key="frame" x="0.0" y="180" width="250" height="70"/>
+                                    <color key="backgroundColor" red="0.24705882352941178" green="0.42352941176470588" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="32"/>
+                                    <state key="normal" title="Game Menu"/>
                                     <connections>
                                         <action selector="returnToGameMenu:" destination="SQo-9G-tie" eventType="touchUpInside" id="xUg-2O-vR3"/>
                                     </connections>
@@ -824,7 +828,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1028" y="-9.4452773613193415"/>
+            <point key="canvasLocation" x="1041" y="101"/>
         </scene>
         <!--Levels Game Controller-->
         <scene sceneID="dTW-PD-uqr">
@@ -946,28 +950,32 @@
                 </view>
                 <exit id="PUe-Gu-uBq" userLabel="Exit" sceneMemberID="exit"/>
                 <view hidden="YES" contentMode="scaleToFill" id="2JP-Ap-ELL" userLabel="Pause Menu View">
-                    <rect key="frame" x="0.0" y="0.0" width="270" height="250"/>
+                    <rect key="frame" x="0.0" y="0.0" width="250" height="250"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <stackView opaque="NO" contentMode="scaleAspectFill" axis="vertical" distribution="fillEqually" spacing="1" translatesAutoresizingMaskIntoConstraints="NO" id="7rN-DO-x2m">
-                            <rect key="frame" x="0.0" y="0.0" width="270" height="250"/>
+                        <stackView opaque="NO" contentMode="scaleAspectFill" axis="vertical" distribution="fillEqually" spacing="21" translatesAutoresizingMaskIntoConstraints="NO" id="7rN-DO-x2m">
+                            <rect key="frame" x="0.0" y="0.0" width="250" height="250"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paused" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D11-g9-x3B">
-                                    <rect key="frame" x="0.0" y="0.0" width="270" height="82.5"/>
-                                    <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="60"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="250" height="69.5"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="60"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VAa-BZ-zCG" userLabel="Resume Button">
-                                    <rect key="frame" x="0.0" y="83.5" width="270" height="83"/>
-                                    <state key="normal" image="resume_button_curved"/>
+                                    <rect key="frame" x="0.0" y="90.5" width="250" height="69"/>
+                                    <color key="backgroundColor" red="0.83137254900000002" green="0.0" blue="0.5568627451" alpha="1" colorSpace="calibratedRGB"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="32"/>
+                                    <state key="normal" title="Resume"/>
                                     <connections>
                                         <action selector="resumeButtonPressed:" destination="lds-87-3TS" eventType="touchUpInside" id="TXC-4B-SHi"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EpW-pu-3Ya" userLabel="Return Game Menu Button">
-                                    <rect key="frame" x="0.0" y="167.5" width="270" height="82.5"/>
-                                    <state key="normal" image="game_menu_button_curved"/>
+                                    <rect key="frame" x="0.0" y="180.5" width="250" height="69.5"/>
+                                    <color key="backgroundColor" red="0.24705882352941178" green="0.42352941176470588" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="33"/>
+                                    <state key="normal" title="Game Menu"/>
                                     <connections>
                                         <action selector="gameMenuButtonPressed:" destination="lds-87-3TS" eventType="touchUpInside" id="PGS-bO-3ea"/>
                                     </connections>
@@ -990,7 +998,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1027" y="658"/>
+            <point key="canvasLocation" x="1041" y="1094"/>
         </scene>
         <!--Reward Ad View Controller-->
         <scene sceneID="s90-HF-whl">
@@ -1017,7 +1025,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0Gm-2G-Mlm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2035" y="-1"/>
+            <point key="canvasLocation" x="2048" y="110"/>
         </scene>
         <!--Levels Tutorial Page Controller-->
         <scene sceneID="9gg-jy-HLg">
@@ -1030,13 +1038,11 @@
     </scenes>
     <resources>
         <image name="game_center_icon" width="41" height="44"/>
-        <image name="game_menu_button_curved" width="480" height="120"/>
         <image name="levels_onboarding_3_items_attempt2@4x" width="1616" height="1617"/>
         <image name="onboarding_1_fire_attempt2@4x" width="1616" height="1616"/>
         <image name="onboarding_2_actions_attempt2@4x" width="1616" height="1617"/>
         <image name="onboarding_3_items_attempt3@4x" width="1616" height="1616"/>
         <image name="rating_icon_1" width="49" height="45"/>
-        <image name="resume_button_curved" width="480" height="120"/>
         <image name="undo_button" width="300" height="300"/>
         <image name="unused_life" width="325" height="321"/>
     </resources>

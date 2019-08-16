@@ -271,8 +271,12 @@ class LevelsGameController: UIViewController,
             scene.gameController = self
             
             pauseMenuView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
+            // XXX This code may not be necessary anymore
             resumeButton.imageView?.contentMode = .scaleAspectFit
             gameMenuButton.imageView?.contentMode = .scaleAspectFit
+            
+            resumeButton.layer.cornerRadius = resumeButton.frame.height * 0.5
+            gameMenuButton.layer.cornerRadius = gameMenuButton.frame.height * 0.5
             
             gameOverView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             
