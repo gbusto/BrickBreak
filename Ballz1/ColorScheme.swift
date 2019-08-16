@@ -98,8 +98,7 @@ class GameMenuColorScheme {
     var fontName: String = "Avenir-Light"
     
     required init() {
-        //backgroundColor = SKColor(red: 48/255, green: 52/255, blue: 50/255, alpha: 1)
-        backgroundColor = SKColor(red: 40/255, green: 40/255, blue: 40/255, alpha: 1)
+        backgroundColor = SKColor(red: 40/255, green: 40/255, blue: 45/255, alpha: 1)
         titleColor = SKColor(rgb: 0x80cbc4)
         buttonColor = UIColor(rgb: 0xf070a1)
         buttonTextColor = backgroundColor
@@ -123,10 +122,9 @@ class GameSceneColorScheme {
         var bottomColor = SKColor(red: 187/255, green: 143/255, blue: 206/255, alpha: 1)
         var topColor = SKColor(red: 165/255, green: 105/255, blue: 189/255, alpha: 1)
         let coloredTexture = SKTexture(size: blockSize, startColor: topColor, endColor: bottomColor, direction: .up)
-        backgroundColor = SKColor(red: 40/255, green: 40/255, blue: 40/255, alpha: 1)
-        //backgroundColor = SKColor(red: 48/255, green: 52/255, blue: 50/255, alpha: 1)
+        backgroundColor = SKColor(red: 40/255, green: 40/255, blue: 45/255, alpha: 1)
         blockTextColor = backgroundColor
-        marginColor = SKColor(red: 72/255, green: 78/255, blue: 75/255, alpha: 1)
+        marginColor = SKColor(red: 60/255, green: 60/255, blue: 65/255, alpha: 1.0)
         textColor = SKColor(red: 117/255, green: 206/255, blue: 235/255, alpha: 1)
         hitBallColor = UIColor(rgb: 0xf070a1)
         blockTexture = coloredTexture
