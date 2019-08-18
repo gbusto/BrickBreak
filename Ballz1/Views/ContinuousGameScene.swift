@@ -74,6 +74,8 @@ class ContinousGameScene: GameScene {
     private var tutorialType: Tutorials?
     private var tutorialsList: [Tutorials] = []
     
+    private var mysteryBlocksToBreak: [MysteryBlockItem] = []
+    
     static var DEFAULT_NUM_BALLS = Int(10)
     
     private var prevBallState = DataManager.BallManagerState(numberOfBalls: 0, originPoint: CGPoint(x: 0, y: 0))
@@ -314,11 +316,26 @@ class ContinousGameScene: GameScene {
             // Reset start time to 0
             startTime = 0
             
+            // XXX Remove these tutorial lines
             // If the user didn't fast forward and the tutorial is still showing, remove it and add it back to the list until the user actually performs the action
             if tutorialIsShowing && tutorialType == .fastForwardTutorial {
                 removeTutorial()
                 tutorialsList.append(.fastForwardTutorial)
             }
+            
+            // Break any mystery blocks at this point (at the end of the turn)
+            let _ = mysteryBlocksToBreak.filter {
+                self.removeChildren(in: [$0.getNode()])
+                var centerPoint = $0.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+                breakBlock(color1: $0.bottomColor!, color2: $0.topColor!, position: centerPoint)
+                
+                // XXX Add the new reward item here for the user; needs to be tracked by the itemgenerator
+                
+                return false
+            }
+            mysteryBlocksToBreak = []
         }
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
@@ -364,6 +381,7 @@ class ContinousGameScene: GameScene {
         }
         
         if gameModel!.isReady() {
+            // XXX Remove this tutorial tracking code
             if false == tutorialIsShowing && tutorialsList.count > 0 {
                 showTutorial(tutorial: .topBarTutorial)
             }
@@ -421,6 +439,10 @@ class ContinousGameScene: GameScene {
                     centerPoint.y += blockSize!.height / 2
                     breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
                     brokenHitBlockCount += 1
+                }
+                else if item is MysteryBlockItem {
+                    // Don't do anything for it here; wait until the round ends
+                    mysteryBlocksToBreak.append(item as! MysteryBlockItem)
                 }
                 else if item is BombItem {
                     self.removeChildren(in: [item.getNode()])

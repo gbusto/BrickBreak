@@ -45,6 +45,8 @@ class LevelsGameScene: GameScene {
     
     private var numRowsGenerated = Int(0)
     
+    private var mysteryBlocksToBreak: [MysteryBlockItem] = []
+    
     // XXX New variables for adding ball manager stuff here
     /* XXX REMOVE THESE
     private var ballArray: [BallItem] = []
@@ -306,6 +308,20 @@ class LevelsGameScene: GameScene {
             if currentCount <= maxCount {
                 gameController!.updateRowCountLabel(currentCount: currentCount, maxCount: maxCount)
             }
+            
+            // Break any mystery blocks at this point (at the end of the turn)
+            let _ = mysteryBlocksToBreak.filter {
+                self.removeChildren(in: [$0.getNode()])
+                var centerPoint = $0.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+                breakBlock(color1: $0.bottomColor!, color2: $0.topColor!, position: centerPoint)
+                
+                // XXX Add the new reward item here for the user; needs to be tracked by the itemgenerator
+                
+                return false
+            }
+            mysteryBlocksToBreak = []
         }
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
@@ -383,6 +399,12 @@ class LevelsGameScene: GameScene {
                     centerPoint.y += blockSize!.height / 2
                     breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
                     brokenHitBlockCount += 1
+                }
+                else if item is MysteryBlockItem {
+                    // Don't do anything for it here; wait until the round ends
+                    // XXX Maybe remove this line too...
+                    //brokenHitBlockCount += 1
+                    mysteryBlocksToBreak.append(item as! MysteryBlockItem)
                 }
                 else if item is BombItem {
                     self.removeChildren(in: [item.getNode()])

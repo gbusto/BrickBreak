@@ -298,6 +298,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                     textColor: colorScheme!.blockTextColor,
                                     fontName: colorScheme!.fontName)
             }
+            if item is MysteryBlockItem {
+                let block = item as! MysteryBlockItem
+                block.setAttributes(bottomColor: bottomColor,
+                                    topColor: topColor,
+                                    textColor: colorScheme!.blockTextColor,
+                                    fontName: colorScheme!.fontName)
+            }
         }
     }
     
@@ -318,6 +325,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     pos = CGPoint(x: posX, y: posY)
                 }
                 else if item is StoneHitBlockItem {
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.025) + leftWallWidth
+                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
+                    pos = CGPoint(x: posX, y: posY)
+                }
+                else if item is MysteryBlockItem {
                     let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.025) + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)

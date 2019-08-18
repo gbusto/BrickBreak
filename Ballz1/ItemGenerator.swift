@@ -59,6 +59,7 @@ class ItemGenerator {
     private static let BALL = Int(2)
     private static let STONE_BLOCK = Int(3)
     private static let BOMB = Int(4)
+    private static let MYSTERY_BLOCK = Int(5)
     
     // Boolean as to whether or not we should use drand to generate randomness
     private var USE_DRAND = false
@@ -125,6 +126,11 @@ class ItemGenerator {
                 else if item is StoneHitBlockItem {
                     let block = item as! StoneHitBlockItem
                     newItemRow.append(ItemGenerator.STONE_BLOCK)
+                    itemHitCountRow.append(block.hitCount!)
+                }
+                else if item is MysteryBlockItem {
+                    let block = item as! MysteryBlockItem
+                    newItemRow.append(ItemGenerator.MYSTERY_BLOCK)
                     itemHitCountRow.append(block.hitCount!)
                 }
                 else if item is BombItem {
@@ -230,6 +236,11 @@ class ItemGenerator {
                             block.changeState(duration: 0)
                         }
                     }
+                    else if item! is MysteryBlockItem {
+                        let block = item! as! MysteryBlockItem
+                        // Load the block's hit count
+                        block.updateHitCount(count: itemHitCounts[i][j])
+                    }
                     else if item! is BombItem {
                         // Don't need to do anything
                     }
@@ -267,8 +278,11 @@ class ItemGenerator {
         if nil == state {
             // Try to load state and if not initialize things to their default values
             // Initialize the allowed item types with only one type for now
-            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 95)
+            // XXX UNCOMMENT ME
+            //addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 95)
             addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 5)
+            // XXX LOWER THIS PERCENTAGE BEFORE RELEASING; basically we only want this block introduced every 50 turns
+            addBlockItemType(type: ItemGenerator.MYSTERY_BLOCK, percentage: 95)
             addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 90)
             addNonBlockItemType(type: ItemGenerator.BALL, percentage: 8)
             addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
@@ -301,6 +315,9 @@ class ItemGenerator {
                 }
                 else if item is StoneHitBlockItem {
                     output += "[T]"
+                }
+                else if item is MysteryBlockItem {
+                    output += "[?]"
                 }
                 else if item is BombItem {
                     output += "[B]"
@@ -337,7 +354,7 @@ class ItemGenerator {
         var count = 0
         for row in itemArray {
             for item in row {
-                if item is HitBlockItem {
+                if item is HitBlockItem || item is StoneHitBlockItem || item is MysteryBlockItem {
                     count += 1
                 }
             }
@@ -507,6 +524,10 @@ class ItemGenerator {
                                 let stoneBlock = item as! StoneHitBlockItem
                                 stoneBlock.hitCount! = 0
                             }
+                            else if item is MysteryBlockItem {
+                                let mysteryBlock = item as! MysteryBlockItem
+                                mysteryBlock.hitCount! = 0
+                            }
                         }
                     }
                     // Break out only if we found the item
@@ -613,6 +634,20 @@ class ItemGenerator {
             let item = StoneHitBlockItem()
             item.initItem(num: numItemsGenerated, size: blockSize!)
             let block = item as StoneHitBlockItem
+            let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2, numberOfBalls * 2]
+            if USE_DRAND {
+                let choice = randomNumber(upper: choices.count - 1, lower: 0)
+                block.setHitCount(count: choices[choice])
+            }
+            else {
+                block.setHitCount(count: choices.randomElement()!)
+            }
+            return item
+        case ItemGenerator.MYSTERY_BLOCK:
+            let item = MysteryBlockItem()
+            item.initItem(num: numItemsGenerated, size: blockSize!)
+            item.chooseReward()
+            let block = item as MysteryBlockItem
             let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2, numberOfBalls * 2]
             if USE_DRAND {
                 let choice = randomNumber(upper: choices.count - 1, lower: 0)
