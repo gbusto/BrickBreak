@@ -308,6 +308,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    public func addItemToView(item: Item, at: (Int, Int)) {
+        // The 'at' param is the row and column (like in a 2d array, where at.0 is the row number, and at.1 is the column in the row) in which to display the item
+        // It needs some translation as to where to place it on the screen
+        let pos = translate2dToCGPoint(rowNum: at.0, colNum: at.1)
+        item.loadItem(position: pos)
+        self.addChild(item.getNode())
+    }
+    
     public func addRowToView(rowNum: Int, items: [Item]) {
         colorizeBlocks(itemRow: items)
         
@@ -623,6 +631,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physBody.contactTestBitMask = contactTestBitMask
         
         return physBody
+    }
+    
+    private func translate2dToCGPoint(rowNum: Int, colNum: Int) -> CGPoint {
+        let posX = (CGFloat(colNum) * rowHeight!) + (rowHeight! * 0.025) + leftWallWidth
+        let posY = (ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
+        return CGPoint(x: posX, y: posY)
     }
     
     /*************************************************/

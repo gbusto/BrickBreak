@@ -74,7 +74,7 @@ class ContinousGameScene: GameScene {
     private var tutorialType: Tutorials?
     private var tutorialsList: [Tutorials] = []
     
-    private var mysteryBlocksToBreak: [MysteryBlockItem] = []
+    private var mysteryBlocksToBreak: [(Item, Int, Int)] = []
     
     static var DEFAULT_NUM_BALLS = Int(10)
     
@@ -290,6 +290,21 @@ class ContinousGameScene: GameScene {
             let items = gameModel!.generateRow()
             addRowToView(rowNum: 1, items: items)
             
+            /* XXX FIX ME LATER
+             // Break any mystery blocks at this point (at the end of the turn but before we animate items)
+             let _ = mysteryBlocksToBreak.filter {
+             self.removeChildren(in: [$0.getNode()])
+             var centerPoint = $0.getNode().position
+             centerPoint.x += blockSize!.width / 2
+             centerPoint.y += blockSize!.height / 2
+             breakBlock(color1: $0.bottomColor!, color2: $0.topColor!, position: centerPoint)
+             
+             // XXX Add the new reward item here for the user; needs to be tracked by the itemgenerator
+             return false
+             }
+             */
+            mysteryBlocksToBreak = []
+            
             // Move the items down in the view
             animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
             gameModel!.itemGenerator!.pruneFirstRow()
@@ -322,20 +337,6 @@ class ContinousGameScene: GameScene {
                 removeTutorial()
                 tutorialsList.append(.fastForwardTutorial)
             }
-            
-            // Break any mystery blocks at this point (at the end of the turn)
-            let _ = mysteryBlocksToBreak.filter {
-                self.removeChildren(in: [$0.getNode()])
-                var centerPoint = $0.getNode().position
-                centerPoint.x += blockSize!.width / 2
-                centerPoint.y += blockSize!.height / 2
-                breakBlock(color1: $0.bottomColor!, color2: $0.topColor!, position: centerPoint)
-                
-                // XXX Add the new reward item here for the user; needs to be tracked by the itemgenerator
-                
-                return false
-            }
-            mysteryBlocksToBreak = []
         }
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
@@ -419,7 +420,8 @@ class ContinousGameScene: GameScene {
             
             // Allow the model to handle a turn
             let removedItems = gameModel!.handleTurn()
-            for item in removedItems {
+            for tup in removedItems {
+                let item = tup.0
                 if item is HitBlockItem {
                     // We want to remove block items from the scene completely
                     self.removeChildren(in: [item.getNode()])
@@ -442,7 +444,7 @@ class ContinousGameScene: GameScene {
                 }
                 else if item is MysteryBlockItem {
                     // Don't do anything for it here; wait until the round ends
-                    mysteryBlocksToBreak.append(item as! MysteryBlockItem)
+                    mysteryBlocksToBreak.append(tup)
                 }
                 else if item is BombItem {
                     self.removeChildren(in: [item.getNode()])

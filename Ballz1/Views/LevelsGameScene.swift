@@ -45,7 +45,7 @@ class LevelsGameScene: GameScene {
     
     private var numRowsGenerated = Int(0)
     
-    private var mysteryBlocksToBreak: [MysteryBlockItem] = []
+    private var mysteryBlocksToBreak: [(Item, Int, Int)] = []
     
     // XXX New variables for adding ball manager stuff here
     /* XXX REMOVE THESE
@@ -289,6 +289,29 @@ class LevelsGameScene: GameScene {
                 }
             }
             
+            // Break any mystery blocks at this point (at the end of the turn but before we animate any items)
+            let _ = mysteryBlocksToBreak.filter {
+                // Get the new items to display from the ItemGenerator
+                let block = $0.0 as! MysteryBlockItem
+                // Add the reward item to the view if we were successfully able to create it and insert into the row of items
+                if let rewardItem = gameModel!.itemGenerator!.insertRewardItem(at: ($0.1, $0.2), rewardType: block.getReward()) {
+                    addItemToView(item: rewardItem, at: ($0.1, $0.2))
+                }
+                // Remove the mystery block from the game
+                self.removeChildren(in: [block.getNode()])
+                var centerPoint = block.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+                // Show to block break animation
+                breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                
+                return false
+            }
+            mysteryBlocksToBreak = []
+            
+            // XXX REMOVE ME
+            gameModel!.itemGenerator!.debugPrint()
+            
             // Move the items down in the view
             animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
             gameModel!.itemGenerator!.pruneFirstRow()
@@ -308,20 +331,6 @@ class LevelsGameScene: GameScene {
             if currentCount <= maxCount {
                 gameController!.updateRowCountLabel(currentCount: currentCount, maxCount: maxCount)
             }
-            
-            // Break any mystery blocks at this point (at the end of the turn)
-            let _ = mysteryBlocksToBreak.filter {
-                self.removeChildren(in: [$0.getNode()])
-                var centerPoint = $0.getNode().position
-                centerPoint.x += blockSize!.width / 2
-                centerPoint.y += blockSize!.height / 2
-                breakBlock(color1: $0.bottomColor!, color2: $0.topColor!, position: centerPoint)
-                
-                // XXX Add the new reward item here for the user; needs to be tracked by the itemgenerator
-                
-                return false
-            }
-            mysteryBlocksToBreak = []
         }
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
@@ -379,7 +388,8 @@ class LevelsGameScene: GameScene {
             
             // Allow the model to handle a turn
             let removedItems = gameModel!.handleTurn()
-            for item in removedItems {
+            for tup in removedItems {
+                let item = tup.0
                 if item is HitBlockItem {
                     // We want to remove block items from the scene completely
                     self.removeChildren(in: [item.getNode()])
@@ -404,7 +414,7 @@ class LevelsGameScene: GameScene {
                     // Don't do anything for it here; wait until the round ends
                     // XXX Maybe remove this line too...
                     //brokenHitBlockCount += 1
-                    mysteryBlocksToBreak.append(item as! MysteryBlockItem)
+                    mysteryBlocksToBreak.append(tup)
                 }
                 else if item is BombItem {
                     self.removeChildren(in: [item.getNode()])

@@ -193,6 +193,60 @@ class ItemGenerator {
         return count
     }
     
+    public func insertRewardItem(at: (Int, Int), rewardType: Int) -> Item? {
+        var rewardItem: Item?
+        if rewardType == MysteryBlockItem.CLEAR_ROW_REWARD {
+            // Generate a clear row reward
+            rewardItem = ClearRowRewardItem()
+        }
+        else {
+            print("Got unknown reward type \(rewardType)")
+            return nil
+        }
+        
+        rewardItem!.initItem(num: numItemsGenerated, size: blockSize!)
+        itemArray[at.0][at.1] = rewardItem!
+        
+        numItemsGenerated += 1
+        
+        return rewardItem!
+    }
+    
+    /* XXX REMOVE THIS FUNCTION
+    public func replaceMysteryBlockWithReward(mysteryBlock: MysteryBlockItem) -> Item? {
+        // First, generate the new item
+        var rewardItem: Item?
+        let rewardType = mysteryBlock.getReward()
+        if rewardType == MysteryBlockItem.CLEAR_ROW_REWARD {
+            rewardItem = ClearRowRewardItem()
+        }
+        else {
+            print("Got unknown reward type of \(rewardType)")
+            return nil
+        }
+        
+        rewardItem!.initItem(num: numItemsGenerated, size: blockSize!)
+        
+        
+        // Now, replace the mystery block with this new item
+        for i in 0...(itemArray.count - 1) {
+            let row = itemArray[i]
+            for j in 0...(row.count - 1) {
+                let item = row[j]
+                if item.getNode().name! == mysteryBlock.getNode().name! {
+                    itemArray[i][j] = rewardItem!
+                    // Increment the count for number of items generated
+                    numItemsGenerated += 1
+                    return rewardItem!
+                }
+            }
+        }
+        
+        print("Failed to find the mystery block to replace the item")
+        return nil
+    }
+    */
+    
     // Load items into an array and return that array
     private func loadItems(items: [[Int]], itemHitCounts: [[Int]], numberOfBalls: Int) -> [[Item]] {
         // The final array we'll return
@@ -324,6 +378,9 @@ class ItemGenerator {
                 }
                 else if item is SpacerItem {
                     output += "[S]"
+                }
+                else {
+                    output += "[#]"
                 }
             }
             output += "\n"
@@ -556,8 +613,8 @@ class ItemGenerator {
     
     // Looks for items that should be removed; each Item keeps track of its state and whether or not it's time for it to be removed.
     // If item.removeItem() returns true, it's time to remove the item; it will be added to an array of items that have been removed and returned to the model
-    public func removeItems() -> [Item] {
-        var removedItems : [Item] = []
+    public func removeItems() -> [(Item, Int, Int)] {
+        var removedItems: [(Item, Int, Int)] = []
         
         // Return out so we don't cause an error with the loop logic below
         if itemArray.isEmpty {
@@ -570,11 +627,14 @@ class ItemGenerator {
             
             // Remove items that should be removed and add them to an array that we will return
             // If an item is removed, replace it with a spacer item
+            var j = 0
             let _ = row.filter {
                 // Perform a remove action if needed
                 if $0.removeItem() {
                     // Remove this item from the array if that evaluates to true (meaning it's time to remove the item)
-                    removedItems.append($0)
+                    let group = ($0, i, j)
+                    j += 1
+                    removedItems.append(group)
                     // Replace it with a spacer item
                     let item = SpacerItem()
                     newRow.append(item)
@@ -582,6 +642,7 @@ class ItemGenerator {
                 }
                 // Keep this item in the array
                 newRow.append($0)
+                j += 1
                 return true
             }
             
@@ -646,7 +707,6 @@ class ItemGenerator {
         case ItemGenerator.MYSTERY_BLOCK:
             let item = MysteryBlockItem()
             item.initItem(num: numItemsGenerated, size: blockSize!)
-            item.chooseReward()
             let block = item as MysteryBlockItem
             let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2, numberOfBalls * 2]
             if USE_DRAND {

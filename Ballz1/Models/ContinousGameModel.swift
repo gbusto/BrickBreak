@@ -165,7 +165,7 @@ class ContinuousGameModel {
         return itemGenerator!.saveUser()
     }
 
-    public func handleTurn() -> [Item] {
+    public func handleTurn() -> [(Item, Int, Int)] {
         // Check to see if the user collected any ball items so far
         let removedItems = itemGenerator!.removeItems()
         

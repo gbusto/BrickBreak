@@ -17,6 +17,8 @@ class MysteryBlockItem: Item {
     public var bottomColor: SKColor?
     public var topColor: SKColor?
     
+    public static let CLEAR_ROW_REWARD = Int(0)
+    
     // MARK: Private properties
     private var size : CGSize?
     private var position : CGPoint?
@@ -28,6 +30,13 @@ class MysteryBlockItem: Item {
     // Setting up properties for collisions
     private var categoryBitMask = UInt32(0b0001)
     private var contactTestBitmask = UInt32(0b0001)
+    
+    private var rewardType = Int(0)
+    private var rewardList: [Int] = [
+        CLEAR_ROW_REWARD,
+        // Add the other rewards here
+    ]
+
     
     // MARK: Protocol functions
     func initItem(num: Int, size: CGSize) {
@@ -49,6 +58,9 @@ class MysteryBlockItem: Item {
         physBody.categoryBitMask = categoryBitMask
         physBody.contactTestBitMask = contactTestBitmask
         node!.physicsBody = physBody
+        
+        // Randomly pick the reward here
+        rewardType = rewardList.randomElement()!
     }
     
     // This should also handle coloring the item appropriately
@@ -111,14 +123,13 @@ class MysteryBlockItem: Item {
     }
     
     public func updateHitCount(count: Int) {
-        hitCount = count
         // Update the hit count, but don't change the text on the block
-        //labelNode!.text = "\(hitCount!)"
-        //shadowLabel!.text = labelNode!.text
+        hitCount = count
     }
     
-    public func chooseReward() {
-        // Choose the reward we give the user for breaking the block
+    public func getReward() -> Int {
+        // Return the reward type to be given to the user
+        return rewardType
     }
     
     // MARK: Private functions
