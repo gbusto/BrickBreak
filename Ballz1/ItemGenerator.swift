@@ -377,7 +377,7 @@ class ItemGenerator {
                     output += "[B]"
                 }
                 else if item is SpacerItem {
-                    output += "[S]"
+                    output += "[ ]"
                 }
                 else {
                     output += "[#]"
@@ -587,6 +587,37 @@ class ItemGenerator {
                             }
                         }
                     }
+                    else if item.getNode().name!.starts(with: "clear_reward") {
+                        // Remove all items in the row
+                        var items: [Item] = []
+                        for row in itemArray {
+                            for i in row {
+                                if i.getNode().name! == item.getNode().name! {
+                                    items = row
+                                    break
+                                }
+                            }
+                        }
+                        
+                        // Now that we have the items, mark the items in the row as being hit
+                        for i in items {
+                            if i is HitBlockItem {
+                                let hitBlock = i as! HitBlockItem
+                                hitBlock.hitCount! = 0
+                            }
+                            // Set stone block item count to 0
+                            else if i is StoneHitBlockItem {
+                                let stoneBlock = i as! StoneHitBlockItem
+                                stoneBlock.hitCount! = 0
+                            }
+                            else if i is MysteryBlockItem {
+                                let mysteryBlock = i as! MysteryBlockItem
+                                mysteryBlock.hitCount! = 0
+                            }
+                            // XXX Also need to handle hitting bombs here
+                        }
+                    }
+                    
                     // Break out only if we found the item
                     return successfulHit
                 }

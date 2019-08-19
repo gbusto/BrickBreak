@@ -295,7 +295,7 @@ class LevelsGameScene: GameScene {
                 let block = $0.0 as! MysteryBlockItem
                 // Add the reward item to the view if we were successfully able to create it and insert into the row of items
                 if let rewardItem = gameModel!.itemGenerator!.insertRewardItem(at: ($0.1, $0.2), rewardType: block.getReward()) {
-                    addItemToView(item: rewardItem, at: ($0.1, $0.2))
+                    addItemToView(item: rewardItem, at: block.getNode().position)
                 }
                 // Remove the mystery block from the game
                 self.removeChildren(in: [block.getNode()])
@@ -417,6 +417,9 @@ class LevelsGameScene: GameScene {
                     mysteryBlocksToBreak.append(tup)
                 }
                 else if item is BombItem {
+                    self.removeChildren(in: [item.getNode()])
+                }
+                else if item is ClearRowRewardItem {
                     self.removeChildren(in: [item.getNode()])
                 }
             }

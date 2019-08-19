@@ -22,7 +22,7 @@ class ClearRowRewardItem: Item {
     func initItem(num: Int, size: CGSize) {
         node = SKSpriteNode(imageNamed: "clear_row_reward_icon")
         node!.size = size
-        node!.name = "reward\(num)"
+        node!.name = "clear_reward\(num)"
         
         let centerPoint = CGPoint(x: size.width / 2, y: size.height / 2)
         let physBody = SKPhysicsBody(circleOfRadius: size.width / 2, center: centerPoint)
