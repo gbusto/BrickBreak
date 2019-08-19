@@ -46,6 +46,9 @@ class ClearRowRewardItem: Item {
     
     func hitItem() {
         // Clear all blocks in the same row as this reward
+        let lightImpactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        lightImpactFeedback.prepare()
+        lightImpactFeedback.impactOccurred()
         
         wasHit = true
     }
