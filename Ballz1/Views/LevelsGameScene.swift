@@ -46,19 +46,7 @@ class LevelsGameScene: GameScene {
     private var numRowsGenerated = Int(0)
     
     private var mysteryBlocksToBreak: [(Item, Int, Int)] = []
-    
-    // XXX New variables for adding ball manager stuff here
-    /* XXX REMOVE THESE
-    private var ballArray: [BallItem] = []
-    private var fireDelay = LevelsGameScene.DEFAULT_FIRE_DELAY
-    private static var DEFAULT_FIRE_DELAY = Double(0.1)
-    private var stoppedBalls: [BallItem] = []
-    private var firstBallReturned = false
-    private var ballsOnFire = false
-    private var firedAllBalls = false
-    private var numBallsFired = 0
-    private var endTurn = false
-    */
+
 
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -309,9 +297,6 @@ class LevelsGameScene: GameScene {
             }
             mysteryBlocksToBreak = []
             
-            // XXX REMOVE ME
-            gameModel!.itemGenerator!.debugPrint()
-            
             // Move the items down in the view
             animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
             gameModel!.itemGenerator!.pruneFirstRow()
@@ -412,8 +397,6 @@ class LevelsGameScene: GameScene {
                 }
                 else if item is MysteryBlockItem {
                     // Don't do anything for it here; wait until the round ends
-                    // XXX Maybe remove this line too...
-                    //brokenHitBlockCount += 1
                     mysteryBlocksToBreak.append(tup)
                 }
                 else if item is BombItem {

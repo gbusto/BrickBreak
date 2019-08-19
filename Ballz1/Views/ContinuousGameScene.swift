@@ -290,19 +290,24 @@ class ContinousGameScene: GameScene {
             let items = gameModel!.generateRow()
             addRowToView(rowNum: 1, items: items)
             
-            /* XXX FIX ME LATER
-             // Break any mystery blocks at this point (at the end of the turn but before we animate items)
-             let _ = mysteryBlocksToBreak.filter {
-             self.removeChildren(in: [$0.getNode()])
-             var centerPoint = $0.getNode().position
-             centerPoint.x += blockSize!.width / 2
-             centerPoint.y += blockSize!.height / 2
-             breakBlock(color1: $0.bottomColor!, color2: $0.topColor!, position: centerPoint)
-             
-             // XXX Add the new reward item here for the user; needs to be tracked by the itemgenerator
-             return false
-             }
-             */
+            // Break any mystery blocks at this point (at the end of the turn but before we animate any items)
+            let _ = mysteryBlocksToBreak.filter {
+                // Get the new items to display from the ItemGenerator
+                let block = $0.0 as! MysteryBlockItem
+                // Add the reward item to the view if we were successfully able to create it and insert into the row of items
+                if let rewardItem = gameModel!.itemGenerator!.insertRewardItem(at: ($0.1, $0.2), rewardType: block.getReward()) {
+                    addItemToView(item: rewardItem, at: block.getNode().position)
+                }
+                // Remove the mystery block from the game
+                self.removeChildren(in: [block.getNode()])
+                var centerPoint = block.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+                // Show to block break animation
+                breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                
+                return false
+            }
             mysteryBlocksToBreak = []
             
             // Move the items down in the view

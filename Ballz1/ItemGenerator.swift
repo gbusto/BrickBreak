@@ -212,41 +212,6 @@ class ItemGenerator {
         return rewardItem!
     }
     
-    /* XXX REMOVE THIS FUNCTION
-    public func replaceMysteryBlockWithReward(mysteryBlock: MysteryBlockItem) -> Item? {
-        // First, generate the new item
-        var rewardItem: Item?
-        let rewardType = mysteryBlock.getReward()
-        if rewardType == MysteryBlockItem.CLEAR_ROW_REWARD {
-            rewardItem = ClearRowRewardItem()
-        }
-        else {
-            print("Got unknown reward type of \(rewardType)")
-            return nil
-        }
-        
-        rewardItem!.initItem(num: numItemsGenerated, size: blockSize!)
-        
-        
-        // Now, replace the mystery block with this new item
-        for i in 0...(itemArray.count - 1) {
-            let row = itemArray[i]
-            for j in 0...(row.count - 1) {
-                let item = row[j]
-                if item.getNode().name! == mysteryBlock.getNode().name! {
-                    itemArray[i][j] = rewardItem!
-                    // Increment the count for number of items generated
-                    numItemsGenerated += 1
-                    return rewardItem!
-                }
-            }
-        }
-        
-        print("Failed to find the mystery block to replace the item")
-        return nil
-    }
-    */
-    
     // Load items into an array and return that array
     private func loadItems(items: [[Int]], itemHitCounts: [[Int]], numberOfBalls: Int) -> [[Item]] {
         // The final array we'll return
@@ -333,10 +298,10 @@ class ItemGenerator {
             // Try to load state and if not initialize things to their default values
             // Initialize the allowed item types with only one type for now
             // XXX UNCOMMENT ME
-            //addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 95)
+            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 95)
             addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 5)
-            // XXX LOWER THIS PERCENTAGE BEFORE RELEASING; basically we only want this block introduced every 50 turns
-            addBlockItemType(type: ItemGenerator.MYSTERY_BLOCK, percentage: 95)
+            // XXX Update this in the future; basically we only want this block introduced every 50 turns
+            addBlockItemType(type: ItemGenerator.MYSTERY_BLOCK, percentage: 1)
             addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 90)
             addNonBlockItemType(type: ItemGenerator.BALL, percentage: 8)
             addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
@@ -644,6 +609,7 @@ class ItemGenerator {
     
     // Looks for items that should be removed; each Item keeps track of its state and whether or not it's time for it to be removed.
     // If item.removeItem() returns true, it's time to remove the item; it will be added to an array of items that have been removed and returned to the model
+    // XXX In the future, change the return type to be either [(Item, CGPoint)], or a Dictionary<Item, CGPoint>
     public func removeItems() -> [(Item, Int, Int)] {
         var removedItems: [(Item, Int, Int)] = []
         

@@ -135,7 +135,6 @@ class MysteryBlockItem: Item {
     // MARK: Private functions
     private func initHitLabel() {
         let centerPoint = CGPoint(x: size!.width / 2, y: size!.height / 3)
-        //labelNode = SKLabelNode(text: "\(hitCount!)")
         labelNode = SKLabelNode(text: "?")
         labelNode!.position = centerPoint
         labelNode!.fontSize = size!.width / 2.4
