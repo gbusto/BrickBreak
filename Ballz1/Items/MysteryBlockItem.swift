@@ -92,8 +92,10 @@ class MysteryBlockItem: Item {
     }
     
     func removeItem() -> Bool {
-        // Don't give any haptic feedback
         if hitCount! <= 0 {
+            let lightImpactFeedback = UIImpactFeedbackGenerator(style: .medium)
+            lightImpactFeedback.prepare()
+            lightImpactFeedback.impactOccurred()
             return true
         }
         return false

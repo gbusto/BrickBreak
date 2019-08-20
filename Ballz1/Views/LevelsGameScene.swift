@@ -44,8 +44,6 @@ class LevelsGameScene: GameScene {
     private var ballProjection = BallProjection()
     
     private var numRowsGenerated = Int(0)
-    
-    private var mysteryBlocksToBreak: [(Item, Int, Int)] = []
 
 
     // MARK: Override functions
@@ -277,26 +275,6 @@ class LevelsGameScene: GameScene {
                 }
             }
             
-            // Break any mystery blocks at this point (at the end of the turn but before we animate any items)
-            let _ = mysteryBlocksToBreak.filter {
-                // Get the new items to display from the ItemGenerator
-                let block = $0.0 as! MysteryBlockItem
-                // Add the reward item to the view if we were successfully able to create it and insert into the row of items
-                if let rewardItem = gameModel!.itemGenerator!.insertRewardItem(at: ($0.1, $0.2), rewardType: block.getReward()) {
-                    addItemToView(item: rewardItem, at: block.getNode().position)
-                }
-                // Remove the mystery block from the game
-                self.removeChildren(in: [block.getNode()])
-                var centerPoint = block.getNode().position
-                centerPoint.x += blockSize!.width / 2
-                centerPoint.y += blockSize!.height / 2
-                // Show to block break animation
-                breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
-                
-                return false
-            }
-            mysteryBlocksToBreak = []
-            
             // Move the items down in the view
             animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
             gameModel!.itemGenerator!.pruneFirstRow()
@@ -396,13 +374,17 @@ class LevelsGameScene: GameScene {
                     brokenHitBlockCount += 1
                 }
                 else if item is MysteryBlockItem {
-                    // Don't do anything for it here; wait until the round ends
-                    mysteryBlocksToBreak.append(tup)
+                    // We want to remove block items from the scene completely
+                    self.removeChildren(in: [item.getNode()])
+                    // Show block break animation
+                    let block = item as! MysteryBlockItem
+                    var centerPoint = block.getNode().position
+                    centerPoint.x += blockSize!.width / 2
+                    centerPoint.y += blockSize!.height / 2
+                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                    brokenHitBlockCount += 1
                 }
                 else if item is BombItem {
-                    self.removeChildren(in: [item.getNode()])
-                }
-                else if item is ClearRowRewardItem {
                     self.removeChildren(in: [item.getNode()])
                 }
             }

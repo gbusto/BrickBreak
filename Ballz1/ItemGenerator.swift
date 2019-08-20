@@ -193,25 +193,6 @@ class ItemGenerator {
         return count
     }
     
-    public func insertRewardItem(at: (Int, Int), rewardType: Int) -> Item? {
-        var rewardItem: Item?
-        if rewardType == MysteryBlockItem.CLEAR_ROW_REWARD {
-            // Generate a clear row reward
-            rewardItem = ClearRowRewardItem()
-        }
-        else {
-            print("Got unknown reward type \(rewardType)")
-            return nil
-        }
-        
-        rewardItem!.initItem(num: numItemsGenerated, size: blockSize!)
-        itemArray[at.0][at.1] = rewardItem!
-        
-        numItemsGenerated += 1
-        
-        return rewardItem!
-    }
-    
     // Load items into an array and return that array
     private func loadItems(items: [[Int]], itemHitCounts: [[Int]], numberOfBalls: Int) -> [[Item]] {
         // The final array we'll return
@@ -297,11 +278,10 @@ class ItemGenerator {
         if nil == state {
             // Try to load state and if not initialize things to their default values
             // Initialize the allowed item types with only one type for now
-            // XXX UNCOMMENT ME
-            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 95)
+            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 90)
             addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 5)
             // XXX Update this in the future; basically we only want this block introduced every 50 turns
-            addBlockItemType(type: ItemGenerator.MYSTERY_BLOCK, percentage: 1)
+            addBlockItemType(type: ItemGenerator.MYSTERY_BLOCK, percentage: 5)
             addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 90)
             addNonBlockItemType(type: ItemGenerator.BALL, percentage: 8)
             addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
@@ -552,34 +532,16 @@ class ItemGenerator {
                             }
                         }
                     }
-                    else if item.getNode().name!.starts(with: "clear_reward") {
-                        // Remove all items in the row
-                        var items: [Item] = []
-                        for row in itemArray {
-                            for i in row {
-                                if i.getNode().name! == item.getNode().name! {
-                                    items = row
-                                    break
-                                }
-                            }
+                    else if item.getNode().name!.starts(with: "mblock") {
+                        if ballsOnFire {
+                            // If balls are on fire, process a second hit against the blocks (ball hits are x2 when they're on fire)
+                            item.hitItem()
                         }
                         
-                        // Now that we have the items, mark the items in the row as being hit
-                        for i in items {
-                            if i is HitBlockItem {
-                                let hitBlock = i as! HitBlockItem
-                                hitBlock.hitCount! = 0
-                            }
-                            // Set stone block item count to 0
-                            else if i is StoneHitBlockItem {
-                                let stoneBlock = i as! StoneHitBlockItem
-                                stoneBlock.hitCount! = 0
-                            }
-                            else if i is MysteryBlockItem {
-                                let mysteryBlock = i as! MysteryBlockItem
-                                mysteryBlock.hitCount! = 0
-                            }
-                            // XXX Also need to handle hitting bombs here
+                        // Check if the block's hitCount is 0 and we should remove all items in its row
+                        let block = item as! MysteryBlockItem
+                        if block.hitCount! <= 0 {
+                            clearRowReward(block: block)
                         }
                     }
                     
@@ -848,6 +810,37 @@ class ItemGenerator {
             }
             // If it is empty, remove it from the array and loop around to check the row before that
             let _ = itemArray.remove(at: 0)
+        }
+    }
+    
+    private func clearRowReward(block: MysteryBlockItem) {
+        // Remove all items in the row
+        var items: [Item] = []
+        for row in itemArray {
+            for i in row {
+                if i.getNode().name! == block.getNode().name! {
+                    items = row
+                    break
+                }
+            }
+        }
+        
+        // Now that we have the items, mark the items in the row as being hit
+        for i in items {
+            if i is HitBlockItem {
+                let hitBlock = i as! HitBlockItem
+                hitBlock.hitCount! = 0
+            }
+                // Set stone block item count to 0
+            else if i is StoneHitBlockItem {
+                let stoneBlock = i as! StoneHitBlockItem
+                stoneBlock.hitCount! = 0
+            }
+            else if i is MysteryBlockItem {
+                let mysteryBlock = i as! MysteryBlockItem
+                mysteryBlock.hitCount! = 0
+            }
+            // XXX Also need to handle hitting bombs here
         }
     }
 }
