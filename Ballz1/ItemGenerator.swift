@@ -278,10 +278,10 @@ class ItemGenerator {
         if nil == state {
             // Try to load state and if not initialize things to their default values
             // Initialize the allowed item types with only one type for now
-            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 90)
+            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 93)
             addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 5)
             // XXX Update this in the future; basically we only want this block introduced every 50 turns
-            addBlockItemType(type: ItemGenerator.MYSTERY_BLOCK, percentage: 5)
+            addBlockItemType(type: ItemGenerator.MYSTERY_BLOCK, percentage: 2)
             addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 90)
             addNonBlockItemType(type: ItemGenerator.BALL, percentage: 8)
             addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
