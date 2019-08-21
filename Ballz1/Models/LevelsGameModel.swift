@@ -79,7 +79,7 @@ class LevelsGameModel {
     }
     
     // MARK: Initialization functions
-    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int) {
+    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int, production: Bool = true) {
         state = WAITING
         
         // Try to load persistent data
@@ -126,34 +126,67 @@ class LevelsGameModel {
             numberOfBalls = LevelsGameModel.MAX_NUM_BALLS
         }
         
-        // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
-        itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
-                                      numberOfRows: numberOfRows,
-                                      numItems: numberOfItems,
-                                      state: nil,
-                                      useDrand: true,
-                                      seed: levelCount)
-        // XXX This isn't so clean.. find a better way to set the number of balls for the item generator
-        itemGenerator!.numberOfBalls = numberOfBalls
+        if production {
+            // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
+            itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
+                                          numberOfRows: numberOfRows,
+                                          numItems: numberOfItems,
+                                          state: nil,
+                                          useDrand: true,
+                                          seed: levelCount)
+            // XXX This isn't so clean.. find a better way to set the number of balls for the item generator
+            itemGenerator!.numberOfBalls = numberOfBalls
         
-        // We don't want to have ball items in levels
-        itemGenerator!.removeBallTypeGeneration()
+            // We don't want to have ball items in levels
+            itemGenerator!.removeBallTypeGeneration()
         
-        // XXX This should be based on the level number (the higher the level, the more difficult it should be)
-        // Addressed in issue #429
-        itemGenerator!.easyPatternPercent = 40
-        itemGenerator!.intermediatePatternPercent = 40
-        itemGenerator!.hardPatternPercent = 20
+            // XXX This should be based on the level number (the higher the level, the more difficult it should be)
+            // Addressed in issue #429
+            itemGenerator!.easyPatternPercent = 40
+            itemGenerator!.intermediatePatternPercent = 40
+            itemGenerator!.hardPatternPercent = 20
         
-        // XXX Force this to be in the TURN_OVER state; getting stuck in WAITING state
-        // Addresses in issue #431
-        /*
-        if 0 == itemGenerator!.itemArray.count {
+            // XXX Force this to be in the TURN_OVER state; getting stuck in WAITING state
+            // Addresses in issue #431
+            /*
+            if 0 == itemGenerator!.itemArray.count {
+                state = TURN_OVER
+            }
+            */
+        
             state = TURN_OVER
         }
-        */
-        
-        state = TURN_OVER
+        else {
+            let numberOfBalls = 10
+            let itemTypeDict: [Int : Int] = [:]
+            let blockTypeArray: [Int] = [ItemGenerator.HIT_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.MYSTERY_BLOCK]
+            let nonBlockTypeArray: [Int] = [ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.BALL]
+            
+            let itemArray: [[Int]] = [
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.BALL, ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.BALL, ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.BALL, ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.BALL, ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.BALL, ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+            ]
+            let itemHitCountArray = [
+                [12, 0, 0, 0, 0, 8, 0, 0],
+                [12, 0, 0, 0, 0, 8, 0, 0],
+                [12, 0, 0, 0, 0, 8, 0, 0],
+                [12, 0, 0, 0, 0, 8, 0, 0],
+                [12, 0, 0, 0, 0, 8, 0, 0],
+            ]
+            
+            let itemState = DataManager.ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: itemArray, itemHitCountArray: itemHitCountArray, blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
+            itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
+                                          numberOfRows: itemArray.count,
+                                          numItems: numberOfItems,
+                                          state: itemState,
+                                          useDrand: false,
+                                          seed: 0)
+            
+            state = READY
+        }
     }
     
     // MARK: Public functions

@@ -26,6 +26,15 @@ class ItemGenerator {
     public var intermediatePatternPercent = 25
     public var easyPatternPercent = 65
     
+    // These should probably be some kind of enum
+    // Used to mark item types to know what item types are allowed to be generated
+    public static let SPACER = Int(0)
+    public static let HIT_BLOCK = Int(1)
+    public static let BALL = Int(2)
+    public static let STONE_BLOCK = Int(3)
+    public static let BOMB = Int(4)
+    public static let MYSTERY_BLOCK = Int(5)
+    
     // -------------------------------------------------------------
     // MARK: Private attributes
     private var igState: DataManager.ItemGeneratorState?
@@ -43,6 +52,7 @@ class ItemGenerator {
     
     // Item types that this generator can generate; for example, after 100 turns, maybe you want to start adding special kinds of blocks
     // The format is [ITEM_TYPE: PERCENTAGE_TO_GENERATE]
+    // XXX This may not be used anymore; if it isn't being used it should be removed
     private var itemTypeDict: [Int: Int] = [:]
     
     // There exist as many block types in this array as its percentage; for example, if hit blocks have a 65% chance of being selected, there will be 65 hit blocks in this array
@@ -51,15 +61,6 @@ class ItemGenerator {
     private var nonBlockTypeArray: [Int] = []
     
     private var prevTurnState = ItemGeneratorPrevTurn(itemArray: [], itemHitCountArray: [], numberOfBalls: 0)
-    
-    // These should probably be some kind of enum
-    // Used to mark item types to know what item types are allowed to be generated
-    private static let SPACER = Int(0)
-    private static let HIT_BLOCK = Int(1)
-    private static let BALL = Int(2)
-    private static let STONE_BLOCK = Int(3)
-    private static let BOMB = Int(4)
-    private static let MYSTERY_BLOCK = Int(5)
     
     // Boolean as to whether or not we should use drand to generate randomness
     private var USE_DRAND = false

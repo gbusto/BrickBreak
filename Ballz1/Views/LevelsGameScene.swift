@@ -649,7 +649,9 @@ class LevelsGameScene: GameScene {
     // MARK: Private functions
     private func initGameModel() {
         gameModel = LevelsGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, numberOfRows:
-                                    Int(GameScene.NUM_ROWS))
+                                    Int(GameScene.NUM_ROWS),
+                                    // XXX REMOVE ME BEFORE GOING BACK INTO PRODUCTION
+                                    production: true)
         
         // XXX This could be changed so fontName can remain private
         ballCountLabel = SKLabelNode(fontNamed: fontName)
