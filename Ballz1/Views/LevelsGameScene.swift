@@ -374,17 +374,18 @@ class LevelsGameScene: GameScene {
                     brokenHitBlockCount += 1
                 }
                 else if item is MysteryBlockItem {
-                    // We want to remove block items from the scene completely
-                    self.removeChildren(in: [item.getNode()])
-                    // Show block break animation
                     let block = item as! MysteryBlockItem
                     var centerPoint = block.getNode().position
+
+                    showMysteryAnimation(block: item as! MysteryBlockItem, center: centerPoint)
+                    
+                    // We want to remove block items from the scene completely
+                    self.removeChildren(in: [item.getNode()])
                     centerPoint.x += blockSize!.width / 2
                     centerPoint.y += blockSize!.height / 2
+                    // Show block break animation
                     breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
                     brokenHitBlockCount += 1
-                    
-                    showMysteryAnimation(block: item as! MysteryBlockItem, center: centerPoint)
                 }
                 else if item is BombItem {
                     self.removeChildren(in: [item.getNode()])

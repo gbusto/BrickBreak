@@ -658,13 +658,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private func clearRowAnimation(center: CGPoint) {
         flashWhiteScreen(toAlpha: 0.6)
         
+        let lineWidth = rowHeight! / 8
+        
         let lineNode = SKShapeNode()
         let path = CGMutablePath()
-        path.move(to: CGPoint(x: leftWallNode!.position.x, y: center.y))
-        path.addLine(to: CGPoint(x: rightWallNode!.position.x, y: center.y))
+        // The center point's coordinates are based on the anchor point (0, 0) of the block; so the center Y position is actually a bit higher than the center.y value
+        path.move(to: CGPoint(x: leftWallNode!.position.x, y: center.y + (rowHeight! / 2)))
+        path.addLine(to: CGPoint(x: rightWallNode!.position.x, y: center.y + (rowHeight! / 2)))
         lineNode.path = path
         lineNode.strokeColor = .white
-        lineNode.lineWidth = rowHeight! / 8
+        lineNode.lineWidth = lineWidth
         lineNode.alpha = 0
         self.addChild(lineNode)
         
