@@ -383,6 +383,8 @@ class LevelsGameScene: GameScene {
                     centerPoint.y += blockSize!.height / 2
                     breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
                     brokenHitBlockCount += 1
+                    
+                    showMysteryAnimation(block: item as! MysteryBlockItem, center: centerPoint)
                 }
                 else if item is BombItem {
                     self.removeChildren(in: [item.getNode()])
