@@ -314,6 +314,7 @@ class ContinousGameScene: GameScene {
             // Reset start time to 0
             startTime = 0
             
+            // XXX Remove these tutorial lines
             // If the user didn't fast forward and the tutorial is still showing, remove it and add it back to the list until the user actually performs the action
             if tutorialIsShowing && tutorialType == .fastForwardTutorial {
                 removeTutorial()
@@ -364,6 +365,7 @@ class ContinousGameScene: GameScene {
         }
         
         if gameModel!.isReady() {
+            // XXX Remove this tutorial tracking code
             if false == tutorialIsShowing && tutorialsList.count > 0 {
                 showTutorial(tutorial: .topBarTutorial)
             }
@@ -401,7 +403,8 @@ class ContinousGameScene: GameScene {
             
             // Allow the model to handle a turn
             let removedItems = gameModel!.handleTurn()
-            for item in removedItems {
+            for tup in removedItems {
+                let item = tup.0
                 if item is HitBlockItem {
                     // We want to remove block items from the scene completely
                     self.removeChildren(in: [item.getNode()])
@@ -416,6 +419,17 @@ class ContinousGameScene: GameScene {
                 else if item is StoneHitBlockItem {
                     self.removeChildren(in: [item.getNode()])
                     let block = item as! StoneHitBlockItem
+                    var centerPoint = block.getNode().position
+                    centerPoint.x += blockSize!.width / 2
+                    centerPoint.y += blockSize!.height / 2
+                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                    brokenHitBlockCount += 1
+                }
+                else if item is MysteryBlockItem {
+                    // We want to remove block items from the scene completely
+                    self.removeChildren(in: [item.getNode()])
+                    // Show block break animation
+                    let block = item as! MysteryBlockItem
                     var centerPoint = block.getNode().position
                     centerPoint.x += blockSize!.width / 2
                     centerPoint.y += blockSize!.height / 2

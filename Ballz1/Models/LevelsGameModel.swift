@@ -175,20 +175,20 @@ class LevelsGameModel {
         return itemGenerator!.saveUser()
     }
     
-    public func handleTurn() -> [Item] {
+    public func handleTurn() -> [(Item, Int, Int)] {
         var addToScore = Int(0)
         
         let removedItems = itemGenerator!.removeItems()
         for item in removedItems {
-            if item is HitBlockItem {
+            if item.0 is HitBlockItem {
                 addToScore += Int(Double(blockBonus) * onFireBonus)
                 blockBonus += Int(2 * onFireBonus)
             }
-            else if item is StoneHitBlockItem {
+            else if item.0 is StoneHitBlockItem {
                 addToScore += Int(Double(blockBonus) * onFireBonus)
                 blockBonus += Int(4 * onFireBonus)
             }
-            else if item is BombItem {
+            else if item.0 is BombItem {
                 addToScore += Int(10 * onFireBonus)
             }
         }

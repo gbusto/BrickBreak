@@ -298,7 +298,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                     textColor: colorScheme!.blockTextColor,
                                     fontName: colorScheme!.fontName)
             }
+            if item is MysteryBlockItem {
+                let block = item as! MysteryBlockItem
+                block.setAttributes(bottomColor: bottomColor,
+                                    topColor: topColor,
+                                    textColor: colorScheme!.blockTextColor,
+                                    fontName: colorScheme!.fontName)
+            }
         }
+    }
+    
+    public func addItemToView(item: Item, at: CGPoint) {
+        item.loadItem(position: at)
+        self.addChild(item.getNode())
     }
     
     public func addRowToView(rowNum: Int, items: [Item]) {
@@ -318,6 +330,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     pos = CGPoint(x: posX, y: posY)
                 }
                 else if item is StoneHitBlockItem {
+                    let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.025) + leftWallWidth
+                    let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
+                    pos = CGPoint(x: posX, y: posY)
+                }
+                else if item is MysteryBlockItem {
                     let posX = (CGFloat(i) * rowHeight!) + (rowHeight! * 0.025) + leftWallWidth
                     let posY = CGFloat(ceilingNode!.position.y - (rowHeight! * CGFloat(rowNum)))
                     pos = CGPoint(x: posX, y: posY)
@@ -500,6 +517,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    public func showMysteryAnimation(block: MysteryBlockItem, center: CGPoint) {
+        let rewardType = block.getReward()
+        if MysteryBlockItem.CLEAR_ROW_REWARD == rewardType {
+            clearRowAnimation(center: center)
+        }
+        else {
+            print("No mystery animation for reward type \(rewardType)")
+        }
+    }
+    
     
     // MARK: Private functions
     // Initialize the different walls and physics edges
@@ -611,6 +638,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physBody.contactTestBitMask = contactTestBitMask
         
         return physBody
+    }
+    
+    // Used by the mystery animation functions to show some special animation when a mystery block is broken
+    private func flashWhiteScreen(toAlpha: CGFloat) {
+        let viewNode = SKSpriteNode(color: .white, size: view!.frame.size)
+        viewNode.name = "flashWhiteNode"
+        viewNode.alpha = 0
+        viewNode.zPosition = 105
+        viewNode.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
+        self.addChild(viewNode)
+        let action1 = SKAction.fadeAlpha(to: toAlpha, duration: 0.25)
+        let action2 = SKAction.fadeAlpha(to: 0, duration: 0.25)
+        viewNode.run(SKAction.sequence([action1, action2])) {
+            viewNode.removeFromParent()
+        }
+    }
+    
+    private func clearRowAnimation(center: CGPoint) {
+        flashWhiteScreen(toAlpha: 0.6)
+        
+        let lineWidth = rowHeight! / 8
+        
+        let lineNode = SKShapeNode()
+        let path = CGMutablePath()
+        // The center point's coordinates are based on the anchor point (0, 0) of the block; so the center Y position is actually a bit higher than the center.y value
+        path.move(to: CGPoint(x: leftWallNode!.position.x, y: center.y + (rowHeight! / 2)))
+        path.addLine(to: CGPoint(x: rightWallNode!.position.x, y: center.y + (rowHeight! / 2)))
+        lineNode.path = path
+        lineNode.strokeColor = .white
+        lineNode.lineWidth = lineWidth
+        lineNode.alpha = 0
+        self.addChild(lineNode)
+        
+        let fadeAction1 = SKAction.fadeAlpha(to: 0.3, duration: 0.1)
+        let fadeAction2 = SKAction.fadeAlpha(to: 0, duration: 0.4)
+        lineNode.run(SKAction.sequence([fadeAction1, fadeAction2])) {
+            lineNode.removeFromParent()
+        }
     }
     
     /*************************************************/

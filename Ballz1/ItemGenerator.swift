@@ -59,6 +59,7 @@ class ItemGenerator {
     private static let BALL = Int(2)
     private static let STONE_BLOCK = Int(3)
     private static let BOMB = Int(4)
+    private static let MYSTERY_BLOCK = Int(5)
     
     // Boolean as to whether or not we should use drand to generate randomness
     private var USE_DRAND = false
@@ -125,6 +126,11 @@ class ItemGenerator {
                 else if item is StoneHitBlockItem {
                     let block = item as! StoneHitBlockItem
                     newItemRow.append(ItemGenerator.STONE_BLOCK)
+                    itemHitCountRow.append(block.hitCount!)
+                }
+                else if item is MysteryBlockItem {
+                    let block = item as! MysteryBlockItem
+                    newItemRow.append(ItemGenerator.MYSTERY_BLOCK)
                     itemHitCountRow.append(block.hitCount!)
                 }
                 else if item is BombItem {
@@ -230,6 +236,11 @@ class ItemGenerator {
                             block.changeState(duration: 0)
                         }
                     }
+                    else if item! is MysteryBlockItem {
+                        let block = item! as! MysteryBlockItem
+                        // Load the block's hit count
+                        block.updateHitCount(count: itemHitCounts[i][j])
+                    }
                     else if item! is BombItem {
                         // Don't need to do anything
                     }
@@ -267,8 +278,10 @@ class ItemGenerator {
         if nil == state {
             // Try to load state and if not initialize things to their default values
             // Initialize the allowed item types with only one type for now
-            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 95)
+            addBlockItemType(type: ItemGenerator.HIT_BLOCK, percentage: 93)
             addBlockItemType(type: ItemGenerator.STONE_BLOCK, percentage: 5)
+            // XXX Update this in the future; basically we only want this block introduced every 50 turns
+            addBlockItemType(type: ItemGenerator.MYSTERY_BLOCK, percentage: 2)
             addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 90)
             addNonBlockItemType(type: ItemGenerator.BALL, percentage: 8)
             addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
@@ -302,11 +315,17 @@ class ItemGenerator {
                 else if item is StoneHitBlockItem {
                     output += "[T]"
                 }
+                else if item is MysteryBlockItem {
+                    output += "[?]"
+                }
                 else if item is BombItem {
                     output += "[B]"
                 }
                 else if item is SpacerItem {
-                    output += "[S]"
+                    output += "[ ]"
+                }
+                else {
+                    output += "[#]"
                 }
             }
             output += "\n"
@@ -337,7 +356,7 @@ class ItemGenerator {
         var count = 0
         for row in itemArray {
             for item in row {
-                if item is HitBlockItem {
+                if item is HitBlockItem || item is StoneHitBlockItem || item is MysteryBlockItem {
                     count += 1
                 }
             }
@@ -507,8 +526,25 @@ class ItemGenerator {
                                 let stoneBlock = item as! StoneHitBlockItem
                                 stoneBlock.hitCount! = 0
                             }
+                            else if item is MysteryBlockItem {
+                                let mysteryBlock = item as! MysteryBlockItem
+                                mysteryBlock.hitCount! = 0
+                            }
                         }
                     }
+                    else if item.getNode().name!.starts(with: "mblock") {
+                        if ballsOnFire {
+                            // If balls are on fire, process a second hit against the blocks (ball hits are x2 when they're on fire)
+                            item.hitItem()
+                        }
+                        
+                        // Check if the block's hitCount is 0 and we should remove all items in its row
+                        let block = item as! MysteryBlockItem
+                        if block.hitCount! <= 0 {
+                            clearRowReward(block: block)
+                        }
+                    }
+                    
                     // Break out only if we found the item
                     return successfulHit
                 }
@@ -535,8 +571,9 @@ class ItemGenerator {
     
     // Looks for items that should be removed; each Item keeps track of its state and whether or not it's time for it to be removed.
     // If item.removeItem() returns true, it's time to remove the item; it will be added to an array of items that have been removed and returned to the model
-    public func removeItems() -> [Item] {
-        var removedItems : [Item] = []
+    // XXX In the future, change the return type to be either [(Item, CGPoint)], or a Dictionary<Item, CGPoint>
+    public func removeItems() -> [(Item, Int, Int)] {
+        var removedItems: [(Item, Int, Int)] = []
         
         // Return out so we don't cause an error with the loop logic below
         if itemArray.isEmpty {
@@ -549,11 +586,14 @@ class ItemGenerator {
             
             // Remove items that should be removed and add them to an array that we will return
             // If an item is removed, replace it with a spacer item
+            var j = 0
             let _ = row.filter {
                 // Perform a remove action if needed
                 if $0.removeItem() {
                     // Remove this item from the array if that evaluates to true (meaning it's time to remove the item)
-                    removedItems.append($0)
+                    let group = ($0, i, j)
+                    j += 1
+                    removedItems.append(group)
                     // Replace it with a spacer item
                     let item = SpacerItem()
                     newRow.append(item)
@@ -561,6 +601,7 @@ class ItemGenerator {
                 }
                 // Keep this item in the array
                 newRow.append($0)
+                j += 1
                 return true
             }
             
@@ -613,6 +654,19 @@ class ItemGenerator {
             let item = StoneHitBlockItem()
             item.initItem(num: numItemsGenerated, size: blockSize!)
             let block = item as StoneHitBlockItem
+            let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2, numberOfBalls * 2]
+            if USE_DRAND {
+                let choice = randomNumber(upper: choices.count - 1, lower: 0)
+                block.setHitCount(count: choices[choice])
+            }
+            else {
+                block.setHitCount(count: choices.randomElement()!)
+            }
+            return item
+        case ItemGenerator.MYSTERY_BLOCK:
+            let item = MysteryBlockItem()
+            item.initItem(num: numItemsGenerated, size: blockSize!)
+            let block = item as MysteryBlockItem
             let choices = [numberOfBalls, numberOfBalls * 2, numberOfBalls, numberOfBalls * 2, numberOfBalls * 2]
             if USE_DRAND {
                 let choice = randomNumber(upper: choices.count - 1, lower: 0)
@@ -756,6 +810,37 @@ class ItemGenerator {
             }
             // If it is empty, remove it from the array and loop around to check the row before that
             let _ = itemArray.remove(at: 0)
+        }
+    }
+    
+    private func clearRowReward(block: MysteryBlockItem) {
+        // Remove all items in the row
+        var items: [Item] = []
+        for row in itemArray {
+            for i in row {
+                if i.getNode().name! == block.getNode().name! {
+                    items = row
+                    break
+                }
+            }
+        }
+        
+        // Now that we have the items, mark the items in the row as being hit
+        for i in items {
+            if i is HitBlockItem {
+                let hitBlock = i as! HitBlockItem
+                hitBlock.hitCount! = 0
+            }
+                // Set stone block item count to 0
+            else if i is StoneHitBlockItem {
+                let stoneBlock = i as! StoneHitBlockItem
+                stoneBlock.hitCount! = 0
+            }
+            else if i is MysteryBlockItem {
+                let mysteryBlock = i as! MysteryBlockItem
+                mysteryBlock.hitCount! = 0
+            }
+            // XXX Also need to handle hitting bombs here
         }
     }
 }

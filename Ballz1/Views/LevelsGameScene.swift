@@ -44,19 +44,7 @@ class LevelsGameScene: GameScene {
     private var ballProjection = BallProjection()
     
     private var numRowsGenerated = Int(0)
-    
-    // XXX New variables for adding ball manager stuff here
-    /* XXX REMOVE THESE
-    private var ballArray: [BallItem] = []
-    private var fireDelay = LevelsGameScene.DEFAULT_FIRE_DELAY
-    private static var DEFAULT_FIRE_DELAY = Double(0.1)
-    private var stoppedBalls: [BallItem] = []
-    private var firstBallReturned = false
-    private var ballsOnFire = false
-    private var firedAllBalls = false
-    private var numBallsFired = 0
-    private var endTurn = false
-    */
+
 
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -363,7 +351,8 @@ class LevelsGameScene: GameScene {
             
             // Allow the model to handle a turn
             let removedItems = gameModel!.handleTurn()
-            for item in removedItems {
+            for tup in removedItems {
+                let item = tup.0
                 if item is HitBlockItem {
                     // We want to remove block items from the scene completely
                     self.removeChildren(in: [item.getNode()])
@@ -381,6 +370,20 @@ class LevelsGameScene: GameScene {
                     var centerPoint = block.getNode().position
                     centerPoint.x += blockSize!.width / 2
                     centerPoint.y += blockSize!.height / 2
+                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                    brokenHitBlockCount += 1
+                }
+                else if item is MysteryBlockItem {
+                    let block = item as! MysteryBlockItem
+                    var centerPoint = block.getNode().position
+
+                    showMysteryAnimation(block: item as! MysteryBlockItem, center: centerPoint)
+                    
+                    // We want to remove block items from the scene completely
+                    self.removeChildren(in: [item.getNode()])
+                    centerPoint.x += blockSize!.width / 2
+                    centerPoint.y += blockSize!.height / 2
+                    // Show block break animation
                     breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
                     brokenHitBlockCount += 1
                 }
