@@ -650,7 +650,7 @@ class LevelsGameScene: GameScene {
     private func initGameModel() {
         gameModel = LevelsGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, numberOfRows:
                                     Int(GameScene.NUM_ROWS),
-                                    // XXX REMOVE ME BEFORE GOING BACK INTO PRODUCTION
+                                    // PRODUCTION: Change back the TRUE before deploying
                                     production: true)
         
         // XXX This could be changed so fontName can remain private
