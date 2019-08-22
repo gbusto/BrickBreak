@@ -57,6 +57,8 @@ class LevelsGameModel {
     private static var MAX_NUM_ROWS_TO_GENERATE = Int(50)
     private static var MAX_NUM_BALLS = Int(50)
     
+    private var PRODUCTION = true
+    
     static public var GAMEOVER_NONE = Int(0)
     static public var GAMEOVER_LOSS = Int(1)
     static public var GAMEOVER_WIN = Int(2)
@@ -79,7 +81,9 @@ class LevelsGameModel {
     }
     
     // MARK: Initialization functions
-    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int) {
+    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int, production: Bool = true) {
+        PRODUCTION = production
+        
         state = WAITING
         
         // Try to load persistent data
@@ -101,7 +105,7 @@ class LevelsGameModel {
         cumulativeScore = persistentData!.cumulativeScore
         showedTutorials = persistentData!.showedTutorials
         self.numberOfRows = numberOfRows
-                
+        
         /*
         // XXX REMOVE ME
         if 0 == cumulativeScore && levelCount > 1 {
@@ -112,48 +116,84 @@ class LevelsGameModel {
         }
         */
         
-        // Generate a dynamic number of rows based on the level count
-        // Essentially, add 5 rows to the base for every 10 levels the user passes
-        numRowsToGenerate = 10 + (4 * (levelCount / 10))
-        if numRowsToGenerate > LevelsGameModel.MAX_NUM_ROWS_TO_GENERATE {
-            // Cap it off to 50 rows max
-            numRowsToGenerate = LevelsGameModel.MAX_NUM_ROWS_TO_GENERATE
-        }
+        if PRODUCTION {
+            // Generate a dynamic number of rows based on the level count
+            // Essentially, add 5 rows to the base for every 10 levels the user passes
+            numRowsToGenerate = 10 + (4 * (levelCount / 10))
+            if numRowsToGenerate > LevelsGameModel.MAX_NUM_ROWS_TO_GENERATE {
+                // Cap it off to 50 rows max
+                numRowsToGenerate = LevelsGameModel.MAX_NUM_ROWS_TO_GENERATE
+            }
+            
+            numberOfBalls = 20 + (3 * (levelCount / 10))
+            if numberOfBalls > LevelsGameModel.MAX_NUM_BALLS {
+                // Cap it off to 50 balls max
+                numberOfBalls = LevelsGameModel.MAX_NUM_BALLS
+            }
+            
+            // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
+            itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
+                                          numberOfRows: numberOfRows,
+                                          numItems: numberOfItems,
+                                          state: nil,
+                                          useDrand: true,
+                                          seed: levelCount)
+            // XXX This isn't so clean.. find a better way to set the number of balls for the item generator
+            itemGenerator!.numberOfBalls = numberOfBalls
         
-        numberOfBalls = 20 + (3 * (levelCount / 10))
-        if numberOfBalls > LevelsGameModel.MAX_NUM_BALLS {
-            // Cap it off to 50 balls max
-            numberOfBalls = LevelsGameModel.MAX_NUM_BALLS
-        }
+            // We don't want to have ball items in levels
+            itemGenerator!.removeBallTypeGeneration()
         
-        // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
-        itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
-                                      numberOfRows: numberOfRows,
-                                      numItems: numberOfItems,
-                                      state: nil,
-                                      useDrand: true,
-                                      seed: levelCount)
-        // XXX This isn't so clean.. find a better way to set the number of balls for the item generator
-        itemGenerator!.numberOfBalls = numberOfBalls
+            // XXX This should be based on the level number (the higher the level, the more difficult it should be)
+            // Addressed in issue #429
+            itemGenerator!.easyPatternPercent = 40
+            itemGenerator!.intermediatePatternPercent = 40
+            itemGenerator!.hardPatternPercent = 20
         
-        // We don't want to have ball items in levels
-        itemGenerator!.removeBallTypeGeneration()
+            // XXX Force this to be in the TURN_OVER state; getting stuck in WAITING state
+            // Addresses in issue #431
+            /*
+            if 0 == itemGenerator!.itemArray.count {
+                state = TURN_OVER
+            }
+            */
         
-        // XXX This should be based on the level number (the higher the level, the more difficult it should be)
-        // Addressed in issue #429
-        itemGenerator!.easyPatternPercent = 40
-        itemGenerator!.intermediatePatternPercent = 40
-        itemGenerator!.hardPatternPercent = 20
-        
-        // XXX Force this to be in the TURN_OVER state; getting stuck in WAITING state
-        // Addresses in issue #431
-        /*
-        if 0 == itemGenerator!.itemArray.count {
             state = TURN_OVER
         }
-        */
-        
-        state = TURN_OVER
+        else {
+            // NON-PRODUCTION: Create the desired row layouts here manually for testing
+            let numberOfBalls = 10
+            let itemTypeDict: [Int : Int] = [:]
+            let blockTypeArray: [Int] = [ItemGenerator.HIT_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.MYSTERY_BLOCK]
+            let nonBlockTypeArray: [Int] = [ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.BALL]
+            
+            let itemArray: [[Int]] = [
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+            ]
+            let itemHitCountArray = [
+                [12, 0, 5, 0, 0, 8, 0, 0],
+                [12, 0, 5, 0, 0, 8, 0, 0],
+                [12, 0, 5, 0, 0, 8, 0, 0],
+                [12, 0, 5, 0, 0, 8, 0, 0],
+                [12, 0, 5, 0, 0, 8, 0, 0],
+            ]
+            
+            numRowsToGenerate = itemArray.count
+            
+            let itemState = DataManager.ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: itemArray, itemHitCountArray: itemHitCountArray, blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
+            itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
+                                          numberOfRows: 0,
+                                          numItems: numberOfItems,
+                                          state: itemState,
+                                          useDrand: false,
+                                          seed: 0)
+            
+            state = TURN_OVER
+        }
     }
     
     // MARK: Public functions
@@ -293,8 +333,15 @@ class LevelsGameModel {
             // Return an empty row of items (we're not generating anymore items)
             return itemGenerator!.generateRow(emptyRow: true)
         }
-        // Generate a normal row
-        return itemGenerator!.generateRow()
+        
+        if PRODUCTION {
+            // Generate a normal row
+            return itemGenerator!.generateRow()
+        }
+        else {
+            // NON-PRODUCTION: Generate a test row if we're not in production mode
+            return generateTestRow()
+        }
     }
     
     public func lossRisk() -> Bool {
@@ -314,8 +361,13 @@ class LevelsGameModel {
             return LevelsGameModel.GAMEOVER_LOSS
         }
         else if itemGenerator!.itemArray.count == 0 {
-            // The user beat the level!
-            levelCount += 1
+            if PRODUCTION {
+                // The user beat the level!
+                levelCount += 1
+            }
+            else {
+                // NON-PRODUCTION: Don't increment the level count if we're not in production
+            }
             
             // Show an ad
             
@@ -365,5 +417,11 @@ class LevelsGameModel {
     private func resetAdditives() {
         blockBonus = Int(2)
         onFireBonus = Double(1.0)
+    }
+    
+    // NON-PRODUCTION function
+    private func generateTestRow() -> [Item] {
+        let items = itemGenerator!.itemArray[rowNumber - 1]
+        return items
     }
 }
