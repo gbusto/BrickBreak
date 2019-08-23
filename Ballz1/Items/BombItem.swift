@@ -13,6 +13,8 @@ class BombItem: Item {
     // MARK: Public properties
     public var node: SKSpriteNode?
     
+    public var hitWasProcessed = false
+    
     // MARK: Private properties
     private var wasHit = false
     

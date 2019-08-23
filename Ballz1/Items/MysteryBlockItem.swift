@@ -17,6 +17,8 @@ class MysteryBlockItem: Item {
     public var bottomColor: SKColor?
     public var topColor: SKColor?
     
+    public var hitWasProcessed = false
+    
     public static let CLEAR_ROW_REWARD = Int(0)
     
     // MARK: Private properties

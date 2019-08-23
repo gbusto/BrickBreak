@@ -513,24 +513,12 @@ class ItemGenerator {
                         }
                     }
                     else if item.getNode().name!.starts(with: "bomb") {
-                        // If a bomb item was hit, get all adjacent items
-                        let items = getAdjacentItems(to: item)
-                        // Iterate over each item
-                        for item in items {
-                            // Set hit block item count to 0
-                            if item is HitBlockItem {
-                                let hitBlock = item as! HitBlockItem
-                                hitBlock.hitCount! = 0
-                            }
-                            // Set stone block item count to 0
-                            else if item is StoneHitBlockItem {
-                                let stoneBlock = item as! StoneHitBlockItem
-                                stoneBlock.hitCount! = 0
-                            }
-                            else if item is MysteryBlockItem {
-                                let mysteryBlock = item as! MysteryBlockItem
-                                mysteryBlock.hitCount! = 0
-                            }
+                        // If a bomb item was hit, clear all adjacent items
+                        let bomb = item as! BombItem
+                        if false == bomb.hitWasProcessed {
+                            // hitWasProcessed is a boolean so we don't run in an infinite loop/recursion where we keep calling the hit function for the same item
+                            bomb.hitWasProcessed = true
+                            clearAdjacentItems(to: item)
                         }
                     }
                     else if item.getNode().name!.starts(with: "mblock") {
@@ -541,8 +529,10 @@ class ItemGenerator {
                         
                         // Check if the block's hitCount is 0 and we should remove all items in its row
                         let block = item as! MysteryBlockItem
-                        if block.hitCount! <= 0 {
-                            clearRowReward(block: block)
+                        if (block.hitCount! <= 0) && (false == block.hitWasProcessed) {
+                            // hitWasProcessed is a boolean so we don't run in an infinite loop/recursion where we keep calling the hit function for the same item
+                            block.hitWasProcessed = true
+                            clearRowItems(item: item)
                         }
                     }
                     
@@ -736,49 +726,6 @@ class ItemGenerator {
         return nil
     }
     
-    // This could be improved and refactored
-    private func getAdjacentItems(to: Item) -> [Item] {
-        var adjacentItems: [Item] = []
-        
-        // 1. Find the row that the item is in
-        // 2. Find the index of the item in that row
-        // 3. Find (rowIndex - 1) and get the items at (itemIndex - 1, itemIndex, and itemIndex + 1)
-        // 4. Find rowIndex and get the items at (itemIndex - 1 and itemIndex + 1)
-        // 5. Find (rowIndex + 1) and get the items at (itemIndex - 1, itemIndex, and itemIndex + 1)
-        // 6. Return that list
-        
-        // Find the row index of the item if it exists
-        if let rowIndex = findItemRowIndex(to) {
-            // Find the item's index in that row
-            if let itemIndex = itemIndexInRow(lookFor: to, rowIndex: rowIndex) {
-                // Iterate over all the rows in the item array
-                for i in 0...(itemArray.count - 1) {
-                    // If the row is before or after the item's row, add items at (itemIndex - 1, itemIndex, and itemIndex + 1)
-                    if (i == (rowIndex - 1)) || (i == (rowIndex + 1)) {
-                        // Iterate over the row to find adjacent items
-                        let row = itemArray[i]
-                        for j in 0...(row.count - 1) {
-                            if (j == (itemIndex - 1)) || (j == (itemIndex)) || (j == (itemIndex + 1)) {
-                                adjacentItems.append(row[j])
-                            }
-                        }
-                    }
-                    // If this is the row the item is in, we just need to find the item before it and after it
-                    else if (i == rowIndex) {
-                        let row = itemArray[i]
-                        for j in 0...(row.count - 1) {
-                            if (j == (itemIndex - 1)) || (j == (itemIndex + 1)) {
-                                adjacentItems.append(row[j])
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        return adjacentItems
-    }
-    
     /*
      This is how we need to remove empty rows. If we have rows of items like these:
      [H] [S] [S] [B]
@@ -814,12 +761,82 @@ class ItemGenerator {
         }
     }
     
-    private func clearRowReward(block: MysteryBlockItem) {
+    // This could be improved and refactored
+    private func clearAdjacentItems(to: Item) {
+        var adjacentItems: [Item] = []
+        
+        // 1. Find the row that the item is in
+        // 2. Find the index of the item in that row
+        // 3. Find (rowIndex - 1) and get the items at (itemIndex - 1, itemIndex, and itemIndex + 1)
+        // 4. Find rowIndex and get the items at (itemIndex - 1 and itemIndex + 1)
+        // 5. Find (rowIndex + 1) and get the items at (itemIndex - 1, itemIndex, and itemIndex + 1)
+        // 6. Return that list
+        
+        // Find the row index of the item if it exists
+        if let rowIndex = findItemRowIndex(to) {
+            // Find the item's index in that row
+            if let itemIndex = itemIndexInRow(lookFor: to, rowIndex: rowIndex) {
+                // Iterate over all the rows in the item array
+                for i in 0...(itemArray.count - 1) {
+                    // If the row is before or after the item's row, add items at (itemIndex - 1, itemIndex, and itemIndex + 1)
+                    if (i == (rowIndex - 1)) || (i == (rowIndex + 1)) {
+                        // Iterate over the row to find adjacent items
+                        let row = itemArray[i]
+                        for j in 0...(row.count - 1) {
+                            if (j == (itemIndex - 1)) || (j == (itemIndex)) || (j == (itemIndex + 1)) {
+                                adjacentItems.append(row[j])
+                            }
+                        }
+                    }
+                        // If this is the row the item is in, we just need to find the item before it and after it
+                    else if (i == rowIndex) {
+                        let row = itemArray[i]
+                        for j in 0...(row.count - 1) {
+                            if (j == (itemIndex - 1)) || (j == (itemIndex + 1)) {
+                                adjacentItems.append(row[j])
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        for item in adjacentItems {
+            if item is HitBlockItem {
+                let hitBlock = item as! HitBlockItem
+                hitBlock.hitCount! = 0
+            }
+            // Set stone block item count to 0
+            else if item is StoneHitBlockItem {
+                let stoneBlock = item as! StoneHitBlockItem
+                stoneBlock.hitCount! = 0
+            }
+            else if item is MysteryBlockItem {
+                let mysteryBlock = item as! MysteryBlockItem
+                // Reduce the item count down to 0
+                mysteryBlock.hitCount! = 0
+                if false == mysteryBlock.hitWasProcessed {
+                    clearRowItems(item: mysteryBlock)
+                    mysteryBlock.hitWasProcessed = true
+                }
+            }
+            else if item is BombItem {
+                let bomb = item as! BombItem
+                if false == bomb.hitWasProcessed {
+                    // Process the bomb hit
+                    clearAdjacentItems(to: item)
+                    bomb.hitWasProcessed = true
+                }
+            }
+        }
+    }
+    
+    private func clearRowItems(item: Item) {
         // Remove all items in the row
         var items: [Item] = []
         for row in itemArray {
             for i in row {
-                if i.getNode().name! == block.getNode().name! {
+                if i.getNode().name! == item.getNode().name! {
                     items = row
                     break
                 }
@@ -838,10 +855,21 @@ class ItemGenerator {
                 stoneBlock.hitCount! = 0
             }
             else if i is MysteryBlockItem {
+                // This item is in the same row so we don't need to do any special processing here
                 let mysteryBlock = i as! MysteryBlockItem
                 mysteryBlock.hitCount! = 0
             }
-            // XXX Also need to handle hitting bombs here
+            else if i is BombItem {
+                let bomb = i as! BombItem
+                if false == bomb.hitWasProcessed {
+                    // Hit the item first
+                    bomb.hitItem()
+                    
+                    // Then process the bomb hit
+                    clearAdjacentItems(to: i)
+                    bomb.hitWasProcessed = true
+                }
+            }
         }
     }
 }
