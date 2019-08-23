@@ -26,6 +26,7 @@
 		037536B421BB04CF00B62589 /* AdHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037536B321BB04CF00B62589 /* AdHandler.swift */; };
 		037536BA21BC055500B62589 /* RewardAdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037536B921BC055500B62589 /* RewardAdViewController.swift */; };
 		03837346225EDE3900352EFB /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03837345225EDE3900352EFB /* Review.swift */; };
+		03B32B5423104B3C00FCE87E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03B32B5323104B3C00FCE87E /* GoogleService-Info.plist */; };
 		03B5F94922910D11003A3A3C /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B5F94822910D11003A3A3C /* GameScene.swift */; };
 		03B8B4F0216919DD00FFD589 /* GameMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4EF216919DD00FFD589 /* GameMenuScene.swift */; };
 		03B8B4F221691A0100FFD589 /* ContinuousGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4F121691A0100FFD589 /* ContinuousGameScene.swift */; };
@@ -100,6 +101,7 @@
 		037536B321BB04CF00B62589 /* AdHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdHandler.swift; sourceTree = "<group>"; };
 		037536B921BC055500B62589 /* RewardAdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardAdViewController.swift; sourceTree = "<group>"; };
 		03837345225EDE3900352EFB /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
+		03B32B5323104B3C00FCE87E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		03B5F94822910D11003A3A3C /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		03B8B4EF216919DD00FFD589 /* GameMenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuScene.swift; sourceTree = "<group>"; };
 		03B8B4F121691A0100FFD589 /* ContinuousGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuousGameScene.swift; sourceTree = "<group>"; };
@@ -185,17 +187,18 @@
 		0317DE9C214B5FA300E976E2 /* Ballz1 */ = {
 			isa = PBXGroup;
 			children = (
+				0317DE9D214B5FA300E976E2 /* AppDelegate.swift */,
+				0317DEAF214B5FA500E976E2 /* Info.plist */,
+				0317DEAC214B5FA500E976E2 /* LaunchScreen.storyboard */,
+				0317DEA7214B5FA300E976E2 /* Main.storyboard */,
+				03B32B5323104B3C00FCE87E /* GoogleService-Info.plist */,
 				F23266AD22CFEDAE001BF315 /* Items */,
 				037536B321BB04CF00B62589 /* AdHandler.swift */,
-				0317DE9D214B5FA300E976E2 /* AppDelegate.swift */,
 				03F9A4212151C37800206A84 /* ItemGenerator.swift */,
 				F2677A7D216C3FFF00CE3FC0 /* BallProjection.swift */,
 				03053570218DFEAF0038D1D8 /* ColorScheme.swift */,
 				03FC3BD2220F0A3000A7B991 /* Confetti.swift */,
 				03837345225EDE3900352EFB /* Review.swift */,
-				0317DEA7214B5FA300E976E2 /* Main.storyboard */,
-				0317DEAC214B5FA500E976E2 /* LaunchScreen.storyboard */,
-				0317DEAF214B5FA500E976E2 /* Info.plist */,
 				F23266A522CB134F001BF315 /* DataManager.swift */,
 				0342D21A216FEA3B00FE5760 /* Assets.xcassets */,
 				03B8B4EE216919C600FFD589 /* Controllers */,
@@ -329,6 +332,7 @@
 				0317DE96214B5FA300E976E2 /* Sources */,
 				0317DE97214B5FA300E976E2 /* Frameworks */,
 				0317DE98214B5FA300E976E2 /* Resources */,
+				3912CA429A5478C0F02C1B89 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -434,6 +438,7 @@
 				03FE968A225E10CE00E6C864 /* Fire.sks in Resources */,
 				03FE968B225E10CE00E6C864 /* Assets.xcassets in Resources */,
 				0317DEAE214B5FA500E976E2 /* LaunchScreen.storyboard in Resources */,
+				03B32B5423104B3C00FCE87E /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,6 +479,30 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3912CA429A5478C0F02C1B89 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
