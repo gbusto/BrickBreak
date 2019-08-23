@@ -168,15 +168,13 @@ class LevelsGameModel {
             let nonBlockTypeArray: [Int] = [ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.BALL]
             
             let itemArray: [[Int]] = [
-                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
-                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
-                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
-                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.HIT_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.HIT_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
             ]
             let itemHitCountArray = [
                 [12, 0, 5, 0, 5, 8, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0],
-                [12, 0, 5, 0, 0, 8, 0, 0],
+                [12, 0, 5, 0, 5, 8, 0, 0],
                 [12, 0, 5, 0, 5, 8, 0, 0],
             ]
             
