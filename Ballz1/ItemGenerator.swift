@@ -532,7 +532,14 @@ class ItemGenerator {
                         if (block.hitCount! <= 0) && (false == block.hitWasProcessed) {
                             // hitWasProcessed is a boolean so we don't run in an infinite loop/recursion where we keep calling the hit function for the same item
                             block.hitWasProcessed = true
-                            clearRowItems(item: item)
+                            let rewardType = block.getReward()
+                            // Based on the reward type, we need to take different actions
+                            if MysteryBlockItem.CLEAR_ROW_REWARD == rewardType {
+                                clearRowItems(item: item)
+                            }
+                            else if MysteryBlockItem.CLEAR_COLUMN_REWARD == rewardType {
+                                clearColumnItems(item: item)
+                            }
                         }
                     }
                     
@@ -816,8 +823,14 @@ class ItemGenerator {
                 // Reduce the item count down to 0
                 mysteryBlock.hitCount! = 0
                 if false == mysteryBlock.hitWasProcessed {
-                    clearRowItems(item: mysteryBlock)
                     mysteryBlock.hitWasProcessed = true
+                    let rewardType = mysteryBlock.getReward()
+                    if MysteryBlockItem.CLEAR_ROW_REWARD == rewardType {
+                        clearRowItems(item: mysteryBlock)
+                    }
+                    else if MysteryBlockItem.CLEAR_COLUMN_REWARD == rewardType {
+                        clearColumnItems(item: mysteryBlock)
+                    }
                 }
             }
             else if item is BombItem {
@@ -841,6 +854,57 @@ class ItemGenerator {
                     break
                 }
             }
+        }
+        
+        // Now that we have the items, mark the items in the row as being hit
+        for i in items {
+            if i is HitBlockItem {
+                let hitBlock = i as! HitBlockItem
+                hitBlock.hitCount! = 0
+            }
+                // Set stone block item count to 0
+            else if i is StoneHitBlockItem {
+                let stoneBlock = i as! StoneHitBlockItem
+                stoneBlock.hitCount! = 0
+            }
+            else if i is MysteryBlockItem {
+                // This item is in the same row so we don't need to do any special processing here
+                let mysteryBlock = i as! MysteryBlockItem
+                mysteryBlock.hitCount! = 0
+            }
+            else if i is BombItem {
+                let bomb = i as! BombItem
+                if false == bomb.hitWasProcessed {
+                    // Hit the item first
+                    bomb.hitItem()
+                    
+                    // Then process the bomb hit
+                    clearAdjacentItems(to: i)
+                    bomb.hitWasProcessed = true
+                }
+            }
+        }
+    }
+    
+    private func clearColumnItems(item: Item) {
+        // Remove all items in the row
+        var items: [Item] = []
+        var columnIndex = Int(0)
+        
+        // First find the exact column index
+        for row in itemArray {
+            for i in 0...(row.count - 1) {
+                let rowItem = row[i]
+                if rowItem.getNode().name! == item.getNode().name! {
+                    columnIndex = i
+                    break
+                }
+            }
+        }
+        
+        // Second, get all items in that column
+        for row in itemArray {
+            items.append(row[columnIndex])
         }
         
         // Now that we have the items, mark the items in the row as being hit

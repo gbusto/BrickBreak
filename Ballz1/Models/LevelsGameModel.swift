@@ -169,8 +169,8 @@ class LevelsGameModel {
             
             let itemArray: [[Int]] = [
                 [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
-                [ItemGenerator.SPACER, ItemGenerator.SPACER, ItemGenerator.SPACER, ItemGenerator.SPACER, ItemGenerator.SPACER, ItemGenerator.SPACER, ItemGenerator.SPACER, ItemGenerator.SPACER],
-                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
+                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
                 [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
             ]
             let itemHitCountArray = [

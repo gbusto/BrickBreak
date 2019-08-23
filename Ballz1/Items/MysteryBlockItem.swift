@@ -20,6 +20,7 @@ class MysteryBlockItem: Item {
     public var hitWasProcessed = false
     
     public static let CLEAR_ROW_REWARD = Int(0)
+    public static let CLEAR_COLUMN_REWARD = Int(1)
     
     // MARK: Private properties
     private var size : CGSize?
@@ -36,6 +37,7 @@ class MysteryBlockItem: Item {
     private var rewardType = Int(0)
     private var rewardList: [Int] = [
         CLEAR_ROW_REWARD,
+        CLEAR_COLUMN_REWARD,
         // Add the other rewards here
     ]
 
@@ -134,6 +136,16 @@ class MysteryBlockItem: Item {
     public func getReward() -> Int {
         // Return the reward type to be given to the user
         return rewardType
+    }
+    
+    public func setReward(reward: Int) {
+        // Public function to set the reward type for testing
+        if (reward < 0) || (reward > rewardList[-1]) {
+            rewardType = 0
+        }
+        else {
+            rewardType = reward
+        }
     }
     
     // MARK: Private functions

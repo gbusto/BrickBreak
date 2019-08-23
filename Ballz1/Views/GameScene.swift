@@ -522,6 +522,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if MysteryBlockItem.CLEAR_ROW_REWARD == rewardType {
             clearRowAnimation(center: center)
         }
+        else if MysteryBlockItem.CLEAR_COLUMN_REWARD == rewardType {
+            clearColumnAnimation(center: center)
+        }
         else {
             print("No mystery animation for reward type \(rewardType)")
         }
@@ -665,6 +668,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // The center point's coordinates are based on the anchor point (0, 0) of the block; so the center Y position is actually a bit higher than the center.y value
         path.move(to: CGPoint(x: leftWallNode!.position.x, y: center.y + (rowHeight! / 2)))
         path.addLine(to: CGPoint(x: rightWallNode!.position.x, y: center.y + (rowHeight! / 2)))
+        lineNode.path = path
+        lineNode.strokeColor = .white
+        lineNode.lineWidth = lineWidth
+        lineNode.alpha = 0
+        self.addChild(lineNode)
+        
+        let fadeAction1 = SKAction.fadeAlpha(to: 0.3, duration: 0.1)
+        let fadeAction2 = SKAction.fadeAlpha(to: 0, duration: 0.4)
+        lineNode.run(SKAction.sequence([fadeAction1, fadeAction2])) {
+            lineNode.removeFromParent()
+        }
+    }
+    
+    private func clearColumnAnimation(center: CGPoint) {
+        flashWhiteScreen(toAlpha: 0.6)
+        
+        let lineWidth = rowHeight! / 8
+        
+        let lineNode = SKShapeNode()
+        let path = CGMutablePath()
+        // The center point's coordinates are based on the anchor point (0, 0) of the block; so the center Y position is actually a bit higher than the center.y value
+        path.move(to: CGPoint(x: center.x + (rowHeight! / 2), y: groundNode!.size.height))
+        path.addLine(to: CGPoint(x: center.x + (rowHeight! / 2), y: ceilingNode!.position.y))
         lineNode.path = path
         lineNode.strokeColor = .white
         lineNode.lineWidth = lineWidth
