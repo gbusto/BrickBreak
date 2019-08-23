@@ -517,16 +517,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    public func showMysteryAnimation(block: MysteryBlockItem, center: CGPoint) {
-        let rewardType = block.getReward()
-        if MysteryBlockItem.CLEAR_ROW_REWARD == rewardType {
-            clearRowAnimation(center: center)
+    public func showSpecialAnimation(item: Item, center: CGPoint) {
+        if item is MysteryBlockItem {
+            let block = item as! MysteryBlockItem
+            let rewardType = block.getReward()
+
+            if MysteryBlockItem.CLEAR_ROW_REWARD == rewardType {
+                clearRowAnimation(center: center)
+            }
+            else if MysteryBlockItem.CLEAR_COLUMN_REWARD == rewardType {
+                clearColumnAnimation(center: center)
+            }
+            else {
+                print("No mystery animation for reward type \(rewardType)")
+            }
         }
-        else if MysteryBlockItem.CLEAR_COLUMN_REWARD == rewardType {
-            clearColumnAnimation(center: center)
-        }
-        else {
-            print("No mystery animation for reward type \(rewardType)")
+        else if item is BombItem {
+            clearAdjacentAnimation(center: center)
         }
     }
     
@@ -665,9 +672,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let lineNode = SKShapeNode()
         let path = CGMutablePath()
-        // The center point's coordinates are based on the anchor point (0, 0) of the block; so the center Y position is actually a bit higher than the center.y value
-        path.move(to: CGPoint(x: leftWallNode!.position.x, y: center.y + (rowHeight! / 2)))
-        path.addLine(to: CGPoint(x: rightWallNode!.position.x, y: center.y + (rowHeight! / 2)))
+        path.move(to: CGPoint(x: leftWallNode!.position.x, y: center.y))
+        path.addLine(to: CGPoint(x: rightWallNode!.position.x, y: center.y))
         lineNode.path = path
         lineNode.strokeColor = .white
         lineNode.lineWidth = lineWidth
@@ -689,8 +695,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let lineNode = SKShapeNode()
         let path = CGMutablePath()
         // The center point's coordinates are based on the anchor point (0, 0) of the block; so the center Y position is actually a bit higher than the center.y value
-        path.move(to: CGPoint(x: center.x + (rowHeight! / 2), y: groundNode!.size.height))
-        path.addLine(to: CGPoint(x: center.x + (rowHeight! / 2), y: ceilingNode!.position.y))
+        path.move(to: CGPoint(x: center.x, y: groundNode!.size.height))
+        path.addLine(to: CGPoint(x: center.x, y: ceilingNode!.position.y))
         lineNode.path = path
         lineNode.strokeColor = .white
         lineNode.lineWidth = lineWidth
@@ -701,6 +707,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let fadeAction2 = SKAction.fadeAlpha(to: 0, duration: 0.4)
         lineNode.run(SKAction.sequence([fadeAction1, fadeAction2])) {
             lineNode.removeFromParent()
+        }
+    }
+    
+    private func clearAdjacentAnimation(center: CGPoint) {
+        flashWhiteScreen(toAlpha: 0.6)
+        
+        let circleNode = SKShapeNode(circleOfRadius: blockSize!.width / 2)
+        circleNode.fillColor = .white
+        circleNode.strokeColor = .clear
+        circleNode.position = center
+        circleNode.alpha = 0
+        self.addChild(circleNode)
+        
+        let fadeAction1 = SKAction.fadeAlpha(to: 0.5, duration: 0.1)
+        let fadeAction2 = SKAction.fadeAlpha(to: 0, duration: 0.4)
+        let scaleAction1 = SKAction.scale(by: 3, duration: 0.1)
+        let scaleAction2 = SKAction.scale(to: 0.1, duration: 0.4)
+        let actionGroup1 = SKAction.sequence([fadeAction1, fadeAction2])
+        let actionGroup2 = SKAction.sequence([scaleAction1, scaleAction2])
+        circleNode.run(SKAction.group([actionGroup1, actionGroup2])) {
+            circleNode.removeFromParent()
         }
     }
     

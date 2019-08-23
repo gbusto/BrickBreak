@@ -428,18 +428,24 @@ class ContinousGameScene: GameScene {
                 else if item is MysteryBlockItem {
                     let block = item as! MysteryBlockItem
                     var centerPoint = block.getNode().position
-                    
-                    showMysteryAnimation(block: item as! MysteryBlockItem, center: centerPoint)
+                    centerPoint.x += blockSize!.width / 2
+                    centerPoint.y += blockSize!.height / 2
+
+                    showSpecialAnimation(item: item, center: centerPoint)
                     
                     // We want to remove block items from the scene completely
                     self.removeChildren(in: [item.getNode()])
-                    centerPoint.x += blockSize!.width / 2
-                    centerPoint.y += blockSize!.height / 2
                     // Show block break animation
                     breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
                     brokenHitBlockCount += 1
                 }
                 else if item is BombItem {
+                    var centerPoint = item.getNode().position
+                    centerPoint.x += blockSize!.width / 2
+                    centerPoint.y += blockSize!.height / 2
+
+                    showSpecialAnimation(item: item, center: centerPoint)
+                    
                     self.removeChildren(in: [item.getNode()])
                 }
                 else if item is BallItem {
