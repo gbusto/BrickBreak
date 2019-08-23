@@ -823,8 +823,14 @@ class ItemGenerator {
                 // Reduce the item count down to 0
                 mysteryBlock.hitCount! = 0
                 if false == mysteryBlock.hitWasProcessed {
-                    clearRowItems(item: mysteryBlock)
                     mysteryBlock.hitWasProcessed = true
+                    let rewardType = mysteryBlock.getReward()
+                    if MysteryBlockItem.CLEAR_ROW_REWARD == rewardType {
+                        clearRowItems(item: mysteryBlock)
+                    }
+                    else if MysteryBlockItem.CLEAR_COLUMN_REWARD == rewardType {
+                        clearColumnItems(item: mysteryBlock)
+                    }
                 }
             }
             else if item is BombItem {
