@@ -302,7 +302,7 @@ class LevelsGameController: UIViewController,
         // Analytics log event: start of a level; this is a provided analytics method from google, not a custom event
         // This function (setLevelNumber()) is called when the level starts after initializing the game model
         Analytics.logEvent("level_start", parameters: [
-            "level_number": level as NSNumber
+            AnalyticsParameterLevel: level as NSNumber,
         ])
     }
     
@@ -417,8 +417,9 @@ class LevelsGameController: UIViewController,
         
         // Analytics log event: level ending; send over the level number that just endedNS whether or not they just beat this level
         Analytics.logEvent("level_end", parameters: [
-            "level_number": currentLevelCount as NSNumber,
-            "success": win,
+            AnalyticsParameterLevel: currentLevelCount as NSNumber,
+            AnalyticsParameterSuccess: win,
+            "rescued": userWasRewarded
         ])
         
         let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
@@ -453,7 +454,7 @@ class LevelsGameController: UIViewController,
     private func analyticsLogClassicStop() {
         // Analytics log event: when the user stops playing classic mode, see how many turns they played
         Analytics.logEvent("level_stop", parameters: [
-            "levels_completed": numLevelsCompleted
+            "levels_completed": numLevelsCompleted,
         ])
     }
 }
