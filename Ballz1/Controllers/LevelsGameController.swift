@@ -9,6 +9,7 @@
 import UIKit
 import SpriteKit
 import GoogleMobileAds
+import FirebaseAnalytics
 
 class LevelsGameController: UIViewController,
                             GADBannerViewDelegate,
@@ -41,6 +42,8 @@ class LevelsGameController: UIViewController,
     
     // Number of consecutive wins the user has had
     private var numConsecutiveWins = 0
+    // Number of levels completed in a session of playing levels
+    private var numLevelsCompleted = 0
     
     private var reviewer: Review?
     
@@ -156,6 +159,8 @@ class LevelsGameController: UIViewController,
     }
     
     public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // Analytics: I think google auto tracks whether or not the user compeleted the reward ad
+
         // The reward ad closed out
         
         // Dismiss the reward ad view controller
@@ -189,6 +194,9 @@ class LevelsGameController: UIViewController,
     }
     
     @IBAction func gameMenuButtonPressed(_ sender: Any) {
+        // Analytics log event: when the user stops playing classic mode, see how many turns they played
+        analyticsLogClassicStop()
+        
         // Show an interstitial ad here
         if interstitialAd.isReady {
             leaveGame = true
@@ -247,6 +255,9 @@ class LevelsGameController: UIViewController,
     
     @objc func handleAppTerminate() {
         // App is about to terminate
+        
+        // Analytics log event: when the user stops playing classic mode, see how many turns they played
+        analyticsLogClassicStop()
     }
     
     // MARK: Public controller functions
@@ -287,6 +298,12 @@ class LevelsGameController: UIViewController,
     
     public func setLevelNumber(level: Int) {
         levelCount.text = "\(level)"
+        
+        // Analytics log event: start of a level; this is a provided analytics method from google, not a custom event
+        // This function (setLevelNumber()) is called when the level starts after initializing the game model
+        Analytics.logEvent("level_start", parameters: [
+            "level_number": level as NSNumber
+        ])
     }
     
     public func updateRowCountLabel(currentCount: Int, maxCount: Int) {
@@ -329,6 +346,11 @@ class LevelsGameController: UIViewController,
         
         let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
         let yesAction = UIAlertAction(title: "Yes", style: .default) { (handler: UIAlertAction) in
+            // Analytics log event: log that the user didn't accept to rescue themselves after losing a level
+            Analytics.logEvent("level_rescue", parameters: [
+                "accepted": true
+            ])
+            
             // Show a reward ad
             if GADRewardBasedVideoAd.sharedInstance().isReady {
                 let scene = self.scene as! LevelsGameScene
@@ -341,6 +363,11 @@ class LevelsGameController: UIViewController,
             }
         }
         let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
+            // Analytics log event: log that the user didn't accept to rescue themselves after losing a level
+            Analytics.logEvent("level_rescue", parameters: [
+                "accepted": false
+            ])
+            
             // User doesn't want to watch an ad
             self.gameOver(win: false)
         }
@@ -379,13 +406,20 @@ class LevelsGameController: UIViewController,
         scene.showGameOverView(win: win, gameOverView: gameOverView)
         
         if win {
+            // Used for determining when we might be able to prompt the use for a positive review (they're more likely to be happy if they've completed more than 1 level successfully)
             numConsecutiveWins += 1
-            print("User has had \(numConsecutiveWins) wins in a row")
+            // Used in analytics to determine how many levels were completed in a session
+            numLevelsCompleted += 1
         }
         else {
             numConsecutiveWins = 0
-            print("User lost... zeroed out numConsecutiveWins")
         }
+        
+        // Analytics log event: level ending; send over the level number that just endedNS whether or not they just beat this level
+        Analytics.logEvent("level_end", parameters: [
+            "level_number": currentLevelCount as NSNumber,
+            "success": win,
+        ])
         
         let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
             let scene = self.scene as! LevelsGameScene
@@ -414,5 +448,12 @@ class LevelsGameController: UIViewController,
         print("Showing classic onboarding")
         let viewController = UIStoryboard.init(name: "BrickBreak", bundle: nil).instantiateViewController(withIdentifier: "LevelsTutorialController")
         self.present(viewController, animated: true, completion: nil)
+    }
+    
+    private func analyticsLogClassicStop() {
+        // Analytics log event: when the user stops playing classic mode, see how many turns they played
+        Analytics.logEvent("level_stop", parameters: [
+            "levels_completed": numLevelsCompleted
+        ])
     }
 }

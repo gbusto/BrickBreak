@@ -13,6 +13,7 @@ import GameKit
 import SpriteKit
 import GameplayKit
 import AVFoundation
+import FirebaseAnalytics
 
 class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     @IBOutlet weak var titleLabel: UILabel!
@@ -243,10 +244,14 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     
     @IBAction func playGame(_ sender: Any) {
         // Launch game
+        print("Clicked classic button")
+        Analytics.logEvent("play_classic_mode", parameters: /* None */ [:])
     }
     
     @IBAction func playLevels(_ sender: Any) {
         // Launch level gameplay
+        print("Clicked levels button")
+        Analytics.logEvent("play_levels_mode", parameters: /* None */ [:])
     }
     
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
