@@ -35,7 +35,7 @@ class LevelsGameController: UIViewController,
     
     private var rewardAdViewController: RewardAdViewController!
     
-    private var userWasRewarded = false
+    private var userWasRescued = false
     
     private var leaveGame = false
     private var gameEnded = false
@@ -44,6 +44,7 @@ class LevelsGameController: UIViewController,
     private var numConsecutiveWins = 0
     // Number of levels completed in a session of playing levels
     private var numLevelsCompleted = 0
+    private var numLevelsFailed = 0
     
     private var reviewer: Review?
     
@@ -91,6 +92,10 @@ class LevelsGameController: UIViewController,
         // Notification that says the app is going into the background
         let backgroundNotification = Notification(name: .NSExtensionHostWillResignActive)
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingBackground), name: backgroundNotification.name, object: nil)
+        
+        // Notification that says the app is going into the foreground
+        let foregroundNotification = Notification(name: .NSExtensionHostWillEnterForeground)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingForeground), name: foregroundNotification.name, object: nil)
         
         // Notification that the app will terminate
         let notification = Notification(name: .init("appTerminate"))
@@ -155,7 +160,7 @@ class LevelsGameController: UIViewController,
         let scene = self.scene as! LevelsGameScene
         scene.saveUser()
         heartImageView.image = UIImage(named: "used_life")
-        userWasRewarded = true
+        userWasRescued = true
     }
     
     public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
@@ -172,13 +177,16 @@ class LevelsGameController: UIViewController,
             view.isPaused = false
         }
         
-        if false == userWasRewarded {
+        if false == userWasRescued {
             // Show the level loss screen because the user skipped the reward ad
             gameOver(win: false)
         }
     }
     
     @IBAction func statusBarTapped(_ sender: UITapGestureRecognizer) {
+        // Analytics log event; user paused classic game by tapping on the status bar
+        Analytics.logEvent("levels_pause_game", parameters: /* None */ [:])
+        
         let scene = self.scene as! LevelsGameScene
         if let view = self.view as! SKView? {
             scene.isPaused = true
@@ -189,11 +197,17 @@ class LevelsGameController: UIViewController,
     
     // MARK: Pause Menu Button Handlers
     @IBAction func resumeButtonPressed(_ sender: Any) {
+        // Analytics log event; user resumed game after pausing it
+        Analytics.logEvent("levels_pause_resume", parameters: /* None */ [:])
+        
         let scene = self.scene as! LevelsGameScene
         scene.resumeGame()
     }
     
     @IBAction func gameMenuButtonPressed(_ sender: Any) {
+        // Analytics log event; user went to game menu after pausing
+        Analytics.logEvent("levels_pause_gamemenu", parameters: /* None */ [:])
+        
         // Analytics log event: when the user stops playing classic mode, see how many turns they played
         analyticsLogClassicStop()
         
@@ -232,8 +246,13 @@ class LevelsGameController: UIViewController,
         return true
     }
     
+    @objc func handleAppGoingForeground() {
+        print("Levels game coming back into the foreground")
+    }
+    
     // MARK: Notification functions
     @objc func handleAppGoingBackground() {
+        print("Levels game going into the background")
         // App is going into the background so pause it
         
         if gameEnded {
@@ -269,7 +288,7 @@ class LevelsGameController: UIViewController,
         heartImageView.image = UIImage(named: "unused_life")
         
         // Reset this boolean
-        userWasRewarded = false
+        userWasRescued = false
         
         // Reset this boolean so the game will pause correctly
         gameEnded = false
@@ -413,13 +432,16 @@ class LevelsGameController: UIViewController,
         }
         else {
             numConsecutiveWins = 0
+            // Increment the number of levels failed
+            numLevelsFailed += 1
         }
         
         // Analytics log event: level ending; send over the level number that just endedNS whether or not they just beat this level
         Analytics.logEvent("level_end", parameters: [
             AnalyticsParameterLevel: currentLevelCount as NSNumber,
             AnalyticsParameterSuccess: win,
-            "rescued": userWasRewarded
+            AnalyticsParameterScore: Int("\(levelScore.text!)")! as NSNumber,
+            "rescued": userWasRescued
         ])
         
         let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
@@ -446,7 +468,10 @@ class LevelsGameController: UIViewController,
     }
     
     private func showInitialOnboarding() {
-        print("Showing classic onboarding")
+        // Analytics log event; levels tutorial begin
+        Analytics.logEvent("levels_tutorial_begin", parameters: /* None */ [:])
+        
+        print("Showing levels onboarding")
         let viewController = UIStoryboard.init(name: "BrickBreak", bundle: nil).instantiateViewController(withIdentifier: "LevelsTutorialController")
         self.present(viewController, animated: true, completion: nil)
     }
@@ -455,6 +480,7 @@ class LevelsGameController: UIViewController,
         // Analytics log event: when the user stops playing classic mode, see how many turns they played
         Analytics.logEvent("level_stop", parameters: [
             "levels_completed": numLevelsCompleted,
+            "levels_failed": numLevelsFailed,
         ])
     }
 }

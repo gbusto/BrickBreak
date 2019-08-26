@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import FirebaseAnalytics
 
 class LevelsTutorialController3: UIViewController {
     
@@ -74,6 +75,10 @@ class LevelsTutorialController3: UIViewController {
                 // Failed to save initial levels onboarding state
             }
         }
+        
+        // Analytics log event; levels tutorial end
+        Analytics.logEvent("levels_tutorial_end", parameters: /* None */ [:])
+        
         dismiss(animated: true, completion: nil)
     }
     
