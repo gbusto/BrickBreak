@@ -51,6 +51,8 @@ class LevelsGameController: UIViewController,
     private var scene: SKScene?
     
     override func viewDidAppear(_ animated: Bool) {
+        Analytics.setScreenName("LevelsGame", screenClass: NSStringFromClass(LevelsGameScene.classForCoder()))
+
         // Check if we need to show the tutorial
         if let initialOnboardingState = DataManager.shared.loadInitialOnboardingState() {
             if false == initialOnboardingState.showedLevelOnboarding {
@@ -84,11 +86,9 @@ class LevelsGameController: UIViewController,
         rewardAdViewController = RewardAdViewController()
         
         GADRewardBasedVideoAd.sharedInstance().delegate = self
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
+        
+        // Register these notifications
+        
         // Notification that says the app is going into the background
         let backgroundNotification = Notification(name: .NSExtensionHostWillResignActive)
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingBackground), name: backgroundNotification.name, object: nil)
@@ -100,6 +100,18 @@ class LevelsGameController: UIViewController,
         // Notification that the app will terminate
         let notification = Notification(name: .init("appTerminate"))
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        // Remove these notifications from the view controller
+        
+        NotificationCenter.default.removeObserver(self, name: .NSExtensionHostWillResignActive, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .NSExtensionHostWillEnterForeground, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .init("appTerminate"), object: nil)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
         goToGameScene()
         
@@ -248,11 +260,18 @@ class LevelsGameController: UIViewController,
     
     @objc func handleAppGoingForeground() {
         print("Levels game coming back into the foreground")
+        
+        // Analytics log event; log when levels goes into the foreground
+        Analytics.logEvent("levels_game_foreground", parameters: /* None */ [:])
     }
     
     // MARK: Notification functions
     @objc func handleAppGoingBackground() {
         print("Levels game going into the background")
+        
+        // Analytics log event; log when levels comes back into the background
+        Analytics.logEvent("levels_game_background", parameters: /* None */ [:])
+        
         // App is going into the background so pause it
         
         if gameEnded {
@@ -274,6 +293,10 @@ class LevelsGameController: UIViewController,
     
     @objc func handleAppTerminate() {
         // App is about to terminate
+        print("Levels game app terminate!!!")
+        
+        // Analytics log event; log when the app terminates from levels
+        Analytics.logEvent("levels_game_terminate", parameters: /* None */ [:])
         
         // Analytics log event: when the user stops playing classic mode, see how many turns they played
         analyticsLogClassicStop()
@@ -367,7 +390,7 @@ class LevelsGameController: UIViewController,
         let yesAction = UIAlertAction(title: "Yes", style: .default) { (handler: UIAlertAction) in
             // Analytics log event: log that the user didn't accept to rescue themselves after losing a level
             Analytics.logEvent("level_rescue", parameters: [
-                "accepted": true
+                "accepted": 1 as NSNumber
             ])
             
             // Show a reward ad
@@ -384,7 +407,7 @@ class LevelsGameController: UIViewController,
         let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
             // Analytics log event: log that the user didn't accept to rescue themselves after losing a level
             Analytics.logEvent("level_rescue", parameters: [
-                "accepted": false
+                "accepted": 0 as NSNumber
             ])
             
             // User doesn't want to watch an ad
@@ -436,12 +459,14 @@ class LevelsGameController: UIViewController,
             numLevelsFailed += 1
         }
         
+        let winInt = win ? 1 : 0
+        let userRescuedInt = userWasRescued ? 1 : 0
         // Analytics log event: level ending; send over the level number that just endedNS whether or not they just beat this level
         Analytics.logEvent("level_end", parameters: [
             AnalyticsParameterLevel: currentLevelCount as NSNumber,
-            AnalyticsParameterSuccess: win,
+            AnalyticsParameterSuccess: winInt as NSNumber,
             AnalyticsParameterScore: Int("\(levelScore.text!)")! as NSNumber,
-            "rescued": userWasRescued
+            "rescued": userRescuedInt as NSNumber,
         ])
         
         let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in

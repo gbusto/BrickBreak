@@ -114,6 +114,8 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        Analytics.setScreenName("GameMenu", screenClass: NSStringFromClass(GameMenuController.classForCoder()))
+
         let classicGradientLayer = createButtonGradient(button: playButton, color1: UIColor(rgb: classicButtonColorValue1), color2: UIColor(rgb: classicButtonColorValue2))
         playButton.backgroundColor = .clear
         playButton.layer.insertSublayer(classicGradientLayer, at: 0)
@@ -256,6 +258,8 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
         // Apparently this is necessary for unwinding views
+        print("Preparing for unwind!")
+        segue.source.dismiss(animated: true, completion: nil)
     }
     
     override var shouldAutorotate: Bool {
