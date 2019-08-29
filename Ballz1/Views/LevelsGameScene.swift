@@ -10,6 +10,7 @@ import UIKit
 import SpriteKit
 import GameplayKit
 import CoreGraphics
+import FirebaseAnalytics
 
 class LevelsGameScene: GameScene {
     
@@ -439,6 +440,9 @@ class LevelsGameScene: GameScene {
             if gameModel!.isMidTurn() {
                 // Speed up the physics simulation
                 if physicsWorld.speed < 3.0 {
+                    // Analytics log event; log when the user swipes right to fast forward in a level
+                    Analytics.logEvent("levels_swipe_right", parameters: /* None */ [:])
+                    
                     physicsWorld.speed = 3.0
                     
                     flashSpeedupImage()
@@ -453,6 +457,9 @@ class LevelsGameScene: GameScene {
         
         if inGame(point) {
             if gameModel!.isMidTurn() {
+                // Analytics log event; log when the user swipes down to end their turn in a level
+                Analytics.logEvent("levels_swipe_down", parameters: /* None */ [:])
+
                 swipedDown = true
             }
         }
