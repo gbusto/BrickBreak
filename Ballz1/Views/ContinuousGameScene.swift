@@ -12,6 +12,7 @@ import UIKit
 import SpriteKit
 import GameplayKit
 import CoreGraphics
+import FirebaseAnalytics
 
 class ContinousGameScene: GameScene {
     
@@ -120,7 +121,6 @@ class ContinousGameScene: GameScene {
         
         // Handle the case where nameA is a ball and it hit the ground
         if nameA!.starts(with: "bm") && "ground" == nameB! {
-            print("Ball \(nameA!) made contact with ground")
             // XXX TEST THIS OUT
             let _ = ballArray.filter {
                 if $0.getNode().name! == nameA! {
@@ -644,6 +644,9 @@ class ContinousGameScene: GameScene {
                 
                 // Speed up the physics simulation
                 if physicsWorld.speed < 3.0 {
+                    // Analytics log event; log when the user swipes right to fast forward in classic mode
+                    Analytics.logEvent("classic_swipe_right", parameters: /* None */ [:])
+                    
                     physicsWorld.speed = 3.0
                     ticksDelay = 1
                     
@@ -659,6 +662,9 @@ class ContinousGameScene: GameScene {
         
         if inGame(point) {
             if gameModel!.isMidTurn() {
+                // Analytics log event; log when the user swipes down to end their turn in classic mode
+                Analytics.logEvent("classic_swipe_down", parameters: /* None */ [:])
+
                 swipedDown = true
             }
         }

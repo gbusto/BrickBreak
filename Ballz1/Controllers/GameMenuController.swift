@@ -13,6 +13,7 @@ import GameKit
 import SpriteKit
 import GameplayKit
 import AVFoundation
+import FirebaseAnalytics
 
 class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     @IBOutlet weak var titleLabel: UILabel!
@@ -113,6 +114,8 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        Analytics.setScreenName("GameMenu", screenClass: NSStringFromClass(GameMenuController.classForCoder()))
+
         let classicGradientLayer = createButtonGradient(button: playButton, color1: UIColor(rgb: classicButtonColorValue1), color2: UIColor(rgb: classicButtonColorValue2))
         playButton.backgroundColor = .clear
         playButton.layer.insertSublayer(classicGradientLayer, at: 0)
@@ -243,14 +246,20 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     
     @IBAction func playGame(_ sender: Any) {
         // Launch game
+        print("Clicked classic button")
+        Analytics.logEvent("play_classic_mode", parameters: /* None */ [:])
     }
     
     @IBAction func playLevels(_ sender: Any) {
         // Launch level gameplay
+        print("Clicked levels button")
+        Analytics.logEvent("play_levels_mode", parameters: /* None */ [:])
     }
     
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
         // Apparently this is necessary for unwinding views
+        print("Preparing for unwind!")
+        segue.source.dismiss(animated: true, completion: nil)
     }
     
     override var shouldAutorotate: Bool {

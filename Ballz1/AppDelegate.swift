@@ -8,6 +8,7 @@
 
 import UIKit
 import GoogleMobileAds
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -21,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         pageControl.backgroundColor = UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0)
         // Override point for customization after application launch.
         GADMobileAds.configure(withApplicationID: AdHandler.getAdModID())
+        FirebaseApp.configure()
         return true
     }
 
@@ -38,6 +40,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        let notification = Notification(name: .NSExtensionHostWillEnterForeground)
+        NotificationCenter.default.post(notification)
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {

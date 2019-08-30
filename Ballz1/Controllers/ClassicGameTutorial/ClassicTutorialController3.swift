@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import FirebaseAnalytics
 
 class ClassicTutorialController3: UIViewController {
     
@@ -73,6 +74,10 @@ class ClassicTutorialController3: UIViewController {
                 // Failed to save initial classic onboarding state
             }
         }
+        
+        // Analytics log event; classic tutorial end
+        Analytics.logEvent("classic_tutorial_end", parameters: /* None */ [:])
+        
         dismiss(animated: true, completion: nil)
     }
 }

@@ -11,6 +11,7 @@
 import UIKit
 import SpriteKit
 import GoogleMobileAds
+import FirebaseAnalytics
 
 class ContinuousGameController: UIViewController,
                                 GADBannerViewDelegate,
@@ -36,6 +37,10 @@ class ContinuousGameController: UIViewController,
     private var startingScore: Int?
     private var reviewer: Review?
     
+    private var userWasRescued = false
+    // Number of times the user has undone their turn in this current session
+    private var numTimesUndoTurn = 0
+    
     private var showedReward = false
     private var rewardType = ContinuousGameController.NO_REWARD
     static private var NO_REWARD = Int(0)
@@ -46,6 +51,8 @@ class ContinuousGameController: UIViewController,
     static private var ENABLED_ALPHA = CGFloat(1.0)
     
     override func viewDidAppear(_ animated: Bool) {
+        Analytics.setScreenName("ClassicGame", screenClass: NSStringFromClass(ContinousGameScene.classForCoder()))
+        
         // Check if we need to show the tutorial
         if let initialOnboardingState = DataManager.shared.loadInitialOnboardingState() {
             if false == initialOnboardingState.showedClassicOnboarding {
@@ -89,18 +96,32 @@ class ContinuousGameController: UIViewController,
         
         // This is a view controller to fix buggy behavior with the reward ads
         rewardAdViewController = RewardAdViewController()
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
+        
+        // Register these notifications here
         
         // Notification that says the app is going into the background
         let backgroundNotification = Notification(name: .NSExtensionHostWillResignActive)
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingBackground), name: backgroundNotification.name, object: nil)
         
+        // Notification that says the app is going into the foreground
+        let foregroundNotification = Notification(name: .NSExtensionHostWillEnterForeground)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingForeground), name: foregroundNotification.name, object: nil)
+        
         // Notification that the app will terminate
         let notification = Notification(name: .init("appTerminate"))
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        // Remove these notifications before the controller disappears
+        
+        NotificationCenter.default.removeObserver(self, name: .NSExtensionHostWillResignActive, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .NSExtensionHostWillEnterForeground, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .init("appTerminate"), object: nil)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
         if let view = self.view as! SKView? {
             let scene = ContinousGameScene(size: view.bounds.size)
@@ -270,6 +291,11 @@ class ContinuousGameController: UIViewController,
             
             let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
             let yesAction = UIAlertAction(title: "Yes", style: .default) { (handler: UIAlertAction) in
+                // Analytics log event: log that the user didn't accept to rescue themselves after losing in classic mode
+                Analytics.logEvent("classic_rescue", parameters: [
+                    "accepted": 1 as NSNumber
+                ])
+                
                 // Show a reward ad
                 // Set this variable so we know what type of reward to give the user
                 self.rewardType = ContinuousGameController.RESCUE_REWARD
@@ -277,6 +303,11 @@ class ContinuousGameController: UIViewController,
                 view.isPaused = false
             }
             let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
+                // Analytics log event: log that the user didn't accept to rescue themselves after losing in classic mode
+                Analytics.logEvent("classic_rescue", parameters: [
+                    "accepted": 0 as NSNumber
+                ])
+                
                 let scene = self.scene as! ContinousGameScene
                 // Should be able to just call handleGameOver()
                 scene.endGame()
@@ -307,14 +338,25 @@ class ContinuousGameController: UIViewController,
     }
     
     public func userWasSaved() {
+        // Also called by the game scene when loading classic game state so this should be correct between game sessions
         heartImageView.image = UIImage(named: "used_life")
+        userWasRescued = true
     }
     
     public func undoButtonIsEnabled() -> Bool {
         return undoButton.alpha >= ContinuousGameController.ENABLED_ALPHA
     }
     
+    // XXX Should update this function name to gameMenuButtonPressed
     @IBAction func returnToGameMenu(_ sender: Any) {
+        // Return to Game Menu button pressed on pause screen
+        
+        // Analytics log event; user went to game menu after pausing
+        Analytics.logEvent("classic_pause_gamemenu", parameters: /* None */ [:])
+        
+        // Analytics log event: when the user stops playing classic mode, see how many turns they played
+        analyticsLogClassicStop()
+        
         let contScene = scene as! ContinousGameScene
         contScene.saveState()
         
@@ -322,11 +364,17 @@ class ContinuousGameController: UIViewController,
     }
     
     @IBAction func resumeGame(_ sender: Any) {
+        // Analytics log event; user resumed game after pausing it
+        Analytics.logEvent("classic_pause_resume", parameters: /* None */ [:])
+        
         let contScene = scene as! ContinousGameScene
         contScene.resumeGame()
     }
     
     @IBAction func statusBarTapped(_ sender: Any) {
+        // Analytics log event; user paused classic game by tapping on the status bar
+        Analytics.logEvent("classic_pause_game", parameters: /* None */ [:])
+        
         let scene = self.scene as! ContinousGameScene
         if let view = self.view as! SKView? {
             scene.isPaused = true
@@ -335,7 +383,15 @@ class ContinuousGameController: UIViewController,
         }
     }
     
+    @objc func handleAppGoingForeground() {
+        // Analytics log event; log when classic comes back into the foreground
+        Analytics.logEvent("classic_game_foreground", parameters: /* None */ [:])
+    }
+    
     @objc func handleAppGoingBackground() {
+        // Analytics log event; log when classic comes back into the background
+        Analytics.logEvent("classic_game_background", parameters: /* None */ [:])
+        
         let scene = self.scene as! ContinousGameScene
         
         scene.saveState()
@@ -356,11 +412,24 @@ class ContinuousGameController: UIViewController,
     }
     
     @objc func handleAppTerminate() {
+        // Analytics log event; log when app terminates during classic game
+        Analytics.logEvent("classic_game_terminate", parameters: /* None */ [:])
+
+        // Analytics log event: when the user stops playing classic mode, see how many turns they played
+        analyticsLogClassicStop()
+        
         let contScene = scene as! ContinousGameScene
         contScene.saveState()
     }
 
     public func handleGameOver() {
+        let userRescuedInt = userWasRescued ? 1 : 0
+        // Analytics log event: the user lost in classic mode; still need classic_stop (stopping a game, but not losing)
+        Analytics.logEvent("classic_end", parameters: [
+            AnalyticsParameterScore: Int("\(gameScoreLabel.text!)")! as NSNumber,
+            "user_was_rescued": userRescuedInt as NSNumber
+        ])
+        
         // Show interstitial ad here if we have one loaded
         if interstitialAd.isReady {
             interstitialAd.present(fromRootViewController: self)
@@ -371,6 +440,10 @@ class ContinuousGameController: UIViewController,
     }
     
     @IBAction func undoTurn(_ sender: Any) {
+        // Analytics log event: log when the user presses the undo button
+        Analytics.logEvent("classic_undo_button", parameters: /* None */ [:])
+        numTimesUndoTurn += 1
+        
         // If the button isn't enabled, notify the user
         if false == undoButtonIsEnabled() {
             // If it's disabled, inform the user that they can't undo at this time
@@ -407,15 +480,27 @@ class ContinuousGameController: UIViewController,
         self.highScoreLabel.text = "\(highScore)"
         
         if nil == startingScore {
+            // The user just started playing classic mode (either a new game or from saved state)
+            
+            if 0 == gameScore {
+                // The user is starting a new classic game
+                Analytics.logEvent("classic_start", parameters: /* None */ [:])
+            }
+            else {
+                // The user returned to a classic game
+                Analytics.logEvent("classic_return", parameters: /* None */ [:])
+            }
             startingScore = gameScore
         }
         
+        /* XXX REMOVE ME
         if gameScore - startingScore! >= 50 {
             print("Attemping to prompt user for review")
             // Show the user a review prompt after they've scored 50 points since starting the game
             // XXX UNCOMMENT THIS WHENEVER I HAVE A BETTER PLAN FOR IT
             //reviewer!.attemptReview()
         }
+        */
     }
     
     // MARK: View override functions
@@ -436,8 +521,19 @@ class ContinuousGameController: UIViewController,
     }
     
     private func showInitialOnboarding() {
-        print("Showing classic onboarding")
+        // Analytics log event; classic tutorial end
+        Analytics.logEvent("classic_tutorial_begin", parameters: /* None */ [:])
+        
         let viewController = UIStoryboard.init(name: "BrickBreak", bundle: nil).instantiateViewController(withIdentifier: "ClassicTutorialController")
         self.present(viewController, animated: true, completion: nil)
+    }
+    
+    private func analyticsLogClassicStop() {
+        // Analytics log event: when the user stops playing classic mode, see how many turns they played
+        let numTurnsPlayed = Int(gameScoreLabel!.text!)! - startingScore!
+        Analytics.logEvent("classic_stop", parameters: [
+            "turns_played": numTurnsPlayed as NSNumber,
+            "number_turns_undone": numTimesUndoTurn as NSNumber,
+        ])
     }
 }

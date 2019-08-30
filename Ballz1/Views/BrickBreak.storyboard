@@ -69,7 +69,6 @@
                                                             <color key="titleShadowColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
                                                         <connections>
-                                                            <action selector="playGame:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="agn-1Z-S9v"/>
                                                             <action selector="playLevels:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="l7G-1Q-vXi"/>
                                                             <segue destination="lds-87-3TS" kind="show" id="ojb-qc-kca"/>
                                                         </connections>
