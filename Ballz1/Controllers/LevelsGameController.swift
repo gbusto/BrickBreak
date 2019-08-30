@@ -90,24 +90,66 @@ class LevelsGameController: UIViewController,
         // Register these notifications
         
         // Notification that says the app is going into the background
-        let backgroundNotification = Notification(name: .NSExtensionHostWillResignActive)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingBackground), name: backgroundNotification.name, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive(notification:)), name: UIApplication.willResignActiveNotification, object: nil)
         
         // Notification that says the app is going into the foreground
-        let foregroundNotification = Notification(name: .NSExtensionHostWillEnterForeground)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingForeground), name: foregroundNotification.name, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
         
         // Notification that the app will terminate
-        let notification = Notification(name: .init("appTerminate"))
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillTerminate(notification:)), name: UIApplication.willTerminateNotification, object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        // Remove these notifications from the view controller
+        // Remove ourselves from observing notifications
+        // We need to do this in THIS function because something maintains a strong reference to this ViewController and we can't use deinit because this will not get deallocated. Meaning these background/foreground/app-terminate notifications will keep firing for levels in the background even after switching game modes. Worse yet, since we add observers for these notifications each time viewDidAppear is called, it will register more observers and so when the app goes into the background, these notifications will stack up and trigger multiple times
         
-        NotificationCenter.default.removeObserver(self, name: .NSExtensionHostWillResignActive, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .NSExtensionHostWillEnterForeground, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .init("appTerminate"), object: nil)
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc func applicationWillTerminate(notification: Notification) {
+        // App is about to terminate
+        
+        // Analytics log event; log when the app terminates from levels
+        Analytics.logEvent("levels_game_terminate", parameters: /* None */ [:])
+        
+        // Analytics log event: when the user stops playing classic mode, see how many turns they played
+        analyticsLogLevelsStop()
+    }
+    
+    @objc func applicationWillResignActive(notification: Notification) {
+        // App is going into the background
+        
+        // Analytics log event; log when levels comes back into the background
+        Analytics.logEvent("levels_game_background", parameters: /* None */ [:])
+        
+        // App is going into the background so pause it
+        
+        if gameEnded {
+            // If the game ended, don't pause the screen
+            return
+        }
+        
+        let scene = self.scene as! LevelsGameScene
+        
+        if let view = self.view as! SKView? {
+            // If the view is paused from showing the Continue? dialog then don't pause the game when it moves to the background
+            if false == view.isPaused {
+                scene.isPaused = true
+                view.isPaused = true
+                scene.showPauseScreen(pauseView: pauseMenuView)
+            }
+        }
+    }
+    
+    @objc func applicationWillEnterForeground(notification: Notification) {
+        // App is coming back into the foreground
+        
+        // Analytics log event; log when levels goes into the foreground
+        Analytics.logEvent("levels_game_foreground", parameters: /* None */ [:])
+    }
+    
+    deinit {
+        // This function will never be called here because something maintains a strong reference to this view controller; I'm assuming it has something to do with the fact that it's created in the BrickBreak.storyboard file
     }
     
     override func viewDidLoad() {
@@ -221,7 +263,7 @@ class LevelsGameController: UIViewController,
         Analytics.logEvent("levels_pause_gamemenu", parameters: /* None */ [:])
         
         // Analytics log event: when the user stops playing classic mode, see how many turns they played
-        analyticsLogClassicStop()
+        analyticsLogLevelsStop()
         
         // Show an interstitial ad here
         if interstitialAd.isReady {
@@ -256,45 +298,6 @@ class LevelsGameController: UIViewController,
     
     override var prefersStatusBarHidden: Bool {
         return true
-    }
-    
-    @objc func handleAppGoingForeground() {
-        // Analytics log event; log when levels goes into the foreground
-        Analytics.logEvent("levels_game_foreground", parameters: /* None */ [:])
-    }
-    
-    // MARK: Notification functions
-    @objc func handleAppGoingBackground() {
-        // Analytics log event; log when levels comes back into the background
-        Analytics.logEvent("levels_game_background", parameters: /* None */ [:])
-        
-        // App is going into the background so pause it
-        
-        if gameEnded {
-            // If the game ended, don't pause the screen
-            return
-        }
-        
-        let scene = self.scene as! LevelsGameScene
-        
-        if let view = self.view as! SKView? {
-            // If the view is paused from showing the Continue? dialog then don't pause the game when it moves to the background
-            if false == view.isPaused {
-                scene.isPaused = true
-                view.isPaused = true
-                scene.showPauseScreen(pauseView: pauseMenuView)
-            }
-        }
-    }
-    
-    @objc func handleAppTerminate() {
-        // App is about to terminate
-        
-        // Analytics log event; log when the app terminates from levels
-        Analytics.logEvent("levels_game_terminate", parameters: /* None */ [:])
-        
-        // Analytics log event: when the user stops playing classic mode, see how many turns they played
-        analyticsLogClassicStop()
     }
     
     // MARK: Public controller functions
@@ -495,7 +498,7 @@ class LevelsGameController: UIViewController,
         self.present(viewController, animated: true, completion: nil)
     }
     
-    private func analyticsLogClassicStop() {
+    private func analyticsLogLevelsStop() {
         // Analytics log event: when the user stops playing classic mode, see how many turns they played
         Analytics.logEvent("level_stop", parameters: [
             "levels_completed": numLevelsCompleted,

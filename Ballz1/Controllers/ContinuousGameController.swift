@@ -100,24 +100,63 @@ class ContinuousGameController: UIViewController,
         // Register these notifications here
         
         // Notification that says the app is going into the background
-        let backgroundNotification = Notification(name: .NSExtensionHostWillResignActive)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingBackground), name: backgroundNotification.name, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive(notification:)), name: UIApplication.willResignActiveNotification, object: nil)
         
         // Notification that says the app is going into the foreground
-        let foregroundNotification = Notification(name: .NSExtensionHostWillEnterForeground)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAppGoingForeground), name: foregroundNotification.name, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
         
         // Notification that the app will terminate
-        let notification = Notification(name: .init("appTerminate"))
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAppTerminate), name: notification.name, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillTerminate(notification:)), name: UIApplication.willTerminateNotification, object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        // Remove these notifications before the controller disappears
+        // Remove ourselves from observing notifications
+        // We need to do this in THIS function because something maintains a strong reference to this ViewController and we can't use deinit because this will not get deallocated. Meaning these background/foreground/app-terminate notifications will keep firing for classic in the background even after switching game modes. Worse yet, since we add observers for these notifications each time viewDidAppear is called, it will register more observers and so when the app goes into the background, these notifications will stack up and trigger multiple times
         
-        NotificationCenter.default.removeObserver(self, name: .NSExtensionHostWillResignActive, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .NSExtensionHostWillEnterForeground, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .init("appTerminate"), object: nil)
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc func applicationWillTerminate(notification: Notification) {
+        // Analytics log event; log when app terminates during classic game
+        Analytics.logEvent("classic_game_terminate", parameters: /* None */ [:])
+        
+        // Analytics log event: when the user stops playing classic mode, see how many turns they played
+        analyticsLogClassicStop()
+        
+        let contScene = scene as! ContinousGameScene
+        contScene.saveState()
+    }
+    
+    @objc func applicationWillResignActive(notification: Notification) {
+        // App is going into the background
+        
+        // Analytics log event; log when classic comes back into the background
+        Analytics.logEvent("classic_game_background", parameters: /* None */ [:])
+        
+        let scene = self.scene as! ContinousGameScene
+        
+        scene.saveState()
+        
+        // Don't pause the game when it goes to the background if the gameover overlay is showing
+        if scene.isGameOverShowing() {
+            return
+        }
+        
+        if let view = self.view as! SKView? {
+            // If the view is paused from showing the Continue? dialog then don't pause the game when it moves to the background
+            if false == view.isPaused {
+                scene.isPaused = true
+                view.isPaused = true
+                scene.showPauseScreen()
+            }
+        }
+    }
+    
+    @objc func applicationWillEnterForeground(notification: Notification) {
+        // App is coming back into the foreground
+        
+        // Analytics log event; log when classic comes back into the foreground
+        Analytics.logEvent("classic_game_foreground", parameters: /* None */ [:])
     }
     
     override func viewDidLoad() {
@@ -381,45 +420,6 @@ class ContinuousGameController: UIViewController,
             view.isPaused = true
             scene.showPauseScreen()
         }
-    }
-    
-    @objc func handleAppGoingForeground() {
-        // Analytics log event; log when classic comes back into the foreground
-        Analytics.logEvent("classic_game_foreground", parameters: /* None */ [:])
-    }
-    
-    @objc func handleAppGoingBackground() {
-        // Analytics log event; log when classic comes back into the background
-        Analytics.logEvent("classic_game_background", parameters: /* None */ [:])
-        
-        let scene = self.scene as! ContinousGameScene
-        
-        scene.saveState()
-        
-        // Don't pause the game when it goes to the background if the gameover overlay is showing
-        if scene.isGameOverShowing() {
-            return
-        }
-        
-        if let view = self.view as! SKView? {
-            // If the view is paused from showing the Continue? dialog then don't pause the game when it moves to the background
-            if false == view.isPaused {
-                scene.isPaused = true
-                view.isPaused = true
-                scene.showPauseScreen()
-            }
-        }
-    }
-    
-    @objc func handleAppTerminate() {
-        // Analytics log event; log when app terminates during classic game
-        Analytics.logEvent("classic_game_terminate", parameters: /* None */ [:])
-
-        // Analytics log event: when the user stops playing classic mode, see how many turns they played
-        analyticsLogClassicStop()
-        
-        let contScene = scene as! ContinousGameScene
-        contScene.saveState()
     }
 
     public func handleGameOver() {
