@@ -57,7 +57,7 @@
                                                         </state>
                                                         <connections>
                                                             <action selector="playGame:" destination="Ys3-oF-MJh" eventType="touchUpInside" id="moO-UF-KuY"/>
-                                                            <segue destination="SQo-9G-tie" kind="showDetail" animates="NO" id="M5j-b5-wJH"/>
+                                                            <segue destination="SQo-9G-tie" kind="show" id="M5j-b5-wJH"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SIu-eg-Tou" userLabel="Levels Button">
