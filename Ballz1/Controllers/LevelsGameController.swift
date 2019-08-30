@@ -259,16 +259,12 @@ class LevelsGameController: UIViewController,
     }
     
     @objc func handleAppGoingForeground() {
-        print("Levels game coming back into the foreground")
-        
         // Analytics log event; log when levels goes into the foreground
         Analytics.logEvent("levels_game_foreground", parameters: /* None */ [:])
     }
     
     // MARK: Notification functions
     @objc func handleAppGoingBackground() {
-        print("Levels game going into the background")
-        
         // Analytics log event; log when levels comes back into the background
         Analytics.logEvent("levels_game_background", parameters: /* None */ [:])
         
@@ -293,7 +289,6 @@ class LevelsGameController: UIViewController,
     
     @objc func handleAppTerminate() {
         // App is about to terminate
-        print("Levels game app terminate!!!")
         
         // Analytics log event; log when the app terminates from levels
         Analytics.logEvent("levels_game_terminate", parameters: /* None */ [:])
@@ -496,7 +491,6 @@ class LevelsGameController: UIViewController,
         // Analytics log event; levels tutorial begin
         Analytics.logEvent("levels_tutorial_begin", parameters: /* None */ [:])
         
-        print("Showing levels onboarding")
         let viewController = UIStoryboard.init(name: "BrickBreak", bundle: nil).instantiateViewController(withIdentifier: "LevelsTutorialController")
         self.present(viewController, animated: true, completion: nil)
     }

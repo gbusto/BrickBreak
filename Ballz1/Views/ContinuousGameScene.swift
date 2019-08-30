@@ -121,7 +121,6 @@ class ContinousGameScene: GameScene {
         
         // Handle the case where nameA is a ball and it hit the ground
         if nameA!.starts(with: "bm") && "ground" == nameB! {
-            print("Ball \(nameA!) made contact with ground")
             // XXX TEST THIS OUT
             let _ = ballArray.filter {
                 if $0.getNode().name! == nameA! {

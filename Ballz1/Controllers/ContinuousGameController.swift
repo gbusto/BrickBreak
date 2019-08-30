@@ -384,15 +384,11 @@ class ContinuousGameController: UIViewController,
     }
     
     @objc func handleAppGoingForeground() {
-        print("Classic game coming back into the foreground")
-        
         // Analytics log event; log when classic comes back into the foreground
         Analytics.logEvent("classic_game_foreground", parameters: /* None */ [:])
     }
     
     @objc func handleAppGoingBackground() {
-        print("Classic game going into the background")
-        
         // Analytics log event; log when classic comes back into the background
         Analytics.logEvent("classic_game_background", parameters: /* None */ [:])
         
@@ -416,9 +412,6 @@ class ContinuousGameController: UIViewController,
     }
     
     @objc func handleAppTerminate() {
-        // App is about to terminate
-        print("Classic game app terminate!!!!!")
-        
         // Analytics log event; log when app terminates during classic game
         Analytics.logEvent("classic_game_terminate", parameters: /* None */ [:])
 
@@ -531,7 +524,6 @@ class ContinuousGameController: UIViewController,
         // Analytics log event; classic tutorial end
         Analytics.logEvent("classic_tutorial_begin", parameters: /* None */ [:])
         
-        print("Showing classic onboarding")
         let viewController = UIStoryboard.init(name: "BrickBreak", bundle: nil).instantiateViewController(withIdentifier: "ClassicTutorialController")
         self.present(viewController, animated: true, completion: nil)
     }
