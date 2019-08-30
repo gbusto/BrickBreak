@@ -228,8 +228,13 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         }
     }
     
+    
     @IBAction func showGameCenter(_ sender: Any) {
+        // Need to prompt the user if game center is not enabled; maybe they don't know what it is and want it enabled?
         if self.gcEnabled {
+            // Analytics log event; the user clicked the game center button
+            Analytics.logEvent("game_center_button", parameters: /* None */ [:])
+            
             let gameCenterController = GKGameCenterViewController()
             gameCenterController.gameCenterDelegate = self
             gameCenterController.viewState = .leaderboards
@@ -239,6 +244,9 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     @IBAction func goToAppStore(_ sender: Any) {
+        // Analytics log event; the user clicked the app review button
+        Analytics.logEvent("app_review_button", parameters: /* None */ [:])
+        
         let appleID = "1445634396"
         let appStoreLink = "https://itunes.apple.com/app/id\(appleID)?action=write-review"
         UIApplication.shared.open(URL(string: appStoreLink)!, options: [:], completionHandler: nil)
