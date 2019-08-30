@@ -103,7 +103,7 @@ class ContinuousGameController: UIViewController,
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive(notification:)), name: UIApplication.willResignActiveNotification, object: nil)
         
         // Notification that says the app is going into the foreground
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(notification:)), name: UIApplication.didBecomeActiveNotification, object: nil)
         
         // Notification that the app will terminate
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillTerminate(notification:)), name: UIApplication.willTerminateNotification, object: nil)
@@ -142,21 +142,20 @@ class ContinuousGameController: UIViewController,
             return
         }
         
-        if let view = self.view as! SKView? {
-            // If the view is paused from showing the Continue? dialog then don't pause the game when it moves to the background
-            if false == view.isPaused {
-                scene.isPaused = true
-                view.isPaused = true
-                scene.showPauseScreen()
-            }
-        }
+        scene.isPaused = true
+        scene.showPauseScreen()
     }
     
-    @objc func applicationWillEnterForeground(notification: Notification) {
+    @objc func applicationDidBecomeActive(notification: Notification) {
         // App is coming back into the foreground
         
         // Analytics log event; log when classic comes back into the foreground
         Analytics.logEvent("classic_game_foreground", parameters: /* None */ [:])
+        
+        if let view = self.view as! SKView? {
+            // Keep this variable set to true; the app will automatically set isPaused to false when the app comes back into view
+            view.isPaused = true
+        }
     }
     
     override func viewDidLoad() {
