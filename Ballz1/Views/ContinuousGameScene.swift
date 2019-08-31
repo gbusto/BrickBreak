@@ -247,6 +247,7 @@ class ContinousGameScene: GameScene {
                     }
                 }
                 
+                // Needed because balls can sometimes slip out of bounds. Not sure how this is possible... race condition bug in the collision engine?
                 if isOutOfBounds(ballPosition: ball.getNode().position) {
                     ball.outOfBounds = true
                 }
