@@ -491,11 +491,7 @@ class ItemGenerator {
             for item in row {
                 if item.getNode().name == name {
                     item.hitItem()
-                    if item.getNode().name!.starts(with: "ball") {
-                        // If this item was a ball, increase the max hit count by 2 because it will be transferred over to the ball manager
-                        numberOfBalls += 1
-                    }
-                    else if item.getNode().name!.starts(with: "block") {
+                    if item.getNode().name!.starts(with: "block") {
                         if ballsOnFire {
                             // If balls are on fire, process a second hit against the blocks (ball hits are x2 when they're on fire)
                             item.hitItem()
@@ -551,6 +547,11 @@ class ItemGenerator {
         
         // If we fall through to here, we didn't find the item so don't count it as a hit
         return false
+    }
+    
+    public func updateBallCount(count: Int) {
+        // This is used to address a bug in which the number of balls and the hit count diverge
+        numberOfBalls = count
     }
     
     // This function is responsible for pruning any items in the first row; once the item generator has numberOfRows - 1 rows in its array, any non-block items are removed from the game scene and will need to be removed from here as well

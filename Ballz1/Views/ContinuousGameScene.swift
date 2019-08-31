@@ -284,6 +284,10 @@ class ContinousGameScene: GameScene {
             gameModel!.handleTurnOver()
             clearNewBallArray()
             
+            // Update the hit count in the item generator
+            // NOTE: This is being done to fix a bug in which the item generator's ball count somehow diverged from the actual ball count
+            gameModel!.itemGenerator!.updateBallCount(count: ballArray.count)
+            
             // Get the newly generated items and add them to the view
             let items = gameModel!.generateRow()
             addRowToView(rowNum: 1, items: items)
