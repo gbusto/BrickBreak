@@ -595,21 +595,23 @@ class ContinousGameScene: GameScene {
     }
     
     public func showPauseScreen() {
-        // Remove the top bar tutorial if it is showing
-        if tutorialType == .topBarTutorial {
-            removeTutorial()
+        if activeViews.count == 0 {
+            // Remove the top bar tutorial if it is showing
+            if tutorialType == .topBarTutorial {
+                removeTutorial()
+            }
+        
+            let blur = UIBlurEffect(style: .dark)
+            let blurView = UIVisualEffectView(effect: blur)
+            blurView.frame = view!.frame
+            view!.addSubview(blurView)
+        
+            let pauseView = gameController!.getPauseMenu()
+            pauseView.isHidden = false
+            view!.addSubview(pauseView)
+        
+            activeViews = [blurView, pauseView]
         }
-        
-        let blur = UIBlurEffect(style: .dark)
-        let blurView = UIVisualEffectView(effect: blur)
-        blurView.frame = view!.frame
-        view!.addSubview(blurView)
-        
-        let pauseView = gameController!.getPauseMenu()
-        pauseView.isHidden = false
-        view!.addSubview(pauseView)
-        
-        activeViews = [blurView, pauseView]
     }
     
     public func resumeGame() {

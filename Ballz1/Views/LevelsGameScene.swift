@@ -470,15 +470,17 @@ class LevelsGameScene: GameScene {
     }
     
     public func showPauseScreen(pauseView: UIView) {
-        let blur = UIBlurEffect(style: .dark)
-        let blurView = UIVisualEffectView(effect: blur)
-        blurView.frame = view!.frame
-        view!.addSubview(blurView)
+        if activeViews.count == 0 {
+            let blur = UIBlurEffect(style: .dark)
+            let blurView = UIVisualEffectView(effect: blur)
+            blurView.frame = view!.frame
+            view!.addSubview(blurView)
         
-        pauseView.isHidden = false
-        view!.addSubview(pauseView)
+            pauseView.isHidden = false
+            view!.addSubview(pauseView)
         
-        activeViews = [blurView, pauseView]
+            activeViews = [blurView, pauseView]
+        }
     }
     
     public func resumeGame() {
