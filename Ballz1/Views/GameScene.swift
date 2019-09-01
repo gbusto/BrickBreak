@@ -805,10 +805,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if false == firstBallReturned {
                 firstBallReturned = true
                 var ballPosition = ball.getNode().position
+                // Correct the ball's Y position
                 if ballPosition.y > groundNode!.size.height {
-                    ballPosition.y = groundNode!.size.height
+                    ballPosition.y = groundNode!.size.height + ballRadius!
                 }
-                originPoint = ball.getNode().position
+                // Correct the ball's X position if it's somehow off screen
+                if ballPosition.x < leftWallNode!.frame.size.width {
+                    ballPosition.x = leftWallNode!.frame.size.width + ballRadius!
+                }
+                else if ballPosition.x > rightWallNode!.position.x {
+                    ballPosition.x = rightWallNode!.position.x - ballRadius!
+                }
+                originPoint = ballPosition
             }
             // This should work and prevent balls from landing in the middle of the screen...
             ball.moveBallTo(originPoint)
