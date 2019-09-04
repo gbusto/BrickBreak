@@ -395,6 +395,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.removeChildren(in: [ballCountLabel!])
     }
     
+    // XXX TEST
     public func allBallsStopped(_ ballArray: [BallItem]) -> Bool {
         var allBallsStopped = true
         let _ = ballArray.filter {
@@ -517,6 +518,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX TEST; could maybe test by returning the special animation function and ensuring it's correct
     public func showSpecialAnimation(item: Item, center: CGPoint) {
         if item is MysteryBlockItem {
             let block = item as! MysteryBlockItem
@@ -758,6 +760,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX TEST; if not automatically, add it to a list of test procedures
     public func startTimer(_ point: CGPoint) {
         let _ = Timer.scheduledTimer(withTimeInterval: fireDelay, repeats: true) { timer in
             if self.endTurn {
@@ -797,6 +800,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX TEST
     // Actions to perform when a ball stops (reaches the ground)
     public func handleStoppedBalls() {
         if stoppedBalls.count > 0 {
@@ -823,11 +827,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // XXX TEST
     // Checks whether or not a point is in the bounds of the game as opposed to the top or bottom margins
     public func inGame(_ point: CGPoint) -> Bool {
         return ((point.y < ceilingNode!.position.y) && (point.y > groundNode!.size.height))
     }
     
+    // XXX TEST
     // Checks if a ball is out of bounds
     public func isOutOfBounds(ballPosition: CGPoint) -> Bool {
         return ((ballPosition.y > 1000) || (ballPosition.x < -1000) || (ballPosition.x > 1000))

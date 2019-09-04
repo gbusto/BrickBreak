@@ -130,6 +130,7 @@ class LevelsGameScene: GameScene {
         }
     }
     
+    // XXX TEST; maybe I could test these by calling the functions with points that should clearly be outside of the game
     // MVC: View detects the touch; the code in this function should notify the GameSceneController to handle this event
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
