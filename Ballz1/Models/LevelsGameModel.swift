@@ -162,11 +162,19 @@ class LevelsGameModel {
         }
         else {
             // NON-PRODUCTION: Create the desired row layouts here manually for testing
-            let numberOfBalls = 10
+            numberOfBalls = 50
             let itemTypeDict: [Int : Int] = [:]
             let blockTypeArray: [Int] = [ItemGenerator.HIT_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.MYSTERY_BLOCK]
             let nonBlockTypeArray: [Int] = [ItemGenerator.SPACER, ItemGenerator.BOMB, ItemGenerator.BALL]
             
+            let itemArrayStr: [[String]] = [
+                ["H:44", "H:23", "S:0", "S:0", "S:0", "S:0", "?:50", "S:0"],
+                ["S:0", "S:0", "H:20", "H:25", "H:35", "H:12", "S:0", "S:0"],
+                ["?:26", "S:0", "S:0", "B:0", "H:44", "S:0", "T:31", "S:0"],
+                ["S:0", "S:0", "S:0", "H:43", "S:0", "H:10", "S:0", "S:0"]
+            ]
+            
+            /* XXX REMOVE ME
             let itemArray: [[Int]] = [
                 [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
                 [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.HIT_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
@@ -177,6 +185,38 @@ class LevelsGameModel {
                 [12, 0, 5, 0, 5, 8, 0, 0],
                 [12, 0, 5, 0, 5, 8, 0, 0],
             ]
+            */
+            
+            var itemArray: [[Int]] = []
+            var itemHitCountArray: [[Int]] = []
+            for row in itemArrayStr {
+                var itemRow: [Int] = []
+                var hitCountRow: [Int] = []
+                for item in row {
+                    if item.starts(with: "H") {
+                        itemRow.append(ItemGenerator.HIT_BLOCK)
+                    }
+                    else if item.starts(with: "T") {
+                        itemRow.append(ItemGenerator.STONE_BLOCK)
+                    }
+                    else if item.starts(with: "?") {
+                        itemRow.append(ItemGenerator.MYSTERY_BLOCK)
+                    }
+                    else if item.starts(with: "B") {
+                        itemRow.append(ItemGenerator.BOMB)
+                    }
+                    else if item.starts(with: "S") {
+                        itemRow.append(ItemGenerator.SPACER)
+                    }
+                    
+                    // Get the hit count for this item
+                    let hitCount = item.split(separator: ":")[1]
+                    hitCountRow.append(Int(hitCount)!)
+                }
+                
+                itemArray.append(itemRow)
+                itemHitCountArray.append(hitCountRow)
+            }
             
             numRowsToGenerate = itemArray.count
             

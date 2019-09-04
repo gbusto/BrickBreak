@@ -667,10 +667,18 @@ class LevelsGameScene: GameScene {
     
     // MARK: Private functions
     private func initGameModel() {
+        let production = true
         gameModel = LevelsGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, numberOfRows:
                                     Int(GameScene.NUM_ROWS),
                                     // PRODUCTION: Change back the TRUE before deploying
-                                    production: true)
+                                    production: production)
+        
+        if false == production {
+            let score = Int.random(in: 10000...15000)
+            gameController!.updateRowCountLabel(currentCount: 50, maxCount: 50)
+            gameController!.setScore(score: score)
+            gameModel!.gameScore = score
+        }
         
         // XXX This could be changed so fontName can remain private
         ballCountLabel = SKLabelNode(fontNamed: fontName)

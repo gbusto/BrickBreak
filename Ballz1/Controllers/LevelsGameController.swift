@@ -355,6 +355,11 @@ class LevelsGameController: UIViewController,
         }
     }
     
+    public func setScore(score: Int) {
+        // Used for app demos
+        levelScore.text = "\(score)"
+    }
+    
     public func gameOverLoss() {
         gameEnded = true
         

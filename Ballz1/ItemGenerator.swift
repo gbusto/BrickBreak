@@ -300,7 +300,7 @@ class ItemGenerator {
         self.nonBlockTypeArray = igState!.nonBlockTypeArray
         
         // Load items into the item array based on our saved item array and item hit count array
-        itemArray = loadItems(items: igState!.itemArray, itemHitCounts: igState!.itemHitCountArray, numberOfBalls: numberOfBalls)
+        itemArray = loadItems(items: igState!.itemArray, itemHitCounts: igState!.itemHitCountArray, numberOfBalls: self.numberOfBalls)
     }
     
     public func debugPrint() {
