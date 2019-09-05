@@ -25,6 +25,24 @@ https://help.apple.com/xcode/mac/current/#/dev442d7f2ca
 5. Fill in the necessary text boxes, upload images, etc  
 6. In the build section, your new archived app should appear eventually after uploading it in the previous steps  
 
+## Recording App Preview on Device
+
+`QuickTime -> File -> New Movie Recording -> Select device as video and microphone output`  
+
+At this point, you the QuickTime recording window should show your device screen. Start recording and then play the game/use the app. Stop recording when you're done.  
+
+Now at this point, you'll need to need to change the frame rate of the app using this command:  
+
+`ffmpeg -i MOVIENAME.mov -r 30 NEWMOVIENAME.mov`  
+
+## Recording App Preview on Simulator
+
+To record an app preview on the simulator, run the following command:  
+
+`xcrun simctl io booted recordVideo <filename>.mov`  
+
+This recording will most likely need a sound channel added to it before being accepted as a valid app preview. I'll update this with that process next time I need to do that.
+
 ## Tagging a Release
 
 git tag -a "vX.X.X" -m "Tag message"  
