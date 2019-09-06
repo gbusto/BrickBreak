@@ -331,6 +331,7 @@ class LevelsGameModel {
     // Some hacky math to figure out how many rows of actual items we have left in the game
     // The reason we need to do this is because levels have a finite number of rows to play (numRowsToGenerate)
     // After we've generated all the rows for a level, we continue adding empty rows (rows with SpacerItems) so that we can properly detect lossRisk and gameOver scenarios
+    // XXX TEST; this should be fairly easy to test
     public func getActualRowCount() -> Int {
         var actualRowCount = 0
         
@@ -380,6 +381,7 @@ class LevelsGameModel {
         }
     }
     
+    // XXX TEST; this should be easy to test
     public func lossRisk() -> Bool {
         return (itemGenerator!.itemArray.count == numberOfRows - 2)
     }
@@ -389,6 +391,7 @@ class LevelsGameModel {
      Rewrite this to maybe detect gameover without needing to call a function first; it should just end up in the GAME_OVER state
      and the view's update() loop should check for .isGameOver()
     */
+    // XXX TEST
     public func gameOver() -> Int {
         // XXX This needs to be updated to capture if the user lost
         // Also, the lossRisk function will need to be updated too

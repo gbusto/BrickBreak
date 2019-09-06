@@ -124,6 +124,7 @@ class ContinuousGameModel {
     
     // Load the previous turn state
     // XXX NEEDS WORK
+    // XXX TEST
     public func loadPreviousTurnState() -> Bool {
         if prevTurnSaved {
             if false == itemGenerator!.loadTurnState() {
@@ -232,10 +233,12 @@ class ContinuousGameModel {
         return itemGenerator!.generateRow()
     }
     
+    // XXX TEST
     public func lossRisk() -> Bool {
         return (itemGenerator!.itemArray.count == numberOfRows - 2)
     }
     
+    // XXX TEST
     // The floor of the game scene; if another row doesn't fit
     public func gameOver() -> Bool {
         if (itemGenerator!.itemArray.count == numberOfRows - 1) {
