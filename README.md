@@ -47,3 +47,16 @@ This recording will most likely need a sound channel added to it before being ac
 
 git tag -a "vX.X.X" -m "Tag message"  
 git push --follow-tags  
+
+## Fixing CocoaPods Bug With Unit Tests
+
+Follow these steps to resolve unit test modules not being able to find packages. This example is specific to Firebase but could probably be applied to any other 3rd party libraries:  
+
+1. Click on the top-level app item in your Xcode file explorer (in my case it was Ballz1)  
+2. Go to Build Settings and click on your MyAppTests target  
+3. Search for Header Search Paths under Search Paths subsection  
+4. Add the following:  
+    * $(inherited) non-recursive  
+    * $(SRCROOT)/Pods/Headers/Public recursive  
+    * $(SRCROOT)/Pods/Firebase recursive  
+5. Try re-running tests and it should be good to go!  
