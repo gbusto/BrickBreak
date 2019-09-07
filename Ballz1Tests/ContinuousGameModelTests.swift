@@ -11,11 +11,13 @@ import XCTest
 
 class ContinuousGameModelTests: XCTestCase {
     
+    private var numberOfRows = 10
     private var model: ContinuousGameModel?
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        model = ContinuousGameModel(numberOfRows: 10)
+        model = ContinuousGameModel(numberOfRows: self.numberOfRows)
+        model!.initItemGenerator(blockSize: CGSize(width: 0, height: 0), ballRadius: CGFloat(0))
     }
 
     override func tearDown() {
@@ -34,6 +36,58 @@ class ContinuousGameModelTests: XCTestCase {
         XCTAssertTrue(model!.isTurnOver(), "CGM should be in turnOver state but isn't")
         model!.incrementState()
         XCTAssertTrue(model!.isWaiting(), "CGM should be in waiting state but isn't")
+    }
+    
+    func testLossRisk() {
+        var itemArray1: [[Item]] = []
+        var itemArray2: [[Item]] = []
+        var itemArray3: [[Item]] = []
+        
+        // We don't TECHNICALLY count the 1st row (row 0) in the game to leave space for balls to go above blocks and break them, so we should start the count at 1 instead of 0 for this test
+        for _ in 1...(self.numberOfRows - 3) {
+            itemArray1.append([SpacerItem()])
+        }
+        for _ in 1...(self.numberOfRows - 2) {
+            itemArray2.append([SpacerItem()])
+        }
+        for _ in 1...(self.numberOfRows - 1) {
+            itemArray3.append([SpacerItem()])
+        }
+        
+        self.model!.itemGenerator!.itemArray = itemArray1
+        XCTAssertFalse(model!.lossRisk(), "Loss risk should be false but isn't")
+        
+        self.model!.itemGenerator!.itemArray = itemArray2
+        XCTAssertTrue(model!.lossRisk(), "Loss risk should be true but isn't")
+        
+        self.model!.itemGenerator!.itemArray = itemArray3
+        XCTAssertFalse(model!.lossRisk(), "Loss risk should be false but isn't")
+    }
+    
+    func testGameOver() {
+        var itemArray1: [[Item]] = []
+        var itemArray2: [[Item]] = []
+        var itemArray3: [[Item]] = []
+        
+        // We don't TECHNICALLY count the 1st row (row 0) in the game to leave space for balls to go above blocks and break them, so we should start the count at 1 instead of 0 for this test
+        for _ in 1...(self.numberOfRows - 2) {
+            itemArray1.append([SpacerItem()])
+        }
+        for _ in 1...(self.numberOfRows - 1) {
+            itemArray2.append([SpacerItem()])
+        }
+        for _ in 1...(self.numberOfRows) {
+            itemArray3.append([SpacerItem()])
+        }
+        
+        self.model!.itemGenerator!.itemArray = itemArray1
+        XCTAssertFalse(model!.gameOver(), "Game over should be false but isn't")
+        
+        self.model!.itemGenerator!.itemArray = itemArray2
+        XCTAssertTrue(model!.gameOver(), "Game over should be true but isn't")
+        
+        self.model!.itemGenerator!.itemArray = itemArray3
+        XCTAssertFalse(model!.gameOver(), "Game over should be false but isn't")
     }
 
     func testPerformanceExample() {
