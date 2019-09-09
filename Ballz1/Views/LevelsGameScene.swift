@@ -669,8 +669,9 @@ class LevelsGameScene: GameScene {
     // MARK: Private functions
     private func initGameModel() {
         let production = true
-        gameModel = LevelsGameModel(view: view!, blockSize: blockSize!, ballRadius: ballRadius!, numberOfRows:
-                                    Int(GameScene.NUM_ROWS),
+        gameModel = LevelsGameModel(blockSize: blockSize!,
+                                    ballRadius: ballRadius!,
+                                    numberOfRows: Int(GameScene.NUM_ROWS),
                                     // PRODUCTION: Change back the TRUE before deploying
                                     production: production)
         

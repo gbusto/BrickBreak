@@ -81,7 +81,7 @@ class LevelsGameModel {
     }
     
     // MARK: Initialization functions
-    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int, production: Bool = true) {
+    required init(blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int, production: Bool = true) {
         PRODUCTION = production
         
         state = WAITING
@@ -173,19 +173,6 @@ class LevelsGameModel {
                 ["?:26", "S:0", "S:0", "B:0", "H:44", "S:0", "T:31", "S:0"],
                 ["S:0", "S:0", "S:0", "H:43", "S:0", "H:10", "S:0", "S:0"]
             ]
-            
-            /* XXX REMOVE ME
-            let itemArray: [[Int]] = [
-                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
-                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.HIT_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
-                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.HIT_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
-            ]
-            let itemHitCountArray = [
-                [12, 0, 5, 0, 5, 8, 0, 0],
-                [12, 0, 5, 0, 5, 8, 0, 0],
-                [12, 0, 5, 0, 5, 8, 0, 0],
-            ]
-            */
             
             var itemArray: [[Int]] = []
             var itemHitCountArray: [[Int]] = []
@@ -328,7 +315,6 @@ class LevelsGameModel {
         }
     }
     
-    // XXX TEST
     // Some hacky math to figure out how many rows of actual items we have left in the game
     // The reason we need to do this is because levels have a finite number of rows to play (numRowsToGenerate)
     // After we've generated all the rows for a level, we continue adding empty rows (rows with SpacerItems) so that we can properly detect lossRisk and gameOver scenarios
@@ -381,12 +367,10 @@ class LevelsGameModel {
         }
     }
     
-    // XXX TEST
     public func lossRisk() -> Bool {
         return (itemGenerator!.itemArray.count == numberOfRows - 2)
     }
     
-    // XXX TEST
     // The floor of the game scene; if another row doesn't fit
     /*  XXX
      Rewrite this to maybe detect gameover without needing to call a function first; it should just end up in the GAME_OVER state

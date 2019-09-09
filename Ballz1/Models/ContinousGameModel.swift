@@ -237,7 +237,6 @@ class ContinuousGameModel {
         return (itemGenerator!.itemArray.count == numberOfRows - 2)
     }
     
-    // XXX TEST
     // The floor of the game scene; if another row doesn't fit
     public func gameOver() -> Bool {
         if (itemGenerator!.itemArray.count == numberOfRows - 1) {
