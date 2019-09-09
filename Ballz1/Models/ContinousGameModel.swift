@@ -124,6 +124,7 @@ class ContinuousGameModel {
     
     // Load the previous turn state
     // XXX NEEDS WORK
+    // XXX TEST
     public func loadPreviousTurnState() -> Bool {
         if prevTurnSaved {
             if false == itemGenerator!.loadTurnState() {

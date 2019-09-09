@@ -81,7 +81,7 @@ class LevelsGameModel {
     }
     
     // MARK: Initialization functions
-    required init(view: SKView, blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int, production: Bool = true) {
+    required init(blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int, production: Bool = true) {
         PRODUCTION = production
         
         state = WAITING
@@ -173,19 +173,6 @@ class LevelsGameModel {
                 ["?:26", "S:0", "S:0", "B:0", "H:44", "S:0", "T:31", "S:0"],
                 ["S:0", "S:0", "S:0", "H:43", "S:0", "H:10", "S:0", "S:0"]
             ]
-            
-            /* XXX REMOVE ME
-            let itemArray: [[Int]] = [
-                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.BOMB, ItemGenerator.STONE_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
-                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.HIT_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
-                [ItemGenerator.HIT_BLOCK, ItemGenerator.SPACER, ItemGenerator.MYSTERY_BLOCK, ItemGenerator.SPACER, ItemGenerator.HIT_BLOCK, ItemGenerator.STONE_BLOCK, ItemGenerator.SPACER, ItemGenerator.SPACER],
-            ]
-            let itemHitCountArray = [
-                [12, 0, 5, 0, 5, 8, 0, 0],
-                [12, 0, 5, 0, 5, 8, 0, 0],
-                [12, 0, 5, 0, 5, 8, 0, 0],
-            ]
-            */
             
             var itemArray: [[Int]] = []
             var itemHitCountArray: [[Int]] = []
