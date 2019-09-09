@@ -38,6 +38,8 @@ class DataManager {
     static let OnboardingDirURL = AppDirURL.appendingPathComponent("OnboardingDir")
     static let InitialOnboardingStateURL = OnboardingDirURL.appendingPathComponent("InitialOnboardingState")
     
+    static let ReviewPromptDataURL = AppDirURL.appendingPathComponent("ReviewPromptData")
+    
     // Path for saving ball manager state
     static let BallManagerPath = "BallManager"
     // Path for saving item generator state
@@ -122,6 +124,20 @@ class DataManager {
         enum CodingKeys: String, CodingKey {
             case showedClassicOnboarding
             case showedLevelOnboarding
+        }
+    }
+    
+    struct ReviewPromptData: Codable {
+        var reviewPrompt1: Bool
+        var reviewPrompt2: Bool
+        var reviewPrompt3: Bool
+        var reviewPrompt4: Bool
+        
+        enum CodingKeys: String, CodingKey {
+            case reviewPrompt1
+            case reviewPrompt2
+            case reviewPrompt3
+            case reviewPrompt4
         }
     }
     
@@ -256,6 +272,26 @@ class DataManager {
         }
     }
     
+    public func saveReviewPromptData(reviewPrompt1: Bool, reviewPrompt2: Bool, reviewPrompt3: Bool, reviewPrompt4: Bool) -> Bool {
+        do {
+            if false == FileManager.default.fileExists(atPath: DataManager.ReviewPromptDataURL.path) {
+                try FileManager.default.createDirectory(at: DataManager.ReviewPromptDataURL, withIntermediateDirectories: true, attributes: nil)
+            }
+            
+            let reviewPromptData: ReviewPromptData = ReviewPromptData(reviewPrompt1: reviewPrompt1, reviewPrompt2: reviewPrompt2, reviewPrompt3: reviewPrompt3, reviewPrompt4: reviewPrompt4)
+            
+            // Save the review prompt data
+            let pData = try PropertyListEncoder().encode(reviewPromptData)
+            try pData.write(to: DataManager.ReviewPromptDataURL, options: .completeFileProtectionUnlessOpen)
+            print("Saved review prompt state: \(reviewPromptData)")
+            return true
+        }
+        catch {
+            print("Error saving review data: \(error)")
+            return false
+        }
+    }
+    
     
     // MARK: Public functions to load data
     
@@ -339,6 +375,19 @@ class DataManager {
         }
         catch {
             print("Error loading initial onboarding state: \(error)")
+            return nil
+        }
+    }
+    
+    public func loadReviewPromptData() -> ReviewPromptData? {
+        do {
+            let data = try Data(contentsOf: DataManager.ReviewPromptDataURL)
+            let reviewState: ReviewPromptData = try PropertyListDecoder().decode(DataManager.ReviewPromptData.self, from: data)
+            print("Loaded initial onboarding state: \(reviewState)")
+            return reviewState
+        }
+        catch {
+            print("Error loading review prompt data: \(error)")
             return nil
         }
     }

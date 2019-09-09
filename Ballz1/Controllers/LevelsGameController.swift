@@ -154,8 +154,6 @@ class LevelsGameController: UIViewController,
         super.viewDidLoad()
         
         goToGameScene()
-        
-        reviewer = Review()
     }
     
     // MARK: Banner ad functions
@@ -187,11 +185,9 @@ class LevelsGameController: UIViewController,
         // The interstitialAd object can only be used once so we need to prepare a new one each time the ad object is used
         prepareInterstitialAd()
         
-        if numConsecutiveWins == 2 {
-            print("Attempting to prompt user for review")
-            // After the user has won 2 consecutive games in a row, attempt to prompt them for a review
-            // XXX UNCOMMENT THIS WHENEVER I HAVE A BETTER PLAN FOR IT
-            //reviewer!.attemptReview()
+        let levelNumber = Int(levelCount.text!)!
+        if levelNumber >= 100 {
+            Review.shared.promptForReview()
         }
     }
     
