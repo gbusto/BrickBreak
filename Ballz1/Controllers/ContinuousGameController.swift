@@ -181,8 +181,6 @@ class ContinuousGameController: UIViewController,
             view.presentScene(scene)
             
             view.ignoresSiblingOrder = true
-            
-            reviewer = Review()
         }
     }
     
@@ -492,14 +490,10 @@ class ContinuousGameController: UIViewController,
             startingScore = gameScore
         }
         
-        /* XXX REMOVE ME
-        if gameScore - startingScore! >= 50 {
-            print("Attemping to prompt user for review")
-            // Show the user a review prompt after they've scored 50 points since starting the game
-            // XXX UNCOMMENT THIS WHENEVER I HAVE A BETTER PLAN FOR IT
-            //reviewer!.attemptReview()
+        // If the user's game score is > 100 and they've played at least 10 turns, ask them if they want to leave a review
+        if gameScore >= 100 && (gameScore - startingScore!) > 10 {
+            Review.shared.promptForReview()
         }
-        */
     }
     
     // MARK: View override functions
