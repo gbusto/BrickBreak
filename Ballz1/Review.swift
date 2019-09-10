@@ -35,10 +35,8 @@ class Review {
     public func promptForReview() {
         if false == reviewPrompt1 {
             print("Prompting user for a review")
-            /* XXX UNCOMMENT THESE LINES
             DataManager.shared.saveReviewPromptData(reviewPrompt1: true, reviewPrompt2: reviewPrompt2, reviewPrompt3: reviewPrompt3, reviewPrompt4: reviewPrompt4)
             SKStoreReviewController.requestReview()
-            */
         }
         else {
             print("Already prompted user for review!")
