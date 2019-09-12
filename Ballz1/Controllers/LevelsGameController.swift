@@ -276,7 +276,16 @@ class LevelsGameController: UIViewController,
     }
     
     @IBAction func gameOverShareButtonClicked(_ sender: Any) {
-        print("USER WANTS TO SHARE THIS!!!")
+        let layer = UIApplication.shared.keyWindow!.layer
+        let scale = UIScreen.main.scale
+        // Creates UIImage of same size as view
+        UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, scale);
+        layer.render(in: UIGraphicsGetCurrentContext()!)
+        let screenshot = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        let activityViewController = UIActivityViewController(activityItems: [screenshot], applicationActivities: [])
+        self.present(activityViewController, animated: true, completion: nil)
     }
     
     @IBAction func gameOverNextButtonClicked(_ sender: Any) {
