@@ -506,6 +506,7 @@ class LevelsGameScene: GameScene {
         let blurView = UIVisualEffectView(effect: blur)
         blurView.frame = view!.frame
         
+        /* XXX
         let imageView = UIImageView(image: UIImage(named: "score_background_yellow_fade"))
         // Set the center of the image to be the center of the main view
         imageView.center = view!.center
@@ -529,6 +530,14 @@ class LevelsGameScene: GameScene {
         
         // Add the background image for the labels
         view!.addSubview(imageView2)
+        */
+        
+        // Add the blur view to the screen first
+        view!.addSubview(blurView)
+        
+        // Set the alphas to 0 so we can fade it in
+        blurView.alpha = 0
+        gameOverView.alpha = 0
         
         // Unhide the level cleared view
         gameOverView.isHidden = false
@@ -536,61 +545,72 @@ class LevelsGameScene: GameScene {
         // Add the level cleared view on top of the blur view and the level cleared view
         view!.addSubview(gameOverView)
         
-        // Set a flag so that the update scene tick will fade the view in
-        showingGameOverView = true
-        
-        activeViews = [blurView, gameOverView, imageView, imageView2]
+        var imageView: UIImageView? = nil
         
         if win {
             if gameModel!.gameScore > gameModel!.highScore {
-                let _ = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
-                    self.addHighScoreStamp()
-                }
+                imageView = addHighScoreStamp()
             }
             else {
-                let _ = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
-                    self.addLevelPassedStamp()
-                }
+                imageView = addLevelPassedStamp()
             }
         }
         else {
-            let _ = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
-                self.addLevelFailedStamp()
-            }
+            imageView = addLevelFailedStamp()
         }
+        
+        view!.addSubview(imageView!)
+        
+        // XXX activeViews = [blurView, gameOverView, imageView, imageView2]
+        activeViews = [blurView, gameOverView, imageView!]
+        
+        // Set a flag so that the update scene tick will fade the view in
+        showingGameOverView = true
     }
     
-    public func addLevelPassedStamp() {
+    public func addLevelPassedStamp() -> UIImageView {
         let levelPassedStampView = UIImageView(image: UIImage(named: "level_passed_narrow4"))
         levelPassedStampView.center = view!.center
         levelPassedStampView.center.y -= 70
         levelPassedStampView.contentMode = .scaleAspectFit
+        levelPassedStampView.alpha = 0
         
+        /* XXX REMOVE ME
         view!.addSubview(levelPassedStampView)
         
         activeViews.append(levelPassedStampView)
+        */
+        return levelPassedStampView
     }
     
-    public func addLevelFailedStamp() {
-        let levelPassedStampView = UIImageView(image: UIImage(named: "level_failed_narrow4"))
-        levelPassedStampView.center = view!.center
-        levelPassedStampView.center.y -= 70
-        levelPassedStampView.contentMode = .scaleAspectFit
+    public func addLevelFailedStamp() -> UIImageView {
+        let levelFailedStampView = UIImageView(image: UIImage(named: "level_failed_narrow4"))
+        levelFailedStampView.center = view!.center
+        levelFailedStampView.center.y -= 70
+        levelFailedStampView.contentMode = .scaleAspectFit
+        levelFailedStampView.alpha = 0
         
-        view!.addSubview(levelPassedStampView)
+        /* XXX REMOVE ME
+        view!.addSubview(levelFailedStampView)
         
-        activeViews.append(levelPassedStampView)
+        activeViews.append(levelFailedStampView)
+        */
+        return levelFailedStampView
     }
     
-    public func addHighScoreStamp() {
+    public func addHighScoreStamp() -> UIImageView {
         let highScoreStamp = UIImageView(image: UIImage(named: "high_score_narrow4"))
         highScoreStamp.center = view!.center
         highScoreStamp.center.y -= 70
         highScoreStamp.contentMode = .scaleAspectFit
+        highScoreStamp.alpha = 0
         
+        /* XXX REMOVE ME
         view!.addSubview(highScoreStamp)
         
         activeViews.append(highScoreStamp)
+        */
+        return highScoreStamp
     }
     
     public func removeGameOverView() {
