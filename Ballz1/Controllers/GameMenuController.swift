@@ -37,6 +37,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     private var levelsButtonColorValue1 = 0xD4008E
     private var levelsButtonColorValue2 = 0xFF1597
 
+    /* XXX REMOVE ME
     // Get the user's current level number from Levels game mode (saved to disk)
     func loadLevelNumber() -> Int {
         let persistentData = DataManager.shared.loadLevelsPersistentData()
@@ -46,7 +47,9 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         print("Read level number '\(persistentData!.levelCount)' from disk")
         return persistentData!.levelCount
     }
+    */
     
+    /* XXX REMOVE ME
     // Get the user's high score from Classic game mode (saved to disk)
     func loadHighScore() -> Int {
         let persistentData = DataManager.shared.loadClassicPeristentData()
@@ -56,20 +59,25 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         print("Read high score '\(persistentData!.highScore)' from disk")
         return persistentData!.highScore
     }
+    */
     
+    /* XXX REMOVE ME
     // Update the user's high score locally (when game center has a higher score on record than is on disk)
     func updateHighScore(score: Int64) {
         print("Saving high score '\(Int(score))' to disk")
         let persistentData = DataManager.shared.loadClassicPeristentData()
         DataManager.shared.saveClassicPersistentData(highScore: Int(score), showedTutorials: persistentData!.showedTutorials)
     }
+    */
     
+    /* XXX REMOVE ME
     // XXX Not currently being used but will be in the future
     func updateLevelNumber(level: Int64) {
         print("Saving high score '\(Int(level))' to disk")
         let persistentData = DataManager.shared.loadLevelsPersistentData()
         DataManager.shared.saveLevelsPersistentData(levelCount: Int(level), highScore: persistentData!.highScore, cumulativeScore: persistentData!.cumulativeScore, showedTutorials: persistentData!.showedTutorials)
     }
+    */
     
     // MARK: Gamecenter delegate protocol
     func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
@@ -100,8 +108,8 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                         // Enable the game center button
                         self.gameCenterButton.isEnabled = true
                         
-                        self.checkHighScore()
-                        self.checkLevelNumber()
+                        GameCenterManager.shared.checkHighScore()
+                        GameCenterManager.shared.checkLevelNumber()
                     }
                 })
             }
@@ -133,8 +141,8 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         if let lp = localPlayer {
             // Player is already auth'ed, load their high score
             if lp.isAuthenticated {
-                checkHighScore()
-                checkLevelNumber()
+                GameCenterManager.shared.checkHighScore()
+                GameCenterManager.shared.checkLevelNumber()
             }
         }
         else {
@@ -286,6 +294,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         return true
     }
     
+    /* XXX REMOVE ME
     private func checkLevelNumber() {
         let leaderBoard = GKLeaderboard(players: [localPlayer!])
         leaderBoard.identifier = LEVELS_LEADERBOARD_ID
@@ -303,12 +312,14 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             }
         })
     }
+    */
     
     /*
      * This function checks the user's high score in game center and compares it to the one locally (on disk)
      * If the score in game center is > than the score on disk, update the user's high score locally
      * If the score locally is > than the score in game center, update the user's high score in game center
      */
+    /* XXX REMOVE ME
     private func checkHighScore() {
         // Get the user's instance of the leaderboard to retrieve their scores
         let leaderBoard = GKLeaderboard(players: [localPlayer!])
@@ -342,7 +353,9 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             }
         })
     }
+    */
     
+    /* XXX REMOVE ME
     // Report the high score to game center
     private func reportHighScore(score: Int64) {
         // Report the game score to the game center
@@ -354,7 +367,9 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             }
         }
     }
+    */
     
+    /* XXX REMOVE ME
     private func reportLevelNumber(level: Int64) {
         let gkscore = GKScore(leaderboardIdentifier: LEVELS_LEADERBOARD_ID, player: localPlayer!)
         gkscore.value = level
@@ -364,6 +379,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             }
         }
     }
+    */
     
     private func createButtonGradient(button: UIButton, color1: UIColor, color2: UIColor) -> CAGradientLayer {
         let gradientLayer = CAGradientLayer()
