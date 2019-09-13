@@ -21,6 +21,7 @@ class LevelsGameController: UIViewController,
     @IBOutlet var rowCountLabel: UILabel!
     @IBOutlet var heartImageView: UIImageView!
     
+    /* XXX REMOVE THESE NEXT 3 LINES */
     @IBOutlet var gameOverView: UIView!
     @IBOutlet var gameOverLevelCount: UILabel!
     @IBOutlet var gameOverLevelScore: UILabel!
@@ -30,6 +31,11 @@ class LevelsGameController: UIViewController,
     @IBOutlet weak var gameMenuButton: UIButton!
     
     @IBOutlet weak var bannerAdView: GADBannerView!
+    
+    @IBOutlet var gameOverViewNew: UIView!
+    @IBOutlet weak var gameOverTextBackground: UIImageView!
+    @IBOutlet weak var gameOverShareButton: UIButton!
+    @IBOutlet weak var gameOverNextButton: UIButton!
     
     private var interstitialAd: GADInterstitial!
     
@@ -269,6 +275,33 @@ class LevelsGameController: UIViewController,
         }
     }
     
+    @IBAction func gameOverShareButtonClicked(_ sender: Any) {
+        let layer = UIApplication.shared.keyWindow!.layer
+        let scale = UIScreen.main.scale
+        // Creates UIImage of same size as view
+        UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, scale);
+        layer.render(in: UIGraphicsGetCurrentContext()!)
+        let screenshot = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        let activityViewController = UIActivityViewController(activityItems: [screenshot], applicationActivities: [])
+        self.present(activityViewController, animated: true, completion: nil)
+    }
+    
+    @IBAction func gameOverNextButtonClicked(_ sender: Any) {
+        let scene = self.scene as! LevelsGameScene
+        scene.removeConfetti()
+        scene.removeGameOverView()
+        
+        // Show an interstitial ad
+        if self.interstitialAd.isReady {
+            self.interstitialAd.present(fromRootViewController: self)
+        }
+        
+        // Replay the game scene; state should have already been saved
+        self.goToGameScene()
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Prepare for a segue
     }
@@ -323,7 +356,14 @@ class LevelsGameController: UIViewController,
             resumeButton.layer.cornerRadius = resumeButton.frame.height * 0.5
             gameMenuButton.layer.cornerRadius = gameMenuButton.frame.height * 0.5
             
-            gameOverView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
+            // XXX REMOVE ME gameOverView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
+            gameOverViewNew.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
+            
+            gameOverNextButton.imageView?.contentMode = .scaleAspectFit
+            gameOverShareButton.imageView?.contentMode = .scaleAspectFit
+            
+            gameOverNextButton.layer.cornerRadius = gameOverNextButton.frame.height * 0.5
+            gameOverShareButton.layer.cornerRadius = gameOverShareButton.frame.height * 0.5
             
             view.presentScene(scene)
             view.ignoresSiblingOrder = true
@@ -435,6 +475,7 @@ class LevelsGameController: UIViewController,
             currentLevelCount -= 1
         }
         
+        /* XXX REMOVE ME
         gameOverLevelCount.attributedText = NSAttributedString(string: "Level \(currentLevelCount)",
             attributes: strokeTextAttributes)
         gameOverLevelScore.attributedText = NSAttributedString(string: "\(scene.gameModel!.gameScore)",
@@ -443,18 +484,25 @@ class LevelsGameController: UIViewController,
         // If they beat their high score, let them know
         
         scene.showGameOverView(win: win, gameOverView: gameOverView)
+        */
         
         if win {
             // Used for determining when we might be able to prompt the use for a positive review (they're more likely to be happy if they've completed more than 1 level successfully)
             numConsecutiveWins += 1
             // Used in analytics to determine how many levels were completed in a session
             numLevelsCompleted += 1
+            gameOverNextButton.setTitle("Next", for: .normal)
         }
         else {
             numConsecutiveWins = 0
             // Increment the number of levels failed
             numLevelsFailed += 1
+            
+            // Change the text of the button to say "Try Again" instead of "Next"
+            gameOverNextButton.setTitle("Try Again", for: .normal)
         }
+        
+        scene.showGameOverView(win: win, gameOverView: gameOverViewNew)
         
         let winInt = win ? 1 : 0
         let userRescuedInt = userWasRescued ? 1 : 0
@@ -466,6 +514,7 @@ class LevelsGameController: UIViewController,
             "rescued": userRescuedInt as NSNumber,
         ])
         
+        /* XXX REWORK ME
         let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
             let scene = self.scene as! LevelsGameScene
             if win {
@@ -482,6 +531,7 @@ class LevelsGameController: UIViewController,
             // Replay the game scene; state should have already been saved
             self.goToGameScene()
         }
+        */
     }
     
     // MARK: Private functions

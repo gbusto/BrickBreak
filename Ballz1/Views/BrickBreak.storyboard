@@ -820,6 +820,49 @@
                     </constraints>
                     <viewLayoutGuide key="safeArea" id="Yeb-nJ-hu9"/>
                 </view>
+                <view hidden="YES" contentMode="scaleToFill" id="UHr-7i-BaQ">
+                    <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Dcg-rG-s1r">
+                            <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="win_lose_text_background" translatesAutoresizingMaskIntoConstraints="NO" id="O0L-pv-vXK">
+                                    <rect key="frame" x="0.0" y="0.0" width="300" height="145"/>
+                                </imageView>
+                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="FoD-tZ-nCw">
+                                    <rect key="frame" x="0.0" y="155" width="300" height="145"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xjf-Gr-tlP">
+                                            <rect key="frame" x="0.0" y="0.0" width="300" height="67.5"/>
+                                            <color key="backgroundColor" red="0.83137254900000002" green="0.0" blue="0.5568627451" alpha="1" colorSpace="calibratedRGB"/>
+                                            <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="31"/>
+                                            <state key="normal" title="Share">
+                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </state>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mDV-Xr-R0H">
+                                            <rect key="frame" x="0.0" y="77.5" width="300" height="67.5"/>
+                                            <color key="backgroundColor" red="0.2470588235" green="0.42352941179999998" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="32"/>
+                                            <state key="normal" title="Play Again">
+                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </state>
+                                        </button>
+                                    </subviews>
+                                </stackView>
+                            </subviews>
+                        </stackView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="Dcg-rG-s1r" firstAttribute="leading" secondItem="9On-Ek-1Sl" secondAttribute="leading" id="7Tg-ue-vtN"/>
+                        <constraint firstItem="Dcg-rG-s1r" firstAttribute="top" secondItem="9On-Ek-1Sl" secondAttribute="top" id="CFi-yx-USR"/>
+                        <constraint firstItem="9On-Ek-1Sl" firstAttribute="trailing" secondItem="Dcg-rG-s1r" secondAttribute="trailing" id="Wji-kX-5ae"/>
+                        <constraint firstItem="9On-Ek-1Sl" firstAttribute="bottom" secondItem="Dcg-rG-s1r" secondAttribute="bottom" id="hUN-qm-uu3"/>
+                    </constraints>
+                    <viewLayoutGuide key="safeArea" id="9On-Ek-1Sl"/>
+                </view>
                 <exit id="BdV-NT-BI6" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="bNb-UM-NRp">
                     <connections>
@@ -907,7 +950,11 @@
                         <outlet property="gameMenuButton" destination="EpW-pu-3Ya" id="gxf-vg-iHo"/>
                         <outlet property="gameOverLevelCount" destination="sch-9a-iJz" id="KKS-60-ija"/>
                         <outlet property="gameOverLevelScore" destination="HeV-yu-1Hk" id="Y3C-K1-yoM"/>
+                        <outlet property="gameOverNextButton" destination="mIP-zL-6vH" id="Kao-1c-AxY"/>
+                        <outlet property="gameOverShareButton" destination="Ghf-oJ-Bi2" id="XQg-2J-u7M"/>
+                        <outlet property="gameOverTextBackground" destination="KiQ-0E-LkJ" id="qmr-ZU-Vn6"/>
                         <outlet property="gameOverView" destination="eNe-4N-TTQ" id="BwE-R3-KYC"/>
+                        <outlet property="gameOverViewNew" destination="pUa-zo-Khf" id="cJk-xg-d8j"/>
                         <outlet property="heartImageView" destination="kBu-Oi-gWf" id="bvF-PU-h5F"/>
                         <outlet property="levelCount" destination="djQ-6i-xDb" id="3Gk-Bb-C5C"/>
                         <outlet property="levelScore" destination="wRS-np-rfH" id="X7e-6K-z8T"/>
@@ -991,6 +1038,55 @@
                     </constraints>
                     <viewLayoutGuide key="safeArea" id="L9l-tV-Ri5"/>
                 </view>
+                <view hidden="YES" contentMode="scaleToFill" id="pUa-zo-Khf">
+                    <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="LNz-wC-NAv">
+                            <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="win_lose_text_background" translatesAutoresizingMaskIntoConstraints="NO" id="KiQ-0E-LkJ">
+                                    <rect key="frame" x="0.0" y="0.0" width="300" height="145"/>
+                                </imageView>
+                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="RSv-O0-Jtg">
+                                    <rect key="frame" x="0.0" y="155" width="300" height="145"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ghf-oJ-Bi2">
+                                            <rect key="frame" x="0.0" y="0.0" width="300" height="67.5"/>
+                                            <color key="backgroundColor" red="0.83137254900000002" green="0.0" blue="0.5568627451" alpha="1" colorSpace="calibratedRGB"/>
+                                            <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="31"/>
+                                            <state key="normal" title="Share">
+                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="gameOverShareButtonClicked:" destination="lds-87-3TS" eventType="touchUpInside" id="vRU-aW-8Wj"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mIP-zL-6vH">
+                                            <rect key="frame" x="0.0" y="77.5" width="300" height="67.5"/>
+                                            <color key="backgroundColor" red="0.2470588235" green="0.42352941179999998" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="32"/>
+                                            <state key="normal" title="Next">
+                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="gameOverNextButtonClicked:" destination="lds-87-3TS" eventType="touchUpInside" id="Ifl-Du-qGG"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                </stackView>
+                            </subviews>
+                        </stackView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="LNz-wC-NAv" firstAttribute="top" secondItem="nAT-28-bjV" secondAttribute="top" id="A53-YY-kYd"/>
+                        <constraint firstItem="LNz-wC-NAv" firstAttribute="leading" secondItem="nAT-28-bjV" secondAttribute="leading" id="DKL-36-BEs"/>
+                        <constraint firstItem="nAT-28-bjV" firstAttribute="bottom" secondItem="LNz-wC-NAv" secondAttribute="bottom" id="KQ7-9j-sIE"/>
+                        <constraint firstItem="nAT-28-bjV" firstAttribute="trailing" secondItem="LNz-wC-NAv" secondAttribute="trailing" id="UIs-UH-fjo"/>
+                    </constraints>
+                    <viewLayoutGuide key="safeArea" id="nAT-28-bjV"/>
+                </view>
                 <tapGestureRecognizer id="H8a-48-Q7M">
                     <connections>
                         <action selector="statusBarTapped:" destination="lds-87-3TS" id="4K3-Bp-N2p"/>
@@ -1044,5 +1140,6 @@
         <image name="rating_icon_1" width="49" height="45"/>
         <image name="undo_button" width="300" height="300"/>
         <image name="unused_life" width="325" height="321"/>
+        <image name="win_lose_text_background" width="308" height="158"/>
     </resources>
 </document>
