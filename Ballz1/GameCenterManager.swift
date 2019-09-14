@@ -16,7 +16,7 @@ class GameCenterManager {
     public var gcEnabled = Bool() // Check if the user has Game Center enabled
     public var gcDefaultLeaderBoard = String() // Check the default leaderboardID
     public var isAuthenticated = false
-    public var localPlayer: GKLocalPlayer?
+    public var localPlayer = GKLocalPlayer.local
     
     // Variables for keeping track of their current scores in level and classic
     public var levelCount = 0
@@ -40,7 +40,6 @@ class GameCenterManager {
         if nil == persistentData {
             return 0
         }
-        print("Read level number '\(persistentData!.levelCount)' from disk")
         return persistentData!.levelCount
     }
     
@@ -50,36 +49,25 @@ class GameCenterManager {
         if nil == persistentData {
             return 0
         }
-        print("Read high score '\(persistentData!.highScore)' from disk")
         return persistentData!.highScore
     }
     
     // Update the user's high score locally (when game center has a higher score on record than is on disk)
     public func updateHighScore(score: Int64) {
-        print("Saving high score '\(Int(score))' to disk")
         let persistentData = DataManager.shared.loadClassicPeristentData()
         DataManager.shared.saveClassicPersistentData(highScore: Int(score), showedTutorials: persistentData!.showedTutorials)
     }
     
     // XXX Not currently being used but will be in the future
     public func updateLevelNumber(level: Int64) {
-        print("Saving high score '\(Int(level))' to disk")
         let persistentData = DataManager.shared.loadLevelsPersistentData()
         DataManager.shared.saveLevelsPersistentData(levelCount: Int(level), highScore: persistentData!.highScore, cumulativeScore: persistentData!.cumulativeScore, showedTutorials: persistentData!.showedTutorials)
     }
     
-    public func gcGetUserClassicHighScore() -> Int {
-        return 0
-    }
-    
-    public func getUserLevelNumber() -> Int {
-        return 0
-    }
-    
     // XXX UPDATE THIS FUNCTION
+    // This function reports the level number and calls loeadLevelNumber
     public func checkLevelNumber() {
-        print("CALLING CHECK_LEVEL_NUMBER!!!!!!")
-        let leaderBoard = GKLeaderboard(players: [localPlayer!])
+        let leaderBoard = GKLeaderboard(players: [localPlayer])
         leaderBoard.identifier = GameCenterManager.LEVELS_LEADERBOARD_ID
         leaderBoard.timeScope = .allTime
         
@@ -103,9 +91,8 @@ class GameCenterManager {
      * If the score locally is > than the score in game center, update the user's high score in game center
      */
     public func checkHighScore() {
-        print("CALLING CHECK_HIGH_SCORE!!!!!!!!!!!")
         // Get the user's instance of the leaderboard to retrieve their scores
-        let leaderBoard = GKLeaderboard(players: [localPlayer!])
+        let leaderBoard = GKLeaderboard(players: [localPlayer])
         // Set the identifier so it knows what leaderboard to check
         leaderBoard.identifier = gcDefaultLeaderBoard
         // Set the time scopre for the score to return (we just set this to all time to go back to the very beginning of time)
@@ -140,9 +127,8 @@ class GameCenterManager {
     // XXX UPDATE THIS FUNCTION
     // Report the high score to game center
     public func reportHighScore(score: Int64) {
-        print("CALLING REPORT_HIGH_SCORE!!!!!!!!")
         // Report the game score to the game center
-        let gkscore = GKScore(leaderboardIdentifier: GameCenterManager.LEADERBOARD_ID, player: localPlayer!)
+        let gkscore = GKScore(leaderboardIdentifier: GameCenterManager.LEADERBOARD_ID, player: localPlayer)
         gkscore.value = Int64(score)
         GKScore.report([gkscore]) { (error) in
             if error != nil {
@@ -153,8 +139,7 @@ class GameCenterManager {
     
     // XXX UPDATE THIS FUNCTION
     public func reportLevelNumber(level: Int64) {
-        print("CALLING REPORT_LEVEL_NUMBER!!!!!!!!")
-        let gkscore = GKScore(leaderboardIdentifier: GameCenterManager.LEVELS_LEADERBOARD_ID, player: localPlayer!)
+        let gkscore = GKScore(leaderboardIdentifier: GameCenterManager.LEVELS_LEADERBOARD_ID, player: localPlayer)
         gkscore.value = level
         GKScore.report([gkscore]) { (error) in
             if error != nil {

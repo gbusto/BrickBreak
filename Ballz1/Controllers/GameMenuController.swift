@@ -22,12 +22,6 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     @IBOutlet var gameCenterButton: UIButton!
     @IBOutlet var rateButton: UIButton!
     
-    /* Variables */
-    var gcEnabled = Bool() // Check if the user has Game Center enabled
-    var gcDefaultLeaderBoard = String() // Check the default leaderboardID
-    var isAuthenticated = false
-    var localPlayer: GKLocalPlayer?
-    
     // IMPORTANT: replace the red string below with your own Leaderboard ID (the one you've set in iTunes Connect)
     let LEADERBOARD_ID = "xyz.ashgames.brickbreak"
     let LEVELS_LEADERBOARD_ID = "xyz.ashgames.brickbreak.levelnumber"
@@ -36,48 +30,6 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     private var classicButtonColorValue2 = 0x3F6CFF
     private var levelsButtonColorValue1 = 0xD4008E
     private var levelsButtonColorValue2 = 0xFF1597
-
-    /* XXX REMOVE ME
-    // Get the user's current level number from Levels game mode (saved to disk)
-    func loadLevelNumber() -> Int {
-        let persistentData = DataManager.shared.loadLevelsPersistentData()
-        if nil == persistentData {
-            return 0
-        }
-        print("Read level number '\(persistentData!.levelCount)' from disk")
-        return persistentData!.levelCount
-    }
-    */
-    
-    /* XXX REMOVE ME
-    // Get the user's high score from Classic game mode (saved to disk)
-    func loadHighScore() -> Int {
-        let persistentData = DataManager.shared.loadClassicPeristentData()
-        if nil == persistentData {
-            return 0
-        }
-        print("Read high score '\(persistentData!.highScore)' from disk")
-        return persistentData!.highScore
-    }
-    */
-    
-    /* XXX REMOVE ME
-    // Update the user's high score locally (when game center has a higher score on record than is on disk)
-    func updateHighScore(score: Int64) {
-        print("Saving high score '\(Int(score))' to disk")
-        let persistentData = DataManager.shared.loadClassicPeristentData()
-        DataManager.shared.saveClassicPersistentData(highScore: Int(score), showedTutorials: persistentData!.showedTutorials)
-    }
-    */
-    
-    /* XXX REMOVE ME
-    // XXX Not currently being used but will be in the future
-    func updateLevelNumber(level: Int64) {
-        print("Saving high score '\(Int(level))' to disk")
-        let persistentData = DataManager.shared.loadLevelsPersistentData()
-        DataManager.shared.saveLevelsPersistentData(levelCount: Int(level), highScore: persistentData!.highScore, cumulativeScore: persistentData!.cumulativeScore, showedTutorials: persistentData!.showedTutorials)
-    }
-    */
     
     // MARK: Gamecenter delegate protocol
     func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
@@ -85,25 +37,25 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     }
     
     func authenticatePlayer() {
-        localPlayer = GKLocalPlayer.local
-        localPlayer!.authenticateHandler = {(ViewController, error) -> Void in
+        let localPlayer = GameCenterManager.shared.localPlayer
+        localPlayer.authenticateHandler = {(ViewController, error) -> Void in
             if ((ViewController) != nil) {
                 // 1. Show login if player is not logged in
                 self.present(ViewController!, animated: true, completion: nil)
             }
-            else if (self.localPlayer!.isAuthenticated) {
+            else if (localPlayer.isAuthenticated) {
                 // 2. Player is already authenticated and logged in; load game center
-                self.gcEnabled = true
+                GameCenterManager.shared.gcEnabled = true
                 
                 // Get the default leaderboard ID
-                self.localPlayer!.loadDefaultLeaderboardIdentifier(completionHandler: { (leaderboardIdentifier, error) in
+                localPlayer.loadDefaultLeaderboardIdentifier(completionHandler: { (leaderboardIdentifier, error) in
                     if error != nil {
                         print("Error getting leaderboard: \(error!)")
                     }
                     else {
                         // I'm assuming the app uses the default leaderboard until one is created for the game
                         // When the first score is reported to a leaderboard, that board is now the default one
-                        self.gcDefaultLeaderBoard = leaderboardIdentifier!
+                        GameCenterManager.shared.gcDefaultLeaderBoard = leaderboardIdentifier!
                         
                         // Enable the game center button
                         self.gameCenterButton.isEnabled = true
@@ -115,7 +67,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
             }
             else {
                 // 3. Game center is not enabled on the users device
-                self.gcEnabled = false
+                GameCenterManager.shared.gcEnabled = false
                 print("Local player could not be authenticated! \(error!)")
             }
         }
@@ -138,12 +90,9 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         rateButton.layer.cornerRadius = rateButton.frame.height * 0.5
         
         // Authenticate the player and submit their high score
-        if let lp = localPlayer {
-            // Player is already auth'ed, load their high score
-            if lp.isAuthenticated {
-                GameCenterManager.shared.checkHighScore()
-                GameCenterManager.shared.checkLevelNumber()
-            }
+        if GameCenterManager.shared.localPlayer.isAuthenticated {
+            GameCenterManager.shared.checkHighScore()
+            GameCenterManager.shared.checkLevelNumber()
         }
         else {
             authenticatePlayer()
@@ -236,17 +185,16 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         }
     }
     
-    
     @IBAction func showGameCenter(_ sender: Any) {
         // Need to prompt the user if game center is not enabled; maybe they don't know what it is and want it enabled?
-        if self.gcEnabled {
+        if GameCenterManager.shared.gcEnabled {
             // Analytics log event; the user clicked the game center button
             Analytics.logEvent("game_center_button", parameters: /* None */ [:])
             
             let gameCenterController = GKGameCenterViewController()
             gameCenterController.gameCenterDelegate = self
             gameCenterController.viewState = .leaderboards
-            gameCenterController.leaderboardIdentifier = LEADERBOARD_ID
+            gameCenterController.leaderboardIdentifier = GameCenterManager.LEADERBOARD_ID
             self.present(gameCenterController, animated: true, completion: nil)
         }
     }
@@ -293,93 +241,6 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     override var prefersStatusBarHidden: Bool {
         return true
     }
-    
-    /* XXX REMOVE ME
-    private func checkLevelNumber() {
-        let leaderBoard = GKLeaderboard(players: [localPlayer!])
-        leaderBoard.identifier = LEVELS_LEADERBOARD_ID
-        leaderBoard.timeScope = .allTime
-        
-        leaderBoard.loadScores(completionHandler: {(scores, error) -> Void in
-            if error != nil {
-                // Error when attempting to get the level numbers from the leaderboard
-                print("Error loading level numbers: \(error)")
-            }
-            else {
-                // XXX Here is where we will add code to make sure the level number on disk matches the level number in GameCenter
-                let levelNumber = self.loadLevelNumber()
-                self.reportLevelNumber(level: Int64(levelNumber))
-            }
-        })
-    }
-    */
-    
-    /*
-     * This function checks the user's high score in game center and compares it to the one locally (on disk)
-     * If the score in game center is > than the score on disk, update the user's high score locally
-     * If the score locally is > than the score in game center, update the user's high score in game center
-     */
-    /* XXX REMOVE ME
-    private func checkHighScore() {
-        // Get the user's instance of the leaderboard to retrieve their scores
-        let leaderBoard = GKLeaderboard(players: [localPlayer!])
-        // Set the identifier so it knows what leaderboard to check
-        leaderBoard.identifier = gcDefaultLeaderBoard
-        // Set the time scopre for the score to return (we just set this to all time to go back to the very beginning of time)
-        leaderBoard.timeScope = .allTime
-        
-        leaderBoard.loadScores(completionHandler: {(scores, error) -> Void in
-            if error != nil {
-                print("Error loading scores: \(error)")
-                // Report a high score of 0 (game center won't overwrite this unless it's higher than what it has on record)
-                // I'm also assuming an error would be thrown here if the user doesn't have a score on the leaderboard yet which is why I'm including this in this code block
-                self.reportHighScore(score: 0)
-            }
-            else {
-                if let userScores = scores {
-                    // Get the user's high score saved to disk
-                    let diskScore = self.loadHighScore()
-                    // Get the user's high score from the game center
-                    let gcScore = userScores[0].value
-                    
-                    if diskScore > gcScore {
-                        self.reportHighScore(score: Int64(diskScore))
-                    }
-                    
-                    if gcScore > diskScore {
-                        self.updateHighScore(score: gcScore)
-                    }
-                }
-            }
-        })
-    }
-    */
-    
-    /* XXX REMOVE ME
-    // Report the high score to game center
-    private func reportHighScore(score: Int64) {
-        // Report the game score to the game center
-        let gkscore = GKScore(leaderboardIdentifier: LEADERBOARD_ID, player: localPlayer!)
-        gkscore.value = Int64(score)
-        GKScore.report([gkscore]) { (error) in
-            if error != nil {
-                print("Error reporting score: \(error!)")
-            }
-        }
-    }
-    */
-    
-    /* XXX REMOVE ME
-    private func reportLevelNumber(level: Int64) {
-        let gkscore = GKScore(leaderboardIdentifier: LEVELS_LEADERBOARD_ID, player: localPlayer!)
-        gkscore.value = level
-        GKScore.report([gkscore]) { (error) in
-            if error != nil {
-                print("Error reporting score: \(error!)")
-            }
-        }
-    }
-    */
     
     private func createButtonGradient(button: UIButton, color1: UIColor, color2: UIColor) -> CAGradientLayer {
         let gradientLayer = CAGradientLayer()
