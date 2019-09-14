@@ -204,11 +204,11 @@
 				03FC3BD2220F0A3000A7B991 /* Confetti.swift */,
 				03837345225EDE3900352EFB /* Review.swift */,
 				F23266A522CB134F001BF315 /* DataManager.swift */,
+				D5DDBF83232BA3D50025CE32 /* GameCenterManager.swift */,
 				0342D21A216FEA3B00FE5760 /* Assets.xcassets */,
 				03B8B4EE216919C600FFD589 /* Controllers */,
 				03B8B4ED216919C000FFD589 /* Models */,
 				03B8B4EC216919B400FFD589 /* Views */,
-				D5DDBF83232BA3D50025CE32 /* GameCenterManager.swift */,
 			);
 			path = Ballz1;
 			sourceTree = "<group>";

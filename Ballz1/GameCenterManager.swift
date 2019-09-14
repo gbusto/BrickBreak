@@ -13,10 +13,18 @@ import GameplayKit
 class GameCenterManager {
     
     /* Variables */
-    var gcEnabled = Bool() // Check if the user has Game Center enabled
-    var gcDefaultLeaderBoard = String() // Check the default leaderboardID
-    var isAuthenticated = false
-    var localPlayer: GKLocalPlayer?
+    public var gcEnabled = Bool() // Check if the user has Game Center enabled
+    public var gcDefaultLeaderBoard = String() // Check the default leaderboardID
+    public var isAuthenticated = false
+    public var localPlayer: GKLocalPlayer?
+    
+    // Variables for keeping track of their current scores in level and classic
+    public var levelCount = 0
+    public var classicScore = 0
+    
+    // Variables for keeping track of their current rank in each of the leaderboards
+    public var levelRank = 0
+    public var classicRank = 0
     
     // IMPORTANT: replace the red string below with your own Leaderboard ID (the one you've set in iTunes Connect)
     static var LEADERBOARD_ID = "xyz.ashgames.brickbreak"
