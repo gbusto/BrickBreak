@@ -13,7 +13,7 @@ import GameplayKit
 class GameCenterManager {
     
     /* Variables */
-    public var gcEnabled = Bool() // Check if the user has Game Center enabled
+    public var gcEnabled = false // Check if the user has Game Center enabled
     public var gcDefaultLeaderBoard = String() // Check the default leaderboardID
     public var isAuthenticated = false
     public var localPlayer = GKLocalPlayer.local
@@ -26,6 +26,13 @@ class GameCenterManager {
     public var levelRank = 0
     public var classicRank = 0
     
+    // The next player up in level rank and what their level count is
+    public var nextLevelRank = 0
+    public var nextLevelCount = 0
+    // The next player up in classic rank and what their score is
+    public var nextClassicRank = 0
+    public var nextClassicScore = 0
+    
     // IMPORTANT: replace the red string below with your own Leaderboard ID (the one you've set in iTunes Connect)
     static var LEADERBOARD_ID = "xyz.ashgames.brickbreak"
     static var LEVELS_LEADERBOARD_ID = "xyz.ashgames.brickbreak.levelnumber"
@@ -33,6 +40,25 @@ class GameCenterManager {
     static var shared = GameCenterManager()
     
     private init() {}
+    
+    public func userIsAuthenticated() {
+        gcEnabled = true
+        
+        // Get the default leaderboard ID
+        localPlayer.loadDefaultLeaderboardIdentifier(completionHandler: { (leaderboardIdentifier, error) in
+            if error != nil {
+                print("Error getting leaderboard: \(error!)")
+            }
+            else {
+                // I'm assuming the app uses the default leaderboard until one is created for the game
+                // When the first score is reported to a leaderboard, that board is now the default one
+                self.gcDefaultLeaderBoard = leaderboardIdentifier!
+                
+                self.updateHighScore()
+                self.updateLevelNumber()
+            }
+        })
+    }
     
     // Get the user's current level number from Levels game mode (saved to disk)
     public func loadLevelNumber() -> Int {
@@ -58,19 +84,84 @@ class GameCenterManager {
         DataManager.shared.saveClassicPersistentData(highScore: Int(score), showedTutorials: persistentData!.showedTutorials)
     }
     
-    // XXX Not currently being used but will be in the future
     public func updateLevelNumber(level: Int64) {
         let persistentData = DataManager.shared.loadLevelsPersistentData()
         DataManager.shared.saveLevelsPersistentData(levelCount: Int(level), highScore: persistentData!.highScore, cumulativeScore: persistentData!.cumulativeScore, showedTutorials: persistentData!.showedTutorials)
     }
     
-    // XXX UPDATE THIS FUNCTION
+    public func getNextClassicRank(currentRank: Int) {
+        if 1 == currentRank {
+            // The user is already ranked #1, no need to get the next player in rank
+            return
+        }
+        
+        let leaderBoard = GKLeaderboard()
+        leaderBoard.identifier = GameCenterManager.LEADERBOARD_ID
+        leaderBoard.range = NSRange(location: currentRank - 1, length: 2)
+        
+        // XXX Maybe switch to using leaderBoard.localPlayerScore instead of loadScores()
+        leaderBoard.loadScores(completionHandler: {(scores, error) -> Void in
+            if error != nil {
+                // Error when attempting to get the level numbers from the leaderboard
+                print("Error loading classic scores: \(error)")
+            }
+            else {
+                if let _scores = scores {
+                    for s in _scores {
+                        let name = s.player.alias
+                        let score = s.value
+                        let rank = s.rank
+                        self.nextClassicRank = rank
+                        self.nextClassicScore = Int(score)
+                        //print("!!!!!! [CLASSIC] PLAYER: \(name), SCORE: \(score), RANK: \(rank)")
+                    }
+                }
+            }
+        })
+    }
+    
+    public func getNextLevelRank(currentRank: Int) {
+        if 1 == currentRank {
+            // The user is already ranked #1, no need to get the next player in rank
+            return
+        }
+        
+        let leaderBoard = GKLeaderboard()
+        leaderBoard.identifier = GameCenterManager.LEVELS_LEADERBOARD_ID
+        leaderBoard.range = NSRange(location: currentRank - 1, length: 2)
+        
+        // XXX Maybe switch to using leaderBoard.localPlayerScore instead of loadScores()
+        leaderBoard.loadScores(completionHandler: {(scores, error) -> Void in
+            if error != nil {
+                // Error when attempting to get the level numbers from the leaderboard
+                print("Error loading level numbers: \(error)")
+            }
+            else {
+                if let _scores = scores {
+                    for s in _scores {
+                        let name = s.player.alias
+                        let score = s.value
+                        let rank = s.rank
+                        self.nextLevelRank = rank
+                        self.nextLevelCount = Int(score)
+                        //print("!!!!!! [LEVELS] PLAYER: \(name), SCORE: \(score), RANK: \(rank)")
+                    }
+                }
+            }
+        })
+    }
+    
+    /*
+     Should add some tests for these functions to ensure they're working appropriately.
+     Separate out the logic for getting scores and rank from GC into another function that can be passed into here as parameters to ensure the correct action is being taken in every case.
+    */
     // This function reports the level number and calls loeadLevelNumber
-    public func checkLevelNumber() {
+    public func updateLevelNumber() {
         let leaderBoard = GKLeaderboard(players: [localPlayer])
         leaderBoard.identifier = GameCenterManager.LEVELS_LEADERBOARD_ID
         leaderBoard.timeScope = .allTime
         
+        // XXX Maybe switch to using leaderBoard.localPlayerScore instead of loadScores()
         leaderBoard.loadScores(completionHandler: {(scores, error) -> Void in
             if error != nil {
                 // Error when attempting to get the level numbers from the leaderboard
@@ -78,19 +169,35 @@ class GameCenterManager {
             }
             else {
                 // XXX Here is where we will add code to make sure the level number on disk matches the level number in GameCenter
-                let levelNumber = self.loadLevelNumber()
-                self.reportLevelNumber(level: Int64(levelNumber))
+                if let userScores = scores {
+                    // Get the user's level number saved to disk
+                    let diskLevelNumber = self.loadLevelNumber()
+                    // Get the user's high score from game center
+                    let gcLevelNumber = userScores[0].value
+                    // Set the user's current rank based on game center
+                    self.levelRank = userScores[0].rank
+                    
+                    self.getNextLevelRank(currentRank: self.levelRank)
+                    
+                    // Report the higher of the 2 scores between what's saved on disk and what game center reports to be the user's highest score
+                    if diskLevelNumber > gcLevelNumber {
+                        self.reportLevelNumber(level: Int64(diskLevelNumber))
+                    }
+            
+                    if gcLevelNumber > diskLevelNumber {
+                        self.updateLevelNumber(level: Int64(gcLevelNumber))
+                    }
+                }
             }
         })
     }
     
-    // XXX UPDATE THIS FUNCTION
     /*
      * This function checks the user's high score in game center and compares it to the one locally (on disk)
      * If the score in game center is > than the score on disk, update the user's high score locally
      * If the score locally is > than the score in game center, update the user's high score in game center
      */
-    public func checkHighScore() {
+    public func updateHighScore() {
         // Get the user's instance of the leaderboard to retrieve their scores
         let leaderBoard = GKLeaderboard(players: [localPlayer])
         // Set the identifier so it knows what leaderboard to check
@@ -111,7 +218,12 @@ class GameCenterManager {
                     let diskScore = self.loadHighScore()
                     // Get the user's high score from the game center
                     let gcScore = userScores[0].value
+                    // Set the user's current rank based on game center
+                    self.classicRank = userScores[0].rank
                     
+                    self.getNextClassicRank(currentRank: self.classicRank)
+                    
+                    // Report the higher of the 2 scores between what's saved on disk and what game center reports to be the user's highest score
                     if diskScore > gcScore {
                         self.reportHighScore(score: Int64(diskScore))
                     }
@@ -124,7 +236,6 @@ class GameCenterManager {
         })
     }
     
-    // XXX UPDATE THIS FUNCTION
     // Report the high score to game center
     public func reportHighScore(score: Int64) {
         // Report the game score to the game center
@@ -137,7 +248,6 @@ class GameCenterManager {
         }
     }
     
-    // XXX UPDATE THIS FUNCTION
     public func reportLevelNumber(level: Int64) {
         let gkscore = GKScore(leaderboardIdentifier: GameCenterManager.LEVELS_LEADERBOARD_ID, player: localPlayer)
         gkscore.value = level

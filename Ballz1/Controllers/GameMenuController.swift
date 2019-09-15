@@ -22,10 +22,6 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
     @IBOutlet var gameCenterButton: UIButton!
     @IBOutlet var rateButton: UIButton!
     
-    // IMPORTANT: replace the red string below with your own Leaderboard ID (the one you've set in iTunes Connect)
-    let LEADERBOARD_ID = "xyz.ashgames.brickbreak"
-    let LEVELS_LEADERBOARD_ID = "xyz.ashgames.brickbreak.levelnumber"
-    
     private var classicButtonColorValue1 = 0x1599FF
     private var classicButtonColorValue2 = 0x3F6CFF
     private var levelsButtonColorValue1 = 0xD4008E
@@ -53,15 +49,11 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
                         print("Error getting leaderboard: \(error!)")
                     }
                     else {
-                        // I'm assuming the app uses the default leaderboard until one is created for the game
-                        // When the first score is reported to a leaderboard, that board is now the default one
-                        GameCenterManager.shared.gcDefaultLeaderBoard = leaderboardIdentifier!
+                        // Tell the game center manager that the user is now authenticated and to initialized everything
+                        GameCenterManager.shared.userIsAuthenticated()
                         
                         // Enable the game center button
                         self.gameCenterButton.isEnabled = true
-                        
-                        GameCenterManager.shared.checkHighScore()
-                        GameCenterManager.shared.checkLevelNumber()
                     }
                 })
             }
@@ -90,11 +82,7 @@ class GameMenuController: UIViewController, GKGameCenterControllerDelegate {
         rateButton.layer.cornerRadius = rateButton.frame.height * 0.5
         
         // Authenticate the player and submit their high score
-        if GameCenterManager.shared.localPlayer.isAuthenticated {
-            GameCenterManager.shared.checkHighScore()
-            GameCenterManager.shared.checkLevelNumber()
-        }
-        else {
+        if false == GameCenterManager.shared.localPlayer.isAuthenticated {
             authenticatePlayer()
         }
         
