@@ -48,6 +48,7 @@
 		D5B076962307406500C52A9A /* MysteryBlockItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B076952307406500C52A9A /* MysteryBlockItem.swift */; };
 		D5B0769C2312C6D500C52A9A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5B0769B2312C6D500C52A9A /* GoogleService-Info.plist */; };
 		D5DDBF822324444E0025CE32 /* LevelsGameModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5DDBF812324444E0025CE32 /* LevelsGameModelTests.swift */; };
+		D5DDBF84232BA3D50025CE32 /* GameCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5DDBF83232BA3D50025CE32 /* GameCenterManager.swift */; };
 		F200B2E921EBA3DE00FE0FB6 /* LevelsGameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */; };
 		F200B2EB21EBA4C100FE0FB6 /* LevelsGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2EA21EBA4C100FE0FB6 /* LevelsGameScene.swift */; };
 		F200B2ED21EBCA3900FE0FB6 /* LevelsGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2EC21EBCA3900FE0FB6 /* LevelsGameModel.swift */; };
@@ -125,6 +126,7 @@
 		D5B076952307406500C52A9A /* MysteryBlockItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MysteryBlockItem.swift; sourceTree = "<group>"; };
 		D5B0769B2312C6D500C52A9A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D5DDBF812324444E0025CE32 /* LevelsGameModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameModelTests.swift; sourceTree = "<group>"; };
+		D5DDBF83232BA3D50025CE32 /* GameCenterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterManager.swift; sourceTree = "<group>"; };
 		ECEC017C6EB71AEF0022F501 /* Pods-Ballz1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballz1.release.xcconfig"; path = "Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1.release.xcconfig"; sourceTree = "<group>"; };
 		F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameController.swift; sourceTree = "<group>"; };
 		F200B2EA21EBA4C100FE0FB6 /* LevelsGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameScene.swift; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				03FC3BD2220F0A3000A7B991 /* Confetti.swift */,
 				03837345225EDE3900352EFB /* Review.swift */,
 				F23266A522CB134F001BF315 /* DataManager.swift */,
+				D5DDBF83232BA3D50025CE32 /* GameCenterManager.swift */,
 				0342D21A216FEA3B00FE5760 /* Assets.xcassets */,
 				03B8B4EE216919C600FFD589 /* Controllers */,
 				03B8B4ED216919C000FFD589 /* Models */,
@@ -523,6 +526,7 @@
 				03F4C93D2172756000D38D84 /* BombItem.swift in Sources */,
 				03F9A4282151D56700206A84 /* HitBlockItem.swift in Sources */,
 				0362B65D22F62B4E0032C7CB /* LevelsTutorialController3.swift in Sources */,
+				D5DDBF84232BA3D50025CE32 /* GameCenterManager.swift in Sources */,
 				03B8B4F0216919DD00FFD589 /* GameMenuScene.swift in Sources */,
 				03F9A4242151C3D600206A84 /* Item.swift in Sources */,
 				03F4C93B217235DA00D38D84 /* StoneHitBlockItem.swift in Sources */,
