@@ -89,7 +89,7 @@ class GameCenterManager {
         DataManager.shared.saveLevelsPersistentData(levelCount: Int(level), highScore: persistentData!.highScore, cumulativeScore: persistentData!.cumulativeScore, showedTutorials: persistentData!.showedTutorials)
     }
     
-    public func getNextClassicRank(currentRank: Int) {
+    public func setNextClassicRank(currentRank: Int) {
         if 1 == currentRank {
             // The user is already ranked #1, no need to get the next player in rank
             return
@@ -113,14 +113,13 @@ class GameCenterManager {
                         let rank = s.rank
                         self.nextClassicRank = rank
                         self.nextClassicScore = Int(score)
-                        //print("!!!!!! [CLASSIC] PLAYER: \(name), SCORE: \(score), RANK: \(rank)")
                     }
                 }
             }
         })
     }
     
-    public func getNextLevelRank(currentRank: Int) {
+    public func setNextLevelRank(currentRank: Int) {
         if 1 == currentRank {
             // The user is already ranked #1, no need to get the next player in rank
             return
@@ -144,7 +143,6 @@ class GameCenterManager {
                         let rank = s.rank
                         self.nextLevelRank = rank
                         self.nextLevelCount = Int(score)
-                        //print("!!!!!! [LEVELS] PLAYER: \(name), SCORE: \(score), RANK: \(rank)")
                     }
                 }
             }
@@ -177,7 +175,7 @@ class GameCenterManager {
                     // Set the user's current rank based on game center
                     self.levelRank = userScores[0].rank
                     
-                    self.getNextLevelRank(currentRank: self.levelRank)
+                    self.setNextLevelRank(currentRank: self.levelRank)
                     
                     // Report the higher of the 2 scores between what's saved on disk and what game center reports to be the user's highest score
                     if diskLevelNumber > gcLevelNumber {
@@ -221,7 +219,7 @@ class GameCenterManager {
                     // Set the user's current rank based on game center
                     self.classicRank = userScores[0].rank
                     
-                    self.getNextClassicRank(currentRank: self.classicRank)
+                    self.setNextClassicRank(currentRank: self.classicRank)
                     
                     // Report the higher of the 2 scores between what's saved on disk and what game center reports to be the user's highest score
                     if diskScore > gcScore {
