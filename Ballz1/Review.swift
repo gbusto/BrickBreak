@@ -35,9 +35,12 @@ class Review {
     
     public func promptForReview() {
         if false == reviewPrompt1 {
+            // Set this variable so we don't prompt again for reviewPrompt1 within this same session
+            reviewPrompt1 = true
+            
             // Analytics log event; log when the user gets prompted to leave a review
             Analytics.logEvent("reviewPrompt1", parameters: /* None */ [:])
-            DataManager.shared.saveReviewPromptData(reviewPrompt1: true, reviewPrompt2: reviewPrompt2, reviewPrompt3: reviewPrompt3, reviewPrompt4: reviewPrompt4)
+            DataManager.shared.saveReviewPromptData(reviewPrompt1: reviewPrompt1, reviewPrompt2: reviewPrompt2, reviewPrompt3: reviewPrompt3, reviewPrompt4: reviewPrompt4)
             SKStoreReviewController.requestReview()
         }
         else {

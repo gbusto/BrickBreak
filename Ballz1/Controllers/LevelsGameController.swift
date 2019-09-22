@@ -40,6 +40,8 @@ class LevelsGameController: UIViewController,
     private var leaveGame = false
     private var gameEnded = false
     
+    private var userJustWon = false
+    
     // Number of consecutive wins the user has had
     private var numConsecutiveWins = 0
     // Number of levels completed in a session of playing levels
@@ -181,14 +183,21 @@ class LevelsGameController: UIViewController,
         // Interstitial ad closed out; prepare a new one unless the user wants to exit the game
         if leaveGame {
             returnToMenu()
+            return
         }
         // The interstitialAd object can only be used once so we need to prepare a new one each time the ad object is used
         prepareInterstitialAd()
         
-        let levelNumber = Int(levelCount.text!)!
-        if levelNumber >= 100 {
-            Review.shared.promptForReview()
+        // If the user just own, prompt them to leave a review
+        if userJustWon {
+            let levelNumber = Int(levelCount.text!)!
+            if levelNumber >= 10 {
+                Review.shared.promptForReview()
+            }
         }
+        
+        // Reset this variable here after checking it; it was originally being reset to false when the game scene started over which would happen before this callback function gets called so it would never resolve to true
+        userJustWon = false
     }
     
     public func prepareInterstitialAd() {
@@ -433,6 +442,22 @@ class LevelsGameController: UIViewController,
             // At this point in the logic, if the user won then the level count will have incremented by 1
             // We want to show them the level they just beat/lost
             currentLevelCount -= 1
+            
+            // Set this flag to true to let the game know the user just won to show them a review prompt if they haven't seen it yet
+            userJustWon = true
+            
+            // Used for determining when we might be able to prompt the use for a positive review (they're more likely to be happy if they've completed more than 1 level successfully)
+            numConsecutiveWins += 1
+            // Used in analytics to determine how many levels were completed in a session
+            numLevelsCompleted += 1
+        }
+        else {
+            // Set this flag to false to let the game know the user just won to show them a review prompt if they haven't seen it yet
+            userJustWon = false
+            
+            numConsecutiveWins = 0
+            // Increment the number of levels failed
+            numLevelsFailed += 1
         }
         
         gameOverLevelCount.attributedText = NSAttributedString(string: "Level \(currentLevelCount)",
@@ -443,18 +468,6 @@ class LevelsGameController: UIViewController,
         // If they beat their high score, let them know
         
         scene.showGameOverView(win: win, gameOverView: gameOverView)
-        
-        if win {
-            // Used for determining when we might be able to prompt the use for a positive review (they're more likely to be happy if they've completed more than 1 level successfully)
-            numConsecutiveWins += 1
-            // Used in analytics to determine how many levels were completed in a session
-            numLevelsCompleted += 1
-        }
-        else {
-            numConsecutiveWins = 0
-            // Increment the number of levels failed
-            numLevelsFailed += 1
-        }
         
         let winInt = win ? 1 : 0
         let userRescuedInt = userWasRescued ? 1 : 0

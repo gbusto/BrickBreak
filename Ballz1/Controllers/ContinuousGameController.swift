@@ -491,7 +491,7 @@ class ContinuousGameController: UIViewController,
         }
         
         // If the user's game score is > 100 and they've played at least 10 turns, ask them if they want to leave a review
-        if gameScore >= 100 && (gameScore - startingScore!) > 10 {
+        if gameScore >= 50 && (gameScore - startingScore!) > 10 {
             Review.shared.promptForReview()
         }
     }
