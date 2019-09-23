@@ -344,7 +344,6 @@ class ContinousGameScene: GameScene {
                         // Show an ad
                     }
                     else {
-                        view!.isPaused = true
                         // Otherwise show the gameover overlay
                         self.endGame()
                     }
@@ -615,9 +614,6 @@ class ContinousGameScene: GameScene {
     }
     
     public func resumeGame() {
-        self.isPaused = false
-        self.view!.isPaused = false
-        
         let views = activeViews.filter {
             $0.removeFromSuperview()
             return false

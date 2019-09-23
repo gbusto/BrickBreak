@@ -142,6 +142,7 @@ class ContinuousGameController: UIViewController,
             return
         }
         
+        // View will automatically be paused here; manually pause the scene here
         scene.isPaused = true
         scene.showPauseScreen()
     }
@@ -263,6 +264,7 @@ class ContinuousGameController: UIViewController,
         
         // Unpause the game
         let scene = self.scene as! ContinousGameScene
+        // Set these isPaused variables to false to unpause the game after a reward ad
         scene.isPaused = false
         if let view = self.view as! SKView? {
             view.isPaused = false
@@ -294,7 +296,7 @@ class ContinuousGameController: UIViewController,
     public func showRewardAd() {
         // Show the reward ad if we can
         if GADRewardBasedVideoAd.sharedInstance().isReady {
-            // Pause the game
+            // Pause the game before showing the ad
             let scene = self.scene as! ContinousGameScene
             scene.isPaused = true
             if let view = self.view as! SKView? {
@@ -323,6 +325,7 @@ class ContinuousGameController: UIViewController,
         }
         
         if let view = self.view as! SKView? {
+            // Pause the game while the continue/rescue button is showing
             view.isPaused = true
             
             let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
@@ -336,7 +339,6 @@ class ContinuousGameController: UIViewController,
                 // Set this variable so we know what type of reward to give the user
                 self.rewardType = ContinuousGameController.RESCUE_REWARD
                 self.showRewardAd()
-                view.isPaused = false
             }
             let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
                 // Analytics log event: log that the user didn't accept to rescue themselves after losing in classic mode
@@ -403,8 +405,13 @@ class ContinuousGameController: UIViewController,
         // Analytics log event; user resumed game after pausing it
         Analytics.logEvent("classic_pause_resume", parameters: /* None */ [:])
         
+        // Unpause the game (view and scene)
         let contScene = scene as! ContinousGameScene
-        contScene.resumeGame()
+        if let view = self.view as! SKView? {
+            contScene.resumeGame()
+            view.isPaused = false
+            contScene.isPaused = false
+        }
     }
     
     @IBAction func statusBarTapped(_ sender: Any) {
@@ -412,6 +419,7 @@ class ContinuousGameController: UIViewController,
         Analytics.logEvent("classic_pause_game", parameters: /* None */ [:])
         
         let scene = self.scene as! ContinousGameScene
+        // Pause the game when the status bar is tapped
         if let view = self.view as! SKView? {
             scene.isPaused = true
             view.isPaused = true
@@ -426,6 +434,11 @@ class ContinuousGameController: UIViewController,
             AnalyticsParameterScore: Int("\(gameScoreLabel.text!)")! as NSNumber,
             "user_was_rescued": userRescuedInt as NSNumber
         ])
+        
+        // Pause the game now
+        if let view = self.view as! SKView? {
+            view.isPaused = true
+        }
         
         // Show interstitial ad here if we have one loaded
         if interstitialAd.isReady {
