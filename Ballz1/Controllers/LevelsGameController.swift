@@ -132,8 +132,11 @@ class LevelsGameController: UIViewController,
         }
         
         let scene = self.scene as! LevelsGameScene
-        scene.isPaused = true
+        scene.realPaused = true
         scene.showPauseScreen(pauseView: pauseMenuView)
+        if let view = self.view as! SKView? {
+            view.isPaused = true
+        }
     }
     
     @objc func applicationDidBecomeActive(notification: Notification) {
@@ -143,7 +146,7 @@ class LevelsGameController: UIViewController,
         Analytics.logEvent("levels_game_foreground", parameters: /* None */ [:])
         
         if let view = self.view as! SKView? {
-            // Keep this variable set to true; the app will automatically set isPaused to false when the app comes back into view
+            // Keep this variable set to true; the app will automatically set realPaused to false when the app comes back into view
             view.isPaused = true
         }
     }
@@ -230,7 +233,8 @@ class LevelsGameController: UIViewController,
         
         let scene = self.scene as! LevelsGameScene
         if let view = self.view as! SKView? {
-            scene.isPaused = false
+            // Unpause the game after the reward ad closes
+            scene.realPaused = false
             view.isPaused = false
         }
         
@@ -246,7 +250,8 @@ class LevelsGameController: UIViewController,
         
         let scene = self.scene as! LevelsGameScene
         if let view = self.view as! SKView? {
-            scene.isPaused = true
+            // Pause the game when the status bar is tapped
+            scene.realPaused = true
             view.isPaused = true
             scene.showPauseScreen(pauseView: pauseMenuView)
         }
@@ -258,7 +263,12 @@ class LevelsGameController: UIViewController,
         Analytics.logEvent("levels_pause_resume", parameters: /* None */ [:])
         
         let scene = self.scene as! LevelsGameScene
-        scene.resumeGame()
+        if let view = self.view as! SKView? {
+            scene.resumeGame()
+            // Unpause the game when the resume button is tapped
+            scene.realPaused = false
+            view.isPaused = false
+        }
     }
     
     @IBAction func gameMenuButtonPressed(_ sender: Any) {
@@ -366,6 +376,11 @@ class LevelsGameController: UIViewController,
     }
     
     public func gameOverLoss() {
+        // Pause the game here
+        if let view = self.view as! SKView? {
+            view.isPaused = true
+        }
+        
         gameEnded = true
         
         let scene = self.scene as! LevelsGameScene
@@ -402,7 +417,8 @@ class LevelsGameController: UIViewController,
             // Show a reward ad
             if GADRewardBasedVideoAd.sharedInstance().isReady {
                 let scene = self.scene as! LevelsGameScene
-                scene.isPaused = true
+                // Pause the game before showing the reward ad
+                scene.realPaused = true
                 if let view = self.view as! SKView? {
                     view.isPaused = true
                 }
@@ -467,6 +483,11 @@ class LevelsGameController: UIViewController,
         
         // If they beat their high score, let them know
         
+        // Unpause the game
+        if let view = self.view as! SKView? {
+            // Unpause the view if it's paused so we can update it with the user win/loss view
+            view.isPaused = false
+        }
         scene.showGameOverView(win: win, gameOverView: gameOverView)
         
         let winInt = win ? 1 : 0

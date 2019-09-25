@@ -313,7 +313,6 @@ class LevelsGameScene: GameScene {
                 let gameOverType = gameModel!.gameOver()
                 if gameOverType == LevelsGameModel.GAMEOVER_LOSS {
                     // If the game is over, the game model will change its state to GAME_OVER
-                    view!.isPaused = true
                     // Otherwise show the gameover overlay
                     self.gameOverLoss()
                 }
@@ -485,9 +484,6 @@ class LevelsGameScene: GameScene {
     }
     
     public func resumeGame() {
-        self.isPaused = false
-        self.view!.isPaused = false
-        
         let views = activeViews.filter {
             $0.removeFromSuperview()
             return false
@@ -497,11 +493,6 @@ class LevelsGameScene: GameScene {
     }
     
     public func showGameOverView(win: Bool, gameOverView: UIView) {
-        if view!.isPaused {
-            // Unpause the view if it's paused so we can update it with the user win/loss view
-            view!.isPaused = false
-        }
-        
         let blur = UIBlurEffect(style: .dark)
         let blurView = UIVisualEffectView(effect: blur)
         blurView.frame = view!.frame
