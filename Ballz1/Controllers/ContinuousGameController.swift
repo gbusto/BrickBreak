@@ -143,8 +143,12 @@ class ContinuousGameController: UIViewController,
         }
         
         // View will automatically be paused here; manually pause the scene here
-        scene.isPaused = true
+        scene.realPaused = true
         scene.showPauseScreen()
+        
+        if let view = self.view as! SKView? {
+            view.isPaused = true
+        }
     }
     
     @objc func applicationDidBecomeActive(notification: Notification) {
@@ -264,8 +268,8 @@ class ContinuousGameController: UIViewController,
         
         // Unpause the game
         let scene = self.scene as! ContinousGameScene
-        // Set these isPaused variables to false to unpause the game after a reward ad
-        scene.isPaused = false
+        // Set these realPaused variables to false to unpause the game after a reward ad
+        scene.realPaused = false
         if let view = self.view as! SKView? {
             view.isPaused = false
         }
@@ -298,7 +302,7 @@ class ContinuousGameController: UIViewController,
         if GADRewardBasedVideoAd.sharedInstance().isReady {
             // Pause the game before showing the ad
             let scene = self.scene as! ContinousGameScene
-            scene.isPaused = true
+            scene.realPaused = true
             if let view = self.view as! SKView? {
                 view.isPaused = true
             }
@@ -409,8 +413,8 @@ class ContinuousGameController: UIViewController,
         let contScene = scene as! ContinousGameScene
         if let view = self.view as! SKView? {
             contScene.resumeGame()
+            contScene.realPaused = false
             view.isPaused = false
-            contScene.isPaused = false
         }
     }
     
@@ -421,7 +425,7 @@ class ContinuousGameController: UIViewController,
         let scene = self.scene as! ContinousGameScene
         // Pause the game when the status bar is tapped
         if let view = self.view as! SKView? {
-            scene.isPaused = true
+            scene.realPaused = true
             view.isPaused = true
             scene.showPauseScreen()
         }

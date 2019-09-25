@@ -17,6 +17,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Public attributes
     public var colorScheme: GameSceneColorScheme?
 
+    public var realPaused: Bool = false
+    
+    override var isPaused: Bool {
+        didSet {
+            // If there is a discrepancy between these 2, make sure isPaused is set to whatever we want it to be
+            if self.isPaused != self.realPaused {
+                self.isPaused = self.realPaused
+                if let view = self.view {
+                    view.isPaused = self.realPaused
+                }
+            }
+        }
+    }
     
     // MARK: Private attributes
     // The margin aka the ceiling height and ground height
