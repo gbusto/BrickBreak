@@ -36,6 +36,8 @@ class BallItem: Item {
     
     private var defaultColor: UIColor = .white
     
+    private var movingToOrigin = false
+    
     
     // MARK: Protocol functions
     public func initItem(num: Int, size: CGSize) {
@@ -128,8 +130,10 @@ class BallItem: Item {
     // MARK: Public functions
     public func stop() {
         if node!.hasActions() {
-            // If the node is currently executing any actions, just stop them so we can stop the ball now
-            node!.removeAllActions()
+            if false == movingToOrigin {
+                // If the node is currently executing any actions, just stop them so we can stop the ball now
+                node!.removeAllActions()
+            }
         }
         
         node!.physicsBody?.isResting = true
@@ -140,8 +144,12 @@ class BallItem: Item {
     }
     
     public func moveBallTo(_ point: CGPoint) {
+        self.movingToOrigin = true
+
         // Now with all actions stopped, we can tell the ball to return to this point
         node!.run(SKAction.move(to: point, duration: 0.2)) {
+            self.movingToOrigin = false
+            
             // Reset this variable
             self.outOfBounds = false
             
@@ -157,6 +165,11 @@ class BallItem: Item {
         node!.physicsBody!.affectedByGravity = false
         
         node!.removeAllChildren()
+        
+        if false == movingToOrigin {
+            // If the node is currently executing any actions, just stop them so we can stop the ball now
+            node!.removeAllActions()
+        }
     }
     
     public func fire(point: CGPoint) {
