@@ -733,14 +733,14 @@ class ContinousGameScene: GameScene {
             }
             if let _ = leftWallNode {
                 // Check the left boundary to make sure the ball is not stuck outside the left side of the gameplay area
-                if originPoint.x < getLeftWallWidth() {
+                if originPoint.x < getLeftWallWidth() + ballRadius! {
                     // If it's beyond the left wall's width, place it at the wall's ending X position plus the ball radius
                     originPoint.x = getLeftWallWidth() + ballRadius!
                 }
             }
             if let rightWall = rightWallNode {
                 // Check the right boundary to make sure the ball is not stuck outside the right side of the gameplay area
-                if originPoint.x > rightWall.position.x {
+                if originPoint.x > rightWall.position.x - ballRadius! {
                     // If it's beyond the right wall's starting X position, place it at wall's X position minus the ball radius
                     originPoint.x = rightWall.position.x - ballRadius!
                 }
