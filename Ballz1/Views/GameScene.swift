@@ -106,6 +106,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /* Ball-related variables */
     public var originPoint = CGPoint(x: 0, y: 0)
     public var ballArray: [BallItem] = []
+    // The official ball count
+    public var numberOfBalls = 0
     public var fireDelay = GameScene.DEFAULT_FIRE_DELAY
     public static var DEFAULT_FIRE_DELAY = Double(0.1)
     public var stoppedBalls: [BallItem] = []
@@ -792,7 +794,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             // Set this boolean so we know whether or not this is the last ball and need to remove the label
-            let lastBall = (self.numBallsFired == (self.ballArray.count - 1))
+            // XXX REMOVE ME let lastBall = (self.numBallsFired == (self.ballArray.count - 1))
+            let lastBall = (self.numBallsFired == (self.numberOfBalls - 1))
             
             let ball = self.ballArray[self.numBallsFired]
             ball.fire(point: point)

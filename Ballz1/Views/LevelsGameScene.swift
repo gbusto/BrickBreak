@@ -286,7 +286,8 @@ class LevelsGameScene: GameScene {
             gameModel!.itemGenerator!.pruneFirstRow()
             
             // Add back the ball count label
-            addBallCountLabel(position: originPoint, ballCount: ballArray.count)
+            // XXX REMOVE ME addBallCountLabel(position: originPoint, ballCount: ballArray.count)
+            addBallCountLabel(position: originPoint, ballCount: numberOfBalls)
             
             // Check the model to update the score label
             // Update the current game score
@@ -691,6 +692,8 @@ class LevelsGameScene: GameScene {
         // Update the level count label
         
         currentBallCount = gameModel!.numberOfBalls
+        // Update the official ball count variable
+        numberOfBalls = currentBallCount
         ballArray = initBallArray(numberOfBalls: currentBallCount, point: originPoint)
         for ball in ballArray {
             self.addChild(ball.getNode())
