@@ -21,7 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         pageControl.currentPageIndicatorTintColor = .darkGray
         pageControl.backgroundColor = UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0)
         // Override point for customization after application launch.
-        GADMobileAds.configure(withApplicationID: AdHandler.getAdModID())
+        //GADMobileAds.configure(withApplicationID: AdHandler.getAdModID())
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
         FirebaseApp.configure()
         return true
     }

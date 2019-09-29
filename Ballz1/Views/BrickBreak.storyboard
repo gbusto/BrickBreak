@@ -997,33 +997,6 @@
             </objects>
             <point key="canvasLocation" x="1041" y="1094"/>
         </scene>
-        <!--Reward Ad View Controller-->
-        <scene sceneID="s90-HF-whl">
-            <objects>
-                <viewController id="clB-ra-sGW" customClass="RewardAdViewController" customModule="Ballz1" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="bQ8-E1-zwX">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tut-py-qgS">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="HYC-sV-9CV" firstAttribute="bottom" secondItem="tut-py-qgS" secondAttribute="bottom" id="0d5-4l-XOa"/>
-                            <constraint firstItem="HYC-sV-9CV" firstAttribute="trailing" secondItem="tut-py-qgS" secondAttribute="trailing" id="jvp-ca-NJk"/>
-                            <constraint firstItem="tut-py-qgS" firstAttribute="leading" secondItem="HYC-sV-9CV" secondAttribute="leading" id="mty-ig-dwx"/>
-                            <constraint firstItem="tut-py-qgS" firstAttribute="top" secondItem="HYC-sV-9CV" secondAttribute="top" id="vob-9j-MxD"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="HYC-sV-9CV"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="0Gm-2G-Mlm" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2048" y="110"/>
-        </scene>
         <!--Levels Tutorial Page Controller-->
         <scene sceneID="9gg-jy-HLg">
             <objects>
