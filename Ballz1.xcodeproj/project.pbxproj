@@ -24,7 +24,6 @@
 		0362B65D22F62B4E0032C7CB /* LevelsTutorialController3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0362B65C22F62B4E0032C7CB /* LevelsTutorialController3.swift */; };
 		037536B221B74F4800B62589 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 037536B121B74F4800B62589 /* GameKit.framework */; };
 		037536B421BB04CF00B62589 /* AdHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037536B321BB04CF00B62589 /* AdHandler.swift */; };
-		037536BA21BC055500B62589 /* RewardAdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037536B921BC055500B62589 /* RewardAdViewController.swift */; };
 		03837346225EDE3900352EFB /* Review.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03837345225EDE3900352EFB /* Review.swift */; };
 		03B5F94922910D11003A3A3C /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B5F94822910D11003A3A3C /* GameScene.swift */; };
 		03B8B4F0216919DD00FFD589 /* GameMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4EF216919DD00FFD589 /* GameMenuScene.swift */; };
@@ -101,7 +100,6 @@
 		0362B65C22F62B4E0032C7CB /* LevelsTutorialController3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsTutorialController3.swift; sourceTree = "<group>"; };
 		037536B121B74F4800B62589 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		037536B321BB04CF00B62589 /* AdHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdHandler.swift; sourceTree = "<group>"; };
-		037536B921BC055500B62589 /* RewardAdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardAdViewController.swift; sourceTree = "<group>"; };
 		03837345225EDE3900352EFB /* Review.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Review.swift; sourceTree = "<group>"; };
 		03B5F94822910D11003A3A3C /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		03B8B4EF216919DD00FFD589 /* GameMenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuScene.swift; sourceTree = "<group>"; };
@@ -298,7 +296,6 @@
 				03B8B4F521691A2100FFD589 /* GameMenuController.swift */,
 				03B8B4F721691A2D00FFD589 /* ContinuousGameController.swift */,
 				F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */,
-				037536B921BC055500B62589 /* RewardAdViewController.swift */,
 				03FE9689225E10CE00E6C864 /* Assets.xcassets */,
 			);
 			path = Controllers;
@@ -519,7 +516,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0362B65722F62A070032C7CB /* LevelsTutorialPageController.swift in Sources */,
-				037536BA21BC055500B62589 /* RewardAdViewController.swift in Sources */,
 				03FC3BD3220F0A3000A7B991 /* Confetti.swift in Sources */,
 				D5B076962307406500C52A9A /* MysteryBlockItem.swift in Sources */,
 				0362B64D22EE6EB00032C7CB /* ClassicTutorialController2.swift in Sources */,

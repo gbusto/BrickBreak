@@ -31,8 +31,6 @@ class ContinuousGameController: UIViewController,
     @IBOutlet var returnGameMenuButton: UIButton!
     @IBOutlet var heartImageView: UIImageView!
     
-    private var rewardAdViewController: RewardAdViewController!
-    
     // Made this conditional because I want it to be nil when we start to know whether or not it's been initialized
     private var startingScore: Int?
     private var reviewer: Review?
@@ -93,9 +91,6 @@ class ContinuousGameController: UIViewController,
         let intAdRequest = GADRequest()
         intAdRequest.testDevices = AdHandler.getTestDevices()
         interstitialAd.load(intAdRequest)
-        
-        // This is a view controller to fix buggy behavior with the reward ads
-        rewardAdViewController = RewardAdViewController()
         
         // Register these notifications here
         
@@ -238,8 +233,7 @@ class ContinuousGameController: UIViewController,
     public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
         // Get ready to load up a new reward ad right away
         // Dismiss the reward ad view controller
-        rewardAdViewController.dismiss(animated: true, completion: nil)
-        
+
         // Ensure the undo button is disabled after showing a reward ad
         disableUndoButton()
         
@@ -307,8 +301,9 @@ class ContinuousGameController: UIViewController,
                 view.isPaused = true
             }
             print("Pausing game")
-            // MARK: Bug - to avoid a weird bug, I need to load a new view with its own View Controller
-            self.present(rewardAdViewController, animated: true, completion: nil)
+            if GADRewardBasedVideoAd.sharedInstance().isReady {
+                GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+            }
         }
         else {
             // If we didn't load an ad don't give the user a reward (maybe they're offline?)

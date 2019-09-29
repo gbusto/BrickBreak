@@ -33,8 +33,6 @@ class LevelsGameController: UIViewController,
     
     private var interstitialAd: GADInterstitial!
     
-    private var rewardAdViewController: RewardAdViewController!
-    
     private var userWasRescued = false
     
     private var leaveGame = false
@@ -84,8 +82,6 @@ class LevelsGameController: UIViewController,
         let rewardAdRequest = GADRequest()
         rewardAdRequest.testDevices = AdHandler.getTestDevices()
         GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
-        
-        rewardAdViewController = RewardAdViewController()
         
         GADRewardBasedVideoAd.sharedInstance().delegate = self
         
@@ -227,9 +223,6 @@ class LevelsGameController: UIViewController,
         // Analytics: I think google auto tracks whether or not the user compeleted the reward ad
 
         // The reward ad closed out
-        
-        // Dismiss the reward ad view controller
-        rewardAdViewController.dismiss(animated: true, completion: nil)
         
         let scene = self.scene as! LevelsGameScene
         if let view = self.view as! SKView? {
@@ -423,7 +416,9 @@ class LevelsGameController: UIViewController,
                     view.isPaused = true
                 }
                 self.gameEnded = false
-                self.present(self.rewardAdViewController, animated: true, completion: nil)
+                if GADRewardBasedVideoAd.sharedInstance().isReady {
+                    GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+                }
             }
         }
         let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
