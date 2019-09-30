@@ -143,7 +143,7 @@ class BallItem: Item {
         self.extinguish()
     }
     
-    public func moveBallTo(_ point: CGPoint) {
+    public func moveBallTo(_ point: CGPoint, completionHandler: @escaping () -> Void = { }) {
         self.movingToOrigin = true
 
         // Now with all actions stopped, we can tell the ball to return to this point
@@ -154,6 +154,8 @@ class BallItem: Item {
             self.outOfBounds = false
             
             self.resetBall()
+            
+            completionHandler()
         }
     }
     

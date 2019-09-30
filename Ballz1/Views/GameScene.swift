@@ -105,6 +105,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /* Ball-related variables */
     public var originPoint = CGPoint(x: 0, y: 0)
+    // The current origin point for the duration of the turn; originPoint (above) will be updated as soon as the first ball lands
+    public var currentOriginPoint = CGPoint(x: 0, y: 0)
     public var ballArray: [BallItem] = []
     // The official ball count
     public var numberOfBalls = 0
@@ -116,6 +118,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     public var firedAllBalls = false
     public var numBallsFired = 0
     public var endTurn = false
+    
+    private var nextBall: BallItem?
     
     override func didMove(to view: SKView) {
         // Load the game scene
@@ -411,6 +415,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // XXX TEST
+    // XXX REMOVE ME?
     public func allBallsStopped(_ ballArray: [BallItem]) -> Bool {
         var allBallsStopped = true
         let _ = ballArray.filter {
@@ -751,10 +756,40 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /*************************************************/
     
     public func returnAllBalls() {
+        // When flag is true, it means the first ball hasn't returned yet so save the first ball from being removed from the scene
+        // If it's set to false, the current ball being processed will be removed from the game scene
+        var flag = !firstBallReturned
+        
         if false == firstBallReturned {
             firstBallReturned = true
         }
         
+        let newArray = ballArray.filter {
+            let ball = $0
+            ball.getNode().physicsBody!.collisionBitMask = 0
+            ball.getNode().physicsBody!.categoryBitMask = 0
+            ball.getNode().physicsBody!.contactTestBitMask = 0
+            ball.stop()
+            if true == flag {
+                // Save the first ball in the game scene and keep this as the only ball in the array
+                // At the end of each turn, only 1 ball will remain in the array to save some processing cycles and needing to track of numberOfBalls extra nodes on the screen when they don't need to be remembered
+                flag = false
+                ball.moveBallTo(originPoint)
+                return true
+            }
+            
+            ball.moveBallTo(originPoint) {
+                ball.getNode().removeFromParent()
+            }
+            return false
+        }
+        
+        // Replace the old ballArray with this new array that only has 1 ball
+        ballArray = newArray
+        
+        // NOTE: Don't forget to rename the first ball in the array so the ones generated the next turn won't collide with it
+       
+        /* XXX REMOVE ME
         for ball in ballArray {
             ball.getNode().physicsBody!.collisionBitMask = 0
             ball.getNode().physicsBody!.categoryBitMask = 0
@@ -762,6 +797,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.stop()
             ball.moveBallTo(originPoint)
         }
+        */
         
         // shootBalls() will increment the ball manager's state if it's shooting
     }
@@ -793,17 +829,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 return
             }
             
+            // XXX REMOVE ME let ball = self.ballArray[self.numBallsFired]
+            
+            // Fire the ball
+            if nil == self.nextBall {
+                self.nextBall = self.ballArray[0]
+            }
+            self.nextBall!.fire(point: point)
+            self.numBallsFired += 1
+            if self.ballsOnFire {
+                self.nextBall!.setOnFire()
+            }
+            self.currentBallCount -= 1
+            
             // Set this boolean so we know whether or not this is the last ball and need to remove the label
             // XXX REMOVE ME let lastBall = (self.numBallsFired == (self.ballArray.count - 1))
             let lastBall = (self.numBallsFired == (self.numberOfBalls - 1))
             
-            let ball = self.ballArray[self.numBallsFired]
-            ball.fire(point: point)
-            self.numBallsFired += 1
-            if self.ballsOnFire {
-                ball.setOnFire()
+            if false == lastBall {
+                // Generate a new ball on the screen at the origin point after firing the previous one
+                let ball = BallItem()
+                self.ballArray.append(ball)
+                ball.initItem(num: self.ballArray.count, size: CGSize(width: self.ballRadius!, height: self.ballRadius!))
+                ball.loadItem(position: self.currentOriginPoint)
+                ball.resetBall()
+                self.nextBall = ball
+                self.addChild(ball.getNode())
             }
-            self.currentBallCount -= 1
+            
             // If we're on the last ball. after firing it remove the ball count label
             if lastBall {
                 self.removeBallCountLabel()
@@ -823,7 +876,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // Pop this ball off the front of the list
             let ball = stoppedBalls.removeFirst()
             if false == firstBallReturned {
+                // This should work and prevent balls from landing in the middle of the screen...
+                
                 firstBallReturned = true
+                
                 var ballPosition = ball.getNode().position
                 // Correct the ball's Y position
                 if ballPosition.y > groundNode!.size.height {
@@ -837,9 +893,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     ballPosition.x = rightWallNode!.position.x - ballRadius!
                 }
                 originPoint = ballPosition
+                ball.moveBallTo(originPoint)
+
+                // NOTE: Don't forget to rename the first ball in the array so the ones generated the next turn won't collide with it
             }
-            // This should work and prevent balls from landing in the middle of the screen...
-            ball.moveBallTo(originPoint)
+            else {
+                // Remove the ball from the game scene; it should already be removed from the ball array
+                ball.moveBallTo(originPoint) {
+                    print("REMOVING BALL FROM SCENE!!!!!!!!!!!!!!!!!!")
+                    ball.getNode().removeFromParent()
+                }
+            }
         }
     }
     

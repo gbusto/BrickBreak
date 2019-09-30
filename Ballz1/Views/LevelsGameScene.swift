@@ -83,13 +83,21 @@ class LevelsGameScene: GameScene {
         // Handle the case where nameA is a ball and it hit the ground
         if nameA!.starts(with: "bm") && "ground" == nameB! {
             // XXX TEST THIS OUT
-            let _ = ballArray.filter {
+            let newArray = ballArray.filter {
                 if $0.getNode().name! == nameA! {
                     self.stoppedBalls.append($0)
                     $0.stop()
+                    
+                    return false
                 }
                 return true
             }
+            
+            if newArray.count > 0 {
+                // Assign this new array with balls removed to the official ball array
+                ballArray = newArray
+            }
+
             // Bail out because we don't need to continue
             return
         }
@@ -97,13 +105,21 @@ class LevelsGameScene: GameScene {
         // Same as the case above; handle the case where a ball hit the ground
         if nameB!.starts(with: "bm") && "ground" == nameA! {
             // XXX TEST THIS OUT
-            let _ = ballArray.filter {
+            let newArray = ballArray.filter {
                 if $0.getNode().name! == nameB! {
                     self.stoppedBalls.append($0)
                     $0.stop()
+                    
+                    return false
                 }
                 return true
             }
+            
+            if newArray.count > 0 {
+                // Assign this new array with balls removed to the official ball array
+                ballArray = newArray
+            }
+            
             // Bail out because we don't need to continue
             return
         }
@@ -301,6 +317,11 @@ class LevelsGameScene: GameScene {
             if currentCount <= maxCount {
                 gameController!.updateRowCountLabel(currentCount: currentCount, maxCount: maxCount)
             }
+            
+            currentOriginPoint = originPoint
+            
+            // Rename the only remaining ball in the array to bm1 to avoid name collisions when balls are generated next turn
+            ballArray[0].getNode().name = "bm1"
         }
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
@@ -428,7 +449,9 @@ class LevelsGameScene: GameScene {
             handleStoppedBalls()
             if firedAllBalls {
                 // Wait for all balls to return
-                if allBallsStopped(ballArray) {
+                // XXX REMOVE ME if allBallsStopped(ballArray) {
+                // If there is more than 1 ball still in the array, then we know there are more active balls
+                if ballArray.count > 1 {
                     // Increment game model state from MID_TURN to TURN_OVER
                     gameModel!.incrementState()
                 }
@@ -694,7 +717,8 @@ class LevelsGameScene: GameScene {
         currentBallCount = gameModel!.numberOfBalls
         // Update the official ball count variable
         numberOfBalls = currentBallCount
-        ballArray = initBallArray(numberOfBalls: currentBallCount, point: originPoint)
+        // XXX REMOVE ME ballArray = initBallArray(numberOfBalls: currentBallCount, point: originPoint)
+        ballArray = initBallArray(numberOfBalls: 1, point: originPoint)
         for ball in ballArray {
             self.addChild(ball.getNode())
         }
