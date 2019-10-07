@@ -189,7 +189,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.getNode().name! = "bm\(i)"
             ballArray.append(ball)
             ball.loadItem(position: point)
-            ball.resetBall()
+            // XXX REMOVE ME ball.resetBall()
         }
         
         return ballArray
@@ -416,6 +416,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // XXX TEST
     // XXX REMOVE ME?
+    /* XXX REMOVE ME
     public func allBallsStopped(_ ballArray: [BallItem]) -> Bool {
         var allBallsStopped = true
         let _ = ballArray.filter {
@@ -430,6 +431,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return true
         }
         return allBallsStopped
+    }
+    */
+    
+    public func allBallsStopped() -> Bool {
+        /* XXX REMOVE ME
+        let ballNodes = self.children.filter {
+            if let name = $0.name {
+                if name.starts(with: "bm") {
+                    // Return any remaining ball nodes on the screen
+                    return true
+                }
+            }
+            
+            return false
+        }
+        
+        return ballNodes.count == 1
+        */
+        return (ballArray.count == 1) && (stoppedBalls.count == 0)
     }
     
     public func displayEncouragement(emoji: String, text: String) {
@@ -836,6 +856,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.nextBall = self.ballArray[0]
             }
             self.nextBall!.fire(point: point)
+            print("FIRING BALL \(self.nextBall!.getNode().name!) &&&&&&&&&&&&&&&&&&")
+            self.nextBall!.resetBall()
             self.numBallsFired += 1
             if self.ballsOnFire {
                 self.nextBall!.setOnFire()
@@ -844,16 +866,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             // Set this boolean so we know whether or not this is the last ball and need to remove the label
             // XXX REMOVE ME let lastBall = (self.numBallsFired == (self.ballArray.count - 1))
-            let lastBall = (self.numBallsFired == (self.numberOfBalls - 1))
+            // XXX REMOVE ME let lastBall = (self.numBallsFired == (self.numberOfBalls - 1))
+            let lastBall = (self.numBallsFired == (self.numberOfBalls))
             
             if false == lastBall {
                 // Generate a new ball on the screen at the origin point after firing the previous one
                 let ball = BallItem()
                 self.ballArray.append(ball)
-                ball.initItem(num: self.ballArray.count, size: CGSize(width: self.ballRadius!, height: self.ballRadius!))
+                ball.initItem(num: self.numBallsFired, size: CGSize(width: self.ballRadius!, height: self.ballRadius!))
                 ball.loadItem(position: self.currentOriginPoint)
-                ball.resetBall()
                 self.nextBall = ball
+                let nextNumber = self.numBallsFired + 1
+                print("NEXT BALL NUMBER \(nextNumber) &&&&&&&&&&&&&&&&&&&&&&&")
+                ball.getNode().name = "bm\(nextNumber)"
                 self.addChild(ball.getNode())
             }
             
@@ -900,7 +925,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             else {
                 // Remove the ball from the game scene; it should already be removed from the ball array
                 ball.moveBallTo(originPoint) {
-                    print("REMOVING BALL FROM SCENE!!!!!!!!!!!!!!!!!!")
+                    print("REMOVING BALL \(ball.getNode().name!) FROM SCENE!!!!!!!!!!!!!!!!!!")
                     ball.getNode().removeFromParent()
                 }
             }

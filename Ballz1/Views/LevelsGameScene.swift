@@ -87,6 +87,7 @@ class LevelsGameScene: GameScene {
                 if $0.getNode().name! == nameA! {
                     self.stoppedBalls.append($0)
                     $0.stop()
+                    print("STOPPING BALL \(nameA!) $*********************")
                     
                     return false
                 }
@@ -109,6 +110,7 @@ class LevelsGameScene: GameScene {
                 if $0.getNode().name! == nameB! {
                     self.stoppedBalls.append($0)
                     $0.stop()
+                    print("STOPPING BALL \(nameA!) $*********************")
                     
                     return false
                 }
@@ -359,6 +361,16 @@ class LevelsGameScene: GameScene {
         if gameModel!.isReady() {
             // Reset this list to empty
             stoppedBalls = []
+            
+            let ballNodes = self.children.filter {
+                if let name = $0.name {
+                    if name.starts(with: "bm") {
+                        return true
+                    }
+                }
+                return false
+            }
+            print("THERE ARE \(ballNodes.count) BALLS ON THE SCREEN RIGHT NOW")
         }
         
         // Actions to perform while in the middle of a turn
@@ -450,8 +462,9 @@ class LevelsGameScene: GameScene {
             if firedAllBalls {
                 // Wait for all balls to return
                 // XXX REMOVE ME if allBallsStopped(ballArray) {
-                // If there is more than 1 ball still in the array, then we know there are more active balls
-                if ballArray.count > 1 {
+                // If there is one ball remaining in the array then we know all balls have stopped
+                // XXX REMOVE ME if ballArray.count == 1 {
+                if allBallsStopped() {
                     // Increment game model state from MID_TURN to TURN_OVER
                     gameModel!.incrementState()
                 }

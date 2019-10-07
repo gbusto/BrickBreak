@@ -502,8 +502,9 @@ class ContinousGameScene: GameScene {
             if firedAllBalls {
                 // Wait for all balls to return
                 // XXX REMOVE ME if allBallsStopped(ballArray) {
-                // If there is more than 1 ball still in the array, then we know there are more active balls
-                if ballArray.count > 1 {
+                // If there is one ball remaining in the array then we know all balls have stopped
+                // XXX REMOVE ME if ballArray.count == 1 {
+                if allBallsStopped() {
                     // Increment game model state from MID_TURN to TURN_OVER
                     gameModel!.incrementState()
                 }
@@ -612,7 +613,7 @@ class ContinousGameScene: GameScene {
         prevBallCount = numberOfBalls
         
         ballArray[0].loadItem(position: originPoint)
-        ballArray[0].resetBall()
+        // XXX REMOVE ME ballArray[0].resetBall()
         /* XXX REMOVE ME
         for ball in ballArray {
             ball.loadItem(position: originPoint)
