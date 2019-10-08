@@ -886,6 +886,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if lastBall {
                 self.removeBallCountLabel()
                 self.firedAllBalls = true
+                // Nullify this variable so we don't have another ball ready to shoot next time around
+                self.nextBall = nil
                 timer.invalidate()
             }
             else {
@@ -901,6 +903,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // Pop this ball off the front of the list
             let ball = stoppedBalls.removeFirst()
             if false == firstBallReturned {
+                print("111111111111111111111 FIRST BALL RETURNED")
                 // This should work and prevent balls from landing in the middle of the screen...
                 
                 firstBallReturned = true
@@ -919,6 +922,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 originPoint = ballPosition
                 ball.moveBallTo(originPoint)
+                
+                // Re-append this ball to the array because this is the one we're going to keep on the screen
+                // Not doing this created a weird scenario where the ball would get removed from the ball array but also stay on the screen, so we kind of lost reference to it which would result in n + 1 balls on the screen where n is the number of turns played so far. We should only end up with 1 ball on the screen after each turn
+                ballArray.append(ball)
 
                 // NOTE: Don't forget to rename the first ball in the array so the ones generated the next turn won't collide with it
             }
