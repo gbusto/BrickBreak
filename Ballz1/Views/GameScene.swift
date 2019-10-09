@@ -449,7 +449,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         return ballNodes.count == 1
         */
-        return (ballArray.count == 1) && (stoppedBalls.count == 0)
+        return (ballArray.count == 0) && (stoppedBalls.count == 0)
     }
     
     public func displayEncouragement(emoji: String, text: String) {
@@ -925,7 +925,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 // Re-append this ball to the array because this is the one we're going to keep on the screen
                 // Not doing this created a weird scenario where the ball would get removed from the ball array but also stay on the screen, so we kind of lost reference to it which would result in n + 1 balls on the screen where n is the number of turns played so far. We should only end up with 1 ball on the screen after each turn
-                ballArray.append(ball)
+                // XXX REMOVE ME; THIS HAS BEEN MOVED ELSEWHERE ballArray.append(ball)
 
                 // NOTE: Don't forget to rename the first ball in the array so the ones generated the next turn won't collide with it
             }

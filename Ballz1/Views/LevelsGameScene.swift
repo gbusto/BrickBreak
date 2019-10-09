@@ -94,6 +94,9 @@ class LevelsGameScene: GameScene {
                 return true
             }
             
+            ballArray = newArray
+            
+            /* XXX REMOVE ME
             if newArray.count > 0 {
                 // Assign this new array with balls removed to the official ball array
                 ballArray = newArray
@@ -101,6 +104,7 @@ class LevelsGameScene: GameScene {
             else {
                 print("(((((((((( NEW ARRAY == 0")
             }
+            */
             
             print("00000000000000000000 BALL ARRAY: \(ballArray)")
 
@@ -122,6 +126,9 @@ class LevelsGameScene: GameScene {
                 return true
             }
             
+            ballArray = newArray
+            
+            /* XXX REMOVE ME
             if newArray.count > 0 {
                 // Assign this new array with balls removed to the official ball array
                 ballArray = newArray
@@ -129,6 +136,7 @@ class LevelsGameScene: GameScene {
             else {
                 print("(((((((((( NEW ARRAY == 0")
             }
+            */
             
             print("00000000000000000000 BALL ARRAY: \(ballArray)")
             
@@ -383,6 +391,9 @@ class LevelsGameScene: GameScene {
                     return false
                 }
                 print("THERE ARE \(ballNodes.count) BALLS ON THE SCREEN RIGHT NOW: \(s)")
+                let ball = BallItem()
+                ball.node = ballNodes[0] as! SKShapeNode
+                ballArray = [ball]
                 
                 // Rename the only remaining ball in the array to bm1 to avoid name collisions when balls are generated next turn
                 ballArray[0].getNode().name = "bm1"
