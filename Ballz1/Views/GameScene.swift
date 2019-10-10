@@ -100,6 +100,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var contactTestBitMask = UInt32(0b0001)
     private var groundCategoryBitmask = UInt32(0b0101)
     
+    private var useOldOriginPoint = false
+    
     public static var NUM_ROWS = CGFloat(12)
     public static var NUM_COLUMNS = CGFloat(8)
     
@@ -189,7 +191,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.getNode().name! = "bm\(i)"
             ballArray.append(ball)
             ball.loadItem(position: point)
-            // XXX REMOVE ME ball.resetBall()
         }
         
         return ballArray
@@ -414,41 +415,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.removeChildren(in: [ballCountLabel!])
     }
     
-    // XXX TEST
-    // XXX REMOVE ME?
-    /* XXX REMOVE ME
-    public func allBallsStopped(_ ballArray: [BallItem]) -> Bool {
-        var allBallsStopped = true
-        let _ = ballArray.filter {
-            if false == $0.isResting {
-                allBallsStopped = false
-                if $0.outOfBounds {
-                    // If the ball is out of bounds, stop it and move it back to the origin point
-                    self.stoppedBalls.append($0)
-                    $0.stop()
-                }
-            }
-            return true
-        }
-        return allBallsStopped
-    }
-    */
-    
     public func allBallsStopped() -> Bool {
-        /* XXX REMOVE ME
-        let ballNodes = self.children.filter {
-            if let name = $0.name {
-                if name.starts(with: "bm") {
-                    // Return any remaining ball nodes on the screen
-                    return true
-                }
-            }
-            
-            return false
-        }
-        
-        return ballNodes.count == 1
-        */
         return (ballArray.count == 0) && (stoppedBalls.count == 0)
     }
     
@@ -776,50 +743,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /*************************************************/
     
     public func returnAllBalls() {
-        // When flag is true, it means the first ball hasn't returned yet so save the first ball from being removed from the scene
-        // If it's set to false, the current ball being processed will be removed from the game scene
-        var flag = !firstBallReturned
-        
-        if false == firstBallReturned {
-            firstBallReturned = true
-        }
-        
         let newArray = ballArray.filter {
             let ball = $0
-            ball.getNode().physicsBody!.collisionBitMask = 0
-            ball.getNode().physicsBody!.categoryBitMask = 0
-            ball.getNode().physicsBody!.contactTestBitMask = 0
+            self.stoppedBalls.append(ball)
             ball.stop()
-            if true == flag {
-                // Save the first ball in the game scene and keep this as the only ball in the array
-                // At the end of each turn, only 1 ball will remain in the array to save some processing cycles and needing to track of numberOfBalls extra nodes on the screen when they don't need to be remembered
-                flag = false
-                ball.moveBallTo(originPoint)
-                return true
-            }
-            
-            ball.moveBallTo(originPoint) {
-                ball.getNode().removeFromParent()
-            }
             return false
         }
         
-        // Replace the old ballArray with this new array that only has 1 ball
         ballArray = newArray
         
-        // NOTE: Don't forget to rename the first ball in the array so the ones generated the next turn won't collide with it
-       
-        /* XXX REMOVE ME
-        for ball in ballArray {
-            ball.getNode().physicsBody!.collisionBitMask = 0
-            ball.getNode().physicsBody!.categoryBitMask = 0
-            ball.getNode().physicsBody!.contactTestBitMask = 0
-            ball.stop()
-            ball.moveBallTo(originPoint)
-        }
-        */
+        // This tells the game to use the old origin point in the event that none of the balls have hit the ground yet
+        // If set to true, the first ball hasn't return yet so use the old origin point and don't correct it; if false, the first ball has already returned to there should be a new origin point to use
+        useOldOriginPoint = !firstBallReturned
         
-        // shootBalls() will increment the ball manager's state if it's shooting
+        // Reset this in here in case it isn't reset in startTimer; the only way this would happen is if the user swipes down before all the balls have been fired because this variable gets reset when the lastBall flag is set to true
+        self.nextBall = nil
     }
     
     public func setBallsOnFire() {
@@ -848,15 +786,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.startTimer(point)
                 return
             }
-            
-            // XXX REMOVE ME let ball = self.ballArray[self.numBallsFired]
-            
+                        
             // Fire the ball
             if nil == self.nextBall {
                 self.nextBall = self.ballArray[0]
+                print("NEXT BALL IS \(self.nextBall!.getNode().name!)")
+            }
+            else {
+                print("NEXT BALL IS \(self.nextBall!.getNode().name!)")
             }
             self.nextBall!.fire(point: point)
-            print("FIRING BALL \(self.nextBall!.getNode().name!) &&&&&&&&&&&&&&&&&&")
             self.nextBall!.resetBall()
             self.numBallsFired += 1
             if self.ballsOnFire {
@@ -865,8 +804,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.currentBallCount -= 1
             
             // Set this boolean so we know whether or not this is the last ball and need to remove the label
-            // XXX REMOVE ME let lastBall = (self.numBallsFired == (self.ballArray.count - 1))
-            // XXX REMOVE ME let lastBall = (self.numBallsFired == (self.numberOfBalls - 1))
             let lastBall = (self.numBallsFired == (self.numberOfBalls))
             
             if false == lastBall {
@@ -877,8 +814,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ball.loadItem(position: self.currentOriginPoint)
                 self.nextBall = ball
                 let nextNumber = self.numBallsFired + 1
-                print("NEXT BALL NUMBER \(nextNumber) &&&&&&&&&&&&&&&&&&&&&&&")
-                ball.getNode().name = "bm\(nextNumber)"
+                print("GENERATED NEW BALL WITH NUMBER \(nextNumber)")
+                
+                // This code here is to prevent duplicate ball names
+                var ballName = "bm\(nextNumber)"
+                ball.getNode().name = ballName
                 self.addChild(ball.getNode())
             }
             
@@ -903,36 +843,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // Pop this ball off the front of the list
             let ball = stoppedBalls.removeFirst()
             if false == firstBallReturned {
-                print("111111111111111111111 FIRST BALL RETURNED")
                 // This should work and prevent balls from landing in the middle of the screen...
                 
                 firstBallReturned = true
-                
-                var ballPosition = ball.getNode().position
-                // Correct the ball's Y position
-                if ballPosition.y > groundNode!.size.height {
-                    ballPosition.y = groundNode!.size.height + ballRadius!
+                    
+                if false == useOldOriginPoint {
+                    var ballPosition = ball.getNode().position
+                    // Correct the ball's Y position
+                    if ballPosition.y > groundNode!.size.height {
+                        ballPosition.y = groundNode!.size.height + ballRadius!
+                    }
+                    // Correct the ball's X position if it's somehow off screen
+                    if ballPosition.x < leftWallNode!.frame.size.width {
+                        ballPosition.x = leftWallNode!.frame.size.width + ballRadius!
+                    }
+                    else if ballPosition.x > rightWallNode!.position.x {
+                        ballPosition.x = rightWallNode!.position.x - ballRadius!
+                    }
+                    originPoint = ballPosition
+                    ball.moveBallTo(originPoint)
                 }
-                // Correct the ball's X position if it's somehow off screen
-                if ballPosition.x < leftWallNode!.frame.size.width {
-                    ballPosition.x = leftWallNode!.frame.size.width + ballRadius!
+                else {
+                    // If the flag is set, set it back to false
+                    useOldOriginPoint = false
+                    // Just move this ball back to its origin point
+                    ball.moveBallTo(originPoint)
                 }
-                else if ballPosition.x > rightWallNode!.position.x {
-                    ballPosition.x = rightWallNode!.position.x - ballRadius!
-                }
-                originPoint = ballPosition
-                ball.moveBallTo(originPoint)
-                
-                // Re-append this ball to the array because this is the one we're going to keep on the screen
-                // Not doing this created a weird scenario where the ball would get removed from the ball array but also stay on the screen, so we kind of lost reference to it which would result in n + 1 balls on the screen where n is the number of turns played so far. We should only end up with 1 ball on the screen after each turn
-                // XXX REMOVE ME; THIS HAS BEEN MOVED ELSEWHERE ballArray.append(ball)
-
-                // NOTE: Don't forget to rename the first ball in the array so the ones generated the next turn won't collide with it
             }
             else {
                 // Remove the ball from the game scene; it should already be removed from the ball array
                 ball.moveBallTo(originPoint) {
-                    print("REMOVING BALL \(ball.getNode().name!) FROM SCENE!!!!!!!!!!!!!!!!!!")
                     ball.getNode().removeFromParent()
                 }
             }

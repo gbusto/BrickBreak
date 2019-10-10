@@ -30,6 +30,7 @@ class ContinuousGameModel {
     private var gameState: DataManager.ClassicGameState?
     
     private var numberOfItems = Int(8)
+    // XXX Maybe remove this variable at some point?
     private var numberOfBalls = Int(10)
     private var numberOfRows = Int(0)
     

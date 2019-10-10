@@ -82,31 +82,19 @@ class LevelsGameScene: GameScene {
         
         // Handle the case where nameA is a ball and it hit the ground
         if nameA!.starts(with: "bm") && "ground" == nameB! {
-            // XXX TEST THIS OUT
             let newArray = ballArray.filter {
                 if $0.getNode().name! == nameA! {
                     self.stoppedBalls.append($0)
                     $0.stop()
-                    print("STOPPING BALL \(nameA!) $*********************")
                     
+                    // Remove this ball because it hit the ground
                     return false
                 }
+                // Keep this ball in the array because it's not the one that hit the ground
                 return true
             }
             
             ballArray = newArray
-            
-            /* XXX REMOVE ME
-            if newArray.count > 0 {
-                // Assign this new array with balls removed to the official ball array
-                ballArray = newArray
-            }
-            else {
-                print("(((((((((( NEW ARRAY == 0")
-            }
-            */
-            
-            print("00000000000000000000 BALL ARRAY: \(ballArray)")
 
             // Bail out because we don't need to continue
             return
@@ -119,26 +107,15 @@ class LevelsGameScene: GameScene {
                 if $0.getNode().name! == nameB! {
                     self.stoppedBalls.append($0)
                     $0.stop()
-                    print("STOPPING BALL \(nameB!) $*********************")
                     
+                    // Remove this ball because it hit the ground
                     return false
                 }
+                // Keep this ball in the array because it's not the one that hit the ground
                 return true
             }
             
             ballArray = newArray
-            
-            /* XXX REMOVE ME
-            if newArray.count > 0 {
-                // Assign this new array with balls removed to the official ball array
-                ballArray = newArray
-            }
-            else {
-                print("(((((((((( NEW ARRAY == 0")
-            }
-            */
-            
-            print("00000000000000000000 BALL ARRAY: \(ballArray)")
             
             // Bail out because we don't need to continue
             return
@@ -322,7 +299,6 @@ class LevelsGameScene: GameScene {
             gameModel!.itemGenerator!.pruneFirstRow()
             
             // Add back the ball count label
-            // XXX REMOVE ME addBallCountLabel(position: originPoint, ballCount: ballArray.count)
             addBallCountLabel(position: originPoint, ballCount: numberOfBalls)
             
             // Check the model to update the score label
@@ -339,11 +315,6 @@ class LevelsGameScene: GameScene {
             }
             
             currentOriginPoint = originPoint
-            
-            /* XXX MAYBE REMOVE ME?
-            // Rename the only remaining ball in the array to bm1 to avoid name collisions when balls are generated next turn
-            ballArray[0].getNode().name = "bm1"
-            */
         }
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
@@ -376,22 +347,16 @@ class LevelsGameScene: GameScene {
                     }
                 }
 
-                
-
-                // XXX DEBUG; REMOVE THE LINES BELOW THIS COMMENT
-                var s: [String] = []
-
                 let ballNodes = self.children.filter {
                     if let name = $0.name {
                         if name.starts(with: "bm") {
-                            s.append(name)
                             return true
                         }
                     }
                     return false
                 }
-                print("THERE ARE \(ballNodes.count) BALLS ON THE SCREEN RIGHT NOW: \(s)")
                 let ball = BallItem()
+                ball.initItem(num: 1, size: CGSize(width: ballRadius!, height: ballRadius!))
                 ball.node = ballNodes[0] as! SKShapeNode
                 ballArray = [ball]
                 
@@ -403,22 +368,6 @@ class LevelsGameScene: GameScene {
         if gameModel!.isReady() {
             // Reset this list to empty
             stoppedBalls = []
-            
-            /* XXX MAYBE REMOVE ME?
-            // XXX DEBUG; REMOVE THE LINES BELOW THIS COMMENT
-            var s: [String] = []
-
-            let ballNodes = self.children.filter {
-                if let name = $0.name {
-                    if name.starts(with: "bm") {
-                        s.append(name)
-                        return true
-                    }
-                }
-                return false
-            }
-            print("THERE ARE \(ballNodes.count) BALLS ON THE SCREEN RIGHT NOW: \(s)")
-            */
         }
         
         // Actions to perform while in the middle of a turn
@@ -509,9 +458,7 @@ class LevelsGameScene: GameScene {
             handleStoppedBalls()
             if firedAllBalls {
                 // Wait for all balls to return
-                // XXX REMOVE ME if allBallsStopped(ballArray) {
                 // If there is one ball remaining in the array then we know all balls have stopped
-                // XXX REMOVE ME if ballArray.count == 1 {
                 if allBallsStopped() {
                     // Increment game model state from MID_TURN to TURN_OVER
                     gameModel!.incrementState()
@@ -778,7 +725,6 @@ class LevelsGameScene: GameScene {
         currentBallCount = gameModel!.numberOfBalls
         // Update the official ball count variable
         numberOfBalls = currentBallCount
-        // XXX REMOVE ME ballArray = initBallArray(numberOfBalls: currentBallCount, point: originPoint)
         ballArray = initBallArray(numberOfBalls: 1, point: originPoint)
         for ball in ballArray {
             self.addChild(ball.getNode())
@@ -797,12 +743,6 @@ class LevelsGameScene: GameScene {
             }
             addRowToView(rowNum: (numRowsToStart + 1) - i, items: row)
         }
-        
-        // XXX May need to uncomment this line
-        // Addressed in issue #431
-        // actionsStarted or animteItems() should only be allowed to be called once and ignored while items are in motion
-        // Move the items down in the view
-        //animateItems()
     }
     
     // XXX Common function
