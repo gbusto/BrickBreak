@@ -790,10 +790,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // Fire the ball
             if nil == self.nextBall {
                 self.nextBall = self.ballArray[0]
-                print("NEXT BALL IS \(self.nextBall!.getNode().name!)")
-            }
-            else {
-                print("NEXT BALL IS \(self.nextBall!.getNode().name!)")
             }
             self.nextBall!.fire(point: point)
             self.nextBall!.resetBall()
@@ -814,7 +810,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ball.loadItem(position: self.currentOriginPoint)
                 self.nextBall = ball
                 let nextNumber = self.numBallsFired + 1
-                print("GENERATED NEW BALL WITH NUMBER \(nextNumber)")
                 
                 // This code here is to prevent duplicate ball names
                 var ballName = "bm\(nextNumber)"
