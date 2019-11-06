@@ -274,8 +274,9 @@ class DataManager {
     
     public func saveReviewPromptData(reviewPrompt1: Bool, reviewPrompt2: Bool, reviewPrompt3: Bool, reviewPrompt4: Bool) -> Bool {
         do {
-            if false == FileManager.default.fileExists(atPath: DataManager.ReviewPromptDataURL.path) {
-                try FileManager.default.createDirectory(at: DataManager.ReviewPromptDataURL, withIntermediateDirectories: true, attributes: nil)
+            // Create the App directory Documents/BB
+            if false == FileManager.default.fileExists(atPath: DataManager.AppDirURL.path) {
+                try FileManager.default.createDirectory(at: DataManager.AppDirURL, withIntermediateDirectories: true, attributes: nil)
             }
             
             let reviewPromptData: ReviewPromptData = ReviewPromptData(reviewPrompt1: reviewPrompt1, reviewPrompt2: reviewPrompt2, reviewPrompt3: reviewPrompt3, reviewPrompt4: reviewPrompt4)
@@ -383,7 +384,7 @@ class DataManager {
         do {
             let data = try Data(contentsOf: DataManager.ReviewPromptDataURL)
             let reviewState: ReviewPromptData = try PropertyListDecoder().decode(DataManager.ReviewPromptData.self, from: data)
-            print("Loaded initial onboarding state: \(reviewState)")
+            print("Loaded review prompt state: \(reviewState)")
             return reviewState
         }
         catch {
