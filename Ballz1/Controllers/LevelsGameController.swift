@@ -357,10 +357,7 @@ class LevelsGameController: UIViewController,
     }
     
     public func updateScore(score: Int) {
-        let currentScore = Int(levelScore.text!)!
-        if currentScore < score {
-            levelScore.text = "\(currentScore + 1)"
-        }
+        levelScore.text = "\(score)"
     }
     
     public func setScore(score: Int) {
