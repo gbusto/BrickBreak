@@ -45,9 +45,32 @@ class ContinuousGameModel {
     
     private var GAME_OVER = Int(255)
     
+    /*
+     Main things for which this class should be responsible:
+     - Managing the full model, including number of balls, items, rows, etc
+     - The ItemGenerator for this instance
+     - Previous turn data for undo
+     - User saved boolean
+     
+     "state" should be moved OUT of the model, and into the ViewController for this model.
+     */
+    
     // MARK: State handling code
 
-    
+    /*
+     Saves the full game state so it can be retrieved later.
+     Accesses current state to prevent cheating.
+     Accesses the high score to save that.
+     If the current state is "GAME_OVER", then clear the saved data
+     Try to save the data
+     Save the item generator's state
+     4 different data save functions:
+     - One to save the high score and whether or not the player was shown the tutorials
+     - One to save the game state (i.e. current game score and whether the user was saved)
+     - One to save the ball state (i.e. number of balls and their current origin point)
+     - Then tell the ItemGenerator to save its state
+     */
+    // Improvement: Maybe all game state should be able to be loaded at once; it’s weird that high score, game score, item generator, etc all load separately. What happens if one can load but not the others?
     public func saveState(numberOfBalls: Int, originPoint: CGPoint) {
         // If we're in the middle of a turn, we don't want to save the state. Users could exploit this to cheat
         if isReady() || isGameOver() {
@@ -83,6 +106,18 @@ class ContinuousGameModel {
     }
     
     // MARK: Initialization functions
+    /* PURPOSE: inits the model
+        Sets "state" to WAITING
+        Attempts to load high score and tutorials boolean
+        Attempts to load game score and whether or not the user was saved
+        Sets variables with all that info:
+        - highScore
+        - showedTutorials
+        - gameScore
+        - userWasSaved
+     */
+    // All saved state should be loaded at once; it makes no sense for some saved session data to be able to load when other saved data fails to load
+    // High score and tutorials can be saved and loaded separately
     required init(numberOfRows: Int) {
         state = WAITING
         
@@ -108,6 +143,12 @@ class ContinuousGameModel {
         self.numberOfRows = numberOfRows
     }
     
+    /* PURPOSE: Initializes the item generator with objects and positions; called in ContinuousGameScene
+        Attempt to load the item generator's state
+        Setup the ItemGenerator with loaded state if any (Optional)
+        Modifies "state" variable; probably shouldn't do this
+     */
+    // This function should not modify game state, leave that responsibility to another function
     public func initItemGenerator(blockSize: CGSize, ballRadius: CGFloat) {
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
         let igState = DataManager.shared.loadClassicItemGeneratorState()
@@ -122,6 +163,14 @@ class ContinuousGameModel {
     
     // MARK: Public functions
     
+    /* PURPOSE: called when the user wants to "undo"; returns state to what it was previously
+        Returns "true" if it was able to load the previous state, "false" otherwise
+        Asks itemGenerator to load the previous turn state? If that fails, we return "false"
+        Undo high score and game score (by substracting one)
+        Marks "prevTurnSaved" as false because we just undid a turn, and you can only undo one turn at a time
+        Updates "state" to WAITING which is the state before the user makes a move
+     */
+    // There should be some game state struct from which the previous turn is loaded
     // Load the previous turn state
     // XXX NEEDS WORK
     // XXX TEST
@@ -149,6 +198,12 @@ class ContinuousGameModel {
         return false
     }
     
+    /* PURPOSE: handle actions once the user starts their next turn
+        Saves the item generator's turn state
+        Sets "prevTurnSaved" to true
+        Moves state to the next value (incrementState)
+     */
+    // The way incrementState is being used I think should be changed... or it will change how and where it should be called
     public func prepareTurn(point: CGPoint) {
         // Save the item generator's turn state as soon as the user starts the next turn
         itemGenerator!.saveTurnState()
@@ -160,12 +215,20 @@ class ContinuousGameModel {
         incrementState()
     }
 
+    /* PURPOSE: Called after the user watches an ad to save them (tells item generator to remove the bottom 3 rows if necessary)
+        Updates "state" to READY
+        Updates "userWasSaved" to true
+        Tells ItemGenerator to save the user
+     */
     public func saveUser() -> [Item] {
         state = READY
         userWasSaved = true
         return itemGenerator!.saveUser()
     }
 
+    /*
+     Unclear on what this does exactly... removeItems removes items from the generator, but after the turn ends?
+     */
     public func handleTurn() -> [(Item, Int, Int)] {
         // Check to see if the user collected any ball items so far
         let removedItems = itemGenerator!.removeItems()
@@ -176,6 +239,13 @@ class ContinuousGameModel {
         return removedItems
     }
     
+    /* PURPOSE: Handle actions after a turn ends
+     Increment game score
+     Update high score if necessary
+     Increment the game state to the next state
+     Reset the "on fire bonus" in the ItemGenerator
+     */
+    // Maybe actions for each state should be encapsulated in a single function
     // Handles a turn ending; generate a new row, check for new balls, increment the score, etc
     public func handleTurnOver() {
         gameScore += 1
@@ -191,6 +261,10 @@ class ContinuousGameModel {
     }
     
     // MARK: Physics contact functions
+    /* PURPOSE: Handles logic for when contact is made
+     Figure out which item in the contact was not the game ball, and then tell the ItemGenerator that that object was hit
+     */
+    // This seems okay for now...
     public func handleContact(nameA: String, nameB: String) {
         // XXX NEEDS WORK
         // Items that start with the name bm are ball manager balls. They are named differently from the other items so we can quickly check if a ball manager ball is interacting with an item from the item generator
@@ -205,13 +279,22 @@ class ContinuousGameModel {
         
         if itemGenerator!.hit(name: item) {
             // Pass; don't need to do anything here
+            // Look into why we don't need to do anything here
         }
     }
     
+    /*
+     Enables the "on fire bonus"
+     */
+    // Maybe the ItemGenerator can be made aware via another mechanism for when to enable this?
     public func addOnFireBonus() {
         itemGenerator!.setOnFireBonus(true)
     }
     
+    /* PURPOSE: Generates a new row
+     The ItemGenerator should handle the logic in this function; all it needs to know is WHEN to generate a new row
+     */
+    // The logic from this function show be moved into ItemGenerator class
     public func generateRow() -> [Item] {
         let count = itemGenerator!.getBlockCount()
         // If the user is doing well and there are no items on the screen, generate a harder pattern
@@ -233,11 +316,19 @@ class ContinuousGameModel {
         return itemGenerator!.generateRow()
     }
     
+    /*
+     Calculates the loss risk; this function returns "true" if the user is close to losing, "false" otherwise
+     */
+    // Item array count and number of rows could be passed into here to make this more easily testable
     public func lossRisk() -> Bool {
         return (itemGenerator!.itemArray.count == numberOfRows - 2)
     }
     
+    /*
+     Determines if the game is over; returns "true" if it's over, "false" otherwise
+     */
     // The floor of the game scene; if another row doesn't fit
+    // Functions like this that are meant to check something shouldn't also update something like game state
     public func gameOver() -> Bool {
         if (itemGenerator!.itemArray.count == numberOfRows - 1) {
             state = GAME_OVER
@@ -246,6 +337,10 @@ class ContinuousGameModel {
         return false
     }
     
+    /*
+     Increments the game state to the next state
+     */
+    // This needs to be improved
     public func incrementState() {
         if WAITING == state {
             state = READY
@@ -260,6 +355,7 @@ class ContinuousGameModel {
         state += 1
     }
     
+    // All functions below this comment can be removed and we can check another way
     public func isReady() -> Bool {
         // State when ball manager and item generator are ready
         return (READY == state)
