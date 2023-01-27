@@ -9,6 +9,16 @@
 import SpriteKit
 import GameplayKit
 
+/*
+ This might be a good file to start with with regards to testing since it's core to both game types, and there are plenty of ways to fix up this code.
+ 
+ Big improvements:
+ - Create models for each item type that can handle initialization
+ - Create an enum of possible item types
+ - Functions should actually be somewhat testable, more easily than the Models at the moment
+ -
+ */
+
 class ItemGenerator {
     
     // -------------------------------------------------------------
@@ -28,6 +38,7 @@ class ItemGenerator {
     
     // These should probably be some kind of enum
     // Used to mark item types to know what item types are allowed to be generated
+    // TODO: Change these to an enum
     public static let SPACER = Int(0)
     public static let HIT_BLOCK = Int(1)
     public static let BALL = Int(2)
@@ -37,6 +48,7 @@ class ItemGenerator {
     
     // -------------------------------------------------------------
     // MARK: Private attributes
+    // TODO: This is a good start for this, allows for dependency injection
     private var igState: DataManager.ItemGeneratorState?
     
     // Number of items to fit on each row
@@ -151,17 +163,26 @@ class ItemGenerator {
         return prevTurn
     }
     
+    /* PURPOSE: Actually save turn state to disk
+     Saves turn state to disk by backing up items in their current positions
+     */
     public func saveState() {
         let backedUpItems = backupItems()
         
         DataManager.shared.saveClassicItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: backedUpItems.itemArray, itemHitCountArray: backedUpItems.itemHitCountArray, blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
     }
     
+    /* PURPOSE: Backs up items and position to a variable, doesn't actually save to dis
+     Should maybe be called something different to avoid confusing it with the variable above
+     */
     public func saveTurnState() {
         // Backup the items into this state struct
         prevTurnState = backupItems()
     }
 
+    /*
+     Loads turn state from "prevTurnState" variable
+     */
     public func loadTurnState() -> Bool {
         // Return false if the array for the previous turn is empty
         if prevTurnState.itemArray.isEmpty {
@@ -179,6 +200,9 @@ class ItemGenerator {
     }
     
     // Gets the item count (doesn't include spacer items)
+    /*
+     Gets the current count of items; could be simplified using map, filter, and count?
+     */
     public func getItemCount() -> Int {
         var count = Int(0)
         for row in itemArray {
@@ -195,6 +219,10 @@ class ItemGenerator {
     }
     
     // Load items into an array and return that array
+    /*
+     Sets up items in the item generator based on variables passed in; good for testing.
+     Code looks complicated, could probably be simplified.
+     */
     private func loadItems(items: [[Int]], itemHitCounts: [[Int]], numberOfBalls: Int) -> [[Item]] {
         // The final array we'll return
         var array: [[Item]] = []
@@ -257,11 +285,17 @@ class ItemGenerator {
         return array
     }
     
+    /*
+     I think this generates a number for blocks that ends up being the block's required hits before it breaks
+     */
     private func randomNumber(upper: Int, lower: Int) -> Int {
         return Int(drand48() * 100) % (upper - lower + 1) + lower
     }
     
     // MARK: Public functions
+    /*
+     Big initializer; need to find a good way to test this stuff out since it's generating things based on a percentage.
+     */
     required init(blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int, numItems: Int, state: DataManager.ItemGeneratorState?, useDrand: Bool = false, seed: Int = 0) {
         // XXX Change restoration URL to be optional; if it's nil, don't try to load any data
         // XXX Maybe this should only be something that the view is aware of
@@ -303,6 +337,10 @@ class ItemGenerator {
         itemArray = loadItems(items: igState!.itemArray, itemHitCounts: igState!.itemHitCountArray, numberOfBalls: self.numberOfBalls)
     }
     
+    /*
+     Not sure if this is totally necessary anymore.. but it may be useful.
+     Should use a switch statement instead these if/else ones though.
+     */
     public func debugPrint() {
         var output = ""
         for row in itemArray {
@@ -334,12 +372,22 @@ class ItemGenerator {
         print(output)
     }
     
+    /*
+     This is sort of a helper function to make it easier to pick a random block type later on.
+     The way it works at a high level is this:
+     Create an array (with a total length of 100) of X block type, Y block type, and Z block type.
+     Then we will randomly choose one element out of that array.
+     There is likely a much better way to handle this.
+     */
     public func addBlockItemType(type: Int, percentage: Int) {
         for _ in 1...percentage {
             blockTypeArray.append(type)
         }
     }
     
+    /*
+     Same as the function above, except this is done with non block item types.
+     */
     public func addNonBlockItemType(type: Int, percentage: Int) {
         for _ in 1...percentage {
             nonBlockTypeArray.append(type)
@@ -347,12 +395,21 @@ class ItemGenerator {
     }
     
     // Removes balls from the item generator's generation list
+    /*
+     Seems to reset the non block item array and then repopulate it with spacers and bombs.
+     Again, if I could fix the way the code is randomly picking a type, then all we'd need to do here is just remove the
+        ball type from the list of possibilities of non block type items.
+     */
     public func removeBallTypeGeneration() {
         nonBlockTypeArray = []
         addNonBlockItemType(type: ItemGenerator.SPACER, percentage: 98)
         addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
     }
     
+    /*
+     Could probably be made simpler and have a variable keeping track of this.
+     Could also maybe use filter, map, and count to accomplish this
+     */
     public func getBlockCount() -> Int {
         var count = 0
         for row in itemArray {
@@ -367,12 +424,19 @@ class ItemGenerator {
     }
     
     // Used by the model to reset the pattern difficulty distribution
+    /*
+     Resets the difficulty of items being generated. Basically makes the game a bit easier after making it more difficult
+     */
     public func resetDifficulty() {
         easyPatternPercent = 65
         intermediatePatternPercent = 25
         hardPatternPercent = 10
     }
     
+    /*
+     Generates a new row of items.
+     Massive function that could probably be simplified; it's very difficult to test.
+     */
     public func generateRow(emptyRow: Bool = false) -> [Item] {
         var newRow: [Item] = []
         
@@ -480,10 +544,17 @@ class ItemGenerator {
         return newRow
     }
     
+    /*
+     Super simple; not sure if it needs its own function.
+     */
     public func setOnFireBonus(_ flag: Bool) {
         ballsOnFire = flag
     }
     
+    /*
+     Handle two items colliding.
+     Could probably move each hit action into a separate function tied to the specific item type.
+     */
     public func hit(name: String) -> Bool {
         var successfulHit = true
         
@@ -549,12 +620,19 @@ class ItemGenerator {
         return false
     }
     
+    /*
+     Very simple; probably doesn't need its own function
+     */
     public func updateBallCount(count: Int) {
         // This is used to address a bug in which the number of balls and the hit count diverge
         numberOfBalls = count
     }
     
     // This function is responsible for pruning any items in the first row; once the item generator has numberOfRows - 1 rows in its array, any non-block items are removed from the game scene and will need to be removed from here as well
+    /*
+     Prunes the bottom-most row of blocks, but not balls or bombs (I think); unclear on the context and why it's called.
+     It's always called after animateItems() function
+     */
     public func pruneFirstRow() {
         if itemArray.count == (numberOfRows - 1) {
             let row = itemArray[0]
@@ -571,6 +649,12 @@ class ItemGenerator {
     // Looks for items that should be removed; each Item keeps track of its state and whether or not it's time for it to be removed.
     // If item.removeItem() returns true, it's time to remove the item; it will be added to an array of items that have been removed and returned to the model
     // XXX In the future, change the return type to be either [(Item, CGPoint)], or a Dictionary<Item, CGPoint>
+    /*
+     Looks for items that should be removed, as stated by comment above, and returns all items that were removed.
+     The function name could be changed so it's a little more clear about what it does.
+     It sounds like it should remove a specified list of items.
+     Probably difficult to test, should be improved.
+     */
     public func removeItems() -> [(Item, Int, Int)] {
         var removedItems: [(Item, Int, Int)] = []
         
@@ -615,6 +699,9 @@ class ItemGenerator {
         return removedItems
     }
     
+    /*
+     Function could probably be renamed, but I think this removes the bottom 3 rows to save a user before they lose.
+     */
     public func saveUser() -> [Item] {
         var removedItems: [Item] = []
         for _ in 1...4 {
@@ -631,6 +718,11 @@ class ItemGenerator {
     
     // MARK: Private functions
     // Actually generate the item to be placed in the array
+    /*
+     Generates an item; I don't think this should return an optional. The default case could maybe be the SpacerItem.
+     Should be relatively easy to test.
+     Could have separate models for each item type that is responsible for initializing itself.
+     */
     private func generateItem(itemType: Int) -> Item? {
         switch itemType {
         case ItemGenerator.SPACER:
@@ -689,6 +781,9 @@ class ItemGenerator {
         }
     }
     
+    /*
+     These next 3 functions seem okay for now.
+     */
     private func getEasyPatternPercent() -> Int {
         return easyPatternPercent
     }
@@ -702,6 +797,10 @@ class ItemGenerator {
     }
     
     // Finds the row index of a given item or nil if it wasn't found (it shouldn't ever return nil, but just in case)
+    /*
+     I guess it's okay that this can return nil. But we should be confident enough in the code to know for sure whether or not the item still exists.
+     If there's no chance it could accidentally be removed, then we can return an Int that isn't an optional.
+     */
     private func findItemRowIndex(_ item: Item) -> Int? {
         if 0 == itemArray.count {
             return nil
@@ -721,6 +820,9 @@ class ItemGenerator {
     }
     
     // Find the item's index within its row (shouldn't ever return nil, but it should be checked anyways)
+    /*
+     Same as function from above; we should know for sure whether or not the item can still be in the item array.
+     */
     private func itemIndexInRow(lookFor: Item, rowIndex: Int) -> Int? {
         let name = lookFor.getNode().name!
         let row = itemArray[rowIndex]
@@ -749,6 +851,9 @@ class ItemGenerator {
      
      which is incorrect. The layout of the items should be exactly the same.
      */
+    /*
+     Self explanatory; should be testable. We shouldn't use a "while true" loop though.
+     */
     private func removeEmptyRows() {
         while true {
             // If there are no rows left, return out
@@ -770,6 +875,11 @@ class ItemGenerator {
     }
     
     // This could be improved and refactored
+    /*
+     I think this is used for Bombs when they explode. It needs to destroy adjacent items.
+     Guarantee that this function is horribly inefficient and can be improved.
+     It should be testable though; maybe it should return the adjacent items and another function should remove them.
+     */
     private func clearAdjacentItems(to: Item) {
         var adjacentItems: [Item] = []
         
@@ -845,6 +955,11 @@ class ItemGenerator {
         }
     }
     
+    /*
+     I think this function was introduced to handle when a mystery block breaks.
+     One type of mystery block clears out an entire row, and this handles removing items in the same row as that mystery block.
+     Should be more easily testable; should return items to be removed, and then have another function actually remove those items.
+     */
     private func clearRowItems(item: Item) {
         // Remove all items in the row
         var items: [Item] = []
@@ -887,6 +1002,9 @@ class ItemGenerator {
         }
     }
     
+    /*
+     Same as above, but clears out a column of items instead of a row.
+     */
     private func clearColumnItems(item: Item) {
         // Remove all items in the row
         var items: [Item] = []
