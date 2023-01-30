@@ -13,10 +13,7 @@ import SpriteKit
 import GoogleMobileAds
 import FirebaseAnalytics
 
-class ContinuousGameController: UIViewController,
-                                GADBannerViewDelegate,
-                                GADRewardBasedVideoAdDelegate,
-                                GADInterstitialDelegate {
+class ContinuousGameController: UIViewController {
     
     private var scene: SKScene?
     
@@ -183,114 +180,7 @@ class ContinuousGameController: UIViewController,
             view.ignoresSiblingOrder = true
         }
     }
-    
-    // MARK: Banner ad functions
-    public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
-        // Error loading the ad; hide the banner
-        bannerView.isHidden = true
-        print("Error loading ad: \(error.localizedDescription)")
-    }
-    
-    public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
-        // Received an ad; show the banner now
-        bannerView.isHidden = false
-    }
-    
-    
-    // MARK: Reward ad functions
-    public func rewardBasedVideoAdDidReceive(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
-        // Received a reward based video ad; may not end up using this
-    }
-    
-    public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
-        // User was rewarded; let the game model know to save the user or undo the turn (depending on what the reward is supposed to be)
-        if rewardType == ContinuousGameController.NO_REWARD {
-            print("No reward type specified... oops?")
-        }
-        else if rewardType == ContinuousGameController.UNDO_REWARD {
-            
-            // Undo the last turn
-            let contScene = scene as! ContinousGameScene
-            contScene.loadPreviousTurnState()
-        }
-        else if rewardType == ContinuousGameController.RESCUE_REWARD {
-            // Save the user!
-            let contScene = scene as! ContinousGameScene
-            contScene.saveUser()
-            userWasSaved()
-        }
         
-        // Reset the reward type since we just rewarded the user
-        rewardType = ContinuousGameController.NO_REWARD
-        
-        showedReward = true
-    }
-    
-    public func rewardBasedVideoAdDidCompletePlaying(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
-        // The video ad completed; might not need to use this either since the function above this handles rewards
-    }
-    
-    public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
-        // Get ready to load up a new reward ad right away
-        // Dismiss the reward ad view controller
-
-        // Ensure the undo button is disabled after showing a reward ad
-        disableUndoButton()
-        
-        // Load a new reward ad
-        let rewardAdRequest = GADRequest()
-        rewardAdRequest.testDevices = AdHandler.getTestDevices()
-        GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
-        
-        if false == showedReward {
-            if rewardType == ContinuousGameController.NO_REWARD {
-                print("Skipped reward ad and no reward type specified... oops?")
-            }
-            else if rewardType == ContinuousGameController.UNDO_REWARD {
-                // Don't do anything since they didn't watch the ad
-            }
-            else if rewardType == ContinuousGameController.RESCUE_REWARD {
-                // Don't save the user since they didn't watch the ad
-                let scene = self.scene as! ContinousGameScene
-                scene.endGame()
-            }
-        }
-        else {
-            // Set showedReward to false
-            showedReward = false
-        }
-        
-        // Unpause the game
-        let scene = self.scene as! ContinousGameScene
-        // Set these realPaused variables to false to unpause the game after a reward ad
-        scene.realPaused = false
-        if let view = self.view as! SKView? {
-            view.isPaused = false
-        }
-        print("Unpaused game")
-    }
-    
-    public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didFailToLoadWithError error: Error) {
-        // Failed to load a reward ad; need to handle this case when the user isn't on the network
-        
-        // Disable the undo button if it's loaded because we don't have an ad loaded
-        disableUndoButton()
-    }
-    
-    // MARK: Interstitial ad functions
-    public func interstitialDidReceiveAd(_ ad: GADInterstitial) {
-        // Received an interstitial ad
-    }
-    
-    public func interstitial(_ ad: GADInterstitial, didFailToReceiveAdWithError error: GADRequestError) {
-        // Failed to receive an interstitial ad
-    }
-    
-    public func interstitialDidDismissScreen(_ ad: GADInterstitial) {
-        // Interstitial ad closed out; return to game menu now
-        self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
-    }
-    
     public func showRewardAd() {
         // Show the reward ad if we can
         if GADRewardBasedVideoAd.sharedInstance().isReady {
@@ -541,4 +431,118 @@ class ContinuousGameController: UIViewController,
             "number_turns_undone": numTimesUndoTurn as NSNumber,
         ])
     }
+}
+
+// MARK: - Banner ad functions
+extension ContinuousGameController: GADBannerViewDelegate {
+    public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
+        // Error loading the ad; hide the banner
+        bannerView.isHidden = true
+        print("Error loading ad: \(error.localizedDescription)")
+    }
+    
+    public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+        // Received an ad; show the banner now
+        bannerView.isHidden = false
+    }
+}
+
+// MARK: - Interstitial ad functions
+extension ContinuousGameController: GADInterstitialDelegate {
+    public func interstitialDidReceiveAd(_ ad: GADInterstitial) {
+        // Received an interstitial ad
+    }
+    
+    public func interstitial(_ ad: GADInterstitial, didFailToReceiveAdWithError error: GADRequestError) {
+        // Failed to receive an interstitial ad
+    }
+    
+    public func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        // Interstitial ad closed out; return to game menu now
+        self.performSegue(withIdentifier: "unwindToGameMenu", sender: self)
+    }
+    
+}
+
+// MARK: - Reward ad functions
+extension ContinuousGameController: GADRewardBasedVideoAdDelegate {
+    public func rewardBasedVideoAdDidReceive(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // Received a reward based video ad; may not end up using this
+    }
+    
+    public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
+        // User was rewarded; let the game model know to save the user or undo the turn (depending on what the reward is supposed to be)
+        if rewardType == ContinuousGameController.NO_REWARD {
+            print("No reward type specified... oops?")
+        }
+        else if rewardType == ContinuousGameController.UNDO_REWARD {
+            
+            // Undo the last turn
+            let contScene = scene as! ContinousGameScene
+            contScene.loadPreviousTurnState()
+        }
+        else if rewardType == ContinuousGameController.RESCUE_REWARD {
+            // Save the user!
+            let contScene = scene as! ContinousGameScene
+            contScene.saveUser()
+            userWasSaved()
+        }
+        
+        // Reset the reward type since we just rewarded the user
+        rewardType = ContinuousGameController.NO_REWARD
+        
+        showedReward = true
+    }
+    
+    public func rewardBasedVideoAdDidCompletePlaying(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // The video ad completed; might not need to use this either since the function above this handles rewards
+    }
+    
+    public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // Get ready to load up a new reward ad right away
+        // Dismiss the reward ad view controller
+
+        // Ensure the undo button is disabled after showing a reward ad
+        disableUndoButton()
+        
+        // Load a new reward ad
+        let rewardAdRequest = GADRequest()
+        rewardAdRequest.testDevices = AdHandler.getTestDevices()
+        GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
+        
+        if false == showedReward {
+            if rewardType == ContinuousGameController.NO_REWARD {
+                print("Skipped reward ad and no reward type specified... oops?")
+            }
+            else if rewardType == ContinuousGameController.UNDO_REWARD {
+                // Don't do anything since they didn't watch the ad
+            }
+            else if rewardType == ContinuousGameController.RESCUE_REWARD {
+                // Don't save the user since they didn't watch the ad
+                let scene = self.scene as! ContinousGameScene
+                scene.endGame()
+            }
+        }
+        else {
+            // Set showedReward to false
+            showedReward = false
+        }
+        
+        // Unpause the game
+        let scene = self.scene as! ContinousGameScene
+        // Set these realPaused variables to false to unpause the game after a reward ad
+        scene.realPaused = false
+        if let view = self.view as! SKView? {
+            view.isPaused = false
+        }
+        print("Unpaused game")
+    }
+    
+    public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didFailToLoadWithError error: Error) {
+        // Failed to load a reward ad; need to handle this case when the user isn't on the network
+        
+        // Disable the undo button if it's loaded because we don't have an ad loaded
+        disableUndoButton()
+    }
+
 }
