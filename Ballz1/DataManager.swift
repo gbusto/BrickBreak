@@ -62,6 +62,7 @@ class DataManager {
         var itemTypeDict: [Int: Int]
         // An array of tuples where index 0 is the item type (SPACER, HIT_BLOCK, BALL, etc) and index 1 is the hit block count (it's only really needed for hit block items)
         var itemArray: [[Int]]
+        // TODO: Fix this. This is really dumb; in code, hit count should be a property contained by an object, not in a separate array like this.
         var itemHitCountArray: [[Int]]
         var blockTypeArray: [Int]
         var nonBlockTypeArray: [Int]

@@ -11,10 +11,7 @@ import SpriteKit
 import GoogleMobileAds
 import FirebaseAnalytics
 
-class LevelsGameController: UIViewController,
-                            GADBannerViewDelegate,
-                            GADInterstitialDelegate,
-                            GADRewardBasedVideoAdDelegate {
+class LevelsGameController: UIViewController {
     
     @IBOutlet weak var levelCount: UILabel!
     @IBOutlet weak var levelScore: UILabel!
@@ -51,9 +48,11 @@ class LevelsGameController: UIViewController,
     private var scene: SKScene?
     
     override func viewDidAppear(_ animated: Bool) {
+        // TODO: Use dependency injection here; this event doesn't need to be fired in testing
         Analytics.setScreenName("LevelsGame", screenClass: NSStringFromClass(LevelsGameScene.classForCoder()))
 
         // Check if we need to show the tutorial
+        // TODO: Again, use dependency injection here for the DataManager. This is difficult to test
         if let initialOnboardingState = DataManager.shared.loadInitialOnboardingState() {
             if false == initialOnboardingState.showedLevelOnboarding {
                 showInitialOnboarding()
@@ -67,6 +66,7 @@ class LevelsGameController: UIViewController,
         }
         
         // Load the banner ad view
+        // TODO: This could be encapsulated in a function call to another dependency; it doesn't need to be run when testing
         bannerAdView.adUnitID = AdHandler.getBannerAdID()
         bannerAdView.rootViewController = self
         bannerAdView.delegate = self
@@ -155,86 +155,6 @@ class LevelsGameController: UIViewController,
         super.viewDidLoad()
         
         goToGameScene()
-    }
-    
-    // MARK: Banner ad functions
-    public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
-        // Error loading the ad; hide the banner
-        bannerView.isHidden = true
-        print("Error loading ad: \(error.localizedDescription)")
-    }
-    
-    public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
-        // Received an ad; show the banner now
-        bannerView.isHidden = false
-    }
-    
-    // MARK: Interstitial ad functions
-    public func interstitialDidReceiveAd(_ ad: GADInterstitial) {
-        // Received an interstitial ad
-    }
-    
-    public func interstitial(_ ad: GADInterstitial, didFailToReceiveAdWithError error: GADRequestError) {
-        // Failed to receive an interstitial ad
-    }
-    
-    public func interstitialDidDismissScreen(_ ad: GADInterstitial) {
-        // Interstitial ad closed out; prepare a new one unless the user wants to exit the game
-        if leaveGame {
-            returnToMenu()
-            return
-        }
-        // The interstitialAd object can only be used once so we need to prepare a new one each time the ad object is used
-        prepareInterstitialAd()
-        
-        // If the user just own, prompt them to leave a review
-        if userJustWon {
-            let levelNumber = Int(levelCount.text!)!
-            if levelNumber >= 10 {
-                Review.shared.promptForReview()
-            }
-        }
-        
-        // Reset this variable here after checking it; it was originally being reset to false when the game scene started over which would happen before this callback function gets called so it would never resolve to true
-        userJustWon = false
-    }
-    
-    public func prepareInterstitialAd() {
-        // Prepare to load interstitial ad
-        interstitialAd = GADInterstitial(adUnitID: AdHandler.getInterstitialAdID())
-        interstitialAd.delegate = self
-        
-        // Attempt to load the interstitial ad
-        let intAdRequest = GADRequest()
-        intAdRequest.testDevices = AdHandler.getTestDevices()
-        interstitialAd.load(intAdRequest)
-    }
-    
-    // MARK: Reward ad functions
-    public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
-        // User was rewarded
-        let scene = self.scene as! LevelsGameScene
-        scene.saveUser()
-        heartImageView.image = UIImage(named: "used_life")
-        userWasRescued = true
-    }
-    
-    public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
-        // Analytics: I think google auto tracks whether or not the user compeleted the reward ad
-
-        // The reward ad closed out
-        
-        let scene = self.scene as! LevelsGameScene
-        if let view = self.view as! SKView? {
-            // Unpause the game after the reward ad closes
-            scene.realPaused = false
-            view.isPaused = false
-        }
-        
-        if false == userWasRescued {
-            // Show the level loss screen because the user skipped the reward ad
-            gameOver(win: false)
-        }
     }
     
     @IBAction func statusBarTapped(_ sender: UITapGestureRecognizer) {
@@ -529,5 +449,92 @@ class LevelsGameController: UIViewController,
             "levels_completed": numLevelsCompleted,
             "levels_failed": numLevelsFailed,
         ])
+    }
+}
+
+// MARK: - Banner ad functions
+extension LevelsGameController: GADBannerViewDelegate {
+    public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
+        // Error loading the ad; hide the banner
+        bannerView.isHidden = true
+        print("Error loading ad: \(error.localizedDescription)")
+    }
+    
+    public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+        // Received an ad; show the banner now
+        bannerView.isHidden = false
+    }
+}
+
+// MARK: - Interstitial ad functions
+extension LevelsGameController: GADInterstitialDelegate {
+    public func interstitialDidReceiveAd(_ ad: GADInterstitial) {
+        // Received an interstitial ad
+    }
+    
+    public func interstitial(_ ad: GADInterstitial, didFailToReceiveAdWithError error: GADRequestError) {
+        // Failed to receive an interstitial ad
+    }
+    
+    public func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        // Interstitial ad closed out; prepare a new one unless the user wants to exit the game
+        if leaveGame {
+            returnToMenu()
+            return
+        }
+        // The interstitialAd object can only be used once so we need to prepare a new one each time the ad object is used
+        prepareInterstitialAd()
+        
+        // If the user just own, prompt them to leave a review
+        if userJustWon {
+            let levelNumber = Int(levelCount.text!)!
+            if levelNumber >= 10 {
+                Review.shared.promptForReview()
+            }
+        }
+        
+        // Reset this variable here after checking it; it was originally being reset to false when the game scene started over which would happen before this callback function gets called so it would never resolve to true
+        userJustWon = false
+    }
+    
+    public func prepareInterstitialAd() {
+        // Prepare to load interstitial ad
+        interstitialAd = GADInterstitial(adUnitID: AdHandler.getInterstitialAdID())
+        interstitialAd.delegate = self
+        
+        // Attempt to load the interstitial ad
+        let intAdRequest = GADRequest()
+        intAdRequest.testDevices = AdHandler.getTestDevices()
+        interstitialAd.load(intAdRequest)
+    }
+    
+}
+
+// MARK: - Reward ad functions
+extension LevelsGameController: GADRewardBasedVideoAdDelegate {
+    public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
+        // User was rewarded
+        let scene = self.scene as! LevelsGameScene
+        scene.saveUser()
+        heartImageView.image = UIImage(named: "used_life")
+        userWasRescued = true
+    }
+    
+    public func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        // Analytics: I think google auto tracks whether or not the user compeleted the reward ad
+
+        // The reward ad closed out
+        
+        let scene = self.scene as! LevelsGameScene
+        if let view = self.view as! SKView? {
+            // Unpause the game after the reward ad closes
+            scene.realPaused = false
+            view.isPaused = false
+        }
+        
+        if false == userWasRescued {
+            // Show the level loss screen because the user skipped the reward ad
+            gameOver(win: false)
+        }
     }
 }

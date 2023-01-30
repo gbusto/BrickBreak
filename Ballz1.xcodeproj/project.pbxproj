@@ -33,6 +33,7 @@
 		03B8B4FC21691A6000FFD589 /* GameMenuModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4FB21691A6000FFD589 /* GameMenuModel.swift */; };
 		03B8B4FE21691A7600FFD589 /* ContinousGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03B8B4FD21691A7600FFD589 /* ContinousGameModel.swift */; };
 		03B8B542216AB2B300FFD589 /* BrickBreak.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03B8B541216AB2B300FFD589 /* BrickBreak.storyboard */; };
+		03E977FF2986DA2500C7120E /* ItemGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E977FE2986DA2500C7120E /* ItemGeneratorTests.swift */; };
 		03F4C93B217235DA00D38D84 /* StoneHitBlockItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F4C93A217235DA00D38D84 /* StoneHitBlockItem.swift */; };
 		03F4C93D2172756000D38D84 /* BombItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F4C93C2172756000D38D84 /* BombItem.swift */; };
 		03F9A4222151C37800206A84 /* ItemGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03F9A4212151C37800206A84 /* ItemGenerator.swift */; };
@@ -109,6 +110,7 @@
 		03B8B4FB21691A6000FFD589 /* GameMenuModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuModel.swift; sourceTree = "<group>"; };
 		03B8B4FD21691A7600FFD589 /* ContinousGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinousGameModel.swift; sourceTree = "<group>"; };
 		03B8B541216AB2B300FFD589 /* BrickBreak.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = BrickBreak.storyboard; sourceTree = "<group>"; };
+		03E977FE2986DA2500C7120E /* ItemGeneratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemGeneratorTests.swift; sourceTree = "<group>"; };
 		03F4C93A217235DA00D38D84 /* StoneHitBlockItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoneHitBlockItem.swift; sourceTree = "<group>"; };
 		03F4C93C2172756000D38D84 /* BombItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BombItem.swift; sourceTree = "<group>"; };
 		03F9A4212151C37800206A84 /* ItemGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemGenerator.swift; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 				F2F20383227F2E2F009298AB /* BallItemTests.swift */,
 				F2F20385227F419D009298AB /* HitBlockItemTests.swift */,
 				F2F20387227F4569009298AB /* StoneHitBlockItemTests.swift */,
+				03E977FE2986DA2500C7120E /* ItemGeneratorTests.swift */,
 			);
 			path = Ballz1Tests;
 			sourceTree = "<group>";
@@ -562,6 +565,7 @@
 				F2F20382227F2167009298AB /* ContinuousGameModelTests.swift in Sources */,
 				0317DEB9214B5FA500E976E2 /* Ballz1Tests.swift in Sources */,
 				F2F20384227F2E2F009298AB /* BallItemTests.swift in Sources */,
+				03E977FF2986DA2500C7120E /* ItemGeneratorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

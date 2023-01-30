@@ -16,7 +16,8 @@ import GameplayKit
  - Create models for each item type that can handle initialization
  - Create an enum of possible item types
  - Functions should actually be somewhat testable, more easily than the Models at the moment
- -
+ - ItemGenerator should ONLY be concerned with logic to generate items. It shouldn't have any concept of CGSize for blocks
+    + Should the ItemGenerator be concerned with how many balls are on the screen? The number of balls on the screen aren't technically generated items. Should the name of this class change? Or should the things this class does change?
  */
 
 class ItemGenerator {
@@ -28,6 +29,7 @@ class ItemGenerator {
     public var itemArray: [[Item]] = []
     
     // Maximum hit count for a HitBlock
+    // The default could possibly be set in the constructor
     public var numberOfBalls = Int(10)
     
     // These variables can be used to tweak the pattern distribution as needed
@@ -52,15 +54,16 @@ class ItemGenerator {
     private var igState: DataManager.ItemGeneratorState?
     
     // Number of items to fit on each row
-    private var numItemsPerRow = Int(0)
+    public private(set) var numItemsPerRow = Int(0)
     
-    private var numberOfRows = Int(0)
+    public private(set) var numberOfRows = Int(0)
     
     // Number of items that this generator has generated
     private var numItemsGenerated = Int(0)
     
-    private var blockSize: CGSize?
-    private var ballRadius: CGFloat?
+    // TODO: Why are these private? I could just make them read-only
+    public private(set) var blockSize: CGSize?
+    public private(set) var ballRadius: CGFloat?
     
     // Item types that this generator can generate; for example, after 100 turns, maybe you want to start adding special kinds of blocks
     // The format is [ITEM_TYPE: PERCENTAGE_TO_GENERATE]
@@ -120,6 +123,9 @@ class ItemGenerator {
     }
     
     // Backs up the items (used for saving state and restoring user's previous turn)
+    /*
+     Anything that has to do with the previous turn should be moved up a level in the layers of abstraction. This class should only be concerned with generating items.
+     */
     private func backupItems() -> ItemGeneratorPrevTurn {
         var savedItemArray: [[Int]] = []
         var savedHitCountArray: [[Int]] = []
@@ -182,6 +188,8 @@ class ItemGenerator {
 
     /*
      Loads turn state from "prevTurnState" variable
+     
+     This function should be renamed; it sounds like it should take a parameter
      */
     public func loadTurnState() -> Bool {
         // Return false if the array for the previous turn is empty
@@ -223,7 +231,7 @@ class ItemGenerator {
      Sets up items in the item generator based on variables passed in; good for testing.
      Code looks complicated, could probably be simplified.
      */
-    private func loadItems(items: [[Int]], itemHitCounts: [[Int]], numberOfBalls: Int) -> [[Item]] {
+    func loadItems(items: [[Int]], itemHitCounts: [[Int]], numberOfBalls: Int) -> [[Item]] {
         // The final array we'll return
         var array: [[Item]] = []
         

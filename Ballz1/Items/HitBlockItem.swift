@@ -51,6 +51,7 @@ class HitBlockItem: Item {
     }
     
     // This should also handle coloring the item appropriately
+    // TODO: If this needs to return something, it should be more useful than a boolean
     func loadItem(position: CGPoint) -> Bool {
         self.position = position
         node!.position = position
