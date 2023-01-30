@@ -157,6 +157,7 @@ class LevelsGameController: UIViewController {
         goToGameScene()
     }
     
+    // TODO: I believe this code is very similar in the continuous game controller too. This could be moved to its own file.
     @IBAction func statusBarTapped(_ sender: UITapGestureRecognizer) {
         // Analytics log event; user paused classic game by tapping on the status bar
         Analytics.logEvent("levels_pause_game", parameters: /* None */ [:])

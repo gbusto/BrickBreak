@@ -26,9 +26,36 @@ class Ballz1UITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExample() {
+    func test_ContinousGameMode_statusBarExists() {
+        let app = XCUIApplication()
+
         // Use recording to get started writing UI tests.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+        app.buttons["Classic"].tap()
+                
+        XCTAssert(app.staticTexts["continuousStatusBarHighScoreLabelId"].exists)
+        
+        XCTAssert(app.staticTexts["continuousStatusBarGameScoreLabelId"].exists)
+        
+        XCTAssert(app.buttons["continuousStatusBarUndoButton"].exists)
+        
+        XCTAssert(app.images["continuousStatusBarHeartImageView"].exists)
+    }
+    
+    func test_LevelsGameMode_statusBarExists() {
+        let app = XCUIApplication()
+
+        // Use recording to get started writing UI tests.
+        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        app.buttons["Levels"].tap()
+                
+        XCTAssert(app.staticTexts["levelsStatusBarLevelCountLabelId"].exists)
+        
+        XCTAssert(app.staticTexts["levelsStatusBarLevelScoreLabelId"].exists)
+        
+        XCTAssert(app.staticTexts["levelsStatusBarRowCountLabelId"].exists)
+        
+        XCTAssert(app.images["levelsStatusBarHeartImageView"].exists)
     }
 
 }

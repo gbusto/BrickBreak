@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ys3-oF-MJh">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ys3-oF-MJh">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -118,6 +118,7 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="rqZ-GN-noK"/>
                         <color key="backgroundColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -126,7 +127,6 @@
                             <constraint firstItem="rqZ-GN-noK" firstAttribute="bottom" secondItem="9bZ-if-qO9" secondAttribute="bottom" id="lM5-H2-ypX"/>
                             <constraint firstItem="9bZ-if-qO9" firstAttribute="top" secondItem="rqZ-GN-noK" secondAttribute="top" id="xBo-G9-nlc"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="rqZ-GN-noK"/>
                     </view>
                     <connections>
                         <outlet property="gameCenterButton" destination="kUv-85-qmg" id="QLM-pC-i0Q"/>
@@ -169,7 +169,7 @@
                                                         <rect key="frame" x="0.0" y="49" width="280" height="48.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
-                                                        <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                                        <color key="textColor" systemColor="tableCellGroupedBackgroundColor"/>
                                                         <nil key="highlightedColor"/>
                                                         <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <size key="shadowOffset" width="1" height="2"/>
@@ -178,7 +178,7 @@
                                                         <rect key="frame" x="0.0" y="97.5" width="280" height="49"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
-                                                        <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                                        <color key="textColor" systemColor="tableCellGroupedBackgroundColor"/>
                                                         <nil key="highlightedColor"/>
                                                         <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <size key="shadowOffset" width="1" height="2"/>
@@ -187,7 +187,7 @@
                                                         <rect key="frame" x="0.0" y="146.5" width="280" height="48.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
-                                                        <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                                        <color key="textColor" systemColor="tableCellGroupedBackgroundColor"/>
                                                         <nil key="highlightedColor"/>
                                                         <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <size key="shadowOffset" width="1" height="2"/>
@@ -212,6 +212,7 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="DL3-df-T4f"/>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="DL3-df-T4f" firstAttribute="trailing" secondItem="Fvv-FP-N3H" secondAttribute="trailing" id="8Qs-WH-Qtp"/>
@@ -219,7 +220,6 @@
                             <constraint firstItem="DL3-df-T4f" firstAttribute="bottom" secondItem="Fvv-FP-N3H" secondAttribute="bottom" id="JrT-Dr-EY7"/>
                             <constraint firstItem="Fvv-FP-N3H" firstAttribute="leading" secondItem="DL3-df-T4f" secondAttribute="leading" id="Nho-y2-617"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="DL3-df-T4f"/>
                     </view>
                     <connections>
                         <outlet property="backgroundGradientView" destination="4Tq-1L-hzB" id="xzw-VD-DmQ"/>
@@ -298,6 +298,7 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="1sR-6K-A3H"/>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="6is-0Z-Zfw" firstAttribute="top" secondItem="1sR-6K-A3H" secondAttribute="top" id="Ezt-Ww-NXB"/>
@@ -305,7 +306,6 @@
                             <constraint firstItem="1sR-6K-A3H" firstAttribute="bottom" secondItem="6is-0Z-Zfw" secondAttribute="bottom" id="QkD-QT-xjB"/>
                             <constraint firstItem="6is-0Z-Zfw" firstAttribute="leading" secondItem="1sR-6K-A3H" secondAttribute="leading" id="k4Z-QI-WGQ"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="1sR-6K-A3H"/>
                     </view>
                     <connections>
                         <outlet property="backgroundGradientView" destination="wg8-J9-aUP" id="qDX-iz-aC8"/>
@@ -396,6 +396,7 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="LBS-2U-ctf"/>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="LBS-2U-ctf" firstAttribute="bottom" secondItem="iSL-uK-zfC" secondAttribute="bottom" id="4eE-LC-lV1"/>
@@ -403,7 +404,6 @@
                             <constraint firstItem="LBS-2U-ctf" firstAttribute="trailing" secondItem="iSL-uK-zfC" secondAttribute="trailing" id="FRc-3K-pNb"/>
                             <constraint firstItem="iSL-uK-zfC" firstAttribute="leading" secondItem="LBS-2U-ctf" secondAttribute="leading" id="oud-Nt-seK"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="LBS-2U-ctf"/>
                     </view>
                     <connections>
                         <outlet property="backgroundGradientView" destination="1Rn-jT-Do6" id="FdL-Tx-EkU"/>
@@ -442,7 +442,7 @@
                                                         <rect key="frame" x="0.0" y="49" width="280" height="48.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
-                                                        <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                                        <color key="textColor" systemColor="tableCellGroupedBackgroundColor"/>
                                                         <nil key="highlightedColor"/>
                                                         <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <size key="shadowOffset" width="1" height="2"/>
@@ -451,7 +451,7 @@
                                                         <rect key="frame" x="0.0" y="97.5" width="280" height="49"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
-                                                        <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                                        <color key="textColor" systemColor="tableCellGroupedBackgroundColor"/>
                                                         <nil key="highlightedColor"/>
                                                         <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <size key="shadowOffset" width="1" height="2"/>
@@ -460,7 +460,7 @@
                                                         <rect key="frame" x="0.0" y="146.5" width="280" height="48.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="28"/>
-                                                        <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                                        <color key="textColor" systemColor="tableCellGroupedBackgroundColor"/>
                                                         <nil key="highlightedColor"/>
                                                         <color key="shadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <size key="shadowOffset" width="1" height="2"/>
@@ -485,6 +485,7 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="Rz6-PC-plR"/>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Rz6-PC-plR" firstAttribute="bottom" secondItem="VSK-9s-tcB" secondAttribute="bottom" id="lTm-bV-MoB"/>
@@ -492,7 +493,6 @@
                             <constraint firstItem="VSK-9s-tcB" firstAttribute="top" secondItem="Rz6-PC-plR" secondAttribute="top" id="sS6-AX-oo8"/>
                             <constraint firstItem="Rz6-PC-plR" firstAttribute="trailing" secondItem="VSK-9s-tcB" secondAttribute="trailing" id="zIk-XG-niL"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="Rz6-PC-plR"/>
                     </view>
                     <connections>
                         <outlet property="backgroundGradientView" destination="Hln-Ub-3cY" id="fBM-QJ-5iR"/>
@@ -570,6 +570,7 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="AVM-Wx-oH1"/>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="PSE-nt-4Pn" firstAttribute="top" secondItem="AVM-Wx-oH1" secondAttribute="top" id="11k-S8-046"/>
@@ -577,7 +578,6 @@
                             <constraint firstItem="PSE-nt-4Pn" firstAttribute="leading" secondItem="AVM-Wx-oH1" secondAttribute="leading" id="Fwf-e6-Mkp"/>
                             <constraint firstItem="AVM-Wx-oH1" firstAttribute="bottom" secondItem="PSE-nt-4Pn" secondAttribute="bottom" id="MYf-BT-rIO"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="AVM-Wx-oH1"/>
                     </view>
                     <connections>
                         <outlet property="backgroundGradientView" destination="7HV-dQ-mPr" id="kFx-5t-Xf7"/>
@@ -660,6 +660,7 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="mHJ-KS-5VU"/>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="mHJ-KS-5VU" firstAttribute="trailing" secondItem="v3h-L7-tUn" secondAttribute="trailing" id="ONp-Vz-TAS"/>
@@ -667,7 +668,6 @@
                             <constraint firstItem="mHJ-KS-5VU" firstAttribute="bottom" secondItem="v3h-L7-tUn" secondAttribute="bottom" id="fJF-M5-ycI"/>
                             <constraint firstItem="v3h-L7-tUn" firstAttribute="leading" secondItem="mHJ-KS-5VU" secondAttribute="leading" id="lKZ-yn-G2h"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="mHJ-KS-5VU"/>
                     </view>
                     <connections>
                         <outlet property="backgroundGradientView" destination="WJ6-8k-05A" id="M90-vM-shZ"/>
@@ -699,6 +699,7 @@
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="50" placeholderIntrinsicHeight="50" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7yN-Nr-Ust">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="continuousStatusBarHighScoreLabelId"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="HqO-NV-9Af"/>
                                             <constraint firstAttribute="height" constant="50" id="jQz-7q-Inv"/>
@@ -712,12 +713,14 @@
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PPQ-wv-sQa">
                                                 <rect key="frame" x="0.0" y="0.0" width="200" height="33"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="continuousStatusBarGameScoreLabelId"/>
                                                 <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="36"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="unused_life" translatesAutoresizingMaskIntoConstraints="NO" id="zcT-6N-brb">
                                                 <rect key="frame" x="0.0" y="38" width="200" height="12"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="continuousStatusBarHeartImageView"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="12" id="odk-3j-xqQ"/>
                                                 </constraints>
@@ -727,6 +730,7 @@
                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QBR-JF-eVE">
                                         <rect key="frame" x="250" y="0.0" width="50" height="50"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="continuousStatusBarUndoButton"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="nLv-Xt-olG"/>
                                             <constraint firstAttribute="width" constant="50" id="xB1-fN-oCU"/>
@@ -746,12 +750,14 @@
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jLh-xN-cgX" customClass="GADBannerView">
                                 <rect key="frame" x="0.0" y="518" width="320" height="50"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <accessibility key="accessibilityConfiguration" identifier="continuousGameBannerView"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="320" id="dTg-OW-6by"/>
                                     <constraint firstAttribute="height" constant="50" id="vrS-nl-sKN"/>
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="onz-3b-lSx"/>
                         <color key="backgroundColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
                             <constraint firstItem="fvE-kJ-god" firstAttribute="leading" secondItem="onz-3b-lSx" secondAttribute="leading" constant="10" id="GR5-om-h0v"/>
@@ -760,7 +766,6 @@
                             <constraint firstItem="jLh-xN-cgX" firstAttribute="centerX" secondItem="fvE-kJ-god" secondAttribute="centerX" id="rYM-AQ-ClA"/>
                             <constraint firstItem="onz-3b-lSx" firstAttribute="trailing" secondItem="fvE-kJ-god" secondAttribute="trailing" constant="10" id="wqH-ev-wET"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="onz-3b-lSx"/>
                     </view>
                     <connections>
                         <outlet property="bannerView" destination="jLh-xN-cgX" id="bNo-6a-B8q"/>
@@ -809,6 +814,7 @@
                             </subviews>
                         </stackView>
                     </subviews>
+                    <viewLayoutGuide key="safeArea" id="Yeb-nJ-hu9"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="D47-sN-cOu" firstAttribute="top" secondItem="Yeb-nJ-hu9" secondAttribute="top" id="AZg-du-Edy"/>
@@ -816,7 +822,6 @@
                         <constraint firstItem="D47-sN-cOu" firstAttribute="leading" secondItem="Yeb-nJ-hu9" secondAttribute="leading" id="iu2-rn-EEB"/>
                         <constraint firstItem="Yeb-nJ-hu9" firstAttribute="trailing" secondItem="D47-sN-cOu" secondAttribute="trailing" id="wSf-iS-nwi"/>
                     </constraints>
-                    <viewLayoutGuide key="safeArea" id="Yeb-nJ-hu9"/>
                 </view>
                 <exit id="BdV-NT-BI6" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="bNb-UM-NRp">
@@ -840,6 +845,7 @@
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="50" placeholderIntrinsicHeight="50" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="djQ-6i-xDb" userLabel="Level Count">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="levelsStatusBarLevelCountLabelId"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="CKR-P7-WZh"/>
                                             <constraint firstAttribute="width" constant="50" id="ryN-tI-ZJG"/>
@@ -853,12 +859,14 @@
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wRS-np-rfH" userLabel="Level Score">
                                                 <rect key="frame" x="0.0" y="0.0" width="200" height="33"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="levelsStatusBarLevelScoreLabelId"/>
                                                 <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="36"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="unused_life" translatesAutoresizingMaskIntoConstraints="NO" id="kBu-Oi-gWf">
                                                 <rect key="frame" x="0.0" y="38" width="200" height="12"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="levelsStatusBarHeartImageView"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="12" id="Jg5-CJ-6gR"/>
                                                 </constraints>
@@ -867,6 +875,7 @@
                                     </stackView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0/50" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yI2-3D-3P1">
                                         <rect key="frame" x="250" y="0.0" width="50" height="50"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="levelsStatusBarRowCountLabelId"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="4EP-Ix-Jed"/>
                                             <constraint firstAttribute="height" constant="50" id="HaZ-fA-NlY"/>
@@ -890,6 +899,7 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="CgB-AU-xiN"/>
                         <color key="backgroundColor" red="0.57414853570000002" green="0.57416242360000003" blue="0.57415497299999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="ett-vT-KzD" firstAttribute="top" secondItem="CgB-AU-xiN" secondAttribute="top" constant="10" id="2u6-MX-P8q"/>
@@ -898,7 +908,6 @@
                             <constraint firstItem="nxt-hu-S3v" firstAttribute="bottom" secondItem="CgB-AU-xiN" secondAttribute="bottom" id="u6Z-VS-2Od"/>
                             <constraint firstItem="nxt-hu-S3v" firstAttribute="centerX" secondItem="ett-vT-KzD" secondAttribute="centerX" id="yua-4k-L8M"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="CgB-AU-xiN"/>
                     </view>
                     <connections>
                         <outlet property="bannerAdView" destination="nxt-hu-S3v" id="0jh-dg-iAh"/>
@@ -936,6 +945,7 @@
                             </subviews>
                         </stackView>
                     </subviews>
+                    <viewLayoutGuide key="safeArea" id="vpL-Rs-fm4"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="bottom" secondItem="DqS-IQ-Pww" secondAttribute="bottom" id="81I-zl-eRo"/>
@@ -943,7 +953,6 @@
                         <constraint firstItem="DqS-IQ-Pww" firstAttribute="leading" secondItem="vpL-Rs-fm4" secondAttribute="leading" id="Aem-TX-u5V"/>
                         <constraint firstItem="DqS-IQ-Pww" firstAttribute="top" secondItem="vpL-Rs-fm4" secondAttribute="top" id="Vq4-EU-CUk"/>
                     </constraints>
-                    <viewLayoutGuide key="safeArea" id="vpL-Rs-fm4"/>
                 </view>
                 <exit id="PUe-Gu-uBq" userLabel="Exit" sceneMemberID="exit"/>
                 <view hidden="YES" contentMode="scaleToFill" id="2JP-Ap-ELL" userLabel="Pause Menu View">
@@ -954,13 +963,13 @@
                             <rect key="frame" x="0.0" y="0.0" width="250" height="250"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paused" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D11-g9-x3B">
-                                    <rect key="frame" x="0.0" y="0.0" width="250" height="69.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="250" height="69.333333333333329"/>
                                     <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="60"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VAa-BZ-zCG" userLabel="Resume Button">
-                                    <rect key="frame" x="0.0" y="90.5" width="250" height="69"/>
+                                    <rect key="frame" x="0.0" y="90.333333333333343" width="250" height="69.333333333333343"/>
                                     <color key="backgroundColor" red="0.83137254900000002" green="0.0" blue="0.5568627451" alpha="1" colorSpace="calibratedRGB"/>
                                     <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="32"/>
                                     <state key="normal" title="Resume"/>
@@ -969,7 +978,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EpW-pu-3Ya" userLabel="Return Game Menu Button">
-                                    <rect key="frame" x="0.0" y="180.5" width="250" height="69.5"/>
+                                    <rect key="frame" x="0.0" y="180.66666666666666" width="250" height="69.333333333333343"/>
                                     <color key="backgroundColor" red="0.24705882352941178" green="0.42352941176470588" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                     <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="33"/>
                                     <state key="normal" title="Game Menu"/>
@@ -980,6 +989,7 @@
                             </subviews>
                         </stackView>
                     </subviews>
+                    <viewLayoutGuide key="safeArea" id="L9l-tV-Ri5"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="7rN-DO-x2m" firstAttribute="leading" secondItem="L9l-tV-Ri5" secondAttribute="leading" id="GMq-lC-sYx"/>
@@ -987,7 +997,6 @@
                         <constraint firstItem="L9l-tV-Ri5" firstAttribute="trailing" secondItem="7rN-DO-x2m" secondAttribute="trailing" id="eM1-OG-pHH"/>
                         <constraint firstItem="7rN-DO-x2m" firstAttribute="top" secondItem="L9l-tV-Ri5" secondAttribute="top" id="esQ-XH-zlk"/>
                     </constraints>
-                    <viewLayoutGuide key="safeArea" id="L9l-tV-Ri5"/>
                 </view>
                 <tapGestureRecognizer id="H8a-48-Q7M">
                     <connections>
@@ -1015,5 +1024,8 @@
         <image name="rating_icon_1" width="49" height="45"/>
         <image name="undo_button" width="300" height="300"/>
         <image name="unused_life" width="325" height="321"/>
+        <systemColor name="tableCellGroupedBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>
