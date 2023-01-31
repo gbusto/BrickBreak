@@ -13,6 +13,12 @@ import SpriteKit
 import GoogleMobileAds
 import FirebaseAnalytics
 
+enum RewardTypes {
+    case noReward
+    case undoTurnReward
+    case rescueReward
+}
+
 class ContinuousGameController: UIViewController {
     
     private var scene: SKScene?
@@ -37,10 +43,7 @@ class ContinuousGameController: UIViewController {
     private var numTimesUndoTurn = 0
     
     private var showedReward = false
-    private var rewardType = ContinuousGameController.NO_REWARD
-    static private var NO_REWARD = Int(0)
-    static private var UNDO_REWARD = Int(1)
-    static private var RESCUE_REWARD = Int(2)
+    private var rewardType: RewardTypes = .noReward
     
     static private var DISABLED_ALPHA = CGFloat(0.1)
     static private var ENABLED_ALPHA = CGFloat(1.0)
@@ -180,25 +183,6 @@ class ContinuousGameController: UIViewController {
             view.ignoresSiblingOrder = true
         }
     }
-        
-    public func showRewardAd() {
-        // Show the reward ad if we can
-        if GADRewardBasedVideoAd.sharedInstance().isReady {
-            // Pause the game before showing the ad
-            let scene = self.scene as! ContinousGameScene
-            scene.realPaused = true
-            if let view = self.view as! SKView? {
-                view.isPaused = true
-            }
-            print("Pausing game")
-            if GADRewardBasedVideoAd.sharedInstance().isReady {
-                GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
-            }
-        }
-        else {
-            // If we didn't load an ad don't give the user a reward (maybe they're offline?)
-        }
-    }
     
     // MARK: Public view controller functions
     public func getPauseMenu() -> UIView {
@@ -226,7 +210,7 @@ class ContinuousGameController: UIViewController {
                 
                 // Show a reward ad
                 // Set this variable so we know what type of reward to give the user
-                self.rewardType = ContinuousGameController.RESCUE_REWARD
+                self.rewardType = .rescueReward
                 self.showRewardAd()
             }
             let noAction = UIAlertAction(title: "No", style: .default) { (handler: UIAlertAction) in
@@ -354,7 +338,7 @@ class ContinuousGameController: UIViewController {
             // Check if a reward ad is loaded
             if GADRewardBasedVideoAd.sharedInstance().isReady {
                 // Set this variable so we know what type of reward to give the user
-                rewardType = ContinuousGameController.UNDO_REWARD
+                rewardType = .undoTurnReward
                 showRewardAd()
             }
             else {
@@ -466,30 +450,29 @@ extension ContinuousGameController: GADInterstitialDelegate {
 
 // MARK: - Reward ad functions
 extension ContinuousGameController: GADRewardBasedVideoAdDelegate {
+    // MARK: Reward ad delegate methods
     public func rewardBasedVideoAdDidReceive(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
         // Received a reward based video ad; may not end up using this
     }
     
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
         // User was rewarded; let the game model know to save the user or undo the turn (depending on what the reward is supposed to be)
-        if rewardType == ContinuousGameController.NO_REWARD {
-            print("No reward type specified... oops?")
-        }
-        else if rewardType == ContinuousGameController.UNDO_REWARD {
-            
+        switch rewardType {
+        case .undoTurnReward:
             // Undo the last turn
             let contScene = scene as! ContinousGameScene
             contScene.loadPreviousTurnState()
-        }
-        else if rewardType == ContinuousGameController.RESCUE_REWARD {
+        case .rescueReward:
             // Save the user!
             let contScene = scene as! ContinousGameScene
             contScene.saveUser()
             userWasSaved()
+        default:
+            print("No reward type specified... oops?")
         }
         
         // Reset the reward type since we just rewarded the user
-        rewardType = ContinuousGameController.NO_REWARD
+        rewardType = .noReward
         
         showedReward = true
     }
@@ -511,16 +494,16 @@ extension ContinuousGameController: GADRewardBasedVideoAdDelegate {
         GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
         
         if false == showedReward {
-            if rewardType == ContinuousGameController.NO_REWARD {
-                print("Skipped reward ad and no reward type specified... oops?")
-            }
-            else if rewardType == ContinuousGameController.UNDO_REWARD {
+            switch rewardType {
+            case .undoTurnReward:
                 // Don't do anything since they didn't watch the ad
-            }
-            else if rewardType == ContinuousGameController.RESCUE_REWARD {
+                break
+            case .rescueReward:
                 // Don't save the user since they didn't watch the ad
                 let scene = self.scene as! ContinousGameScene
                 scene.endGame()
+            default:
+                print("Skipped reward ad and no reward type specified... oops?")
             }
         }
         else {
@@ -544,5 +527,24 @@ extension ContinuousGameController: GADRewardBasedVideoAdDelegate {
         // Disable the undo button if it's loaded because we don't have an ad loaded
         disableUndoButton()
     }
-
+    
+    // MARK: My reward ad methods
+    public func showRewardAd() {
+        // Show the reward ad if we can
+        if GADRewardBasedVideoAd.sharedInstance().isReady {
+            // Pause the game before showing the ad
+            let scene = self.scene as! ContinousGameScene
+            scene.realPaused = true
+            if let view = self.view as! SKView? {
+                view.isPaused = true
+            }
+            print("Pausing game")
+            if GADRewardBasedVideoAd.sharedInstance().isReady {
+                GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+            }
+        }
+        else {
+            // If we didn't load an ad don't give the user a reward (maybe they're offline?)
+        }
+    }
 }
