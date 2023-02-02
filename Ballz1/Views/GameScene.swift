@@ -70,6 +70,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Attributes based on how the scene is displayed
     // XXX With some minor changes this could be left private
     public var fontName: String = "HelveticaNeue"
+    public var hitBallColor: UIColor = .purple
     private var topColor: UIColor = .black
     private var bottomColor: UIColor = .white
     
@@ -166,6 +167,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         colorScheme = GameSceneColorScheme(backgroundSize: view.frame.size, blockSize: blockSize!)
         fontName = colorScheme!.fontName
         topColor = colorList[colorIndex]
+        hitBallColor = colorScheme!.hitBallColor
         
         // Initialize the walls for the game
         initWalls(view: view)

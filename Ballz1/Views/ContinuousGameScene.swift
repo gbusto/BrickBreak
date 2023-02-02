@@ -459,7 +459,7 @@ class ContinousGameScene: GameScene {
                     let ballNode = item.getNode()
                     ballNode.physicsBody!.affectedByGravity = true
                     ballNode.run(SKAction.applyImpulse(vector, duration: 0.05))
-                    ballHitAnimation(color: colorScheme!.hitBallColor, position: ballNode.position)
+                    ballHitAnimation(color: hitBallColor, position: ballNode.position)
                     
                     // Ball is transferred from item generator to our ball array
                     newBallArray.append(ball)
@@ -851,7 +851,7 @@ class ContinousGameScene: GameScene {
         pointerNode.position = startPoint
         pointerNode.zPosition = 105
 
-        let labelNode = SKLabelNode(fontNamed: colorScheme!.fontName)
+        let labelNode = SKLabelNode(fontNamed: fontName)
         labelNode.fontColor = .white
         labelNode.fontSize = 20
         labelNode.position = CGPoint(x: centerPoint.x, y: centerPoint.y - 50)
@@ -890,7 +890,7 @@ class ContinousGameScene: GameScene {
         pointerNode.zPosition = 105
         pointerNode.position = CGPoint(x: view!.frame.midX + 80, y: ceilingNode!.position.y + 10)
         
-        let labelNode = SKLabelNode(fontNamed: colorScheme!.fontName)
+        let labelNode = SKLabelNode(fontNamed: fontName)
         labelNode.zPosition = 105
         labelNode.fontColor = .white
         if getMargin() < 60 {
@@ -906,7 +906,7 @@ class ContinousGameScene: GameScene {
         labelNode.horizontalAlignmentMode = .center
         labelNode.verticalAlignmentMode = .center
         
-        let highScoreHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
+        let highScoreHelper = SKLabelNode(fontNamed: fontName)
         highScoreHelper.zPosition = 105
         highScoreHelper.text = "Best"
         highScoreHelper.fontColor = .white
@@ -922,7 +922,7 @@ class ContinousGameScene: GameScene {
         }
         highScoreHelper.numberOfLines = 1
         
-        let gameScoreHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
+        let gameScoreHelper = SKLabelNode(fontNamed: fontName)
         gameScoreHelper.zPosition = 105
         gameScoreHelper.text = "Score"
         gameScoreHelper.fontColor = .white
@@ -938,7 +938,7 @@ class ContinousGameScene: GameScene {
         }
         gameScoreHelper.numberOfLines = 1
         
-        let undoHelper = SKLabelNode(fontNamed: colorScheme!.fontName)
+        let undoHelper = SKLabelNode(fontNamed: fontName)
         undoHelper.zPosition = 105
         undoHelper.text = "Undo"
         undoHelper.fontColor = .white
@@ -982,7 +982,7 @@ class ContinousGameScene: GameScene {
         pointerNode.position = startPoint
         pointerNode.zPosition = 105
         
-        let labelNode = SKLabelNode(fontNamed: colorScheme!.fontName)
+        let labelNode = SKLabelNode(fontNamed: fontName)
         labelNode.fontColor = .white
         labelNode.fontSize = 20
         labelNode.position = CGPoint(x: centerPoint.x, y: centerPoint.y - 50)
@@ -1021,7 +1021,7 @@ class ContinousGameScene: GameScene {
         pointerNode.position = startPoint
         pointerNode.zPosition = 105
         
-        let labelNode = SKLabelNode(fontNamed: colorScheme!.fontName)
+        let labelNode = SKLabelNode(fontNamed: fontName)
         labelNode.fontColor = .white
         labelNode.fontSize = 20
         labelNode.position = CGPoint(x: centerPoint.x, y: centerPoint.y - 50)
