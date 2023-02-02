@@ -228,6 +228,9 @@ class LevelsGameController: UIViewController {
     }
     
     // MARK: Public controller functions
+    /*
+     This is a helper function to load the levels game scene
+     */
     public func goToGameScene() {
         // Reset the level score
         levelScore.text = "0"

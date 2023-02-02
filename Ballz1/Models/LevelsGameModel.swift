@@ -42,6 +42,7 @@ class LevelsGameModel {
     private var blockBonus = Int(2)
     private var onFireBonus = Double(1.0)
     
+    // TODO: Change this into an enum
     private var state = Int(0)
     // READY means the game model is ready to go
     private var READY = Int(0)
@@ -57,6 +58,7 @@ class LevelsGameModel {
     private static var MAX_NUM_ROWS_TO_GENERATE = Int(50)
     private static var MAX_NUM_BALLS = Int(50)
     
+    // TODO: Fix this - this is bad, I could accidentally deploy the app with this set to false and then what?
     private var PRODUCTION = true
     
     static public var GAMEOVER_NONE = Int(0)
@@ -160,6 +162,7 @@ class LevelsGameModel {
         
             state = TURN_OVER
         }
+        // TODO: This would be a good thing to do in some kind of UI test or using some other mechanism instead of a PRODUCTION boolean
         else {
             // NON-PRODUCTION: Create the desired row layouts here manually for testing
             numberOfBalls = 50

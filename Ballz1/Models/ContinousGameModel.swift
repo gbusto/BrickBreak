@@ -10,6 +10,14 @@
 
 import SpriteKit
 
+enum ContinuousGameState {
+    case gameStateReady
+    case gameStateMidTurn
+    case gameStateTurnOver
+    case gameStateWaiting
+    case gameStateGameOver
+}
+
 class ContinuousGameModel {
     
     // MARK: Public properties
@@ -33,17 +41,7 @@ class ContinuousGameModel {
     private var numberOfBalls = Int(10)
     private var numberOfRows = Int(0)
     
-    private var state = Int(0)
-    // READY means the game model is ready to go
-    private var READY = Int(0)
-    // MID_TURN means it's in the middle of processing a user's turn and waiting for the balls to return and items to be collected
-    private var MID_TURN = Int(1)
-    // TURN_OVER means the turn ended; this gives the View some time to process everything and perform any end of turn actions
-    private var TURN_OVER = Int(2)
-    // WAITING means the game model is waiting for item animations to finish (i.e. the view tells the items to shift down one row while in the TURN_OVER state, so we remain in this state until all animations are finished)
-    private var WAITING = Int(3)
-    
-    private var GAME_OVER = Int(255)
+    private var state: ContinuousGameState = .gameStateReady
     
     /*
      Main things for which this class should be responsible:
@@ -82,7 +80,7 @@ class ContinuousGameModel {
             DataManager.shared.saveClassicPersistentData(highScore: persistentData!.highScore, showedTutorials: persistentData!.showedTutorials)
             
             // Handle saving off game state
-            if GAME_OVER == state {
+            if .gameStateGameOver == state {
                 // If it's a game over, clear the game state so we start fresh next time
                 // Don't save any of this stuff after a game over
                 DataManager.shared.clearClassicGameState()
@@ -119,7 +117,7 @@ class ContinuousGameModel {
     // All saved state should be loaded at once; it makes no sense for some saved session data to be able to load when other saved data fails to load
     // High score and tutorials can be saved and loaded separately
     required init(numberOfRows: Int) {
-        state = WAITING
+        state = .gameStateWaiting
         
         // Try to load persistent data
         persistentData = DataManager.shared.loadClassicPeristentData()
@@ -157,7 +155,7 @@ class ContinuousGameModel {
                                       numItems: numberOfItems,
                                       state: igState)
         if 0 == itemGenerator!.itemArray.count {
-            state = TURN_OVER
+            state = .gameStateTurnOver
         }
     }
     
@@ -190,7 +188,7 @@ class ContinuousGameModel {
             prevTurnSaved = false
             
             // Set state to waiting so the game checks to see whether or not to warn the user or end the game
-            state = WAITING
+            state = .gameStateWaiting
             
             return true
         }
@@ -221,7 +219,7 @@ class ContinuousGameModel {
         Tells ItemGenerator to save the user
      */
     public func saveUser() -> [Item] {
-        state = READY
+        state = .gameStateReady
         userWasSaved = true
         return itemGenerator!.saveUser()
     }
@@ -331,7 +329,7 @@ class ContinuousGameModel {
     // Functions like this that are meant to check something shouldn't also update something like game state
     public func gameOver() -> Bool {
         if (itemGenerator!.itemArray.count == numberOfRows - 1) {
-            state = GAME_OVER
+            state = .gameStateGameOver
             return true
         }
         return false
@@ -342,39 +340,48 @@ class ContinuousGameModel {
      */
     // This needs to be improved
     public func incrementState() {
-        if WAITING == state {
-            state = READY
+        if .gameStateWaiting == state {
+            state = .gameStateReady
             // Don't need to save state after each turn
             return
         }
-        else if GAME_OVER == state {
+        else if .gameStateGameOver == state {
             // Don't change state after the game is over
             return
         }
-        
-        state += 1
+
+        switch state {
+        case .gameStateReady:
+            state = .gameStateMidTurn
+        case .gameStateMidTurn:
+            state = .gameStateTurnOver
+        case .gameStateTurnOver:
+            state = .gameStateWaiting
+        default:
+            break
+        }
     }
     
     // All functions below this comment can be removed and we can check another way
     public func isReady() -> Bool {
         // State when ball manager and item generator are ready
-        return (READY == state)
+        return (.gameStateReady == state)
     }
     
     public func isMidTurn() -> Bool {
         // This state is when ball manager is in SHOOTING || WAITING state
-        return (MID_TURN == state)
+        return (.gameStateMidTurn == state)
     }
     
     public func isTurnOver() -> Bool {
-        return (TURN_OVER == state)
+        return (.gameStateTurnOver == state)
     }
     
     public func isWaiting() -> Bool {
-        return (WAITING == state)
+        return (.gameStateWaiting == state)
     }
     
     public func isGameOver() -> Bool {
-        return (GAME_OVER == state)
+        return (.gameStateGameOver == state)
     }
 }
