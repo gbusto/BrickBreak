@@ -45,6 +45,8 @@ class ContinuousGameController: UIViewController {
     private var showedReward = false
     private var rewardType: RewardTypes = .noReward
     
+    private var dataManager: DataManager = DataManager.shared
+    
     static private var DISABLED_ALPHA = CGFloat(0.1)
     static private var ENABLED_ALPHA = CGFloat(1.0)
     
@@ -52,7 +54,7 @@ class ContinuousGameController: UIViewController {
         Analytics.setScreenName("ClassicGame", screenClass: NSStringFromClass(ContinousGameScene.classForCoder()))
         
         // Check if we need to show the tutorial
-        if let initialOnboardingState = DataManager.shared.loadInitialOnboardingState() {
+        if let initialOnboardingState = dataManager.loadInitialOnboardingState() {
             if false == initialOnboardingState.showedClassicOnboarding {
                 showInitialOnboarding()
             }
