@@ -15,6 +15,8 @@ class LevelsTutorialController3: UIViewController {
     @IBOutlet var backgroundGradientView: UIView!
     @IBOutlet var playButton: UIButton!
     
+    var dataManager: DataManager = DataManager.shared
+    
     private var buttonColor = UIColor(red: 22/255, green: 110/255, blue: 238/255, alpha: 1.0)
     private var pressedButtonColor = UIColor(red: 17/255, green: 94/255, blue: 205/255, alpha: 1.0)
     
@@ -56,9 +58,9 @@ class LevelsTutorialController3: UIViewController {
     }
     
     @IBAction func dismissLevelsTutorial(_ sender: Any) {
-        if let initialOnboardingState = DataManager.shared.loadInitialOnboardingState() {
+        if let initialOnboardingState = dataManager.loadInitialOnboardingState() {
             // Set the classic onboarding boolean to true, but leave the level one set to whatever it currently is
-            if DataManager.shared.saveInitialOnboardingState(showedClassicOnboarding:
+            if dataManager.saveInitialOnboardingState(showedClassicOnboarding:
                 // Successfully saved initial levels onboarding state
                 initialOnboardingState.showedClassicOnboarding, showedLevelOnboarding: true) {
             }
@@ -68,7 +70,7 @@ class LevelsTutorialController3: UIViewController {
         }
         else {
             // If this data has never been loaded, follow this path instead
-            if DataManager.shared.saveInitialOnboardingState(showedClassicOnboarding: false, showedLevelOnboarding: true) {
+            if dataManager.saveInitialOnboardingState(showedClassicOnboarding: false, showedLevelOnboarding: true) {
                 // Successfully saved inital levels onboarding state
             }
             else {
