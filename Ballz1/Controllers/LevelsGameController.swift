@@ -47,13 +47,15 @@ class LevelsGameController: UIViewController {
     
     private var scene: SKScene?
     
+    private var dataManager: DataManager = DataManager.shared
+    
     override func viewDidAppear(_ animated: Bool) {
         // TODO: Use dependency injection here; this event doesn't need to be fired in testing
         Analytics.setScreenName("LevelsGame", screenClass: NSStringFromClass(LevelsGameScene.classForCoder()))
 
         // Check if we need to show the tutorial
         // TODO: Again, use dependency injection here for the DataManager. This is difficult to test
-        if let initialOnboardingState = DataManager.shared.loadInitialOnboardingState() {
+        if let initialOnboardingState = dataManager.loadInitialOnboardingState() {
             if false == initialOnboardingState.showedLevelOnboarding {
                 showInitialOnboarding()
             }
