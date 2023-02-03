@@ -196,6 +196,38 @@ class ContinuousGameModel {
         return false
     }
     
+    // MARK: - Helper functions to prevent ContinuousGameScene from depending directly on the model's ItemGenerator instance
+    
+    // Helper functions for LevelsGameScene to prevent it from directly accessing the ItemGenerator
+    public func getItemCount() -> Int {
+        if let ig = itemGenerator {
+            return ig.getItemCount()
+        }
+        
+        return 0
+    }
+    
+    public func getItem2DArray() -> [[Item]] {
+        if let ig = itemGenerator {
+            return ig.itemArray
+        }
+        
+        return []
+    }
+    
+    public func pruneFirstRowOfItems() {
+        if let ig = itemGenerator {
+            ig.pruneFirstRow()
+        }
+    }
+    
+    public func updateBallCount(count: Int) {
+        if let ig = itemGenerator {
+            ig.updateBallCount(count: count)
+        }
+    }
+
+    
     /* PURPOSE: handle actions once the user starts their next turn
         Saves the item generator's turn state
         Sets "prevTurnSaved" to true

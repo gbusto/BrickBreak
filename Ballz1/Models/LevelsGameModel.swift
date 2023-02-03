@@ -82,7 +82,9 @@ class LevelsGameModel {
         }
     }
     
-    // Helper function for LevelsGameScene to prevent it from directly accessing the ItemGenerator
+    // MARK: - Helper functions to prevent LevelsGameScene from depending directly on the model's ItemGenerator instance
+    
+    // Helper functions for LevelsGameScene to prevent it from directly accessing the ItemGenerator
     public func getItemCount() -> Int {
         if let ig = itemGenerator {
             return ig.getItemCount()
@@ -101,7 +103,7 @@ class LevelsGameModel {
     
     public func pruneFirstRowOfItems() {
         if let ig = itemGenerator {
-            return ig.pruneFirstRow()
+            ig.pruneFirstRow()
         }
     }
     

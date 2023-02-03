@@ -287,15 +287,15 @@ class ContinousGameScene: GameScene {
             
             // Update the hit count in the item generator
             // NOTE: This is being done to fix a bug in which the item generator's ball count somehow diverged from the actual ball count
-            gameModel!.itemGenerator!.updateBallCount(count: ballArray.count)
+            gameModel!.updateBallCount(count: ballArray.count)
             
             // Get the newly generated items and add them to the view
             let items = gameModel!.generateRow()
             addRowToView(rowNum: 1, items: items)
             
             // Move the items down in the view
-            animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
-            gameModel!.itemGenerator!.pruneFirstRow()
+            animateItems(numItems: gameModel!.getItemCount(), array: gameModel!.getItem2DArray())
+            gameModel!.pruneFirstRowOfItems()
             
             // Display the label showing how many balls the user has (this needs to be done after we have collected any new balls the user acquired)
             currentBallCount = ballArray.count
@@ -538,7 +538,7 @@ class ContinousGameScene: GameScene {
         lastUndoTurnScore = gameModel!.gameScore
         
         // Get the old item array so we can remove all of those items
-        let oldItemArray = gameModel!.itemGenerator!.itemArray
+        let oldItemArray = gameModel!.getItem2DArray()
         let oldBallArray = ballArray
         
         // Tell the item generator and game model to prepare the new item array
@@ -564,7 +564,7 @@ class ContinousGameScene: GameScene {
         }
         
         // Load the new ones on the screen (at this point the itemArray should have the previous state of items)
-        let itemArray = gameModel!.itemGenerator!.itemArray
+        let itemArray = gameModel!.getItem2DArray()
         var count = itemArray.count
         for row in itemArray {
             // Add the rows to the view
@@ -573,8 +573,8 @@ class ContinousGameScene: GameScene {
         }
         
         // Move the items down in the view
-        animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
-        gameModel!.itemGenerator!.pruneFirstRow()
+        animateItems(numItems: gameModel!.getItemCount(), array: gameModel!.getItem2DArray())
+        gameModel!.pruneFirstRowOfItems()
         
         // At this point the ball manager's state should be updated; update the view to reflect that
         currentBallCount = ballArray.count
@@ -677,6 +677,7 @@ class ContinousGameScene: GameScene {
     private func initGameModel() {
         // The controller also needs a copy of this game model object
         gameModel = ContinuousGameModel(numberOfRows: Int(GameScene.NUM_ROWS))
+        // TODO: This call could happen inside of the ContinuousGameModel's constructor
         gameModel!.initItemGenerator(blockSize: blockSize!, ballRadius: ballRadius!)
         
         // Initialize the ball count label
@@ -716,7 +717,7 @@ class ContinousGameScene: GameScene {
             self.addChild(ball.getNode())
         }
         
-        let itemArray = gameModel!.itemGenerator!.itemArray
+        let itemArray = gameModel!.getItem2DArray()
         var count = itemArray.count
         for row in itemArray {
             addRowToView(rowNum: count, items: row)
@@ -759,8 +760,8 @@ class ContinousGameScene: GameScene {
         
         // Move the items down in the view
         
-        animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
-        gameModel!.itemGenerator!.pruneFirstRow()
+        animateItems(numItems: gameModel!.getItemCount(), array: gameModel!.getItem2DArray())
+        gameModel!.pruneFirstRowOfItems()
         
         // Set the last turn undone as the current game score
         lastUndoTurnScore = gameModel!.gameScore
