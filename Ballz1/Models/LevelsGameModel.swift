@@ -82,6 +82,29 @@ class LevelsGameModel {
         }
     }
     
+    // Helper function for LevelsGameScene to prevent it from directly accessing the ItemGenerator
+    public func getItemCount() -> Int {
+        if let ig = itemGenerator {
+            return ig.getItemCount()
+        }
+        
+        return 0
+    }
+    
+    public func getItem2DArray() -> [[Item]] {
+        if let ig = itemGenerator {
+            return ig.itemArray
+        }
+        
+        return []
+    }
+    
+    public func pruneFirstRowOfItems() {
+        if let ig = itemGenerator {
+            return ig.pruneFirstRow()
+        }
+    }
+    
     // MARK: Initialization functions
     required init(blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int, production: Bool = true) {
         PRODUCTION = production

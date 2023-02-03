@@ -282,8 +282,8 @@ class LevelsGameScene: GameScene {
             }
             
             // Move the items down in the view
-            animateItems(numItems: gameModel!.itemGenerator!.getItemCount(), array: gameModel!.itemGenerator!.itemArray)
-            gameModel!.itemGenerator!.pruneFirstRow()
+            animateItems(numItems: gameModel!.getItemCount(), array: gameModel!.getItem2DArray())
+            gameModel!.pruneFirstRowOfItems()
             
             // Add back the ball count label
             addBallCountLabel(position: originPoint, ballCount: ballArray.count)
