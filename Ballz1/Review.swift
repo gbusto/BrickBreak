@@ -17,6 +17,8 @@ class Review {
     private var reviewPrompt3 = false
     private var reviewPrompt4 = false
     
+    private var dataManager: DataManager = DataManager.shared
+    
     struct PersistentData: Codable {
         // The last date on which the user was prompted for a review
         var lastDatePrompted: TimeInterval
@@ -40,7 +42,7 @@ class Review {
             
             // Analytics log event; log when the user gets prompted to leave a review
             Analytics.logEvent("reviewPrompt1", parameters: /* None */ [:])
-            DataManager.shared.saveReviewPromptData(reviewPrompt1: reviewPrompt1, reviewPrompt2: reviewPrompt2, reviewPrompt3: reviewPrompt3, reviewPrompt4: reviewPrompt4)
+            dataManager.saveReviewPromptData(reviewPrompt1: reviewPrompt1, reviewPrompt2: reviewPrompt2, reviewPrompt3: reviewPrompt3, reviewPrompt4: reviewPrompt4)
             SKStoreReviewController.requestReview()
         }
         else {
