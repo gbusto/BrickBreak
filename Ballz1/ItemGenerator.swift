@@ -82,6 +82,8 @@ class ItemGenerator {
     
     private var ballsOnFire = false
     
+    private var dataManager: DataManager = DataManager.shared
+    
     
     // The distribution for these patterns should be 65, 25, 10 (easy, intermediate, hard)
     private static let EASY_PATTERNS: [[Int]] = [
@@ -175,7 +177,7 @@ class ItemGenerator {
     public func saveState() {
         let backedUpItems = backupItems()
         
-        DataManager.shared.saveClassicItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: backedUpItems.itemArray, itemHitCountArray: backedUpItems.itemHitCountArray, blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
+        dataManager.saveClassicItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: backedUpItems.itemArray, itemHitCountArray: backedUpItems.itemHitCountArray, blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
     }
     
     /* PURPOSE: Backs up items and position to a variable, doesn't actually save to dis
