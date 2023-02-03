@@ -47,7 +47,7 @@ class LevelsGameController: UIViewController {
     
     private var scene: SKScene?
     
-    private var dataManager: DataManager = DataManager.shared
+    var dataManager: DataManager = DataManager.shared
     
     override func viewDidAppear(_ animated: Bool) {
         // TODO: Use dependency injection here; this event doesn't need to be fired in testing

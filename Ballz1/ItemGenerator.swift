@@ -82,7 +82,7 @@ class ItemGenerator {
     
     private var ballsOnFire = false
     
-    private var dataManager: DataManager = DataManager.shared
+    var dataManager: DataManager = DataManager.shared
     
     
     // The distribution for these patterns should be 65, 25, 10 (easy, intermediate, hard)

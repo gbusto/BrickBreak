@@ -37,6 +37,8 @@ class GameCenterManager {
     static var LEADERBOARD_ID = "xyz.ashgames.brickbreak"
     static var LEVELS_LEADERBOARD_ID = "xyz.ashgames.brickbreak.levelnumber"
     
+    var dataManager: DataManager = DataManager.shared
+    
     static var shared = GameCenterManager()
     
     private init() {}
@@ -62,7 +64,7 @@ class GameCenterManager {
     
     // Get the user's current level number from Levels game mode (saved to disk)
     public func loadLevelNumber() -> Int {
-        let persistentData = DataManager.shared.loadLevelsPersistentData()
+        let persistentData = dataManager.loadLevelsPersistentData()
         if nil == persistentData {
             return 0
         }
@@ -71,7 +73,7 @@ class GameCenterManager {
     
     // Get the user's high score from Classic game mode (saved to disk)
     public func loadHighScore() -> Int {
-        let persistentData = DataManager.shared.loadClassicPeristentData()
+        let persistentData = dataManager.loadClassicPeristentData()
         if nil == persistentData {
             return 0
         }
@@ -80,13 +82,13 @@ class GameCenterManager {
     
     // Update the user's high score locally (when game center has a higher score on record than is on disk)
     public func updateHighScore(score: Int64) {
-        let persistentData = DataManager.shared.loadClassicPeristentData()
-        DataManager.shared.saveClassicPersistentData(highScore: Int(score), showedTutorials: persistentData!.showedTutorials)
+        let persistentData = dataManager.loadClassicPeristentData()
+        dataManager.saveClassicPersistentData(highScore: Int(score), showedTutorials: persistentData!.showedTutorials)
     }
     
     public func updateLevelNumber(level: Int64) {
-        let persistentData = DataManager.shared.loadLevelsPersistentData()
-        DataManager.shared.saveLevelsPersistentData(levelCount: Int(level), highScore: persistentData!.highScore, cumulativeScore: persistentData!.cumulativeScore, showedTutorials: persistentData!.showedTutorials)
+        let persistentData = dataManager.loadLevelsPersistentData()
+        dataManager.saveLevelsPersistentData(levelCount: Int(level), highScore: persistentData!.highScore, cumulativeScore: persistentData!.cumulativeScore, showedTutorials: persistentData!.showedTutorials)
     }
     
     public func setNextClassicRank(currentRank: Int) {

@@ -17,7 +17,7 @@ class Review {
     private var reviewPrompt3 = false
     private var reviewPrompt4 = false
     
-    private var dataManager: DataManager = DataManager.shared
+    var dataManager: DataManager = DataManager.shared
     
     struct PersistentData: Codable {
         // The last date on which the user was prompted for a review
