@@ -98,6 +98,10 @@ class DataManager {
         }
     }
     
+    func createLevelsPersistentData(levelCount: Int, highScore: Int, cumulativeScore: Int, showedTutorials: Bool) -> LevelsPersistentData {
+        return LevelsPersistentData(levelCount: levelCount, highScore: highScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)
+    }
+    
     // Struct to save/load classic game data
     struct ClassicPersistentData: Codable {
         var highScore: Int

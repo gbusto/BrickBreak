@@ -118,7 +118,7 @@ class LevelsGameModel {
         // Try to load persistent data
         persistentData = dataManager.loadLevelsPersistentData()
         if nil == persistentData {
-            persistentData = DataManager.LevelsPersistentData(levelCount: levelCount, highScore: gameScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)
+            persistentData = dataManager.createLevelsPersistentData(levelCount: levelCount, highScore: gameScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)
         }
         
         /*
@@ -237,7 +237,7 @@ class LevelsGameModel {
             
             numRowsToGenerate = itemArray.count
             
-            let itemState = DataManager.ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: itemArray, itemHitCountArray: itemHitCountArray, blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
+            let itemState = dataManager.createItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: itemArray, itemHitCountArray: itemHitCountArray, blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
             itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
                                           numberOfRows: 0,
                                           numItems: numberOfItems,
