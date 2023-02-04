@@ -61,6 +61,8 @@ class LevelsGameModel {
     // TODO: Fix this - this is bad, I could accidentally deploy the app with this set to false and then what?
     private var PRODUCTION = true
     
+    var dataManager: DataManager = DataManager.shared
+    
     static public var GAMEOVER_NONE = Int(0)
     static public var GAMEOVER_LOSS = Int(1)
     static public var GAMEOVER_WIN = Int(2)
@@ -78,7 +80,7 @@ class LevelsGameModel {
             
             cumulativeScore += gameScore
             
-            DataManager.shared.saveLevelsPersistentData(levelCount: levelCount, highScore: highScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)
+            dataManager.saveLevelsPersistentData(levelCount: levelCount, highScore: highScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)
         }
     }
     
@@ -114,7 +116,7 @@ class LevelsGameModel {
         state = WAITING
         
         // Try to load persistent data
-        persistentData = DataManager.shared.loadLevelsPersistentData()
+        persistentData = dataManager.loadLevelsPersistentData()
         if nil == persistentData {
             persistentData = DataManager.LevelsPersistentData(levelCount: levelCount, highScore: gameScore, cumulativeScore: cumulativeScore, showedTutorials: showedTutorials)
         }
