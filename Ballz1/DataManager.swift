@@ -107,6 +107,10 @@ class DataManager {
         }
     }
     
+    func createClassicPersistentData(highScore: Int, showedTutorials: Bool) -> ClassicPersistentData {
+        return ClassicPersistentData(highScore: highScore, showedTutorials: showedTutorials)
+    }
+    
     // This struct is used for managing any state from this class that is required to save the user's place
     struct ClassicGameState: Codable {
         var gameScore: Int
@@ -116,6 +120,10 @@ class DataManager {
             case gameScore
             case userWasSaved
         }
+    }
+    
+    func createClassicGameState(gameScore: Int, userWasSaved: Bool) -> ClassicGameState {
+        return ClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
     }
     
     struct InitialOnboardingState: Codable {

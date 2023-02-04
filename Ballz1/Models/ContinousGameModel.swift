@@ -125,14 +125,14 @@ class ContinuousGameModel {
         persistentData = dataManager.loadClassicPeristentData()
         if nil == persistentData {
             // Defaults to load highScore of 0
-            persistentData = DataManager.ClassicPersistentData(highScore: highScore, showedTutorials: showedTutorials)
+            persistentData = dataManager.createClassicPersistentData(highScore: highScore, showedTutorials: showedTutorials)
         }
         
         // Try to load game state
         gameState = dataManager.loadClassicGameState()
         if nil == gameState {
             // Defaults to loading gameScore of 0
-            gameState = DataManager.ClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
+            gameState = dataManager.createClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
         }
         
         // If the load works correctly, these will be initialized to their saved values. Otherwise they'll be loaded to their default values of 0
