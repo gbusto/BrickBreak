@@ -77,6 +77,10 @@ class DataManager {
         }
     }
     
+    func createItemGeneratorState(numberOfBalls: Int, itemTypeDict: [Int: Int], itemArray: [[Int]], itemHitCountArray: [[Int]], blockTypeArray: [Int], nonBlockTypeArray: [Int]) -> ItemGeneratorState {
+        return ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
+    }
+    
     // Struct to save/load persistent level data
     struct LevelsPersistentData: Codable {
         var levelCount: Int

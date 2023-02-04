@@ -331,7 +331,7 @@ class ItemGenerator {
             addNonBlockItemType(type: ItemGenerator.BALL, percentage: 8)
             addNonBlockItemType(type: ItemGenerator.BOMB, percentage: 2)
 
-            igState = DataManager.ItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
+            igState = dataManager.createItemGeneratorState(numberOfBalls: numberOfBalls, itemTypeDict: itemTypeDict, itemArray: [], itemHitCountArray: [], blockTypeArray: blockTypeArray, nonBlockTypeArray: nonBlockTypeArray)
         }
         else {
             igState = state
