@@ -28,6 +28,8 @@ class LevelsGameController: UIViewController {
     
     @IBOutlet weak var bannerAdView: GADBannerView!
     
+    public var gameModel: LevelsGameModel?
+    
     private var interstitialAd: GADInterstitial!
     
     private var userWasRescued = false

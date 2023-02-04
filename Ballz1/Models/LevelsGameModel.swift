@@ -55,12 +55,10 @@ class LevelsGameModel {
     private var blockBonus = Int(2)
     private var onFireBonus = Double(1.0)
     
-    // TODO: Change this into an enum
     private var state: LevelsGameState = .gameStateReady
     
-    // TODO: I think I meant to make these constant also
-    private static var MAX_NUM_ROWS_TO_GENERATE = Int(50)
-    private static var MAX_NUM_BALLS = Int(50)
+    private static let MAX_NUM_ROWS_TO_GENERATE = Int(50)
+    private static let MAX_NUM_BALLS = Int(50)
     
     // TODO: Fix this - this is bad, I could accidentally deploy the app with this set to false and then what?
     private var PRODUCTION = true
