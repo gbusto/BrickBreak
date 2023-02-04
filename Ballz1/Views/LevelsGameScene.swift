@@ -210,6 +210,200 @@ class LevelsGameScene: GameScene {
         }
     }
     
+    func handleTurnOver() {
+        endTurn = false
+        
+        // Reset the number of balls that were fired to 0
+        numBallsFired = 0
+        
+        // Reset this; let's us know when all balls have been fired
+        firedAllBalls = false
+        
+        // Reset the boolean specifying whether or not balls are on fire
+        ballsOnFire = false
+        
+        // Reset this boolean saying that the first ball has touched the ground
+        firstBallReturned = false
+        
+        // Return physics simulation to normal speed
+        physicsWorld.speed = 1.0
+        
+        // Return the fireDelay to the default
+        fireDelay = GameScene.DEFAULT_FIRE_DELAY
+        
+        // Reset the tick delay for firing balls
+        
+        // Clear gesture recognizers in the view
+        view!.gestureRecognizers = []
+        addedGesture = false
+        
+        // Tell the game model to update now that the turn has ended
+        gameModel!.handleTurnOver()
+        
+        // Addressed in issue #431
+        // XXX This state (TURN_OVER) is screwing things up:
+        /*
+         1. It's adding an extra row to the start of the game that messes up logic when checking for loss risk and game over
+         2. When the game is over, all that's left is rows of spacer items and the item generator cleans those out but this then adds an extra row that breaks the model checking for whether or not the user won the game
+        */
+        if gameStart {
+            // If the game just started, don't execute the block of code below
+            gameStart = false
+        }
+        else {
+            let items = gameModel!.generateRow()
+            if items.count > 0 {
+                // Get the newly generated items and add them to the view
+                addRowToView(rowNum: 1, items: items)
+            }
+        }
+        
+        // Move the items down in the view
+        animateItems(numItems: gameModel!.getItemCount(), array: gameModel!.getItem2DArray())
+        gameModel!.pruneFirstRowOfItems()
+        
+        // Add back the ball count label
+        addBallCountLabel(position: originPoint, ballCount: ballArray.count)
+        
+        // Check the model to update the score label
+        // Update the current game score
+        
+        // Reset the number of hit blocks and the encouragements shown to the user
+        brokenHitBlockCount = 0
+        displayedOnFire = false
+        
+        let currentCount = gameModel!.rowNumber
+        let maxCount = gameModel!.numRowsToGenerate
+        if currentCount <= maxCount {
+            gameController!.updateRowCountLabel(currentCount: currentCount, maxCount: maxCount)
+        }
+    }
+    
+    func handleIsWaiting() {
+        if doneAnimatingItems() {
+            // Increment game model state from WAITING to READY
+            gameModel!.incrementState()
+            
+            // XXX Gameover can be good or bad here; gameover loss is when a block hits the ground and gameover win is when the user destroys all blocks and collects all items
+            // Check to see if the game ended after all animations are complete
+            let gameOverType = gameModel!.gameOver()
+            if gameOverType == LevelsGameModel.GAMEOVER_LOSS {
+                // If the game is over, the game model will change its state to GAME_OVER
+                // Otherwise show the gameover overlay
+                self.gameOverLoss()
+            }
+            else if gameOverType == LevelsGameModel.GAMEOVER_WIN {
+                // If the game is over, the game model will change its state to GAME_OVER
+                // Otherwise show the gameover overlay
+                self.gameOverWin()
+            }
+            else if gameOverType == LevelsGameModel.GAMEOVER_NONE {
+                // Check to see if we are at risk of losing the game
+                if gameModel!.lossRisk() {
+                    // Flash notification to user
+                    startFlashingRed()
+                }
+                else {
+                    stopFlashingRed()
+                }
+            }
+        }
+    }
+    
+    func handleMidTurn() {
+        if false == addedGesture {
+            // Ask the model if we showed the fast forward tutorial
+            view!.gestureRecognizers = [rightSwipeGesture!, downSwipeGesture!]
+            addedGesture = true
+        }
+        
+        if swipedDown {
+            // Handle ball return gesture
+            returnAllBalls()
+            swipedDown = false
+            endTurn = true
+        }
+        
+        // Allow the model to handle a turn
+        let removedItems = gameModel!.handleTurn()
+        for tup in removedItems {
+            let item = tup.0
+            if item is HitBlockItem {
+                // We want to remove block items from the scene completely
+                self.removeChildren(in: [item.getNode()])
+                // Show block break animation
+                let block = item as! HitBlockItem
+                var centerPoint = block.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+                breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                brokenHitBlockCount += 1
+            }
+            else if item is StoneHitBlockItem {
+                self.removeChildren(in: [item.getNode()])
+                let block = item as! StoneHitBlockItem
+                var centerPoint = block.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+                breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                brokenHitBlockCount += 1
+            }
+            else if item is MysteryBlockItem {
+                let block = item as! MysteryBlockItem
+                var centerPoint = block.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+
+                showSpecialAnimation(item: item, center: centerPoint)
+                
+                // We want to remove block items from the scene completely
+                self.removeChildren(in: [item.getNode()])
+                // Show block break animation
+                breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                brokenHitBlockCount += 1
+            }
+            else if item is BombItem {
+                var centerPoint = item.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+                
+                showSpecialAnimation(item: item, center: centerPoint)
+                
+                self.removeChildren(in: [item.getNode()])
+            }
+        }
+        
+        // If the user has broken greater than X blocks this turn, they get an "on fire" encouragement
+        if brokenHitBlockCount > LevelsGameScene.ON_FIRE_COUNT && (false == displayedOnFire) {
+            // Display the on fire encouragement
+            displayEncouragement(emoji: "🔥", text: "On fire!")
+            displayedOnFire = true
+            gameModel!.addOnFireBonus()
+            setBallsOnFire()
+        }
+        
+        if gameModel!.lastItemBroken && false == showedConfetti {
+            // Check if the last item broke. If it did, show the confetti!
+            displayEncouragement(emoji: "🎉🎉🎉", text: "")
+            let confetti = Confetti()
+            let emitter = confetti.getEmitter(frame: view!.bounds)
+            emitter.name = "confetti"
+            view!.layer.addSublayer(emitter)
+            
+            showedConfetti = true
+        }
+        
+        // Check on the balls that have hit the ground and marked as inactive and move them to the new origin point
+        handleStoppedBalls()
+        if firedAllBalls {
+            // Wait for all balls to return
+            if allBallsStopped(ballArray) {
+                // Increment game model state from MID_TURN to TURN_OVER
+                gameModel!.incrementState()
+            }
+        }
+    }
+    
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         let gameScore = gameModel!.gameScore
@@ -234,104 +428,12 @@ class LevelsGameScene: GameScene {
         
         // XXX Create a generic resetGame function in GameScene to hold common reset code between LevelsGameScene and ContinuousGameScene
         if gameModel!.isTurnOver() {
-            endTurn = false
-            
-            // Reset the number of balls that were fired to 0
-            numBallsFired = 0
-            
-            // Reset this; let's us know when all balls have been fired
-            firedAllBalls = false
-            
-            // Reset the boolean specifying whether or not balls are on fire
-            ballsOnFire = false
-            
-            // Reset this boolean saying that the first ball has touched the ground
-            firstBallReturned = false
-            
-            // Return physics simulation to normal speed
-            physicsWorld.speed = 1.0
-            
-            // Return the fireDelay to the default
-            fireDelay = GameScene.DEFAULT_FIRE_DELAY
-            
-            // Reset the tick delay for firing balls
-            
-            // Clear gesture recognizers in the view
-            view!.gestureRecognizers = []
-            addedGesture = false
-            
-            // Tell the game model to update now that the turn has ended
-            gameModel!.handleTurnOver()
-            
-            // Addressed in issue #431
-            // XXX This state (TURN_OVER) is screwing things up:
-            /*
-             1. It's adding an extra row to the start of the game that messes up logic when checking for loss risk and game over
-             2. When the game is over, all that's left is rows of spacer items and the item generator cleans those out but this then adds an extra row that breaks the model checking for whether or not the user won the game
-            */
-            if gameStart {
-                // If the game just started, don't execute the block of code below
-                gameStart = false
-            }
-            else {
-                let items = gameModel!.generateRow()
-                if items.count > 0 {
-                    // Get the newly generated items and add them to the view
-                    addRowToView(rowNum: 1, items: items)
-                }
-            }
-            
-            // Move the items down in the view
-            animateItems(numItems: gameModel!.getItemCount(), array: gameModel!.getItem2DArray())
-            gameModel!.pruneFirstRowOfItems()
-            
-            // Add back the ball count label
-            addBallCountLabel(position: originPoint, ballCount: ballArray.count)
-            
-            // Check the model to update the score label
-            // Update the current game score
-            
-            // Reset the number of hit blocks and the encouragements shown to the user
-            brokenHitBlockCount = 0
-            displayedOnFire = false
-            
-            let currentCount = gameModel!.rowNumber
-            let maxCount = gameModel!.numRowsToGenerate
-            if currentCount <= maxCount {
-                gameController!.updateRowCountLabel(currentCount: currentCount, maxCount: maxCount)
-            }
+            handleTurnOver()
         }
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
         if gameModel!.isWaiting() {
-            if doneAnimatingItems() {
-                // Increment game model state from WAITING to READY
-                gameModel!.incrementState()
-                
-                // XXX Gameover can be good or bad here; gameover loss is when a block hits the ground and gameover win is when the user destroys all blocks and collects all items
-                // Check to see if the game ended after all animations are complete
-                let gameOverType = gameModel!.gameOver()
-                if gameOverType == LevelsGameModel.GAMEOVER_LOSS {
-                    // If the game is over, the game model will change its state to GAME_OVER
-                    // Otherwise show the gameover overlay
-                    self.gameOverLoss()
-                }
-                else if gameOverType == LevelsGameModel.GAMEOVER_WIN {
-                    // If the game is over, the game model will change its state to GAME_OVER
-                    // Otherwise show the gameover overlay
-                    self.gameOverWin()
-                }
-                else if gameOverType == LevelsGameModel.GAMEOVER_NONE {
-                    // Check to see if we are at risk of losing the game
-                    if gameModel!.lossRisk() {
-                        // Flash notification to user
-                        startFlashingRed()
-                    }
-                    else {
-                        stopFlashingRed()
-                    }
-                }
-            }
+            handleIsWaiting()
         }
         
         if gameModel!.isReady() {
@@ -341,97 +443,7 @@ class LevelsGameScene: GameScene {
         
         // Actions to perform while in the middle of a turn
         if gameModel!.isMidTurn() {
-            if false == addedGesture {
-                // Ask the model if we showed the fast forward tutorial
-                view!.gestureRecognizers = [rightSwipeGesture!, downSwipeGesture!]
-                addedGesture = true
-            }
-            
-            if swipedDown {
-                // Handle ball return gesture
-                returnAllBalls()
-                swipedDown = false
-                endTurn = true
-            }
-            
-            // Allow the model to handle a turn
-            let removedItems = gameModel!.handleTurn()
-            for tup in removedItems {
-                let item = tup.0
-                if item is HitBlockItem {
-                    // We want to remove block items from the scene completely
-                    self.removeChildren(in: [item.getNode()])
-                    // Show block break animation
-                    let block = item as! HitBlockItem
-                    var centerPoint = block.getNode().position
-                    centerPoint.x += blockSize!.width / 2
-                    centerPoint.y += blockSize!.height / 2
-                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
-                    brokenHitBlockCount += 1
-                }
-                else if item is StoneHitBlockItem {
-                    self.removeChildren(in: [item.getNode()])
-                    let block = item as! StoneHitBlockItem
-                    var centerPoint = block.getNode().position
-                    centerPoint.x += blockSize!.width / 2
-                    centerPoint.y += blockSize!.height / 2
-                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
-                    brokenHitBlockCount += 1
-                }
-                else if item is MysteryBlockItem {
-                    let block = item as! MysteryBlockItem
-                    var centerPoint = block.getNode().position
-                    centerPoint.x += blockSize!.width / 2
-                    centerPoint.y += blockSize!.height / 2
-
-                    showSpecialAnimation(item: item, center: centerPoint)
-                    
-                    // We want to remove block items from the scene completely
-                    self.removeChildren(in: [item.getNode()])
-                    // Show block break animation
-                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
-                    brokenHitBlockCount += 1
-                }
-                else if item is BombItem {
-                    var centerPoint = item.getNode().position
-                    centerPoint.x += blockSize!.width / 2
-                    centerPoint.y += blockSize!.height / 2
-                    
-                    showSpecialAnimation(item: item, center: centerPoint)
-                    
-                    self.removeChildren(in: [item.getNode()])
-                }
-            }
-            
-            // If the user has broken greater than X blocks this turn, they get an "on fire" encouragement
-            if brokenHitBlockCount > LevelsGameScene.ON_FIRE_COUNT && (false == displayedOnFire) {
-                // Display the on fire encouragement
-                displayEncouragement(emoji: "🔥", text: "On fire!")
-                displayedOnFire = true
-                gameModel!.addOnFireBonus()
-                setBallsOnFire()
-            }
-            
-            if gameModel!.lastItemBroken && false == showedConfetti {
-                // Check if the last item broke. If it did, show the confetti!
-                displayEncouragement(emoji: "🎉🎉🎉", text: "")
-                let confetti = Confetti()
-                let emitter = confetti.getEmitter(frame: view!.bounds)
-                emitter.name = "confetti"
-                view!.layer.addSublayer(emitter)
-                
-                showedConfetti = true
-            }
-            
-            // Check on the balls that have hit the ground and marked as inactive and move them to the new origin point
-            handleStoppedBalls()
-            if firedAllBalls {
-                // Wait for all balls to return
-                if allBallsStopped(ballArray) {
-                    // Increment game model state from MID_TURN to TURN_OVER
-                    gameModel!.incrementState()
-                }
-            }
+            handleMidTurn()
         }
     }
     
