@@ -43,6 +43,8 @@ class ContinuousGameModel {
     
     private var state: ContinuousGameState = .gameStateReady
     
+    var dataManager: DataManager = DataManager.shared
+    
     /*
      Main things for which this class should be responsible:
      - Managing the full model, including number of balls, items, rows, etc
@@ -77,21 +79,21 @@ class ContinuousGameModel {
             if persistentData!.highScore != highScore {
                 persistentData!.highScore = highScore
             }
-            DataManager.shared.saveClassicPersistentData(highScore: persistentData!.highScore, showedTutorials: persistentData!.showedTutorials)
+            dataManager.saveClassicPersistentData(highScore: persistentData!.highScore, showedTutorials: persistentData!.showedTutorials)
             
             // Handle saving off game state
             if .gameStateGameOver == state {
                 // If it's a game over, clear the game state so we start fresh next time
                 // Don't save any of this stuff after a game over
-                DataManager.shared.clearClassicGameState()
+                dataManager.clearClassicGameState()
                 return
             }
             
-            DataManager.shared.saveClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
+            dataManager.saveClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
             
             // Save off the ball manager state
             // XXX NEEDS WORK
-            if false == DataManager.shared.saveClassicBallState(numberOfBalls: numberOfBalls, originPoint: originPoint) {
+            if false == dataManager.saveClassicBallState(numberOfBalls: numberOfBalls, originPoint: originPoint) {
                 print("Failed to save ball manager state for classic mode!")
             }
             else {
@@ -120,14 +122,14 @@ class ContinuousGameModel {
         state = .gameStateWaiting
         
         // Try to load persistent data
-        persistentData = DataManager.shared.loadClassicPeristentData()
+        persistentData = dataManager.loadClassicPeristentData()
         if nil == persistentData {
             // Defaults to load highScore of 0
             persistentData = DataManager.ClassicPersistentData(highScore: highScore, showedTutorials: showedTutorials)
         }
         
         // Try to load game state
-        gameState = DataManager.shared.loadClassicGameState()
+        gameState = dataManager.loadClassicGameState()
         if nil == gameState {
             // Defaults to loading gameScore of 0
             gameState = DataManager.ClassicGameState(gameScore: gameScore, userWasSaved: userWasSaved)
@@ -149,7 +151,7 @@ class ContinuousGameModel {
     // This function should not modify game state, leave that responsibility to another function
     public func initItemGenerator(blockSize: CGSize, ballRadius: CGFloat) {
         // I don't think ItemGenerator should have a clue about the view or ceiling height or any of that
-        let igState = DataManager.shared.loadClassicItemGeneratorState()
+        let igState = dataManager.loadClassicItemGeneratorState()
         itemGenerator = ItemGenerator(blockSize: blockSize, ballRadius: ballRadius,
                                       numberOfRows: numberOfRows,
                                       numItems: numberOfItems,
