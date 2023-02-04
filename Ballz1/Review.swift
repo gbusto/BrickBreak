@@ -27,7 +27,7 @@ class Review {
     static var shared = Review()
     
     private init() {
-        if let reviewPromptData = DataManager.shared.loadReviewPromptData() {
+        if let reviewPromptData = dataManager.loadReviewPromptData() {
             reviewPrompt1 = reviewPromptData.reviewPrompt1
             reviewPrompt2 = reviewPromptData.reviewPrompt2
             reviewPrompt3 = reviewPromptData.reviewPrompt3
