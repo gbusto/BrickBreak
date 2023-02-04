@@ -8,6 +8,18 @@
 
 import SpriteKit
 
+enum LevelsGameState {
+    // gameStateReady means the game model is ready to go
+    case gameStateReady
+    // gameStateMidTurn means it's in the middle of processing a user's turn and waiting for the balls to return and items to be collected
+    case gameStateMidTurn
+    // gameStateTurnOver means the turn ended; this gives the View some time to process everything and perform any end of turn actions
+    case gameStateTurnOver
+    // gameStateWaiting means the game model is waiting for item animations to finish (i.e. the view tells the items to shift down one row while in the TURN_OVER state, so we remain in this state until all animations are finished)
+    case gameStateWaiting
+    case gameStateGameOver
+}
+
 class LevelsGameModel {
     
     // MARK: Public properties
@@ -18,6 +30,7 @@ class LevelsGameModel {
     
     public var numberOfBalls = Int(10)
     
+    // TODO: Either move ItemGenerator elsewere since it's view-heavy code or separate ItemGenerator into View code and non-View code and have the non-View code one be accessible to the model only
     public var itemGenerator: ItemGenerator?
     
     public var showedTutorials = false
@@ -43,18 +56,9 @@ class LevelsGameModel {
     private var onFireBonus = Double(1.0)
     
     // TODO: Change this into an enum
-    private var state = Int(0)
-    // READY means the game model is ready to go
-    private var READY = Int(0)
-    // MID_TURN means it's in the middle of processing a user's turn and waiting for the balls to return and items to be collected
-    private var MID_TURN = Int(1)
-    // TURN_OVER means the turn ended; this gives the View some time to process everything and perform any end of turn actions
-    private var TURN_OVER = Int(2)
-    // WAITING means the game model is waiting for item animations to finish (i.e. the view tells the items to shift down one row while in the TURN_OVER state, so we remain in this state until all animations are finished)
-    private var WAITING = Int(3)
+    private var state: LevelsGameState = .gameStateReady
     
-    private var GAME_OVER = Int(255)
-    
+    // TODO: I think I meant to make these constant also
     private static var MAX_NUM_ROWS_TO_GENERATE = Int(50)
     private static var MAX_NUM_BALLS = Int(50)
     
@@ -63,6 +67,7 @@ class LevelsGameModel {
     
     var dataManager: DataManager = DataManager.shared
     
+    // TODO: Convert these to an enum
     static public var GAMEOVER_NONE = Int(0)
     static public var GAMEOVER_LOSS = Int(1)
     static public var GAMEOVER_WIN = Int(2)
@@ -113,7 +118,7 @@ class LevelsGameModel {
     required init(blockSize: CGSize, ballRadius: CGFloat, numberOfRows: Int, production: Bool = true) {
         PRODUCTION = production
         
-        state = WAITING
+        state = .gameStateWaiting
         
         // Try to load persistent data
         persistentData = dataManager.loadLevelsPersistentData()
@@ -187,7 +192,7 @@ class LevelsGameModel {
             }
             */
         
-            state = TURN_OVER
+            state = .gameStateTurnOver
         }
         // TODO: This would be a good thing to do in some kind of UI test or using some other mechanism instead of a PRODUCTION boolean
         else {
@@ -245,7 +250,7 @@ class LevelsGameModel {
                                           useDrand: false,
                                           seed: 0)
             
-            state = TURN_OVER
+            state = .gameStateTurnOver
         }
     }
     
@@ -263,7 +268,7 @@ class LevelsGameModel {
     }
     
     public func saveUser() -> [Item] {
-        state = READY
+        state = .gameStateReady
         savedUser = true
         return itemGenerator!.saveUser()
     }
@@ -324,6 +329,7 @@ class LevelsGameModel {
     }
     
     // MARK: Physics contact functions
+    // TODO: Move this functionality into the Controller
     public func handleContact(nameA: String, nameB: String) {
         var additive = Int(1)
         if onFireBonus > 1.0 {
@@ -370,6 +376,7 @@ class LevelsGameModel {
     
     // XXX This will need to be different for levels; need to generate all rows up front when we initialize the model
     // Addressed in issue #431
+    // TODO: This code should actually probably reside in the Controller, which means the Controller should be the one with the access to the ItemGenerator non-View code
     public func generateRow() -> [Item] {
         rowNumber += 1
 
@@ -397,6 +404,7 @@ class LevelsGameModel {
         }
     }
     
+    // TODO: This looks more like a Controller function, and the Controller would update this model if there is a loss risk
     public func lossRisk() -> Bool {
         return (itemGenerator!.itemArray.count == numberOfRows - 2)
     }
@@ -406,11 +414,12 @@ class LevelsGameModel {
      Rewrite this to maybe detect gameover without needing to call a function first; it should just end up in the GAME_OVER state
      and the view's update() loop should check for .isGameOver()
     */
+    // TODO: Maybe this logic should be moved to the Controller, and then the Controller updates this model to say whether the game ended, and what type of game over it is
     public func gameOver() -> Int {
         // XXX This needs to be updated to capture if the user lost
         // Also, the lossRisk function will need to be updated too
         if (itemGenerator!.itemArray.count == numberOfRows - 1) {
-            state = GAME_OVER
+            state = .gameStateGameOver
             return LevelsGameModel.GAMEOVER_LOSS
         }
         else if itemGenerator!.itemArray.count == 0 {
@@ -424,7 +433,7 @@ class LevelsGameModel {
             
             // Show an ad
             
-            state = GAME_OVER
+            state = .gameStateGameOver
             return LevelsGameModel.GAMEOVER_WIN
         }
         
@@ -432,39 +441,48 @@ class LevelsGameModel {
     }
     
     public func incrementState() {
-        if WAITING == state {
-            state = READY
+        if .gameStateWaiting == state {
+            state = .gameStateReady
             // Don't need to save state after each turn
             return
         }
-        else if GAME_OVER == state {
+        else if .gameStateGameOver == state {
             // Don't change state after the game is over
             return
         }
         
-        state += 1
+        switch state {
+        case .gameStateReady:
+            state = .gameStateMidTurn
+        case .gameStateMidTurn:
+            state = .gameStateTurnOver
+        case .gameStateTurnOver:
+            state = .gameStateWaiting
+        default:
+            break
+        }
     }
     
     public func isReady() -> Bool {
         // State when ball manager and item generator are ready
-        return (READY == state)
+        return (.gameStateReady == state)
     }
     
     public func isMidTurn() -> Bool {
         // This state is when ball manager is in SHOOTING || WAITING state
-        return (MID_TURN == state)
+        return (.gameStateMidTurn == state)
     }
     
     public func isTurnOver() -> Bool {
-        return (TURN_OVER == state)
+        return (.gameStateTurnOver == state)
     }
     
     public func isWaiting() -> Bool {
-        return (WAITING == state)
+        return (.gameStateWaiting == state)
     }
     
     public func isGameOver() -> Bool {
-        return (GAME_OVER == state)
+        return (.gameStateGameOver == state)
     }
     
     private func resetAdditives() {

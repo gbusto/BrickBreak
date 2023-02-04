@@ -26,6 +26,20 @@ class LevelsGameModelTests: XCTestCase {
         model = nil
     }
     
+    func testIncrementState() {
+        // The reason it starts in the WAITING state is because we need to update the view and shift items down; the state we want to start in is essentially the same state that the game is in after a turn has completed but before the user can shoot balls to perform all the necessary actions during that window of time.
+        // Once the item generator is initialized, if there are items in it it sets the model to the TURN_OVER state (right before the WAITING state) to simulate a turn ending and performing all of those actions before the WAITING state.
+        XCTAssertTrue(model!.isTurnOver(), "LGM should be in turnOver state but isn't")
+        model!.incrementState()
+        XCTAssertTrue(model!.isWaiting(), "LGM should be in waiting state but isn't")
+        model!.incrementState()
+        XCTAssertTrue(model!.isReady(), "LGM should be in ready state but isn't")
+        model!.incrementState()
+        XCTAssertTrue(model!.isMidTurn(), "LGM should be in the midTurn state but isn't")
+        model!.incrementState()
+        XCTAssertTrue(model!.isTurnOver(), "LGM should be in turnOver state but isn't")
+    }
+    
     func testGetActualRowCount() {
         model!.rowNumber = 12
         XCTAssertTrue(model!.getActualRowCount() == 6, "getActualRowCount should have returned 6 but did not")

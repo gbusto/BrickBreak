@@ -129,6 +129,7 @@ class LevelsGameController: UIViewController {
         }
         
         let scene = self.scene as! LevelsGameScene
+        // TODO: Anti-pattern, View shouldn't communicate directly with the View
         scene.realPaused = true
         scene.showPauseScreen(pauseView: pauseMenuView)
         if let view = self.view as! SKView? {
@@ -166,6 +167,8 @@ class LevelsGameController: UIViewController {
         let scene = self.scene as! LevelsGameScene
         if let view = self.view as! SKView? {
             // Pause the game when the status bar is tapped
+            // TODO: Fix this anti-pattern; controller should not communicate directly with the view
+            //  Perhaps for this fix, the controller would update the model to say the should pause and the view gets that update from the model via the update function
             scene.realPaused = true
             view.isPaused = true
             scene.showPauseScreen(pauseView: pauseMenuView)
@@ -181,6 +184,7 @@ class LevelsGameController: UIViewController {
         if let view = self.view as! SKView? {
             scene.resumeGame()
             // Unpause the game when the resume button is tapped
+            // TODO: Fix this anti-pattern; controller should not communicate directly with the view
             scene.realPaused = false
             view.isPaused = false
         }
@@ -245,6 +249,7 @@ class LevelsGameController: UIViewController {
         // Reset this boolean so the game will pause correctly
         gameEnded = false
         
+        // TODO: Fix this anti-pattern; controller should not communicate directly with a view
         if let view = self.view as! SKView? {
             let scene = LevelsGameScene(size: view.bounds.size)
             self.scene = scene
@@ -277,6 +282,7 @@ class LevelsGameController: UIViewController {
         ])
     }
     
+    // TODO: Fix these anti-patterns; the controller should not be updating views like this; the main View should update its views based on the model state
     public func updateRowCountLabel(currentCount: Int, maxCount: Int) {
         rowCountLabel.text = "\(currentCount)/\(maxCount)"
     }
@@ -291,6 +297,8 @@ class LevelsGameController: UIViewController {
     }
     
     public func gameOverLoss() {
+        // TODO: Fix this anti-pattern; controller should not communicate directly with the view
+
         // Pause the game here
         if let view = self.view as! SKView? {
             view.isPaused = true
@@ -300,6 +308,7 @@ class LevelsGameController: UIViewController {
         
         let scene = self.scene as! LevelsGameScene
         
+        // TODO: This is horrible! The controller should not access the model through the view! Fix this
         if scene.gameModel!.savedUser {
             // If the user has already been saved, return to the game menu
             gameOver(win: false)
@@ -322,6 +331,7 @@ class LevelsGameController: UIViewController {
             print("Reward ad is ready")
         }
         
+        // TODO: Fix this. I don't think the controller should be creating UI Alert, that should be a responsibility of the UI/View
         let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
         let yesAction = UIAlertAction(title: "Yes", style: .default) { (handler: UIAlertAction) in
             // Analytics log event: log that the user didn't accept to rescue themselves after losing a level
@@ -362,14 +372,15 @@ class LevelsGameController: UIViewController {
     public func gameOver(win: Bool) {
         gameEnded = true
         
+        // TODO: Fix this anti-pattern; controller should not communicate directly with the view
         let scene = self.scene as! LevelsGameScene
-        
         let strokeTextAttributes: [NSAttributedString.Key: Any] = [
             .strokeColor: UIColor.white,
             .foregroundColor: UIColor.black,
             .strokeWidth: -1.0,
         ]
         
+        // TODO: Fix this! Controller should not be accessing the model through the view!
         var currentLevelCount = scene.gameModel!.levelCount
         if win {
             // At this point in the logic, if the user won then the level count will have incremented by 1
