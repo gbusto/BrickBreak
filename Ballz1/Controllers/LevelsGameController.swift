@@ -54,7 +54,6 @@ class LevelsGameController: UIViewController {
         Analytics.setScreenName("LevelsGame", screenClass: NSStringFromClass(LevelsGameScene.classForCoder()))
 
         // Check if we need to show the tutorial
-        // TODO: Again, use dependency injection here for the DataManager. This is difficult to test
         if let initialOnboardingState = dataManager.loadInitialOnboardingState() {
             if false == initialOnboardingState.showedLevelOnboarding {
                 showInitialOnboarding()

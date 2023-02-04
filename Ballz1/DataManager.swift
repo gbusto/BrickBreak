@@ -56,6 +56,10 @@ class DataManager {
         }
     }
     
+    func createBallManagerState(numberOfBalls: Int, originPoint: CGPoint?) -> BallManagerState {
+        return BallManagerState(numberOfBalls: numberOfBalls, originPoint: originPoint)
+    }
+    
     // Struct to save/load item state
     struct ItemGeneratorState: Codable {
         var numberOfBalls: Int

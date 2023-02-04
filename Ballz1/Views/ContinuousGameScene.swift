@@ -77,8 +77,11 @@ class ContinousGameScene: GameScene {
     
     static var DEFAULT_NUM_BALLS = Int(10)
     
+    // TODO: Move this to the model
     private var prevBallState = DataManager.BallManagerState(numberOfBalls: 0, originPoint: CGPoint(x: 0, y: 0))
     private var newBallArray: [BallItem] = []
+    
+    var dataManager: DataManager = DataManager.shared
     
     // MARK: Override functions
     override func didMove(to view: SKView) {
@@ -725,7 +728,7 @@ class ContinousGameScene: GameScene {
         }
         
         // Initialized the ball array
-        if let ballState = DataManager.shared.loadClassicBallState() {
+        if let ballState = dataManager.loadClassicBallState() {
             currentBallCount = ballState.numberOfBalls
             originPoint = ballState.originPoint!
             if let ground = groundNode {
