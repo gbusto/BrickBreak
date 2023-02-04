@@ -258,117 +258,237 @@ class ContinousGameScene: GameScene {
         }
     }
     
+    func handleTurnOver() {
+        endTurn = false
+        
+        numBallsFired = 0
+        
+        firedAllBalls = false
+        
+        ballsOnFire = false
+        
+        firstBallReturned = false
+        
+        // Return the fireDelay to the default
+        fireDelay = GameScene.DEFAULT_FIRE_DELAY
+        
+        // Return physics simulation to normal speed
+        physicsWorld.speed = 1.0
+        
+        // Reset the tick delay for firing balls
+        ticksDelay = 6
+        
+        // Clear gesture recognizers in the view
+        view!.gestureRecognizers = []
+        addedGesture = false
+        
+        // Tell the game model to update now that the turn has ended
+        gameModel!.handleTurnOver()
+        clearNewBallArray()
+        
+        // Update the hit count in the item generator
+        // NOTE: This is being done to fix a bug in which the item generator's ball count somehow diverged from the actual ball count
+        gameModel!.updateBallCount(count: ballArray.count)
+        
+        // Get the newly generated items and add them to the view
+        let items = gameModel!.generateRow()
+        addRowToView(rowNum: 1, items: items)
+        
+        // Move the items down in the view
+        animateItems(numItems: gameModel!.getItemCount(), array: gameModel!.getItem2DArray())
+        gameModel!.pruneFirstRowOfItems()
+        
+        // Display the label showing how many balls the user has (this needs to be done after we have collected any new balls the user acquired)
+        currentBallCount = ballArray.count
+        // See if the user acquired any new balls
+        let diff = currentBallCount - prevBallCount
+        if diff > 0 {
+            // Show a floating label saying how many balls the user acquired that turn
+            showBallsAcquiredLabel(count: diff)
+        }
+        // Update the previous ball count to the current count so that next time around we can see if the user acquired more balls
+        prevBallCount = currentBallCount
+        addBallCountLabel(position: originPoint, ballCount: ballArray.count)
+        
+        // Check the model to update the score label
+        updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
+        
+        // Reset the number of hit blocks and the encouragements shown to the user
+        brokenHitBlockCount = 0
+        displayedOnFire = false
+        
+        // Reset start time to 0
+        startTime = 0
+        
+        // XXX Remove these tutorial lines
+        // If the user didn't fast forward and the tutorial is still showing, remove it and add it back to the list until the user actually performs the action
+        if tutorialIsShowing && tutorialType == .fastForwardTutorial {
+            removeTutorial()
+            tutorialsList.append(.fastForwardTutorial)
+        }
+    }
+    
+    func handleIsWaiting() {
+        if doneAnimatingItems() {
+            // Increment game model state from WAITING to READY
+            gameModel!.incrementState()
+            
+            // Check to see if the game ended after all animations are complete
+            if gameModel!.gameOver() {
+                // If the game is over, the game model will change its state to GAME_OVER
+                
+                // If the user hasn't been saved yet, allow them to be saved
+                if false == gameModel!.userWasSaved {
+                    // Display Continue? graphic
+                    showContinueButton()
+                    // Show an ad
+                }
+                else {
+                    // Otherwise show the gameover overlay
+                    self.endGame()
+                }
+            }
+            // Check to see if we are at risk of losing the game
+            else if gameModel!.lossRisk() {
+                // Flash notification to user
+                startFlashingRed()
+            }
+            else {
+                stopFlashingRed()
+            }
+        }
+        
+        // Depending on whether or not a new turn has been saved, enable the undo button
+        // We check for this in the WAITING state because this is the state we come back to after undoing a turn
+        if gameModel!.prevTurnSaved {
+            enableUndoButton()
+        }
+        else {
+            disableUndoButton()
+        }
+    }
+    
+    func handleRemovedItems(_ removedItems: [(Item, Int, Int)]) {
+        for tup in removedItems {
+            let item = tup.0
+            if item is HitBlockItem {
+                // We want to remove block items from the scene completely
+                self.removeChildren(in: [item.getNode()])
+                // Show block break animation
+                let block = item as! HitBlockItem
+                var centerPoint = block.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+                breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                brokenHitBlockCount += 1
+            }
+            else if item is StoneHitBlockItem {
+                self.removeChildren(in: [item.getNode()])
+                let block = item as! StoneHitBlockItem
+                var centerPoint = block.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+                breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                brokenHitBlockCount += 1
+            }
+            else if item is MysteryBlockItem {
+                let block = item as! MysteryBlockItem
+                var centerPoint = block.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+
+                showSpecialAnimation(item: item, center: centerPoint)
+                
+                // We want to remove block items from the scene completely
+                self.removeChildren(in: [item.getNode()])
+                // Show block break animation
+                breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
+                brokenHitBlockCount += 1
+            }
+            else if item is BombItem {
+                var centerPoint = item.getNode().position
+                centerPoint.x += blockSize!.width / 2
+                centerPoint.y += blockSize!.height / 2
+
+                showSpecialAnimation(item: item, center: centerPoint)
+                
+                self.removeChildren(in: [item.getNode()])
+            }
+            else if item is BallItem {
+                // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
+                let vector = CGVector(dx: 0, dy: ballRadius! * 0.5)
+                let ball = item as! BallItem
+                let ballNode = item.getNode()
+                ballNode.physicsBody!.affectedByGravity = true
+                ballNode.run(SKAction.applyImpulse(vector, duration: 0.05))
+                ballHitAnimation(color: hitBallColor, position: ballNode.position)
+                
+                // Ball is transferred from item generator to our ball array
+                newBallArray.append(ball)
+                ballNode.name! = "bm\(ballArray.count + newBallArray.count)"
+            }
+        }
+    }
+    
+    func handleMidTurn(_ currentTime: TimeInterval) {
+        if startTime == 0 {
+            startTime = currentTime
+        }
+        
+        // If the user's turn has gone on longer than 10 seconds and there are still tutorials to show, we want to show them how to fast forward
+        if (Int(currentTime) - Int(startTime)) > 10 && tutorialsList.count > 0 {
+            // Only show it if the user hasn't fast forwarded yet
+            if false == tutorialIsShowing && physicsWorld.speed == 1.0 {
+                showTutorial(tutorial: .fastForwardTutorial)
+            }
+        }
+        
+        if false == addedGesture {
+            // Ask the model if we showed the fast forward tutorial
+            view!.gestureRecognizers = [rightSwipeGesture!, downSwipeGesture!]
+            addedGesture = true
+        }
+        
+        if swipedDown {
+            // Handle ball return gesture
+            returnAllBalls()
+            swipedDown = false
+            endTurn = true
+        }
+        
+        // Allow the model to handle a turn
+        let removedItems = gameModel!.handleTurn()
+        handleRemovedItems(removedItems)
+        
+        // If the user has broken greater than X blocks this turn, they get an "on fire" encouragement
+        if brokenHitBlockCount > ContinousGameScene.ON_FIRE_COUNT && (false == displayedOnFire) {
+            // Display the on fire encouragement
+            displayEncouragement(emoji: "🔥", text: "On fire!")
+            displayedOnFire = true
+            gameModel!.addOnFireBonus()
+            setBallsOnFire()
+        }
+        
+        // Check on the balls that have hit the ground and marked as inactive and move them to the new origin point
+        handleStoppedBalls()
+        if firedAllBalls {
+            // Wait for all balls to return
+            if allBallsStopped(ballArray) {
+                // Increment game model state from MID_TURN to TURN_OVER
+                gameModel!.incrementState()
+            }
+        }
+    }
+    
     // MARK: Scene update
     override func update(_ currentTime: TimeInterval) {
         if gameModel!.isTurnOver() {
-            endTurn = false
-            
-            numBallsFired = 0
-            
-            firedAllBalls = false
-            
-            ballsOnFire = false
-            
-            firstBallReturned = false
-            
-            // Return the fireDelay to the default
-            fireDelay = GameScene.DEFAULT_FIRE_DELAY
-            
-            // Return physics simulation to normal speed
-            physicsWorld.speed = 1.0
-            
-            // Reset the tick delay for firing balls
-            ticksDelay = 6
-            
-            // Clear gesture recognizers in the view
-            view!.gestureRecognizers = []
-            addedGesture = false
-            
-            // Tell the game model to update now that the turn has ended
-            gameModel!.handleTurnOver()
-            clearNewBallArray()
-            
-            // Update the hit count in the item generator
-            // NOTE: This is being done to fix a bug in which the item generator's ball count somehow diverged from the actual ball count
-            gameModel!.updateBallCount(count: ballArray.count)
-            
-            // Get the newly generated items and add them to the view
-            let items = gameModel!.generateRow()
-            addRowToView(rowNum: 1, items: items)
-            
-            // Move the items down in the view
-            animateItems(numItems: gameModel!.getItemCount(), array: gameModel!.getItem2DArray())
-            gameModel!.pruneFirstRowOfItems()
-            
-            // Display the label showing how many balls the user has (this needs to be done after we have collected any new balls the user acquired)
-            currentBallCount = ballArray.count
-            // See if the user acquired any new balls
-            let diff = currentBallCount - prevBallCount
-            if diff > 0 {
-                // Show a floating label saying how many balls the user acquired that turn
-                showBallsAcquiredLabel(count: diff)
-            }
-            // Update the previous ball count to the current count so that next time around we can see if the user acquired more balls
-            prevBallCount = currentBallCount
-            addBallCountLabel(position: originPoint, ballCount: ballArray.count)
-            
-            // Check the model to update the score label
-            updateScore(highScore: gameModel!.highScore, gameScore: gameModel!.gameScore)
-            
-            // Reset the number of hit blocks and the encouragements shown to the user
-            brokenHitBlockCount = 0
-            displayedOnFire = false
-            
-            // Reset start time to 0
-            startTime = 0
-            
-            // XXX Remove these tutorial lines
-            // If the user didn't fast forward and the tutorial is still showing, remove it and add it back to the list until the user actually performs the action
-            if tutorialIsShowing && tutorialType == .fastForwardTutorial {
-                removeTutorial()
-                tutorialsList.append(.fastForwardTutorial)
-            }
+            handleTurnOver()
         }
         
         // After the turn over, wait for the game logic to decide whether or not the user is about to lose or has lost
         if gameModel!.isWaiting() {
-            if doneAnimatingItems() {
-                // Increment game model state from WAITING to READY
-                gameModel!.incrementState()
-                
-                // Check to see if the game ended after all animations are complete
-                if gameModel!.gameOver() {
-                    // If the game is over, the game model will change its state to GAME_OVER
-                    
-                    // If the user hasn't been saved yet, allow them to be saved
-                    if false == gameModel!.userWasSaved {
-                        // Display Continue? graphic
-                        showContinueButton()
-                        // Show an ad
-                    }
-                    else {
-                        // Otherwise show the gameover overlay
-                        self.endGame()
-                    }
-                }
-                // Check to see if we are at risk of losing the game
-                else if gameModel!.lossRisk() {
-                    // Flash notification to user
-                    startFlashingRed()
-                }
-                else {
-                    stopFlashingRed()
-                }
-            }
-            
-            // Depending on whether or not a new turn has been saved, enable the undo button
-            // We check for this in the WAITING state because this is the state we come back to after undoing a turn
-            if gameModel!.prevTurnSaved {
-                enableUndoButton()
-            }
-            else {
-                disableUndoButton()
-            }
+            handleIsWaiting()
         }
         
         if gameModel!.isReady() {
@@ -383,111 +503,7 @@ class ContinousGameScene: GameScene {
         
         // Actions to perform while in the middle of a turn
         if gameModel!.isMidTurn() {
-            if startTime == 0 {
-                startTime = currentTime
-            }
-            
-            // If the user's turn has gone on longer than 10 seconds and there are still tutorials to show, we want to show them how to fast forward
-            if (Int(currentTime) - Int(startTime)) > 10 && tutorialsList.count > 0 {
-                // Only show it if the user hasn't fast forwarded yet
-                if false == tutorialIsShowing && physicsWorld.speed == 1.0 {
-                    showTutorial(tutorial: .fastForwardTutorial)
-                }
-            }
-            
-            if false == addedGesture {
-                // Ask the model if we showed the fast forward tutorial
-                view!.gestureRecognizers = [rightSwipeGesture!, downSwipeGesture!]
-                addedGesture = true
-            }
-            
-            if swipedDown {
-                // Handle ball return gesture
-                returnAllBalls()
-                swipedDown = false
-                endTurn = true
-            }
-            
-            // Allow the model to handle a turn
-            let removedItems = gameModel!.handleTurn()
-            for tup in removedItems {
-                let item = tup.0
-                if item is HitBlockItem {
-                    // We want to remove block items from the scene completely
-                    self.removeChildren(in: [item.getNode()])
-                    // Show block break animation
-                    let block = item as! HitBlockItem
-                    var centerPoint = block.getNode().position
-                    centerPoint.x += blockSize!.width / 2
-                    centerPoint.y += blockSize!.height / 2
-                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
-                    brokenHitBlockCount += 1
-                }
-                else if item is StoneHitBlockItem {
-                    self.removeChildren(in: [item.getNode()])
-                    let block = item as! StoneHitBlockItem
-                    var centerPoint = block.getNode().position
-                    centerPoint.x += blockSize!.width / 2
-                    centerPoint.y += blockSize!.height / 2
-                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
-                    brokenHitBlockCount += 1
-                }
-                else if item is MysteryBlockItem {
-                    let block = item as! MysteryBlockItem
-                    var centerPoint = block.getNode().position
-                    centerPoint.x += blockSize!.width / 2
-                    centerPoint.y += blockSize!.height / 2
-
-                    showSpecialAnimation(item: item, center: centerPoint)
-                    
-                    // We want to remove block items from the scene completely
-                    self.removeChildren(in: [item.getNode()])
-                    // Show block break animation
-                    breakBlock(color1: block.bottomColor!, color2: block.topColor!, position: centerPoint)
-                    brokenHitBlockCount += 1
-                }
-                else if item is BombItem {
-                    var centerPoint = item.getNode().position
-                    centerPoint.x += blockSize!.width / 2
-                    centerPoint.y += blockSize!.height / 2
-
-                    showSpecialAnimation(item: item, center: centerPoint)
-                    
-                    self.removeChildren(in: [item.getNode()])
-                }
-                else if item is BallItem {
-                    // Ball items are not removed; they are just transferred over to the BallManager from the ItemGenerator
-                    let vector = CGVector(dx: 0, dy: ballRadius! * 0.5)
-                    let ball = item as! BallItem
-                    let ballNode = item.getNode()
-                    ballNode.physicsBody!.affectedByGravity = true
-                    ballNode.run(SKAction.applyImpulse(vector, duration: 0.05))
-                    ballHitAnimation(color: hitBallColor, position: ballNode.position)
-                    
-                    // Ball is transferred from item generator to our ball array
-                    newBallArray.append(ball)
-                    ballNode.name! = "bm\(ballArray.count + newBallArray.count)"
-                }
-            }
-            
-            // If the user has broken greater than X blocks this turn, they get an "on fire" encouragement
-            if brokenHitBlockCount > ContinousGameScene.ON_FIRE_COUNT && (false == displayedOnFire) {
-                // Display the on fire encouragement
-                displayEncouragement(emoji: "🔥", text: "On fire!")
-                displayedOnFire = true
-                gameModel!.addOnFireBonus()
-                setBallsOnFire()
-            }
-            
-            // Check on the balls that have hit the ground and marked as inactive and move them to the new origin point
-            handleStoppedBalls()
-            if firedAllBalls {
-                // Wait for all balls to return
-                if allBallsStopped(ballArray) {
-                    // Increment game model state from MID_TURN to TURN_OVER
-                    gameModel!.incrementState()
-                }
-            }
+            handleMidTurn(currentTime)
         }
     }
     

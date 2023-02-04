@@ -109,6 +109,7 @@ class LevelsGameScene: GameScene {
         }
         
         // Allow the game model to do whatever it needs with this collision; mainly to update the score
+        // TODO: Move contact handling into the controller
         gameModel!.handleContact(nameA: nameA!, nameB: nameB!)
     }
     
@@ -238,6 +239,7 @@ class LevelsGameScene: GameScene {
         addedGesture = false
         
         // Tell the game model to update now that the turn has ended
+        // TODO: Handling end turn functionality should be in the controller
         gameModel!.handleTurnOver()
         
         // Addressed in issue #431
@@ -251,6 +253,7 @@ class LevelsGameScene: GameScene {
             gameStart = false
         }
         else {
+            // TODO: Handling the command to generate a new row should be in the controller
             let items = gameModel!.generateRow()
             if items.count > 0 {
                 // Get the newly generated items and add them to the view
@@ -260,6 +263,7 @@ class LevelsGameScene: GameScene {
         
         // Move the items down in the view
         animateItems(numItems: gameModel!.getItemCount(), array: gameModel!.getItem2DArray())
+        // TODO: This should also be controller functionality
         gameModel!.pruneFirstRowOfItems()
         
         // Add back the ball count label
@@ -282,10 +286,12 @@ class LevelsGameScene: GameScene {
     func handleIsWaiting() {
         if doneAnimatingItems() {
             // Increment game model state from WAITING to READY
+            // TODO: Controller should handle updating the model's state
             gameModel!.incrementState()
             
             // XXX Gameover can be good or bad here; gameover loss is when a block hits the ground and gameover win is when the user destroys all blocks and collects all items
             // Check to see if the game ended after all animations are complete
+            // TODO: This logic should be changed. After the turn ends, the controller should fully update the model, and we should quickly be able to query the model and determine if the game ended
             let gameOverType = gameModel!.gameOver()
             if gameOverType == LevelsGameModel.GAMEOVER_LOSS {
                 // If the game is over, the game model will change its state to GAME_OVER
@@ -299,6 +305,7 @@ class LevelsGameScene: GameScene {
             }
             else if gameOverType == LevelsGameModel.GAMEOVER_NONE {
                 // Check to see if we are at risk of losing the game
+                // TODO: Controller functionality
                 if gameModel!.lossRisk() {
                     // Flash notification to user
                     startFlashingRed()
@@ -374,6 +381,7 @@ class LevelsGameScene: GameScene {
         }
         
         // Allow the model to handle a turn
+        // TODO: This seems like the view telling the model to do something when it should be the other way around
         let removedItems = gameModel!.handleTurn()
         // TODO: removedItems seems to be an array of tuples, but we never use the second tuple value. Maybe this can be removed.
         
@@ -384,6 +392,7 @@ class LevelsGameScene: GameScene {
             // Display the on fire encouragement
             displayEncouragement(emoji: "🔥", text: "On fire!")
             displayedOnFire = true
+            // TODO: Controller should call this; on fire bonus should also maybe be managed by the controller since it only lasts for a single turn
             gameModel!.addOnFireBonus()
             setBallsOnFire()
         }
@@ -405,6 +414,7 @@ class LevelsGameScene: GameScene {
             // Wait for all balls to return
             if allBallsStopped(ballArray) {
                 // Increment game model state from MID_TURN to TURN_OVER
+                // TODO: This should be called from the controller
                 gameModel!.incrementState()
             }
         }
@@ -632,6 +642,7 @@ class LevelsGameScene: GameScene {
     
     public func gameOverWin() {
         // Notify the controller that the user won
+        // TODO: Controller should tell the model when to save
         gameModel!.saveState()
         
         if let controller = gameController {
@@ -656,6 +667,7 @@ class LevelsGameScene: GameScene {
     // Save the user from loss after they watched an ad
     public func saveUser() {
         let fadeOut = SKAction.fadeOut(withDuration: 1)
+        // TODO: Controller should contain the logic to save the user, and controller should then update the model saying that the user has been saved
         let items = gameModel!.saveUser()
         for item in items {
             if item is SpacerItem {
@@ -670,6 +682,7 @@ class LevelsGameScene: GameScene {
         displayEncouragement(emoji: "🤞", text: "Last chance!")
         
         // If the user isn't at risk of losing right now then stop flashing red
+        // TODO: Should maybe be a controller function call
         if false == gameModel!.lossRisk() {
             stopFlashingRed()
         }
@@ -737,6 +750,7 @@ class LevelsGameScene: GameScene {
     
     // XXX Common function
     private func shootBalls(point: CGPoint) {
+        // TODO: This should also be a controller function
         gameModel!.prepareTurn()
         startTimer(point)
     }
