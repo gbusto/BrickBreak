@@ -310,22 +310,7 @@ class LevelsGameScene: GameScene {
         }
     }
     
-    func handleMidTurn() {
-        if false == addedGesture {
-            // Ask the model if we showed the fast forward tutorial
-            view!.gestureRecognizers = [rightSwipeGesture!, downSwipeGesture!]
-            addedGesture = true
-        }
-        
-        if swipedDown {
-            // Handle ball return gesture
-            returnAllBalls()
-            swipedDown = false
-            endTurn = true
-        }
-        
-        // Allow the model to handle a turn
-        let removedItems = gameModel!.handleTurn()
+    func handleRemovedItems(_ removedItems: [(Item, Int, Int)]) {
         for tup in removedItems {
             let item = tup.0
             if item is HitBlockItem {
@@ -372,6 +357,27 @@ class LevelsGameScene: GameScene {
                 self.removeChildren(in: [item.getNode()])
             }
         }
+    }
+    
+    func handleMidTurn() {
+        if false == addedGesture {
+            // Ask the model if we showed the fast forward tutorial
+            view!.gestureRecognizers = [rightSwipeGesture!, downSwipeGesture!]
+            addedGesture = true
+        }
+        
+        if swipedDown {
+            // Handle ball return gesture
+            returnAllBalls()
+            swipedDown = false
+            endTurn = true
+        }
+        
+        // Allow the model to handle a turn
+        let removedItems = gameModel!.handleTurn()
+        // TODO: removedItems seems to be an array of tuples, but we never use the second tuple value. Maybe this can be removed.
+        
+        handleRemovedItems(removedItems)
         
         // If the user has broken greater than X blocks this turn, they get an "on fire" encouragement
         if brokenHitBlockCount > LevelsGameScene.ON_FIRE_COUNT && (false == displayedOnFire) {
@@ -426,7 +432,7 @@ class LevelsGameScene: GameScene {
             }
         }
         
-        // XXX Create a generic resetGame function in GameScene to hold common reset code between LevelsGameScene and ContinuousGameScene
+        // TODO: Create a generic resetGame function in GameScene to hold common reset code between LevelsGameScene and ContinuousGameScene
         if gameModel!.isTurnOver() {
             handleTurnOver()
         }
