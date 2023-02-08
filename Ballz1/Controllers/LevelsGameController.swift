@@ -68,26 +68,16 @@ class LevelsGameController: UIViewController {
             showInitialOnboarding()
         }
         
-        // Load the banner ad view
-        // TODO: This could be encapsulated in a function call to another dependency; it doesn't need to be run when testing
-        bannerAdView.adUnitID = AdHandler.getBannerAdID()
-        bannerAdView.rootViewController = self
-        bannerAdView.delegate = self
-        
-        // Load the banner ad
-        let bannerAdRequest = GADRequest()
-        bannerAdRequest.testDevices = AdHandler.getTestDevices()
-        bannerAdView.load(bannerAdRequest)
+        prepareBannerAd()
         
         prepareInterstitialAd()
         
-        // Load the reward ad
-        let rewardAdRequest = GADRequest()
-        rewardAdRequest.testDevices = AdHandler.getTestDevices()
-        GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
+        prepareRewardAd()
         
-        GADRewardBasedVideoAd.sharedInstance().delegate = self
-        
+        registerForNotifications()
+    }
+    
+    func registerForNotifications() {
         // Register these notifications
         
         // Notification that says the app is going into the background
@@ -98,6 +88,7 @@ class LevelsGameController: UIViewController {
         
         // Notification that the app will terminate
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillTerminate(notification:)), name: UIApplication.willTerminateNotification, object: nil)
+
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -130,7 +121,7 @@ class LevelsGameController: UIViewController {
             return
         }
         
-        let scene = self.scene as! LevelsGameScene
+        let scene = getGameScene()
         // TODO: Anti-pattern, View shouldn't communicate directly with the View
         scene.realPaused = true
         scene.showPauseScreen(pauseView: pauseMenuView)
@@ -166,15 +157,21 @@ class LevelsGameController: UIViewController {
         // Analytics log event; user paused classic game by tapping on the status bar
         Analytics.logEvent("levels_pause_game", parameters: /* None */ [:])
         
-        let scene = self.scene as! LevelsGameScene
+        // NOTE: Order matters here. Scene must be paused first, then the view.
+        pauseScene()
+        pauseView()
+    }
+    
+    func pauseView() {
         if let view = self.view as! SKView? {
-            // Pause the game when the status bar is tapped
-            // TODO: Fix this anti-pattern; controller should not communicate directly with the view
-            //  Perhaps for this fix, the controller would update the model to say the should pause and the view gets that update from the model via the update function
-            scene.realPaused = true
             view.isPaused = true
-            scene.showPauseScreen(pauseView: pauseMenuView)
         }
+    }
+
+    func pauseScene() {
+        let scene = getGameScene()
+        scene.realPaused = true
+        scene.showPauseScreen(pauseView: pauseMenuView)
     }
     
     // MARK: Pause Menu Button Handlers
@@ -182,14 +179,20 @@ class LevelsGameController: UIViewController {
         // Analytics log event; user resumed game after pausing it
         Analytics.logEvent("levels_pause_resume", parameters: /* None */ [:])
         
-        let scene = self.scene as! LevelsGameScene
+        unpauseScene()
+        unpauseView()
+    }
+    
+    func unpauseView() {
         if let view = self.view as! SKView? {
-            scene.resumeGame()
-            // Unpause the game when the resume button is tapped
-            // TODO: Fix this anti-pattern; controller should not communicate directly with the view
-            scene.realPaused = false
             view.isPaused = false
         }
+    }
+    
+    func unpauseScene() {
+        let scene = getGameScene()
+        scene.resumeGame()
+        scene.realPaused = false
     }
     
     @IBAction func gameMenuButtonPressed(_ sender: Any) {
@@ -238,6 +241,7 @@ class LevelsGameController: UIViewController {
     /*
      This is a helper function to load the levels game scene
      */
+    // TODO: This function could be moved to a SceneController if one is created
     public func goToGameScene() {
         // Reset the level score
         levelScore.text = "0"
@@ -273,7 +277,7 @@ class LevelsGameController: UIViewController {
             view.ignoresSiblingOrder = true
         }
     }
-    
+        
     public func setLevelNumber(level: Int) {
         levelCount.text = "\(level)"
         
@@ -284,7 +288,8 @@ class LevelsGameController: UIViewController {
         ])
     }
     
-    // TODO: Fix these anti-patterns; the controller should not be updating views like this; the main View should update its views based on the model state
+    // These types of functions I think are okay for now, because this ViewController is tight with the View
+    // Instead of trying to separate the View and ViewController, I think it makes more sense to extract logic from this file that should belong to something like a SceneController
     public func updateRowCountLabel(currentCount: Int, maxCount: Int) {
         rowCountLabel.text = "\(currentCount)/\(maxCount)"
     }
@@ -298,19 +303,22 @@ class LevelsGameController: UIViewController {
         levelScore.text = "\(score)"
     }
     
+    func getGameScene() -> LevelsGameScene {
+        return self.scene as! LevelsGameScene
+    }
+    
     public func gameOverLoss() {
-        // TODO: Fix this anti-pattern; controller should not communicate directly with the view
-
         // Pause the game here
-        if let view = self.view as! SKView? {
-            view.isPaused = true
-        }
+        pauseView()
         
         gameEnded = true
         
-        let scene = self.scene as! LevelsGameScene
+        // TODO: This could be moved to a SceneController if we separate the SKScene from the View
+        let scene = getGameScene()
         
         // TODO: This is horrible! The controller should not access the model through the view! Fix this
+        // This is something that could be moved to a SceneController I think
+        // The controller should have direct access to the model, and it should actually tell the model whether or not the game should be over
         if scene.gameModel!.savedUser {
             // If the user has already been saved, return to the game menu
             gameOver(win: false)
@@ -333,8 +341,13 @@ class LevelsGameController: UIViewController {
             print("Reward ad is ready")
         }
         
+        showRewardAdAlertView()
+    }
+    
+    func showRewardAdAlertView() {
         // TODO: Fix this. I don't think the controller should be creating UI Alert, that should be a responsibility of the UI/View
         let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
+        // TODO: This is another area where we are creating a strong retain cycle with `self` in this closure. Fix it
         let yesAction = UIAlertAction(title: "Yes", style: .default) { (handler: UIAlertAction) in
             // Analytics log event: log that the user didn't accept to rescue themselves after losing a level
             Analytics.logEvent("level_rescue", parameters: [
@@ -343,7 +356,7 @@ class LevelsGameController: UIViewController {
             
             // Show a reward ad
             if GADRewardBasedVideoAd.sharedInstance().isReady {
-                let scene = self.scene as! LevelsGameScene
+                let scene = self.getGameScene()
                 // Pause the game before showing the reward ad
                 scene.realPaused = true
                 if let view = self.view as! SKView? {
@@ -374,8 +387,8 @@ class LevelsGameController: UIViewController {
     public func gameOver(win: Bool) {
         gameEnded = true
         
-        // TODO: Fix this anti-pattern; controller should not communicate directly with the view
-        let scene = self.scene as! LevelsGameScene
+        // TODO: This could be moved to a SceneController if it's decided to go down that route
+        let scene = getGameScene()
         let strokeTextAttributes: [NSAttributedString.Key: Any] = [
             .strokeColor: UIColor.white,
             .foregroundColor: UIColor.black,
@@ -431,7 +444,7 @@ class LevelsGameController: UIViewController {
         ])
         
         let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
-            let scene = self.scene as! LevelsGameScene
+            let scene = self.getGameScene()
             if win {
                 // We only want to remove the confetti if the user won
                 scene.removeConfetti()
@@ -481,6 +494,19 @@ extension LevelsGameController: GADBannerViewDelegate {
     public func adViewDidReceiveAd(_ bannerView: GADBannerView) {
         // Received an ad; show the banner now
         bannerView.isHidden = false
+    }
+    
+    public func prepareBannerAd() {
+        // Load the banner ad view
+        // TODO: This could be encapsulated in a function call to another dependency; it doesn't need to be run when testing
+        bannerAdView.adUnitID = AdHandler.getBannerAdID()
+        bannerAdView.rootViewController = self
+        bannerAdView.delegate = self
+        
+        // Load the banner ad
+        let bannerAdRequest = GADRequest()
+        bannerAdRequest.testDevices = AdHandler.getTestDevices()
+        bannerAdView.load(bannerAdRequest)
     }
 }
 
@@ -532,7 +558,7 @@ extension LevelsGameController: GADInterstitialDelegate {
 extension LevelsGameController: GADRewardBasedVideoAdDelegate {
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
         // User was rewarded
-        let scene = self.scene as! LevelsGameScene
+        let scene = getGameScene()
         scene.saveUser()
         heartImageView.image = UIImage(named: "used_life")
         userWasRescued = true
@@ -543,7 +569,7 @@ extension LevelsGameController: GADRewardBasedVideoAdDelegate {
 
         // The reward ad closed out
         
-        let scene = self.scene as! LevelsGameScene
+        let scene = getGameScene()
         if let view = self.view as! SKView? {
             // Unpause the game after the reward ad closes
             scene.realPaused = false
@@ -554,5 +580,14 @@ extension LevelsGameController: GADRewardBasedVideoAdDelegate {
             // Show the level loss screen because the user skipped the reward ad
             gameOver(win: false)
         }
+    }
+    
+    public func prepareRewardAd() {
+        // Load the reward ad
+        let rewardAdRequest = GADRequest()
+        rewardAdRequest.testDevices = AdHandler.getTestDevices()
+        GADRewardBasedVideoAd.sharedInstance().load(rewardAdRequest, withAdUnitID: AdHandler.getRewardAdID())
+        
+        GADRewardBasedVideoAd.sharedInstance().delegate = self
     }
 }
