@@ -352,7 +352,7 @@ class LevelsGameModel {
     // Some hacky math to figure out how many rows of actual items we have left in the game
     // The reason we need to do this is because levels have a finite number of rows to play (numRowsToGenerate)
     // After we've generated all the rows for a level, we continue adding empty rows (rows with SpacerItems) so that we can properly detect lossRisk and gameOver scenarios
-    public func getActualRowCount() -> Int {
+    public func getActualRemainingRowCount() -> Int {
         var actualRowCount = 0
         
         if rowNumber >= numRowsToGenerate {

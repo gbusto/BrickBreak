@@ -333,7 +333,7 @@ class LevelsGameController: UIViewController {
             return
         }
         
-        if scene.gameModel!.getActualRowCount() <= 4 {
+        if scene.gameModel!.getActualRemainingRowCount() <= 4 {
             // If the user loses and there are only 4 rows on the screen, don't save them. They need to restart the level
             gameOver(win: false)
             return

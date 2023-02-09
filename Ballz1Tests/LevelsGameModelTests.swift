@@ -41,14 +41,24 @@ class LevelsGameModelTests: XCTestCase {
     }
     
     func testGetActualRowCount() {
-        model!.rowNumber = 12
-        XCTAssertTrue(model!.getActualRowCount() == 6, "getActualRowCount should have returned 6 but did not")
+        // TODO: Rewrite this test eventually. This doesn't tell anything about the function being tested
+        let testRowNumber1 = 12
+        let expectedNumber1 = 46
+        model!.rowNumber = testRowNumber1
+        let actualNumber1 = model!.getActualRemainingRowCount()
+        XCTAssertEqual(expectedNumber1, actualNumber1)
         
-        model!.rowNumber = 10
-        XCTAssertTrue(model!.getActualRowCount() == 8, "getActualRowCount should have returned 8 but did not")
+        let testRowNumber2 = 10
+        let expectedNumber2 = 48
+        model!.rowNumber = testRowNumber2
+        let actualNumber2 = model!.getActualRemainingRowCount()
+        XCTAssertEqual(expectedNumber2, actualNumber2)
         
-        model!.rowNumber = 8
-        XCTAssertTrue(model!.getActualRowCount() == 10, "getActualRowCount should have returned 10, but did not")
+        let testRowNumber3 = 8
+        let expectedNumber3 = 50
+        model!.rowNumber = testRowNumber3
+        let actualNumber3 = model!.getActualRemainingRowCount()
+        XCTAssertEqual(expectedNumber3, actualNumber3)
     }
     
     func testLossRisk() {
