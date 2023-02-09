@@ -156,20 +156,14 @@ class LevelsGameController: UIViewController {
     }
     
     func pauseGame() {
-        pauseScene()
-        pauseView()
+        let scene = getGameScene()
+        scene.pauseGame(pauseMenuView: pauseMenuView)
     }
     
     func pauseView() {
         if let view = self.view as! SKView? {
             view.isPaused = true
         }
-    }
-
-    func pauseScene() {
-        let scene = getGameScene()
-        scene.realPaused = true
-        scene.showPauseScreen(pauseView: pauseMenuView)
     }
     
     // MARK: Pause Menu Button Handlers
@@ -181,20 +175,14 @@ class LevelsGameController: UIViewController {
     }
     
     func unpauseGame() {
-        unpauseScene()
-        unpauseView()
+        let scene = getGameScene()
+        scene.unpauseGame()
     }
     
     func unpauseView() {
         if let view = self.view as! SKView? {
             view.isPaused = false
         }
-    }
-    
-    func unpauseScene() {
-        let scene = getGameScene()
-        scene.resumeGame()
-        scene.realPaused = false
     }
     
     @IBAction func gameMenuButtonPressed(_ sender: Any) {
