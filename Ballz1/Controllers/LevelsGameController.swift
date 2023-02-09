@@ -391,7 +391,7 @@ class LevelsGameController: UIViewController {
         
         present(alert, animated: false, completion: nil)
     }
-    
+        
     public func gameOver(win: Bool) {
         gameEnded = true
         
@@ -451,9 +451,13 @@ class LevelsGameController: UIViewController {
             "rescued": userRescuedInt as NSNumber,
         ])
         
+        startTimerToKickOffNextGame(shouldRemoveConfetti: win)
+    }
+    
+    func startTimerToKickOffNextGame(shouldRemoveConfetti: Bool) {
         let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
             let scene = self.getGameScene()
-            if win {
+            if shouldRemoveConfetti {
                 // We only want to remove the confetti if the user won
                 scene.removeConfetti()
             }
