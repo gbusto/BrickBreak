@@ -435,23 +435,30 @@ class LevelsGameController: UIViewController {
         // If they beat their high score, let them know
         
         // Unpause the game
-        if let view = self.view as! SKView? {
-            // Unpause the view if it's paused so we can update it with the user win/loss view
-            view.isPaused = false
-        }
+        unpauseView()
+        
         scene.showGameOverView(win: win, gameOverView: gameOverView)
         
-        let winInt = win ? 1 : 0
-        let userRescuedInt = userWasRescued ? 1 : 0
         // Analytics log event: level ending; send over the level number that just endedNS whether or not they just beat this level
-        Analytics.logEvent("level_end", parameters: [
-            AnalyticsParameterLevel: currentLevelCount as NSNumber,
-            AnalyticsParameterSuccess: winInt as NSNumber,
-            AnalyticsParameterScore: Int("\(levelScore.text!)")! as NSNumber,
-            "rescued": userRescuedInt as NSNumber,
-        ])
+        logAnalyticsLevelEnded(win: win, userWasRescued: userWasRescued, levelCount: currentLevelCount)
         
         startTimerToKickOffNextGame(shouldRemoveConfetti: win)
+    }
+    
+    func boolToInt(value: Bool) -> Int {
+        return value ? 1 : 0
+    }
+    
+    func logAnalyticsLevelEnded(win: Bool, userWasRescued: Bool, levelCount: Int) {
+        let winInt = boolToInt(value: win)
+        let userWasRescuedInt = boolToInt(value: userWasRescued)
+
+        Analytics.logEvent("level_end", parameters: [
+            AnalyticsParameterLevel: levelCount as NSNumber,
+            AnalyticsParameterSuccess: winInt as NSNumber,
+            AnalyticsParameterScore: Int("\(levelScore.text!)")! as NSNumber,
+            "rescued": userWasRescuedInt as NSNumber,
+        ])
     }
     
     func startTimerToKickOffNextGame(shouldRemoveConfetti: Bool) {
