@@ -28,9 +28,12 @@ class LevelsGameController: UIViewController {
     
     @IBOutlet weak var bannerAdView: GADBannerView!
     
-    public var gameModel: LevelsGameModel?
-    
     private var interstitialAd: GADInterstitial!
+    
+    // TODO: Move all properties below this line to a new file eventually that will be the actual GameController
+    
+    // TODO: This should be used instead of going through scene.gameModel
+    public var gameModel: LevelsGameModel?
     
     private var userWasRescued = false
     
@@ -121,8 +124,7 @@ class LevelsGameController: UIViewController {
             return
         }
         
-        pauseScene()
-        pauseView()
+        pauseGame()
     }
     
     @objc func applicationDidBecomeActive(notification: Notification) {
@@ -150,6 +152,10 @@ class LevelsGameController: UIViewController {
         Analytics.logEvent("levels_pause_game", parameters: /* None */ [:])
         
         // NOTE: Order matters here. Scene must be paused first, then the view.
+        pauseGame()
+    }
+    
+    func pauseGame() {
         pauseScene()
         pauseView()
     }
@@ -171,6 +177,10 @@ class LevelsGameController: UIViewController {
         // Analytics log event; user resumed game after pausing it
         Analytics.logEvent("levels_pause_resume", parameters: /* None */ [:])
         
+        unpauseGame()
+    }
+    
+    func unpauseGame() {
         unpauseScene()
         unpauseView()
     }
