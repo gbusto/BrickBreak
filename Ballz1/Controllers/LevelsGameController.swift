@@ -121,13 +121,8 @@ class LevelsGameController: UIViewController {
             return
         }
         
-        let scene = getGameScene()
-        // TODO: Anti-pattern, View shouldn't communicate directly with the View
-        scene.realPaused = true
-        scene.showPauseScreen(pauseView: pauseMenuView)
-        if let view = self.view as! SKView? {
-            view.isPaused = true
-        }
+        pauseScene()
+        pauseView()
     }
     
     @objc func applicationDidBecomeActive(notification: Notification) {
@@ -136,10 +131,7 @@ class LevelsGameController: UIViewController {
         // Analytics log event; log when levels goes into the foreground
         Analytics.logEvent("levels_game_foreground", parameters: /* None */ [:])
         
-        if let view = self.view as! SKView? {
-            // Keep this variable set to true; the app will automatically set realPaused to false when the app comes back into view
-            view.isPaused = true
-        }
+        pauseView()
     }
     
     deinit {
@@ -257,11 +249,7 @@ class LevelsGameController: UIViewController {
         
         // TODO: Fix this anti-pattern; controller should not communicate directly with a view
         if let view = self.view as! SKView? {
-            let scene = LevelsGameScene(size: view.bounds.size)
-            self.scene = scene
-            
-            scene.scaleMode = .aspectFill
-            scene.gameController = self
+            let scene = getNewLevelsGameScene()
             
             pauseMenuView.center = CGPoint(x: view.frame.midX, y: view.frame.midY)
             // XXX This code may not be necessary anymore
@@ -276,6 +264,16 @@ class LevelsGameController: UIViewController {
             view.presentScene(scene)
             view.ignoresSiblingOrder = true
         }
+    }
+    
+    func getNewLevelsGameScene() -> SKScene {
+        let scene = LevelsGameScene(size: view.bounds.size)
+        self.scene = scene
+        
+        scene.scaleMode = .aspectFill
+        scene.gameController = self
+
+        return scene
     }
         
     public func setLevelNumber(level: Int) {
