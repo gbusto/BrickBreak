@@ -54,6 +54,7 @@ class LevelsGameController: UIViewController {
     
     var dataManager: DataManager = DataManager.shared
     
+    // - UIViewController function
     override func viewDidAppear(_ animated: Bool) {
         // TODO: Use dependency injection here; this event doesn't need to be fired in testing
         Analytics.setScreenName("LevelsGame", screenClass: NSStringFromClass(LevelsGameScene.classForCoder()))
@@ -80,6 +81,7 @@ class LevelsGameController: UIViewController {
         registerForNotifications()
     }
     
+    // - UIViewController function
     func registerForNotifications() {
         // Register these notifications
         
@@ -94,6 +96,7 @@ class LevelsGameController: UIViewController {
 
     }
     
+    // - UIViewController function
     override func viewWillDisappear(_ animated: Bool) {
         // Remove ourselves from observing notifications
         // We need to do this in THIS function because something maintains a strong reference to this ViewController and we can't use deinit because this will not get deallocated. Meaning these background/foreground/app-terminate notifications will keep firing for levels in the background even after switching game modes. Worse yet, since we add observers for these notifications each time viewDidAppear is called, it will register more observers and so when the app goes into the background, these notifications will stack up and trigger multiple times
@@ -101,6 +104,7 @@ class LevelsGameController: UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
     
+    // - UIViewController function
     @objc func applicationWillTerminate(notification: Notification) {
         // App is about to terminate
         
@@ -111,6 +115,7 @@ class LevelsGameController: UIViewController {
         analyticsLogLevelsStop()
     }
     
+    // - UIViewController function
     @objc func applicationWillResignActive(notification: Notification) {
         // App is going into the background
         
@@ -127,6 +132,7 @@ class LevelsGameController: UIViewController {
         pauseGame()
     }
     
+    // - UIViewController function
     @objc func applicationDidBecomeActive(notification: Notification) {
         // App is coming back into the foreground
         
@@ -136,16 +142,19 @@ class LevelsGameController: UIViewController {
         pauseView()
     }
     
+    // - UIViewController function
     deinit {
         // This function will never be called here because something maintains a strong reference to this view controller; I'm assuming it has something to do with the fact that it's created in the BrickBreak.storyboard file
     }
     
+    // - UIViewController function
     override func viewDidLoad() {
         super.viewDidLoad()
         
         goToGameScene()
     }
     
+    // - UIViewController function
     // TODO: I believe this code is very similar in the continuous game controller too. This could be moved to its own file.
     @IBAction func statusBarTapped(_ sender: UITapGestureRecognizer) {
         // Analytics log event; user paused classic game by tapping on the status bar
@@ -155,11 +164,13 @@ class LevelsGameController: UIViewController {
         pauseGame()
     }
     
+    // - UIViewController function
     func pauseGame() {
         let scene = getGameScene()
         scene.pauseGame(pauseMenuView: pauseMenuView)
     }
     
+    // - UIViewController function
     func pauseView() {
         if let view = self.view as! SKView? {
             view.isPaused = true
@@ -167,6 +178,7 @@ class LevelsGameController: UIViewController {
     }
     
     // MARK: Pause Menu Button Handlers
+    // - UIViewController function
     @IBAction func resumeButtonPressed(_ sender: Any) {
         // Analytics log event; user resumed game after pausing it
         Analytics.logEvent("levels_pause_resume", parameters: /* None */ [:])
@@ -174,17 +186,20 @@ class LevelsGameController: UIViewController {
         unpauseGame()
     }
     
+    // - UIViewController function
     func unpauseGame() {
         let scene = getGameScene()
         scene.unpauseGame()
     }
     
+    // - UIViewController function
     func unpauseView() {
         if let view = self.view as! SKView? {
             view.isPaused = false
         }
     }
     
+    // - UIViewController function
     @IBAction func gameMenuButtonPressed(_ sender: Any) {
         // Analytics log event; user went to game menu after pausing
         Analytics.logEvent("levels_pause_gamemenu", parameters: /* None */ [:])
@@ -202,10 +217,12 @@ class LevelsGameController: UIViewController {
         }
     }
     
+    // - UIViewController function
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Prepare for a segue
     }
     
+    // - UIViewController function
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
         // Necessary for unwinding views
     }
@@ -215,6 +232,7 @@ class LevelsGameController: UIViewController {
         return true
     }
     
+    // - UIViewController function
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
             return .portrait
@@ -223,6 +241,7 @@ class LevelsGameController: UIViewController {
         }
     }
     
+    // - UIViewController function
     override var prefersStatusBarHidden: Bool {
         return true
     }
@@ -231,7 +250,7 @@ class LevelsGameController: UIViewController {
     /*
      This is a helper function to load the levels game scene
      */
-    // TODO: This function could be moved to a SceneController if one is created
+    // - UIViewController function (mixed with some GameController code)
     public func goToGameScene() {
         // Reset the level score
         levelScore.text = "0"
@@ -264,6 +283,7 @@ class LevelsGameController: UIViewController {
         }
     }
     
+    // - UIViewController function
     func getNewLevelsGameScene() -> SKScene {
         let scene = LevelsGameScene(size: view.bounds.size)
         self.scene = scene
@@ -273,7 +293,8 @@ class LevelsGameController: UIViewController {
 
         return scene
     }
-        
+    
+    // - UIViewController function
     public func setLevelNumber(level: Int) {
         levelCount.text = "\(level)"
         
@@ -284,16 +305,17 @@ class LevelsGameController: UIViewController {
         ])
     }
     
-    // These types of functions I think are okay for now, because this ViewController is tight with the View
-    // Instead of trying to separate the View and ViewController, I think it makes more sense to extract logic from this file that should belong to something like a SceneController
+    // - UIViewController function
     public func updateRowCountLabel(currentCount: Int, maxCount: Int) {
         rowCountLabel.text = "\(currentCount)/\(maxCount)"
     }
     
+    // - UIViewController function
     public func updateScore(score: Int) {
         levelScore.text = "\(score)"
     }
     
+    // - UIViewController function
     public func setScore(score: Int) {
         // Used for app demos
         levelScore.text = "\(score)"
@@ -303,17 +325,16 @@ class LevelsGameController: UIViewController {
         return self.scene as! LevelsGameScene
     }
     
+    // - GameController function (mixed with some UIViewController code)
     public func gameOverLoss() {
         // Pause the game here
         pauseView()
         
         gameEnded = true
         
-        // TODO: This could be moved to a SceneController if we separate the SKScene from the View
         let scene = getGameScene()
         
         // TODO: This is horrible! The controller should not access the model through the view! Fix this
-        // This is something that could be moved to a SceneController I think
         // The controller should have direct access to the model, and it should actually tell the model whether or not the game should be over
         if scene.gameModel!.savedUser {
             // If the user has already been saved, return to the game menu
@@ -340,6 +361,7 @@ class LevelsGameController: UIViewController {
         showRewardAdAlertView()
     }
     
+    // - UIViewController function (mixed with some GameController code)
     func showRewardAdAlertView() {
         // TODO: Fix this. I don't think the controller should be creating UI Alert, that should be a responsibility of the UI/View
         let alert = UIAlertController(title: "Continue", message: "Watch a sponsored ad to save yourself", preferredStyle: .alert)
@@ -379,11 +401,11 @@ class LevelsGameController: UIViewController {
         
         present(alert, animated: false, completion: nil)
     }
-        
+    
+    // - GameController function (mixed with UIViewController code)
     public func gameOver(win: Bool) {
         gameEnded = true
         
-        // TODO: This could be moved to a SceneController if it's decided to go down that route
         let scene = getGameScene()
         let strokeTextAttributes: [NSAttributedString.Key: Any] = [
             .strokeColor: UIColor.white,
@@ -437,6 +459,7 @@ class LevelsGameController: UIViewController {
         return value ? 1 : 0
     }
     
+    // - GameController functions
     func logAnalyticsLevelEnded(win: Bool, userWasRescued: Bool, levelCount: Int) {
         let winInt = boolToInt(value: win)
         let userWasRescuedInt = boolToInt(value: userWasRescued)
@@ -449,6 +472,7 @@ class LevelsGameController: UIViewController {
         ])
     }
     
+    // - UIViewController functions
     func startTimerToKickOffNextGame(shouldRemoveConfetti: Bool) {
         let _ = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { _ in
             let scene = self.getGameScene()
@@ -490,6 +514,7 @@ class LevelsGameController: UIViewController {
     }
 }
 
+// - UIViewController functions
 // MARK: - Banner ad functions
 extension LevelsGameController: GADBannerViewDelegate {
     public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
@@ -517,6 +542,7 @@ extension LevelsGameController: GADBannerViewDelegate {
     }
 }
 
+// - UIViewController functions
 // MARK: - Interstitial ad functions
 extension LevelsGameController: GADInterstitialDelegate {
     public func interstitialDidReceiveAd(_ ad: GADInterstitial) {
@@ -561,6 +587,7 @@ extension LevelsGameController: GADInterstitialDelegate {
     
 }
 
+// - UIViewController functions
 // MARK: - Reward ad functions
 extension LevelsGameController: GADRewardBasedVideoAdDelegate {
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
