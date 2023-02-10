@@ -11,7 +11,7 @@ import SpriteKit
 import GoogleMobileAds
 import FirebaseAnalytics
 
-class LevelsGameController: UIViewController {
+class LevelsUIViewController: UIViewController {
     
     @IBOutlet weak var levelCount: UILabel!
     @IBOutlet weak var levelScore: UILabel!
@@ -516,7 +516,7 @@ class LevelsGameController: UIViewController {
 
 // - UIViewController functions
 // MARK: - Banner ad functions
-extension LevelsGameController: GADBannerViewDelegate {
+extension LevelsUIViewController: GADBannerViewDelegate {
     public func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
         // Error loading the ad; hide the banner
         bannerView.isHidden = true
@@ -544,7 +544,7 @@ extension LevelsGameController: GADBannerViewDelegate {
 
 // - UIViewController functions
 // MARK: - Interstitial ad functions
-extension LevelsGameController: GADInterstitialDelegate {
+extension LevelsUIViewController: GADInterstitialDelegate {
     public func interstitialDidReceiveAd(_ ad: GADInterstitial) {
         // Received an interstitial ad
     }
@@ -589,7 +589,7 @@ extension LevelsGameController: GADInterstitialDelegate {
 
 // - UIViewController functions
 // MARK: - Reward ad functions
-extension LevelsGameController: GADRewardBasedVideoAdDelegate {
+extension LevelsUIViewController: GADRewardBasedVideoAdDelegate {
     public func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
         // User was rewarded
         let scene = getGameScene()

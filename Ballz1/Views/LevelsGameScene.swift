@@ -17,7 +17,7 @@ class LevelsGameScene: GameScene {
     // MARK: Public attributes
     public var gameModel: LevelsGameModel?
     
-    public var gameController: LevelsGameController?
+    public var gameController: LevelsUIViewController?
     
     // Variables for handling swipe gestures
     private var rightSwipeGesture: UISwipeGestureRecognizer?

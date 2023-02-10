@@ -49,7 +49,7 @@
 		D5B0769C2312C6D500C52A9A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5B0769B2312C6D500C52A9A /* GoogleService-Info.plist */; };
 		D5DDBF822324444E0025CE32 /* LevelsGameModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5DDBF812324444E0025CE32 /* LevelsGameModelTests.swift */; };
 		D5DDBF84232BA3D50025CE32 /* GameCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5DDBF83232BA3D50025CE32 /* GameCenterManager.swift */; };
-		F200B2E921EBA3DE00FE0FB6 /* LevelsGameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */; };
+		F200B2E921EBA3DE00FE0FB6 /* LevelsUIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2E821EBA3DE00FE0FB6 /* LevelsUIViewController.swift */; };
 		F200B2EB21EBA4C100FE0FB6 /* LevelsGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2EA21EBA4C100FE0FB6 /* LevelsGameScene.swift */; };
 		F200B2ED21EBCA3900FE0FB6 /* LevelsGameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F200B2EC21EBCA3900FE0FB6 /* LevelsGameModel.swift */; };
 		F23266A622CB134F001BF315 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23266A522CB134F001BF315 /* DataManager.swift */; };
@@ -128,7 +128,7 @@
 		D5DDBF812324444E0025CE32 /* LevelsGameModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameModelTests.swift; sourceTree = "<group>"; };
 		D5DDBF83232BA3D50025CE32 /* GameCenterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterManager.swift; sourceTree = "<group>"; };
 		ECEC017C6EB71AEF0022F501 /* Pods-Ballz1.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ballz1.release.xcconfig"; path = "Pods/Target Support Files/Pods-Ballz1/Pods-Ballz1.release.xcconfig"; sourceTree = "<group>"; };
-		F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameController.swift; sourceTree = "<group>"; };
+		F200B2E821EBA3DE00FE0FB6 /* LevelsUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsUIViewController.swift; sourceTree = "<group>"; };
 		F200B2EA21EBA4C100FE0FB6 /* LevelsGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameScene.swift; sourceTree = "<group>"; };
 		F200B2EC21EBCA3900FE0FB6 /* LevelsGameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelsGameModel.swift; sourceTree = "<group>"; };
 		F23266A522CB134F001BF315 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
@@ -246,6 +246,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		034731B62996D3A9002BCC21 /* Levels Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				F200B2E821EBA3DE00FE0FB6 /* LevelsUIViewController.swift */,
+			);
+			path = "Levels Controllers";
+			sourceTree = "<group>";
+		};
 		0362B64922EE6DB90032C7CB /* ClassicGameTutorial */ = {
 			isa = PBXGroup;
 			children = (
@@ -298,7 +306,7 @@
 				03FE9688225E10CE00E6C864 /* Fire.sks */,
 				03B8B4F521691A2100FFD589 /* GameMenuController.swift */,
 				03B8B4F721691A2D00FFD589 /* ContinuousGameController.swift */,
-				F200B2E821EBA3DE00FE0FB6 /* LevelsGameController.swift */,
+				034731B62996D3A9002BCC21 /* Levels Controllers */,
 				03FE9689225E10CE00E6C864 /* Assets.xcassets */,
 			);
 			path = Controllers;
@@ -545,7 +553,7 @@
 				03B8B4FC21691A6000FFD589 /* GameMenuModel.swift in Sources */,
 				0317DE9E214B5FA300E976E2 /* AppDelegate.swift in Sources */,
 				03837346225EDE3900352EFB /* Review.swift in Sources */,
-				F200B2E921EBA3DE00FE0FB6 /* LevelsGameController.swift in Sources */,
+				F200B2E921EBA3DE00FE0FB6 /* LevelsUIViewController.swift in Sources */,
 				037536B421BB04CF00B62589 /* AdHandler.swift in Sources */,
 				0342D217216CEC8700FE5760 /* SpacerItem.swift in Sources */,
 				03B8B4F621691A2100FFD589 /* GameMenuController.swift in Sources */,
